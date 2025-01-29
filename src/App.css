@@ -1,8 +1,30 @@
 @import "tailwindcss";
 
+@theme {
+  /* font fam */
+  --font-primary: "DM Sans", sans-serif;
+  --font-baloo: "Baloo 2", sans-serif;
+  --font-balooBhai: "Baloo Bhai 2", sans-serif;
+
+  /* colors */
+  --color-white: #ffffff;
+  --color-green-primary: #447835;
+  --color-green-secondary: #99d58d;
+  --color-green-muted: rgba(32, 102, 45, 0.3) /* #20662D;  30% opacity */
+  --color-yellow: #fbc93d;
+
+  /* heatmap */
+  --color-lightest: #f6fb7a;
+  --color-light: #fbc93d;
+  --color-medium: #f09313;
+  --color-darkest: #a45c11;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  font-family: var(--font-primary)
 }
+

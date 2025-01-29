@@ -1,7 +1,7 @@
 import "./App.css";
 
 function App() {
-  return <p className="not-hover:opacity-10 text-2xl">Hello world!</p>;
+  return <h1 className="text-9xl font-bold font-balooBhai">MathPath</h1>;
 }
 
 export default App;
