@@ -1,7 +1,14 @@
-import "./App.css";
+import "./index.css";
+import Nav from "./components/Nav";
+import Landing from "./pages/landing/Landing"
 
 function App() {
-  return <h1 className="text-9xl font-bold font-balooBhai">MathPath</h1>;
+  return  (
+  <>
+    <Nav/>
+    <Landing/>
+  </>
+  )
 }
 
 export default App;

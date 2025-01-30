@@ -10,7 +10,9 @@
   --color-white: #ffffff;
   --color-green-primary: #447835;
   --color-green-secondary: #99d58d;
-  --color-green-muted: rgba(32, 102, 45, 0.3) /* #20662D;  30% opacity */
+
+  /* #20662D;  30% opacity */
+  --color-green-muted: rgba(32, 102, 45, 0.3);
   --color-yellow: #fbc93d;
 
   /* heatmap */
@@ -20,11 +22,18 @@
   --color-darkest: #a45c11;
 }
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  font-family: var(--font-primary)
+/* resets */
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+#root {
+  font-family: var(--font-primary);
+}
+
+body {
+  min-height: 100vh;
+}
