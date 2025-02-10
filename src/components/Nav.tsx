@@ -6,7 +6,7 @@ export default function Nav(): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <nav className="font-baloo w-full bg-[var(--color-green-primary)] p-5 text-white shadow md:flex md:items-center md:justify-between">
+      <nav className="font-baloo fixed top-0 z-10 w-full bg-[var(--color-green-primary)] p-5 text-white shadow md:flex md:items-center md:justify-between">
         <div className="flex items-center justify-between">
           <span className="cursor-pointer text-4xl font-bold">MathPath</span>
           <span className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
