@@ -9,7 +9,7 @@ export default function About(): ReactElement {
   return (
     <section
       id="about"
-      className="h-full snap-start px-4 py-2 pt-28 md:p-8 md:px-8 md:pt-32 "
+      className="h-full px-4 py-2 pt-28 md:p-8 md:px-8 md:pt-32 "
     >
       <div className="flex h-auto flex-col justify-around gap-4 rounded-2xl border-2 bg-[var(--color-green-secondary)] px-4 py-8 md:px-8">
         <div className="font-baloo flex flex-col gap-2 p-4 text-center md:px-16 xl:gap-8">

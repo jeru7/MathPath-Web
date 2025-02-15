@@ -1,9 +1,10 @@
 import { useState, type ReactElement } from "react";
 import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Nav(): ReactElement {
-  // TODO: nav bar - mobile first
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   return (
     <>
       <nav className="font-baloo fixed top-0 z-10 w-full bg-[var(--color-green-primary)] p-5 text-white shadow md:flex md:items-center md:justify-between">
@@ -12,6 +13,7 @@ export default function Nav(): ReactElement {
             className="cursor-pointer text-4xl font-bold"
             onClick={(e) => {
               e.preventDefault();
+              navigate("/")
               document
                 .getElementById("main-hero")
                 ?.scrollIntoView({ behavior: "smooth" });
@@ -28,9 +30,12 @@ export default function Nav(): ReactElement {
         >
           <li className="mx-4 my-6 md:my-0">
             <a
+              href="#about"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById("about")?.scrollIntoView({behavior: "smooth"});
+                document
+                  .getElementById("about")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
               className="hover:text-yellow text-xl duration-300 hover:cursor-pointer md:font-semibold"
             >
