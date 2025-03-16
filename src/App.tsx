@@ -1,23 +1,14 @@
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Nav from "./components/Nav";
+import Nav from "./globals/components/Nav";
 import Landing from "./pages/landing/Landing";
-import Admin from "./pages/admin/Admin";
 
 function App() {
   return (
     <Router>
+      <Nav />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Nav />
-              <Landing />
-            </>
-          }
-        />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/" element={<Landing />} />
       </Routes>
     </Router>
   );

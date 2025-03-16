@@ -1,45 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* font fam */
+  /* font colors */
   --font-primary: "DM Sans", sans-serif;
+  --font-secondary: "IBM Plex Mono", sans-serif;
   --font-baloo: "Baloo 2", sans-serif;
-  --font-balooBhai: "Baloo Bhai 2", sans-serif;
+  --font-jersey: "Jersey 10", sans-serif;
+  --font-plexMono: "IBM Plex Mono", sans-serif;
 
-  /* colors */
-  --color-white: #ffffff;
-  --color-green-primary: #447835;
-  --color-green-secondary: #99d58d;
-
-  /* #20662D;  30% opacity */
-  --color-green-muted: rgba(32, 102, 45, 0.3);
-  --color-yellow: #fbc93d;
-
-  /* heatmap */
-  --color-lightest: #f6fb7a;
-  --color-light: #fbc93d;
-  --color-medium: #f09313;
-  --color-darkest: #a45c11;
-}
-
-.font-outline {
-  text-shadow: 
-    -0.5px -0.5px 0 black,  
-     0.5px -0.5px 0 black,
-    -0.5px  0.5px 0 black,
-     0.5px  0.5px 0 black;
+  /* color palette */
+  --primary-white: #F5F7F8;
+  --primary-yellow: #F6E96B;
+  --primary-green: #387F39;
+  --secondary-green: #A2CA71;
+  --primary-black: #222222;
 }
 
 @layer utilities {
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 }
-
 
 /* resets */
 *::before,
@@ -49,8 +35,13 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 #root {
   font-family: var(--font-primary);
+  max-width: 100%;
 }
 
 body {
@@ -58,6 +49,6 @@ body {
   width: 100%;
 }
 
-html, body {
-  overflow-x: hidden;
+html,
+body {
 }

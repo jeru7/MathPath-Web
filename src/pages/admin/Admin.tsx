@@ -1,5 +1,7 @@
-import { type ReactElement } from "react"
+import { ReactElement } from "react";
+import AdminLogin from "./components/login/AdminLogin";
 
 export default function Admin(): ReactElement {
-  return <h1 className="w-full text-center text-9xl">ADMIN</h1>
+  // TODO: if not logged in, proceed to admin login
+  return <AdminLogin/>
 }

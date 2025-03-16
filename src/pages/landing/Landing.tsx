@@ -1,85 +1,59 @@
-import { useEffect, useRef, type ReactElement } from "react";
-import About from "./About";
-import landingArt from "../../assets/landingArt.png";
+import { type ReactElement } from "react";
+import Features from "./section/Features";
+import Members from "./section/Members";
+import Download from "./section/Download";
+import About from "./section/About";
+import Hero from "./section/Hero";
+import bgTrees from "../../assets/backgroundImage/bgTrees.png";
+import upperTrees from "../../assets/svgs/upperTrees.svg";
+import bottomBush from "../../assets/svgs/bottomBush.svg";
+import { Parallax, ParallaxLayer } from "@react-spring/parallax";
 
 export default function Landing(): ReactElement {
-  const aboutRef = useRef<HTMLDivElement | null>(null);
-  const heroRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (window.location.hash === "#about") {
-      setTimeout(() => {
-        aboutRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (
-              entry.target === aboutRef.current &&
-              window.location.hash !== "#about"
-            ) {
-              window.history.pushState(null, "", "#about");
-            } else if (
-              entry.target === heroRef.current &&
-              window.location.hash !== "/"
-            ) {
-              window.history.pushState(null, "", "/");
-            }
-          }
-        });
-      },
-      { threshold: 0.5 },
-    );
-
-    if (aboutRef.current) observer.observe(aboutRef.current);
-    if (heroRef.current) observer.observe(heroRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (window.location.hash === "#about") {
-        aboutRef.current?.scrollIntoView({ behavior: "smooth" });
-      } else {
-        heroRef.current?.scrollIntoView({ behavior: "smooth" });
-        window.history.replaceState(null, "", "/");
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
   return (
-    <div className="hide-scrollbar h-screen snap-y overflow-y-scroll md:snap-mandatory">
-      <main
-        id="main-hero"
-        ref={heroRef}
-        className="flex h-screen snap-start items-center p-4 lg:gap-8 lg:pb-0 lg:pl-24 lg:pr-0 lg:pt-32 xl:pl-32"
-      >
-        <div className="font-baloo flex w-full flex-col gap-4 text-center lg:w-auto lg:text-left">
-          <h3 className="font-outline  text-6xl font-bold text-[var(--color-green-primary)] md:text-8xl xl:text-9xl">
-            WELCOME BACK!
-          </h3>
-          <p className="text-2xl font-semibold">
-            Continue your learning journey with MathPath.
-          </p>
-          <p className="cursor-pointer text-2xl font-bold text-[var(--color-green-primary)] underline hover:scale-105 lg:w-fit">
-            Download Now!
-          </p>
-        </div>
-        <div className="hidden lg:block">
-          <img src={landingArt} />
-        </div>
-      </main>
-      <div ref={aboutRef} className="snap-start">
-        <About />
-      </div>
+    <div className="">
+      <Parallax pages={2}>
+        {/* Hero */}
+        <ParallaxLayer offset={0} speed={0}>
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8)), url(${bgTrees})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute bottom-0 left-0 h-80 w-full bg-gradient-to-t from-[#222222] to-transparent" />
+        </ParallaxLayer>
+
+        <ParallaxLayer offset={0} speed={0.2}>
+          <div
+            className="absolute left-0 right-0 top-0 max-h-[40vh] min-h-[120px] w-full bg-cover bg-top md:bg-contain xl:bg-center"
+            style={{
+              backgroundImage: `url(${upperTrees})`,
+            }}
+          />
+          <div className="absolute left-0 top-0 h-24 w-full bg-gradient-to-b from-black/60 to-transparent" />
+        </ParallaxLayer>
+
+        <ParallaxLayer offset={0} speed={0.1}>
+          <div
+            className="absolute bottom-0 left-1/2 h-[30vh] w-full -translate-x-1/2 bg-cover md:h-[20vh] md:bg-contain xl:bg-center"
+            style={{
+              backgroundImage: `url(${bottomBush})`,
+            }}
+          />
+          <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-[#222222] to-transparent" />
+        </ParallaxLayer>
+
+        <ParallaxLayer
+          offset={0}
+          speed={0.35}
+          className="flex h-screen items-center justify-center"
+        >
+          <Hero />
+        </ParallaxLayer>
+      </Parallax>
     </div>
   );
 }
