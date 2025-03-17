@@ -14,8 +14,8 @@ const GameFeatureCard: React.FC<IGameFeatureCard> = ({
   description,
 }: IGameFeatureCard): ReactElement => {
   return (
-    <div className={'flex flex-col items-center justify-center gap-2 px-8 py-8 text-[var(--primary-white)] ' + className}>
-      <img src={imgSrc} alt={title} className="h-full w-full rounded-lg" />
+    <div className={'flex h-screen items-center justify-center gap-2 text-[var(--primary-white)] ' + className}>
+      <img src={imgSrc} alt={title} className="h-auto w-full rounded-lg" />
       <p className="text-2xl font-semibold">{title}</p>
       <p className="text-xl text-gray-400">{description}</p>
     </div>

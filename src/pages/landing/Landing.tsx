@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 export default function Landing(): ReactElement {
   return (
     <div className="">
-      <Parallax pages={2}>
+      <Parallax pages={5}>
         {/* Hero */}
 
         {/* background trees */}
@@ -95,6 +95,21 @@ export default function Landing(): ReactElement {
           >
             <Hero />
           </motion.div>
+        </ParallaxLayer>
+        <ParallaxLayer className="h-fit w-fit" offset={1} speed={0}>
+          <Features />
+        </ParallaxLayer>
+
+        <ParallaxLayer className="h-fit w-fit" offset={2} speed={0}>
+          <About />
+        </ParallaxLayer>
+
+        <ParallaxLayer className="h-fit w-fit" offset={3} speed={0}>
+          <Members />
+        </ParallaxLayer>
+
+        <ParallaxLayer className="h-fit w-fit" offset={4} speed={0}>
+          <Download />
         </ParallaxLayer>
       </Parallax>
     </div>
