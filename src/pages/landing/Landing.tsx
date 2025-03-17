@@ -7,7 +7,7 @@ import Hero from "./section/Hero";
 
 export default function Landing(): ReactElement {
   return (
-    <div className="flex flex-col">
+    <div className="font-gummy flex flex-col bg-[var(--primary-black)]">
       <Hero />
       <Features />
       <About />

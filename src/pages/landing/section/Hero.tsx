@@ -87,7 +87,7 @@ export default function Hero(): ReactElement {
           alt="MathPath Title"
           className="h-auto max-w-[80%] sm:h-auto sm:max-w-[60%]"
         />
-        <button className="font-jersey rounded-2xl border-2 border-[var(--parimary-white)] px-3 py-1 text-xl text-[var(--primary-white)] hover:scale-105 hover:cursor-pointer lg:text-2xl">
+        <button className="rounded-2xl border-2 border-[var(--parimary-white)] px-3 py-1 text-xl font-bold text-[var(--primary-white)] hover:scale-105 hover:cursor-pointer lg:text-2xl">
           Learn More
         </button>
       </motion.div>

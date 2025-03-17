@@ -5,14 +5,14 @@
   --font-primary: "DM Sans", sans-serif;
   --font-secondary: "IBM Plex Mono", sans-serif;
   --font-baloo: "Baloo 2", sans-serif;
-  --font-jersey: "Jersey 10", sans-serif;
+  --font-gummy: "Sour Gummy", sans-serif;
   --font-plexMono: "IBM Plex Mono", sans-serif;
 
   /* color palette */
-  --primary-white: #F5F7F8;
-  --primary-yellow: #F6E96B;
-  --primary-green: #387F39;
-  --secondary-green: #A2CA71;
+  --primary-white: #f5f7f8;
+  --primary-yellow: #f6e96b;
+  --primary-green: #387f39;
+  --secondary-green: #a2ca71;
   --primary-black: #222222;
 }
 
@@ -50,5 +50,4 @@ body {
 }
 
 html,
-body {
-}
+body {}
