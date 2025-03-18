@@ -26,7 +26,7 @@ const features = [
 
 export default function Features(): ReactElement {
   return (
-    <section className="flex h-fit w-screen flex-col items-center justify-center gap-12 bg-[var(--primary-black)] px-4 pt-16 text-[var(--primary-white)]">
+    <section className="flex h-fit w-screen flex-col items-center justify-center gap-12 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]">
       <motion.h3
         className="text-4xl font-bold"
         initial={{ opacity: 0, y: 20 }}

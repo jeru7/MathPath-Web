@@ -16,11 +16,9 @@ const GameFeatureCard: React.FC<IGameFeatureCard> = ({
 }: IGameFeatureCard): ReactElement => {
   return (
     <div
-      className={
-        "flex h-fit w-full flex-col items-center justify-center gap-6 text-[var(--primary-white)] " +
-        className
-      }
+      className={`${className} flex h-fit w-full flex-col items-center justify-center gap-6 text-[var(--primary-white)]`}
     >
+      {/* image */}
       <motion.img
         src={imgSrc}
         alt={title}
@@ -30,6 +28,8 @@ const GameFeatureCard: React.FC<IGameFeatureCard> = ({
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
         viewport={{ once: true }}
       />
+
+      {/* title */}
       <div className="flex flex-col items-center gap-5">
         <motion.p
           className="text-3xl font-bold"
@@ -40,6 +40,8 @@ const GameFeatureCard: React.FC<IGameFeatureCard> = ({
         >
           {title}
         </motion.p>
+
+        {/* description */}
         <motion.p
           className="text-center text-lg"
           initial={{ opacity: 0, y: 20 }}
