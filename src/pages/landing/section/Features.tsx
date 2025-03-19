@@ -50,7 +50,7 @@ const desktopAnimationValue = {
 
 export default function Features(): ReactElement {
   return (
-    <section className="flex h-fit w-screen flex-col items-center justify-center gap-12 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]">
+    <section className="flex h-fit w-screen flex-col items-center justify-center gap-12 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]" id="features">
       <motion.h3
         className="text-4xl font-bold"
         initial={{ opacity: 0, y: 20 }}
@@ -79,7 +79,7 @@ export default function Features(): ReactElement {
         direction="vertical"
         slidesPerView={1}
         spaceBetween={64}
-        mousewheel={{ forceToAxis: true }}
+        mousewheel={{ forceToAxis: true, releaseOnEdges: true }}
         touchStartPreventDefault={false}
         touchMoveStopPropagation={true}
         simulateTouch={true}

@@ -13,7 +13,7 @@ export default function Hero(): ReactElement {
   const bottomBushY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
 
   return (
-    <main className="relative flex h-screen w-screen justify-center overflow-hidden">
+    <main className="relative flex h-screen w-screen justify-center overflow-hidden" id="hero">
       {/* background trees */}
       <motion.div
         className="absolute inset-0 bg-cover bg-center"

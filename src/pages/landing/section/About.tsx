@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export default function About(): ReactElement {
   return (
-    <section className="flex h-fit w-screen flex-col justify-center gap-4 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]">
+    <section className="flex h-fit w-screen flex-col justify-center gap-4 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]" id="about">
       {/* divider */}
       <motion.div
         className="h-[1px] w-full bg-[var(--primary-green)]"
