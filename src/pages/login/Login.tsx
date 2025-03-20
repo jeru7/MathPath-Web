@@ -1,4 +1,5 @@
 import { type ReactElement, useState } from "react";
+import axios from "axios";
 import mathPathTitle from "../../assets/svgs/mathPathTitle.svg";
 import bgTrees from "../../assets/backgroundImage/bgTrees.png";
 import upperTrees from "../../assets/svgs/upperTrees.svg";
@@ -21,7 +22,7 @@ export default function Login(): ReactElement {
   };
 
   // handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newErrors = {
@@ -30,6 +31,31 @@ export default function Login(): ReactElement {
     };
 
     setErrors(newErrors);
+
+    if (newErrors.email || newErrors.password) return;
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/web/auth/login",
+        formData,
+      );
+      const { token, role } = res.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      if (role === "teacher") {
+        navigate("/teacher-dashboard");
+      } else if (role === "student") {
+        navigate("/student-dashboard");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data?.message || "Login failed");
+      } else {
+        console.error("An unexpected error occurred", error);
+      }
+    }
   };
 
   return (
