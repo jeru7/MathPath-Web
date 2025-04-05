@@ -68,8 +68,9 @@ export default function Members(): ReactElement {
 
         {/* members content */}
         <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 md:flex">
-          {members.map((member) => (
+          {members.map((member, index) => (
             <MemberCard
+              key={index}
               className=""
               img={member.img}
               name={member.name}

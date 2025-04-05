@@ -1,13 +1,23 @@
 import { type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 
+import axios from "axios";
+
 export default function StudentDashboard(): ReactElement {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+       await axios.post(
+        "/api/web/auth/logout",
+        {},
+        { withCredentials: true },
+      );
+
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

@@ -6,14 +6,16 @@ import upperTrees from "../../assets/svgs/upperTrees.svg";
 import bottomBush from "../../assets/svgs/bottomBush.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import useAuthCheck from "../../hooks/useAuthCheck";
 
 export default function Login(): ReactElement {
+  const authStatus = useAuthCheck();
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
 
-  // handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -21,42 +23,44 @@ export default function Login(): ReactElement {
     setErrors((prev) => ({ ...prev, [name]: value.trim() === "" }));
   };
 
-  // handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const newErrors = {
+    const isInputEmpty = {
       email: formData.email.trim() === "",
       password: formData.password.trim() === "",
     };
 
-    setErrors(newErrors);
+    setErrors(isInputEmpty);
 
-    if (newErrors.email || newErrors.password) return;
+    if (isInputEmpty.email || isInputEmpty.password) return;
 
     try {
-      const res = await axios.post(
-        "http://localhost:3001/web/auth/login",
-        formData,
-      );
-      const { token, role } = res.data;
+      const res = await axios.post("/api/web/auth/login", formData, {
+        withCredentials: true,
+      });
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      const { role, user } = res.data.data;
 
       if (role === "teacher") {
-        navigate("/teacher-dashboard");
+        console.log('redirecting to teacher dashboard')
+        navigate(`/teachers/${user._id}/dashboard`);
       } else if (role === "student") {
-        navigate("/student-dashboard");
+        console.log('redirecting to student dashboard')
+        navigate(`/students/${user._id}/dashboard`);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error(error.response?.data?.message || "Login failed");
+        console.error(error.response?.data?.error || "Login failed");
       } else {
         console.error("An unexpected error occurred", error);
       }
     }
   };
+
+  if(authStatus === null) {
+    return <div>Loading..</div>
+  }
 
   return (
     <div className="h-screen w-screen">

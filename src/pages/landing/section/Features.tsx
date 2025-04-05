@@ -63,8 +63,9 @@ export default function Features(): ReactElement {
 
       {/* member cards mobile */}
       <div className="flex h-fit w-full flex-col gap-16 lg:hidden">
-        {features.map((feature) => (
+        {features.map((feature, index) => (
           <GameFeatureCard
+          key = {index}
             className="h-full w-full snap-center flex-col gap-6"
             imgSrc={feature.img}
             title={feature.title}

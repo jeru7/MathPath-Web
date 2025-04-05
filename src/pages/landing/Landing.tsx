@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import Nav from "../../globals/components/Nav"
+import LandingNav from "../../globals/components/LandingNav";
 import Features from "./section/Features";
 import Members from "./section/Members";
 import Download from "./section/Download";
@@ -10,7 +10,7 @@ import Footer from "./section/Footer";
 export default function Landing(): ReactElement {
   return (
     <>
-      <Nav />
+      <LandingNav />
       <div className="font-gummy flex flex-col gap-16 bg-[var(--primary-black)]">
         <Hero />
         <Features />
