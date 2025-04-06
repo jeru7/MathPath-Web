@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import mathPathLogo from "../../assets/svgs/mathPathTitle.svg";
 import { useNavigate } from "react-router-dom";
 
-export default function Nav(): ReactElement {
+export default function LandingNav(): ReactElement {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();

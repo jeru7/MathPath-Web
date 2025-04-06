@@ -10,10 +10,23 @@
 
   /* color palette */
   --primary-white: #f5f7f8;
-  --primary-yellow: #f6e96b;
-  --primary-green: #387f39;
-  --secondary-green: #a2ca71;
-  --primary-black: #222222;
+  --secondary-white: #D9D9D9;
+
+  --primary-yellow: #FBC93D;
+  --secondary-yellow: #FFE31A;
+
+  --primary-green: #347928;
+  --secondary-green: #d2f4cb;
+  --tertiary-green: #99D58D;
+  --fourth-green: #0D4715;
+
+  --primary-orange: #F09319;
+  --secondary-orange: #E9762B;
+
+  --primary-black: #2c2c2c;
+  --secondary-black: #222121;
+  --tertiary-black: #303030;
+
 }
 
 @layer utilities {
@@ -46,9 +59,12 @@
 
 body {
   min-height: 100vh;
-  width: 100%;
+  width: inherit;
   overscroll-behavior: contain;
 }
 
 html,
-body {}
+body {
+  width: 100vw;
+  overflow-x: hidden;
+}
