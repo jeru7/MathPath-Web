@@ -43,11 +43,11 @@ export default function Login(): ReactElement {
       const { role, user } = res.data.data;
 
       if (role === "teacher") {
-        console.log('redirecting to teacher dashboard')
-        navigate(`/teachers/${user._id}/dashboard`);
+        console.log("redirecting to teacher dashboard");
+        navigate(`/teachers/${user._id}`);
       } else if (role === "student") {
-        console.log('redirecting to student dashboard')
-        navigate(`/students/${user._id}/dashboard`);
+        console.log("redirecting to student dashboard");
+        navigate(`/students/${user._id}`);
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -58,8 +58,8 @@ export default function Login(): ReactElement {
     }
   };
 
-  if(authStatus === null) {
-    return <div>Loading..</div>
+  if (authStatus === null) {
+    return <div>Loading..</div>;
   }
 
   return (

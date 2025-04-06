@@ -15,9 +15,9 @@ const useAuthCheck = () => {
         });
         if (res.data.data.isLoggedIn) {
           if (res.data.data.role === "teacher") {
-            navigate(`/teachers/${res.data.data.userId}/dashboard`);
+            navigate(`/teachers/${res.data.data.userId}`);
           } else if (res.data.data.role === "student") {
-            navigate(`/students/${res.data.data.userId}/dashboard`);
+            navigate(`/students/${res.data.data.userId}`);
           }
 
           setAuthStatus(true);

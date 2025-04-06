@@ -3,10 +3,9 @@ import { useParams } from "react-router-dom";
 
 // import axios from "axios";
 
-import MainNav from "../../../../globals/components/MainNav";
-import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
+import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
 
-export default function TeacherDashboard(): ReactElement {
+export default function DashboardPage(): ReactElement {
   // const navigate = useNavigate();
   const { teacherId } = useParams();
 
@@ -20,7 +19,7 @@ export default function TeacherDashboard(): ReactElement {
 
   useEffect(() => {
     const connectWebSocket = () => {
-      if(wsRef.current) {
+      if (wsRef.current) {
         return;
       }
 
@@ -103,35 +102,31 @@ export default function TeacherDashboard(): ReactElement {
   // };
 
   return (
-    <div className="font-plexMono h-screen max-h-screen bg-gray-200 pl-16 text-[var(--primary-black)]">
-      <MainNav />
-      <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
-        <div className="flex h-fit items-center justify-between">
-          <h3 className="font-bold lg:text-2xl">Dashboard</h3>
-          <div className="flex w-fit items-center gap-2">
-            <p>Emmanuel Ungab</p>
-            <div className="border-1 h-[50px] w-[50px] rounded-full"></div>
-          </div>
+    <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
+      <div className="flex h-fit items-center justify-between">
+        <h3 className="font-bold lg:text-2xl">Dashboard</h3>
+        <div className="flex w-fit items-center gap-2">
+          <p>Emmanuel Ungab</p>
+          <div className="border-1 h-[50px] w-[50px] rounded-full"></div>
         </div>
-        <div className="flex grow-[2] gap-4">
-          {primaryStats.map((stat, index) => (
-            <PrimaryStat
-              key={index}
-              title={stat.title}
-              color={stat.color}
-              students={stat.students}
-              sections={stat.sections}
-              assessments={stat.assessments}
-              onlineStudents={stat.onlineStudents}
-            />
-          ))}
-        </div>
-        <div className="flex grow-[10] gap-4">
-          <div className="grow-[3] border-2"></div>
-          <div className="grow-[1] border-2"></div>
-        </div>
-      </main>
-      {/* <button onClick={handleLogout}>Logout</button> */}
-    </div>
+      </div>
+      <div className="flex grow-[2] gap-4">
+        {primaryStats.map((stat, index) => (
+          <PrimaryStat
+            key={index}
+            title={stat.title}
+            color={stat.color}
+            students={stat.students}
+            sections={stat.sections}
+            assessments={stat.assessments}
+            onlineStudents={stat.onlineStudents}
+          />
+        ))}
+      </div>
+      <div className="flex grow-[10] gap-4">
+        <div className="grow-[3] border-2"></div>
+        <div className="grow-[1] border-2"></div>
+      </div>
+    </main>
   );
 }
