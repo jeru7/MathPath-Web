@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from "react";
+import { type ReactElement, useState, useEffect } from "react";
 import axios from "axios";
 import mathPathTitle from "../../assets/svgs/mathPathTitle.svg";
 import bgTrees from "../../assets/backgroundImage/bgTrees.png";
@@ -9,12 +9,21 @@ import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
 
 export default function Login(): ReactElement {
-  const authStatus = useAuthCheck();
-
+  const { status, userData } = useAuthCheck();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
+
+  useEffect(() => {
+    if (status && userData) {
+      if (userData.role === "teacher") {
+        navigate(`/teachers/${userData.userId}`);
+      } else if (userData.role === "student") {
+        navigate(`/students/${userData.userId}`);
+      }
+    }
+  }, [status, userData, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,8 +67,8 @@ export default function Login(): ReactElement {
     }
   };
 
-  if (authStatus === null) {
-    return <div>Loading..</div>;
+  if (status && userData) {
+    return <div>Loading</div>;
   }
 
   return (

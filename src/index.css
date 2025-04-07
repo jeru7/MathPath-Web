@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  /* font colors */
+  /* fonts */
   --font-primary: "DM Sans", sans-serif;
   --font-secondary: "IBM Plex Mono", sans-serif;
   --font-baloo: "Baloo 2", sans-serif;
   --font-gummy: "Sour Gummy", sans-serif;
   --font-plexMono: "IBM Plex Mono", sans-serif;
+  --font-openSans: "Open Sans", sans-serif;
 
   /* color palette */
   --primary-white: #f5f7f8;
@@ -21,11 +22,13 @@
   --fourth-green: #0D4715;
 
   --primary-orange: #F09319;
-  --secondary-orange: #E9762B;
+  --secondary-orange: #FFA725;
 
   --primary-black: #2c2c2c;
   --secondary-black: #222121;
   --tertiary-black: #303030;
+
+  --primary-gray: #9C9A9A;
 
 }
 
