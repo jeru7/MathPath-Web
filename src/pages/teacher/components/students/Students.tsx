@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
 
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
+import StudentTable from "./StudentTable";
 
 export default function Students(): ReactElement {
   const { teacherId } = useParams();
@@ -81,14 +82,15 @@ export default function Students(): ReactElement {
   return (
     <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
       {/* Header */}
-      <div className="flex w-full items-center justify-between">
-        <h3 className="text-4xl font-bold">Students</h3>
+      <header className="flex w-full items-center justify-between">
+        <h3 className="text-2xl font-bold">Students</h3>
         <button className="hover:scale-101 rounded-md bg-[var(--primary-green)] px-8 py-4 shadow-sm hover:cursor-pointer">
           <p className="text-[var(--primary-white)]">Add Student</p>
         </button>
-      </div>
+      </header>
+
       {/* Students overall stats */}
-      <div className="flex w-full gap-2">
+      <section className="flex w-full gap-2">
         {primaryStats.map((stat, index) => (
           <PrimaryStat
             key={index}
@@ -99,7 +101,12 @@ export default function Students(): ReactElement {
             averageLevel={stat.averageLevel}
           />
         ))}
-      </div>
+      </section>
+
+      {/* Student Table */}
+      <section className="h-full w-full">
+        <StudentTable />
+      </section>
     </main>
   );
 }

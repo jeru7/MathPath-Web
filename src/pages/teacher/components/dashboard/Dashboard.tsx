@@ -32,6 +32,7 @@ export default function Dashboard(): ReactElement {
 
   const wsRef = useRef<WebSocket | null>(null);
 
+  // WebSocket connection
   useEffect(() => {
     const connectWebSocket = () => {
       if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
@@ -75,7 +76,6 @@ export default function Dashboard(): ReactElement {
 
     return () => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        console.log("Closing WebSocket...");
         wsRef.current.close();
       }
     };
@@ -83,14 +83,17 @@ export default function Dashboard(): ReactElement {
 
   return (
     <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
-      <div className="flex h-fit items-center justify-between">
+      {/* Header */}
+      <header className="flex h-fit items-center justify-between">
         <h3 className="font-bold lg:text-2xl">Dashboard</h3>
         <div className="flex w-fit items-center gap-2">
           <p>Emmanuel Ungab</p>
           <div className="border-1 h-[50px] w-[50px] rounded-full"></div>
         </div>
-      </div>
-      <div className="flex grow-[2] gap-4">
+      </header>
+
+      {/* Stats */}
+      <section className="flex grow-[2] gap-4">
         {primaryStats.map((stat, index) => (
           <PrimaryStat
             key={index}
@@ -102,11 +105,15 @@ export default function Dashboard(): ReactElement {
             onlineStudents={stat.onlineStudents}
           />
         ))}
-      </div>
-      <div className="flex grow-[10] gap-4">
+      </section>
+
+      {/* Charts */}
+      <section className="flex grow-[10] gap-4">
+        {/* Main Chart */}
         <div className="grow-[3] border-2"></div>
+        {/* Student activity */}
         <div className="grow-[1] border-2"></div>
-      </div>
+      </section>
     </main>
   );
 }
