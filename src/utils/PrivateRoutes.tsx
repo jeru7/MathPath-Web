@@ -2,28 +2,28 @@ import { Navigate, Outlet } from "react-router-dom";
 import useAuthCheck from "../hooks/useAuthCheck";
 
 export default function PrivateRoute() {
-  const { status, userData } = useAuthCheck();
+  const auth = useAuthCheck();
 
-  if (status === null) {
+  if (auth === null) {
     return <div>Loading...</div>;
   }
 
-  if (!status) {
+  if (!auth.isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
-  if (userData) {
+  if (auth?.userId) {
     if (
-      userData.role === "teacher" &&
+      auth?.role === "teacher" &&
       !window.location.pathname.includes("/teachers/")
     ) {
-      return <Navigate to={`/teachers/${userData.userId}`} replace />;
+      return <Navigate to={`/teachers/${auth?.userId}`} replace />;
     }
     if (
-      userData.role === "student" &&
+      auth?.role === "student" &&
       !window.location.pathname.includes("/students/")
     ) {
-      return <Navigate to={`/students/${userData.userId}`} replace />;
+      return <Navigate to={`/students/${auth?.userId}`} replace />;
     }
   }
 

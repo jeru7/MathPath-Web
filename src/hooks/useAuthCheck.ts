@@ -1,41 +1,35 @@
 import { useState, useEffect } from "react";
 
-import { UserAuthData } from "../utils/types";
+import { UserAuth } from "../types/user";
 
 import axios from "axios";
+import { checkAuth } from "../services/userService";
 
 const useAuthCheck = () => {
-  const [authData, setAuthData] = useState<{
-    status: boolean | null;
-    userData?: UserAuthData;
-  }>({ status: null });
+  const [authData, setAuthData] = useState<UserAuth | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController();
 
     const checkAuthStatus = async () => {
       try {
-        const res = await axios.get("/api/web/auth/auth-check", {
-          withCredentials: true,
-          signal: controller.signal,
-        });
+        const { userId, role, isLoggedIn }: UserAuth = await checkAuth();
 
         if (isMounted) {
           setAuthData({
-            status: res.data.data.isLoggedIn,
-            userData: res.data.data,
+            userId,
+            role,
+            isLoggedIn,
           });
         }
       } catch (error) {
         if (isMounted) {
           if (
             axios.isAxiosError(error) &&
-            error.response?.data.error === "Not authenticated."
+            error.response?.data.error === "Invalid token."
           ) {
             console.log("Authentication error. Please login.");
           }
-          setAuthData({ status: false });
         }
       }
     };
@@ -43,7 +37,6 @@ const useAuthCheck = () => {
     checkAuthStatus();
     return () => {
       isMounted = false;
-      controller.abort();
     };
   }, []);
 

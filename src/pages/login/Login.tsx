@@ -7,23 +7,24 @@ import bottomBush from "../../assets/svgs/bottomBush.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
+import { userLogin } from "../../services/userService";
 
 export default function Login(): ReactElement {
-  const { status, userData } = useAuthCheck();
+  const auth = useAuthCheck();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
 
   useEffect(() => {
-    if (status && userData) {
-      if (userData.role === "teacher") {
-        navigate(`/teachers/${userData.userId}`);
-      } else if (userData.role === "student") {
-        navigate(`/students/${userData.userId}`);
+    if (auth?.isLoggedIn && auth?.userId) {
+      if (auth?.role === "teacher") {
+        navigate(`/teachers/${auth?.userId}`);
+      } else if (auth?.role === "student") {
+        navigate(`/students/${auth?.userId}`);
       }
     }
-  }, [status, userData, navigate]);
+  }, [auth?.isLoggedIn, auth?.userId, auth?.role, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,11 +46,7 @@ export default function Login(): ReactElement {
     if (isInputEmpty.email || isInputEmpty.password) return;
 
     try {
-      const res = await axios.post("/api/web/auth/login", formData, {
-        withCredentials: true,
-      });
-
-      const { role, user } = res.data.data;
+      const { role, user } = await userLogin(formData.email, formData.password);
 
       if (role === "teacher") {
         console.log("redirecting to teacher dashboard");
@@ -67,7 +64,7 @@ export default function Login(): ReactElement {
     }
   };
 
-  if (status && userData) {
+  if (auth === null) {
     return <div>Loading</div>;
   }
 
