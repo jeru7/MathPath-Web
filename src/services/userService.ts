@@ -25,11 +25,9 @@ export const checkAuth = async () => {
     const res = await axios.get(`${URL}/api/web/auth/auth-check`, {
       withCredentials: true,
     });
-
-    console.log(res.data.data);
     return res.data.data;
   } catch (error) {
     console.error(error);
-    throw new Error(`User is not authenticated: ${error}`);
+    throw new Error("User is not authenticated");
   }
 };

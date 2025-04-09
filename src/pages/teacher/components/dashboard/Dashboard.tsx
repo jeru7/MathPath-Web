@@ -1,94 +1,36 @@
-import { type ReactElement, useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { type ReactElement } from "react";
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
+import { useTeacherContext } from "../../../../context/TeacherContext";
 
 export default function Dashboard(): ReactElement {
-  const { teacherId } = useParams();
-  const [stats, setStats] = useState({
-    students: 0,
-    sections: 0,
-    assessments: 0,
-    onlineStudents: 0,
-  });
-
+  const { students, sections, assessments } = useTeacherContext();
   const primaryStats: IPrimaryStatProps[] = [
     {
       color: "bg-[var(--primary-green)]",
       title: "Students",
-      students: stats.students,
-      onlineStudents: stats.onlineStudents,
+      students: students.length,
+      // onlineStudents: stats.onlineStudents,
     },
     {
       color: "bg-[var(--primary-orange)]",
       title: "Sections",
-      sections: stats.sections,
+      sections: sections.length,
     },
     {
       color: "bg-[var(--secondary-orange)]",
       title: "Assessments",
-      assessments: stats.assessments,
+      assessments: assessments.length,
     },
   ];
-
-  const wsRef = useRef<WebSocket | null>(null);
-
-  // WebSocket connection
-  useEffect(() => {
-    const connectWebSocket = () => {
-      if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-        console.log("Opening WebSocket...");
-        wsRef.current = new WebSocket("ws://localhost:3001");
-
-        wsRef.current.onopen = () => {
-          console.log("WebSocket connected.");
-          wsRef.current?.send(
-            JSON.stringify({
-              type: "TEACHER_CHECK_DASHBOARD",
-              data: teacherId,
-            }),
-          );
-        };
-
-        wsRef.current.onclose = () => {
-          console.log("WebSocket closed.");
-        };
-
-        wsRef.current.onerror = (error) => {
-          console.error("WebSocket error:", error);
-        };
-
-        wsRef.current.onmessage = (event) => {
-          console.log("Message received!");
-          const { type, data } = JSON.parse(event.data);
-          if (type === "TEACHER_DASHBOARD_DATA") {
-            setStats(() => ({
-              students: data.students.length,
-              sections: data.sections.length,
-              assessments: data.assessments.length,
-              onlineStudents: data.onlineStudents.length,
-            }));
-          }
-        };
-      }
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.close();
-      }
-    };
-  }, [teacherId]);
 
   return (
     <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
       {/* Header */}
-      <header className="flex h-fit items-center justify-between">
-        <h3 className="font-bold lg:text-2xl">Dashboard</h3>
+      <header className="flex items-center justify-between">
+        <h3 className="text-2xl font-bold">Dashboard</h3>
         <div className="flex w-fit items-center gap-2">
           <p>Emmanuel Ungab</p>
-          <div className="border-1 h-[50px] w-[50px] rounded-full"></div>
+          <div className="border-1 w-15 h-15 rounded-full"></div>
         </div>
       </header>
 

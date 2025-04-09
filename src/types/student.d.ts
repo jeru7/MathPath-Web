@@ -1,19 +1,13 @@
-export type StudentLoginResponse = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-};
-
-export type StudentTableItem = {
-  id?: string;
+export type Student = {
+  _id: string;
   studentNumber: string;
   section: string;
   firstName: string;
   lastName: string;
-  middleName: string;
+  middleName?: string;
   email: string;
-  lastPlayed: string | Date;
-  status: string;
+  lastPlayed: string;
+  status: "Online" | "Offline";
+  createdAt: string | Date;
+  updatedAt: string | Date;
 };

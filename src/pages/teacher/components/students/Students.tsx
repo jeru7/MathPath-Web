@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
 import StudentTable from "./StudentTable";
+import AddButton from "../AddButton";
 
 export default function Students(): ReactElement {
   const { teacherId } = useParams();
@@ -22,8 +23,7 @@ export default function Students(): ReactElement {
       color: "bg-[var(--primary-orange)]",
       title: "Online Students",
       onlineStudents: stats.onlineStudents,
-    },
-    {
+    }, {
       color: "bg-[var(--secondary-orange)]",
       title: "Average Level",
       averageLevel: stats.averageLevel,
@@ -84,9 +84,7 @@ export default function Students(): ReactElement {
       {/* Header */}
       <header className="flex w-full items-center justify-between">
         <h3 className="text-2xl font-bold">Students</h3>
-        <button className="hover:scale-101 rounded-md bg-[var(--primary-green)] px-8 py-4 shadow-sm hover:cursor-pointer">
-          <p className="text-[var(--primary-white)]">Add Student</p>
-        </button>
+        <AddButton text={"Add Student"} />
       </header>
 
       {/* Students overall stats */}
