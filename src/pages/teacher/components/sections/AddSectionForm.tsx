@@ -1,51 +1,35 @@
 import { useEffect, useState, type ReactElement } from "react"
 import { useParams } from "react-router-dom";
 
-import Select from 'react-select'
+import luffy1 from "../../../../assets/images/luffyBanner.jpg"
+import luffy2 from "../../../../assets/images/luffyBnWBanner.jpg"
+import luffy3 from "../../../../assets/images/luffyGear4Banner.jpg"
 
-import { AddSection, SectionColor } from "../../../../types/section"
+import { AddSection, SectionBanner, SectionColor } from "../../../../types/section"
 import { addSection } from "../../../../services/sectionService";
-import { Teacher } from "../../../../types/teacher";
-import { getTeachers } from "../../../../services/teacherService";
 
 export default function AddSectionForm({ setShowForm }: { setShowForm: (show: boolean) => void }): ReactElement {
   const { teacherId } = useParams();
+
   const [sectionData, setSectionData] = useState<AddSection>({
     name: "",
-    teachers: [] as string[],
+    teacher: "",
+    color: "primary-green",
+    banner: "SBanner_1",
+    lastChecked: new Date(),
     students: [] as string[],
     assessments: [] as string[],
-    color: "primary-green",
   })
-  const [teachers, setTeachers] = useState<Teacher[]>([])
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
-    const fetchTeachers = async () => {
-      try {
-        const teachers = await getTeachers();
-        const filteredTeachers = teachers.filter((teacher) => teacher._id !== teacherId)
-
-        setTeachers(filteredTeachers);
-      } catch (error) {
-        console.error("Failed to fetch teachers: ", error)
-      }
+    if (teacherId) {
+      setSectionData((prev) => ({
+        ...prev,
+        teacher: teacherId
+      }))
     }
-    fetchTeachers();
   }, [teacherId])
-
-  const teacherOptions = teachers.map((teacher) => ({
-    value: teacher._id,
-    label: `${teacher.firstName} ${teacher.lastName}`,
-  }));
-
-  const handleSelectTeacherChange = (selected: Teacher[]) => {
-    const selectedTeacherIds = selected ? selected.map((teacher: Teacher) => teacher._id) : [];
-    setSectionData((prev) => ({
-      ...prev,
-      teachers: selectedTeacherIds,
-    }));
-  };
 
   const handleNameInputChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     if (value.length >= 40) return;
@@ -68,26 +52,8 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
       return;
     }
 
-    if (!teacherId) {
-      console.error("Missing teacher ID.")
-      return
-    }
-
-    const updatedTeachers: string[] = sectionData.teachers.includes(teacherId as string)
-      ? sectionData.teachers
-      : [...sectionData.teachers, teacherId];
-
-    console.log(sectionData);
-
     try {
-      await addSection(
-        sectionData.name,
-        updatedTeachers,
-        sectionData.color,
-        sectionData.students,
-        sectionData.assessments,
-      )
-
+      await addSection(sectionData)
       handleCancel();
     } catch (error) {
       console.error(error)
@@ -119,38 +85,35 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
               style={showError ? { color: 'red' } : {}}
             />
           </div>
-          {/* Teacher selection */}
-          <div>
-            <label htmlFor="teachers" className="text-xl font-semibold">
-              Teacher
-            </label>
-            <div className="relative mt-1">
-              <div className="mt-1">
-                <Select
-                  id="teachers"
-                  options={teacherOptions}
-                  onChange={() => handleSelectTeacherChange}
-                  placeholder={teachers.length === 0 ? "No teachers available" : "Select teacher"}
-                  isDisabled={teachers.length === 0}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderColor: teachers.length === 0 ? "#d1d5db" : "#ccc",
-                      cursor: teachers.length === 0 ? "not-allowed" : "pointer",
-                    }),
-                    option: (base, { isDisabled }) => ({
-                      ...base,
-                      color: isDisabled ? "#d1d5db" : base.color,
-                      cursor: isDisabled ? "not-allowed" : "pointer",
-                    }),
-                  }}
-                />
-              </div>
+          {/* Banner Selection */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="color" className="text-xl font-semibold">Select Banner</label>
+            <div className="flex gap-4">
+              {["SBanner_1", "SBanner_2", "SBanner_3"].map((banner) => (
+                <label key={banner} className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="radio"
+                    name="color"
+                    value={banner}
+                    checked={sectionData.banner === banner}
+                    onChange={() => setSectionData((prev) => ({
+                      ...prev,
+                      banner: banner as SectionBanner,
+                    }))}
+                    className="hidden"
+                  />
+                  <div
+                    className={`border-1 h-20 w-32 rounded-sm hover:scale-105 ${sectionData.banner === banner ? "border-4 border-[var(--primary-green)]" : ""}`}
+                  >
+                    <img src={banner === "SBanner_1" ? luffy1 : banner === "SBanner_2" ? luffy2 : luffy3} alt="section banner" className="h-full w-full object-cover" />
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
           {/* Color Selection */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="color" className="text-xl font-semibold">Color</label>
+            <label htmlFor="color" className="text-xl font-semibold">Select Color</label>
             <div className="flex gap-4">
               {["primary-green", "tertiary-green", "primary-orange", "primary-yellow"].map((color) => (
                 <label key={color} className="flex cursor-pointer items-center gap-2">

@@ -1,6 +1,7 @@
 import { type ReactElement } from "react";
 
 import { User, Users, FileText, ChevronRight } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export interface IPrimaryStatProps {
   color: string;
@@ -19,6 +20,19 @@ export default function PrimaryStat({
   assessments,
   onlineStudents,
 }: IPrimaryStatProps): ReactElement {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navigateClickHandler = () => {
+    console.log(location)
+    if (title === "Students") {
+      navigate(`${location.pathname}/students`)
+    } else if (title === "Sections") {
+      navigate(`${location.pathname}/sections`)
+    } else {
+      navigate(`${location.pathname}/assessments`)
+    }
+  }
   return (
     <div
       className={`flex w-full flex-col rounded-sm bg-[var(--primary-green)] p-4 text-white shadow-sm ${color}`}
@@ -51,12 +65,13 @@ export default function PrimaryStat({
       <div className="flex h-fit items-end justify-between">
         <p className="text-[var(--primary-white)]/80 text-xs ">
           {title === "Students"
-            ? `${onlineStudents} online`
+            ? `${onlineStudents ?? 0} online`
             : title === "Sections"
               ? "Last added data here"
-              : "1 Active"}
+              : `${assessments ?? 0} Active`}
         </p>
-        <button className="bg-[var(--primary-white)]/50 hover:scale-101 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold hover:cursor-pointer">
+        <button className="bg-[var(--primary-white)]/50 hover:bg-[var(--primary-white)]/60 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold hover:cursor-pointer"
+          onClick={navigateClickHandler}>
           <p>
             {title === "Students"
               ? "Check Students"

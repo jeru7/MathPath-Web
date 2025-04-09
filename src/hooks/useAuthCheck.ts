@@ -6,7 +6,11 @@ import axios from "axios";
 import { checkAuth } from "../services/userService";
 
 const useAuthCheck = () => {
-  const [authData, setAuthData] = useState<UserAuth | null>(null);
+  const [authData, setAuthData] = useState<UserAuth>({
+    userId: "",
+    role: undefined,
+    isLoggedIn: null,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -31,6 +35,10 @@ const useAuthCheck = () => {
             console.log("Authentication error. Please login.");
           }
         }
+        setAuthData((prev) => ({
+          ...prev,
+          isLoggedIn: false,
+        }));
       }
     };
 

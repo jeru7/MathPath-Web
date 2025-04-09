@@ -1,10 +1,11 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useAuthCheck from "../hooks/useAuthCheck";
+import { UserAuth } from "../types/user";
 
 export default function PrivateRoute() {
-  const auth = useAuthCheck();
+  const auth: UserAuth = useAuthCheck();
 
-  if (auth === null) {
+  if (auth.isLoggedIn === null) {
     return <div>Loading...</div>;
   }
 

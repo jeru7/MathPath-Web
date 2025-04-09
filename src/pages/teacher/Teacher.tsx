@@ -1,18 +1,18 @@
 import { type ReactElement } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import Nav from "./components/Nav";
-import { TeacherContextProvider } from "../../context/TeacherContext";
+import { TeacherProvider } from "../../providers/TeacherProvider";
 
 export default function Teacher(): ReactElement {
   const { teacherId } = useParams();
   if (!teacherId) return <div>Missing teacher ID.</div>
 
   return (
-    <TeacherContextProvider teacherId={teacherId}>
+    <TeacherProvider teacherId={teacherId}>
       <div className="font-openSans pl-18 h-screen bg-gray-200 text-[var(--primary-black)]">
         <Nav />
         <Outlet />
       </div>
-    </TeacherContextProvider>
+    </TeacherProvider>
   );
 }

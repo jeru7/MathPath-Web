@@ -1,29 +1,15 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Student } from "../types/student";
 import { Section } from "../types/section";
 import { Assessment } from "../types/assessment";
+import { TeacherContext } from "../context/TeacherContext";
 
-interface ITeacherDataContext {
-  students: Student[];
-  sections: Section[];
-  assessments: Assessment[];
-}
-
-const TeacherContext = createContext<ITeacherDataContext | null>(null);
-
-export const useTeacherContext = () => {
-  const context = useContext(TeacherContext);
-  if (!context) {
-    throw new Error("useTeacherData must be used within a TeacherDataProvider.")
-  }
-
-  return context;
-}
-
-export function TeacherContextProvider({ teacherId, children }: { teacherId: string, children: React.ReactNode }) {
-  const [students, setStudents] = useState([])
-  const [sections, setSections] = useState([])
-  const [assessments, setAssessments] = useState([])
+export function TeacherProvider({ teacherId, children }: { teacherId: string, children: React.ReactNode }) {
+  const [students, setStudents] = useState<Student[]>([])
+  const [sections, setSections] = useState<Section[]>([])
+  const [assessments, setAssessments] = useState<Assessment[]>([])
+  const [onlineStudents, setOnlineStudents] = useState<Student[]>([])
+  const [loading, setLoading] = useState<boolean>(true);
 
   const wsRef = useRef<WebSocket | null>(null);
 
@@ -42,10 +28,17 @@ export function TeacherContextProvider({ teacherId, children }: { teacherId: str
 
       wsRef.current.onmessage = (e) => {
         const { type, data } = JSON.parse(e.data);
+        console.log("Received message: ", type, data)
         if (type === "TEACHER_INITIAL_DATA") {
           setStudents(data.students);
           setSections(data.sections);
           setAssessments(data.assessments);
+          setOnlineStudents(data.onlineStudents);
+          setLoading(false);
+        }
+
+        if (type === "NEW_SECTION_ADDED") {
+          setSections((prev) => [...prev, data])
         }
       }
     }
@@ -57,11 +50,14 @@ export function TeacherContextProvider({ teacherId, children }: { teacherId: str
         wsRef.current.close();
       }
     }
-  }, [teacherId])
+  }, [teacherId]);
 
   return (
-    <TeacherContext.Provider value={{ students, sections, assessments }}>
-      {children}
+    <TeacherContext.Provider value={{ students, sections, assessments, onlineStudents }}>
+      {loading ? (
+        <div>Loading...</div>
+      ) : children}
     </TeacherContext.Provider>
-  )
+  );
 }
+

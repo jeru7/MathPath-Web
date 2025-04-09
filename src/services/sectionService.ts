@@ -1,23 +1,12 @@
 import axios from "axios";
-import { SectionColor } from "../types/section";
+import { AddSection } from "../types/section";
 
 const URL = import.meta.env.VITE_BACKEND_TEST_URI;
 
-export const addSection = async (
-  name: string,
-  teachers: string[],
-  color: SectionColor,
-  students?: string[],
-  assessments?: string[],
-) => {
+export const addSection = async (sectionData: AddSection) => {
   try {
-    const res = await axios.post(`${URL}/api/web/sections/create`, {
-      name,
-      teachers,
-      students,
-      assessments,
-      color,
-    });
+    console.log(sectionData);
+    const res = await axios.post(`${URL}/api/web/sections/create`, sectionData);
 
     return res.data.data;
   } catch (error) {

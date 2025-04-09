@@ -64,8 +64,8 @@ export default function Login(): ReactElement {
     }
   };
 
-  if (auth === null) {
-    return <div>Loading haha</div>;
+  if (auth.isLoggedIn === null) {
+    return <div>Loading...</div>
   }
 
   return (

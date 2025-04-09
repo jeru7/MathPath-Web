@@ -1,9 +1,10 @@
 import { type ReactElement } from "react";
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
-import { useTeacherContext } from "../../../../context/TeacherContext";
+import { useTeacherData } from "../../../../hooks/useTeacherData";
+
 
 export default function Dashboard(): ReactElement {
-  const { students, sections, assessments } = useTeacherContext();
+  const { students, sections, assessments } = useTeacherData();
   const primaryStats: IPrimaryStatProps[] = [
     {
       color: "bg-[var(--primary-green)]",
