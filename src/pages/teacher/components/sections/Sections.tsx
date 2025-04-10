@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from "react"
+import { useState, type ReactElement } from "react"
 import AddButton from "../AddButton"
 import AddSectionForm from "./AddSectionForm";
 import { useTeacherData } from "../../../../hooks/useTeacherData";
@@ -7,10 +7,6 @@ import SectionCard from "./SectionCard";
 export default function Sections(): ReactElement {
   const { sections } = useTeacherData();
   const [showForm, setShowForm] = useState(false);
-
-  useEffect(() => {
-    console.log(sections)
-  }, [sections])
 
   return <main className="flex h-full w-full flex-col gap-4 p-4">
     {/* Header */}

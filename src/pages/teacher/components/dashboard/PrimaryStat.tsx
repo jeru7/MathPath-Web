@@ -38,6 +38,7 @@ export default function PrimaryStat({
       className={`flex w-full flex-col rounded-sm bg-[var(--primary-green)] p-4 text-white shadow-sm ${color}`}
     >
       <div className="flex w-full grow-[8]">
+        {/* Icon */}
         <div className="flex w-full items-center justify-center">
           <div className="bg-[var(--primary-white)]/50 flex h-fit w-fit rounded-full p-4 text-white">
             {title === "Students" ? (
@@ -49,6 +50,7 @@ export default function PrimaryStat({
             )}
           </div>
         </div>
+        {/* Total Number */}
         <div className="w-full">
           <div className="text-right">
             <p className="text-4xl">
@@ -62,6 +64,7 @@ export default function PrimaryStat({
           </div>
         </div>
       </div>
+      {/* Specific stat/detail */}
       <div className="flex h-fit items-end justify-between">
         <p className="text-[var(--primary-white)]/80 text-xs ">
           {title === "Students"
@@ -70,6 +73,7 @@ export default function PrimaryStat({
               ? "Last added data here"
               : `${assessments ?? 0} Active`}
         </p>
+        {/* Quick nav button */}
         <button className="bg-[var(--primary-white)]/50 hover:bg-[var(--primary-white)]/60 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold hover:cursor-pointer"
           onClick={navigateClickHandler}>
           <p>

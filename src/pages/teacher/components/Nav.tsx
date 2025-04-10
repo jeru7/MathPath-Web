@@ -28,6 +28,7 @@ export default function Nav(): ReactElement {
 
   return (
     <nav className="w-18 fixed bottom-0 left-0 z-10 flex h-screen flex-col items-center justify-between rounded-r-sm bg-[var(--tertiary-green)] py-4 text-white drop-shadow-md">
+      {/* Nav Items */}
       <div className="flex flex-col gap-4">
         {navItems.map(({ to, icon }, index) => {
           const isActive =
@@ -44,6 +45,7 @@ export default function Nav(): ReactElement {
           );
         })}
       </div>
+      {/* User Profile */}
       <div className="border-1 h-12 w-12 rounded-full"></div>
     </nav>
   );

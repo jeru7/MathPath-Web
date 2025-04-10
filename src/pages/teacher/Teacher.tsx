@@ -5,6 +5,7 @@ import { TeacherProvider } from "../../providers/TeacherProvider";
 
 export default function Teacher(): ReactElement {
   const { teacherId } = useParams();
+  console.log(teacherId)
   if (!teacherId) return <div>Missing teacher ID.</div>
 
   return (

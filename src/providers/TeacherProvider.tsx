@@ -3,8 +3,10 @@ import { Student } from "../types/student";
 import { Section } from "../types/section";
 import { Assessment } from "../types/assessment";
 import { TeacherContext } from "../context/TeacherContext";
+import { Teacher } from "../types/teacher";
 
 export function TeacherProvider({ teacherId, children }: { teacherId: string, children: React.ReactNode }) {
+  const [teacher, setTeacher] = useState<Teacher | null>(null)
   const [students, setStudents] = useState<Student[]>([])
   const [sections, setSections] = useState<Section[]>([])
   const [assessments, setAssessments] = useState<Assessment[]>([])
@@ -30,6 +32,7 @@ export function TeacherProvider({ teacherId, children }: { teacherId: string, ch
         const { type, data } = JSON.parse(e.data);
         console.log("Received message: ", type, data)
         if (type === "TEACHER_INITIAL_DATA") {
+          setTeacher(data.teacher);
           setStudents(data.students);
           setSections(data.sections);
           setAssessments(data.assessments);
@@ -53,7 +56,7 @@ export function TeacherProvider({ teacherId, children }: { teacherId: string, ch
   }, [teacherId]);
 
   return (
-    <TeacherContext.Provider value={{ students, sections, assessments, onlineStudents }}>
+    <TeacherContext.Provider value={{ students, sections, assessments, onlineStudents, teacher }}>
       {loading ? (
         <div>Loading...</div>
       ) : children}
