@@ -1,4 +1,4 @@
-export type Section = {
+export type SectionType = {
   _id: string;
   name: string;
   teacher: string;
@@ -11,7 +11,7 @@ export type Section = {
   updatedAt: string | Date;
 };
 
-export type AddSection = {
+export type AddSectionType = {
   name: string;
   teacher: string;
   color: SectionColor;
@@ -21,9 +21,9 @@ export type AddSection = {
   assessments?: string[];
 };
 
-export type SectionBanner = "SBanner_1" | "SBanner_2" | "SBanner_3";
+export type SectionBannerType = "SBanner_1" | "SBanner_2" | "SBanner_3";
 
-export type SectionColor =
+export type SectionColorType =
   | "primary-green"
   | "tertiary-green"
   | "primary-orange"

@@ -1,10 +1,11 @@
 import axios from "axios";
+import { UserLoginType } from "../types/user";
 
 const URL = import.meta.env.VITE_BACKEND_TEST_URI;
 
-export const userLogin = async (email: string, password: string) => {
+export const loginService = async (email: string, password: string) => {
   try {
-    const res = await axios.post(
+    const res = await axios.post<{ data: UserLoginType }>(
       `${URL}/api/web/auth/login`,
       {
         email,
@@ -13,8 +14,6 @@ export const userLogin = async (email: string, password: string) => {
       { withCredentials: true },
     );
 
-    console.log(res.data.data);
-
     return res.data.data;
   } catch (error) {
     console.error(error);
@@ -22,25 +21,18 @@ export const userLogin = async (email: string, password: string) => {
   }
 };
 
-export const checkAuth = async () => {
-  try {
-    const res = await axios.get(`${URL}/api/web/auth/auth-check`, {
+export const checkAuthService = async () => {
+  const res = await axios.get<{ data: UserLoginType }>(
+    `${URL}/api/web/auth/auth-check`,
+    {
       withCredentials: true,
-    });
+    },
+  );
 
-    return res.data.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        return { isLoggedIn: false };
-      }
-    }
-
-    throw new Error("Server error while checking auth.");
-  }
+  return res.data.data;
 };
 
-export const userLogout = async (userId: string) => {
+export const logoutService = async (userId: string) => {
   try {
     const res = await axios.post(
       `${URL}/api/web/auth/logout`,

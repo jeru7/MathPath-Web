@@ -1,9 +1,9 @@
 import axios from "axios";
-import { AddSection } from "../types/section";
+import { AddSectionType } from "../types/section";
 
 const URL = import.meta.env.VITE_BACKEND_TEST_URI;
 
-export const addSection = async (sectionData: AddSection) => {
+export const addSection = async (sectionData: AddSectionType) => {
   try {
     console.log(sectionData);
     const res = await axios.post(`${URL}/api/web/sections/create`, sectionData);

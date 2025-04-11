@@ -1,4 +1,4 @@
-export type Teacher = {
+export type TeacherType = {
   _id: string;
   email: string;
   firstName: string;

@@ -1,30 +1,23 @@
-import { type ReactElement, useState, useEffect } from "react";
-import axios from "axios";
+import { type ReactElement, useEffect, useState } from "react";
 import mathPathTitle from "../../assets/svgs/mathPathTitle.svg";
 import bgTrees from "../../assets/backgroundImage/bgTrees.png";
 import upperTrees from "../../assets/svgs/upperTrees.svg";
 import bottomBush from "../../assets/svgs/bottomBush.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import useAuthCheck from "../../hooks/useAuthCheck";
-import { userLogin } from "../../services/userService";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Login(): ReactElement {
-  const auth = useAuthCheck();
   const navigate = useNavigate();
-
+  const { user, login, isLoading } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
 
   useEffect(() => {
-    if (auth?.isLoggedIn && auth?.userId) {
-      if (auth?.role === "teacher") {
-        navigate(`/teachers/${auth?.userId}`);
-      } else if (auth?.role === "student") {
-        navigate(`/students/${auth?.userId}`);
-      }
+    if (!isLoading && user) {
+      navigate(`/${user.role}s/${user._id}`)
     }
-  }, [auth?.isLoggedIn, auth?.userId, auth?.role, navigate]);
+  }, [user, isLoading, navigate])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,28 +38,8 @@ export default function Login(): ReactElement {
 
     if (isInputEmpty.email || isInputEmpty.password) return;
 
-    try {
-      const { role, user } = await userLogin(formData.email, formData.password);
-
-      if (role === "teacher") {
-        console.log("redirecting to teacher dashboard");
-        navigate(`/teachers/${user._id}`);
-      } else if (role === "student") {
-        console.log("redirecting to student dashboard");
-        navigate(`/students/${user._id}`);
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data?.error || "Login failed");
-      } else {
-        console.error("An unexpected error occurred", error);
-      }
-    }
+    login(formData.email, formData.password);
   };
-
-  if (auth.isLoggedIn === null) {
-    return <div>Loading...</div>
-  }
 
   return (
     <div className="h-screen w-screen">

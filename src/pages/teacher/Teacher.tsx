@@ -1,15 +1,18 @@
 import { type ReactElement } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Nav from "./components/Nav";
 import { TeacherProvider } from "../../providers/TeacherProvider";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Teacher(): ReactElement {
-  const { teacherId } = useParams();
-  console.log(teacherId)
-  if (!teacherId) return <div>Missing teacher ID.</div>
+  const { user } = useAuth();
+
+  if (!user) {
+    return <div>Loading..</div>
+  }
 
   return (
-    <TeacherProvider teacherId={teacherId}>
+    <TeacherProvider teacherId={user?._id}>
       <div className="font-openSans pl-18 h-screen bg-gray-200 text-[var(--primary-black)]">
         <Nav />
         <Outlet />

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
 import StudentTable from "./StudentTable";
 import AddButton from "../AddButton";
+import AddStudentForm from "./AddStudentForm";
 
 export default function Students(): ReactElement {
   const { teacherId } = useParams();
@@ -12,6 +13,7 @@ export default function Students(): ReactElement {
     onlineStudents: 0,
     averageLevel: 0,
   });
+  const [showForm, setShowForm] = useState<boolean>(false);
 
   const primaryStats: IPrimaryStatProps[] = [
     {
@@ -34,11 +36,11 @@ export default function Students(): ReactElement {
   useEffect(() => {
     const connectWebSocket = () => {
       if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-        console.log("Opening WebSocket...");
+        // console.log("Opening WebSocket...");
         wsRef.current = new WebSocket("ws://localhost:3001");
 
         wsRef.current.onopen = () => {
-          console.log("WebSocket connected.");
+          // console.log("WebSocket connected.");
           wsRef.current?.send(
             JSON.stringify({
               type: "TEACHER_CHECK_STUDENTS",
@@ -48,7 +50,7 @@ export default function Students(): ReactElement {
         };
 
         wsRef.current.onclose = () => {
-          console.log("WebSocket closed.");
+          // console.log("WebSocket closed.");
         };
 
         wsRef.current.onerror = (error) => {
@@ -56,7 +58,7 @@ export default function Students(): ReactElement {
         };
 
         wsRef.current.onmessage = (event) => {
-          console.log("Message received!");
+          // console.log("Message received!");
           const { type, data } = JSON.parse(event.data);
           if (type === "TEACHER_STUDENTS_DATA") {
             setStats(() => ({
@@ -73,7 +75,7 @@ export default function Students(): ReactElement {
 
     return () => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        console.log("Closing WebSocket...");
+        // console.log("Closing WebSocket...");
         wsRef.current.close();
       }
     };
@@ -84,7 +86,7 @@ export default function Students(): ReactElement {
       {/* Header */}
       <header className="flex w-full items-center justify-between">
         <h3 className="text-2xl font-bold">Students</h3>
-        <AddButton text={"Add Student"} />
+        <AddButton text={"Add Student"} action={() => setShowForm(true)} />
       </header>
 
       {/* Students overall stats */}
@@ -105,6 +107,8 @@ export default function Students(): ReactElement {
       <section className="h-full w-full">
         <StudentTable />
       </section>
+
+      {showForm && <AddStudentForm />}
     </main>
   );
 }

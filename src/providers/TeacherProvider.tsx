@@ -1,19 +1,34 @@
-import { useEffect, useRef, useState } from "react";
-import { Student } from "../types/student";
-import { Section } from "../types/section";
-import { Assessment } from "../types/assessment";
+import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { TeacherContext } from "../context/TeacherContext";
-import { Teacher } from "../types/teacher";
+import {
+  useTeacher,
+  useTeacherAssessments,
+  useTeacherOnlineStudents,
+  useTeacherSections,
+  useTeacherStudents
+} from "../hooks/useTeacherData";
 
-export function TeacherProvider({ teacherId, children }: { teacherId: string, children: React.ReactNode }) {
-  const [teacher, setTeacher] = useState<Teacher | null>(null)
-  const [students, setStudents] = useState<Student[]>([])
-  const [sections, setSections] = useState<Section[]>([])
-  const [assessments, setAssessments] = useState<Assessment[]>([])
-  const [onlineStudents, setOnlineStudents] = useState<Student[]>([])
-  const [loading, setLoading] = useState<boolean>(true);
+import { TeacherType } from "../types/teacher"; import { StudentType } from "../types/student";
+import { SectionType } from "../types/section";
+import { AssessmentType } from "../types/assessment";
 
+export function TeacherProvider({
+  teacherId,
+  children }:
+  {
+    teacherId: string,
+    children: React.ReactNode
+  }) {
+  const queryClient = useQueryClient();
   const wsRef = useRef<WebSocket | null>(null);
+
+  const { data: teacher } = useTeacher(teacherId);
+  const { data: students } = useTeacherStudents(teacherId);
+  const { data: sections } = useTeacherSections(teacherId);
+  const { data: assessments } = useTeacherAssessments(teacherId);
+  const { data: onlineStudents } = useTeacherOnlineStudents(teacherId);
 
   useEffect(() => {
     const connectWebSocket = () => {
@@ -30,18 +45,40 @@ export function TeacherProvider({ teacherId, children }: { teacherId: string, ch
 
       wsRef.current.onmessage = (e) => {
         const { type, data } = JSON.parse(e.data);
-        console.log("Received message: ", type, data)
+        // console.log("Received message: ", type, data)
+
         if (type === "TEACHER_INITIAL_DATA") {
-          setTeacher(data.teacher);
-          setStudents(data.students);
-          setSections(data.sections);
-          setAssessments(data.assessments);
-          setOnlineStudents(data.onlineStudents);
-          setLoading(false);
+          queryClient.setQueryData<TeacherType>(
+            ["teacher", teacherId],
+            data.teacher
+          )
+
+          queryClient.setQueryData<StudentType[]>(
+            ["teacher", teacherId, "students"],
+            data.students
+          )
+
+          queryClient.setQueryData<SectionType[]>(
+            ["teacher", teacherId, 'sections'],
+            data.sections
+          )
+
+          queryClient.setQueryData<AssessmentType[]>(
+            ["teacher", teacherId, "assessments"],
+            data.assessments
+          );
+
+          queryClient.setQueryData<StudentType[]>(
+            ["teacher", teacherId, "onlineStudents"],
+            data.onlineStudents
+          )
         }
 
-        if (type === "NEW_SECTION_ADDED") {
-          setSections((prev) => [...prev, data])
+        if (type === "STUDENT_ONLINE_UPDATE") {
+          queryClient.setQueryData<StudentType[]>(
+            ["teacher", teacherId, "onlineStudents"],
+            data.onlineStudents
+          )
         }
       }
     }
@@ -49,17 +86,24 @@ export function TeacherProvider({ teacherId, children }: { teacherId: string, ch
     connectWebSocket();
 
     return () => {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.close();
-      }
+      if (wsRef.current?.readyState === WebSocket.OPEN) wsRef.current?.close();
     }
-  }, [teacherId]);
+
+  }, [teacherId, queryClient]);
+
+  const value = {
+    teacher: teacher || null,
+    students: students || [],
+    sections: sections || [],
+    assessments: assessments || [],
+    onlineStudents: onlineStudents || [],
+  }
 
   return (
-    <TeacherContext.Provider value={{ students, sections, assessments, onlineStudents, teacher }}>
-      {loading ? (
-        <div>Loading...</div>
-      ) : children}
+    <TeacherContext.Provider value={value}>
+      {teacher && students && sections && assessments ? (
+        children
+      ) : <div>Loading teacher data...</div>}
     </TeacherContext.Provider>
   );
 }

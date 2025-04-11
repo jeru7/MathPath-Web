@@ -1,14 +1,14 @@
 import { type ReactElement } from "react";
-import { useNavigate } from "react-router-dom";
 
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
-import { useTeacherData } from "../../../../hooks/useTeacherData";
-import { userLogout } from "../../../../services/userService";
 
+import { useAuth } from "../../../../hooks/useAuth";
+import { useTeacherContext } from "../../../../hooks/useTeacherData";
 
 export default function Dashboard(): ReactElement {
-  const navigate = useNavigate();
-  const { teacher, students, sections, assessments, onlineStudents } = useTeacherData();
+  const { logout } = useAuth();
+  const { teacher, students, sections, assessments, onlineStudents } = useTeacherContext();
+
   const primaryStats: IPrimaryStatProps[] = [
     {
       color: "bg-[var(--primary-green)]",
@@ -29,13 +29,8 @@ export default function Dashboard(): ReactElement {
   ];
 
   const handleLogoutClick = async () => {
-    try {
-      if (teacher) {
-        await userLogout(teacher?._id);
-        navigate("/")
-      }
-    } catch (error) {
-      console.error(error)
+    if (teacher) {
+      logout(teacher._id)
     }
   }
 

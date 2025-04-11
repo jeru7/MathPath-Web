@@ -1,4 +1,4 @@
-export type Student = {
+export type StudentType = {
   _id: string;
   studentNumber: string;
   section: string;
@@ -6,8 +6,8 @@ export type Student = {
   lastName: string;
   middleName?: string;
   email: string;
-  lastPlayed: string;
+  lastPlayed: Date;
   status: "Online" | "Offline";
-  createdAt: string | Date;
-  updatedAt: string | Date;
+  createdAt: Date;
+  updatedAt: Date;
 };

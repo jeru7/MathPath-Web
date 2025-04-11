@@ -1,11 +1,11 @@
 import { useState, type ReactElement } from "react"
 import AddButton from "../AddButton"
 import AddSectionForm from "./AddSectionForm";
-import { useTeacherData } from "../../../../hooks/useTeacherData";
+import { useTeacherContext } from "../../../../hooks/useTeacherData";
 import SectionCard from "./SectionCard";
 
 export default function Sections(): ReactElement {
-  const { sections } = useTeacherData();
+  const { sections } = useTeacherContext();
   const [showForm, setShowForm] = useState(false);
 
   return <main className="flex h-full w-full flex-col gap-4 p-4">

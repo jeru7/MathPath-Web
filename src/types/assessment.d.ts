@@ -1,14 +1,14 @@
-export type Assessment = {
+export type AssessmentType = {
   _id: string;
   name: string;
   teachers: string[];
   sections: string[];
-  questions: Question[];
+  questions: QuestionType[];
   createdAt: string | Date;
   updatedAt: string | Date;
 };
 
-export type Question = {
+export type QuestionType = {
   question: string;
   choices: string[];
   answer: string;
