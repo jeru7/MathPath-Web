@@ -8,7 +8,10 @@ import Assessments from "../pages/teacher/components/assessments/Assessments";
 export const teacherRoutes = (
   <Route path="/teachers/:teacherId" element={<Teacher />}>
     <Route index element={<Dashboard />} />
-    <Route path="students" element={<Students />} />
+    <Route path="students">
+      <Route index element={<Students />} />
+      <Route path="add-students" element={<Students />} />
+    </Route>
     <Route path="sections" element={<Sections />} />
     <Route path="assessments" element={<Assessments />} />
   </Route>

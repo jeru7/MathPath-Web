@@ -1,17 +1,19 @@
 import { useEffect, useState, type ReactElement } from "react"
 import { useParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import luffy1 from "../../../../assets/images/luffyBanner.jpg"
 import luffy2 from "../../../../assets/images/luffyBnWBanner.jpg"
 import luffy3 from "../../../../assets/images/luffyGear4Banner.jpg"
 
-import { AddSection, SectionBanner, SectionColor } from "../../../../types/section"
+import { AddSectionType, SectionBannerType, SectionColorType } from "../../../../types/section"
 import { addSection } from "../../../../services/sectionService";
 
 export default function AddSectionForm({ setShowForm }: { setShowForm: (show: boolean) => void }): ReactElement {
   const { teacherId } = useParams();
+  const queryClient = useQueryClient();
 
-  const [sectionData, setSectionData] = useState<AddSection>({
+  const [sectionData, setSectionData] = useState<AddSectionType>({
     name: "",
     teacher: "",
     color: "primary-green",
@@ -21,6 +23,19 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
     assessments: [] as string[],
   })
   const [showError, setShowError] = useState(false);
+
+  const addSectionMutation = useMutation({
+    mutationFn: (sectionData: AddSectionType) => addSection(sectionData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["teacher", teacherId, 'sections'],
+      });
+      handleCancel();
+    },
+    onError: (error) => {
+      console.error("Error in adding section.", error)
+    }
+  });
 
   useEffect(() => {
     if (teacherId) {
@@ -52,12 +67,7 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
       return;
     }
 
-    try {
-      await addSection(sectionData)
-      handleCancel();
-    } catch (error) {
-      console.error(error)
-    }
+    addSectionMutation.mutate(sectionData)
   }
 
   const handleCancel = () => {
@@ -72,15 +82,13 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
         </div>
         <div className="flex w-full flex-col gap-8">
           {/* Name input */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <label htmlFor="name" className={`text-xl font-semibold ${showError && "text-red-400"}`}>Name</label>
-            </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="name" className={`text-xl font-semibold ${showError && "text-red-400"}`}>Name</label>
             <input type="text"
               id="name"
               value={sectionData.name}
               onChange={handleNameInputChange}
-              className={`border-b bg-inherit p-1 focus:border-b-[var(--primary-green)] focus:outline-none ${showError && "border-b-red-400 focus:border-b-red-400"}`}
+              className={`border-1 rounded-lg bg-inherit px-1 py-2 focus:border-[var(--primary-green)] focus:outline-none ${showError && "border-b-red-400 focus:border-b-red-400"}`}
               placeholder="Enter name here"
               style={showError ? { color: 'red' } : {}}
             />
@@ -98,14 +106,14 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
                     checked={sectionData.banner === banner}
                     onChange={() => setSectionData((prev) => ({
                       ...prev,
-                      banner: banner as SectionBanner,
+                      banner: banner as SectionBannerType,
                     }))}
                     className="hidden"
                   />
                   <div
-                    className={`border-1 h-20 w-32 rounded-sm hover:scale-105 ${sectionData.banner === banner ? "border-4 border-[var(--primary-green)]" : ""}`}
+                    className={`border-1 h-20 w-32 rounded-lg hover:scale-105 ${sectionData.banner === banner ? "border-4 border-[var(--primary-green)]" : ""}`}
                   >
-                    <img src={banner === "SBanner_1" ? luffy1 : banner === "SBanner_2" ? luffy2 : luffy3} alt="section banner" className="h-full w-full object-cover" />
+                    <img src={banner === "SBanner_1" ? luffy1 : banner === "SBanner_2" ? luffy2 : luffy3} alt="section banner" className="h-full w-full rounded-lg object-cover" />
                   </div>
                 </label>
               ))}
@@ -124,7 +132,7 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
                     checked={sectionData.color === color}
                     onChange={() => setSectionData((prev) => ({
                       ...prev,
-                      color: color as SectionColor,
+                      color: color as SectionColorType,
                     }))}
                     className="hidden"
                   />

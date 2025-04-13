@@ -7,9 +7,9 @@ import luffy3 from "../../../../assets/images/luffyGear4Banner.jpg"
 import { Ellipsis } from "lucide-react"
 import { format } from 'date-fns'
 
-import { Section } from "../../../../types/section"
+import { SectionType } from "../../../../types/section"
 
-export default function SectionCard({ section }: { section: Section }): ReactElement {
+export default function SectionCard({ section }: { section: SectionType }): ReactElement {
   return (
     <section className={`flex max-w-lg flex-col rounded-md bg-white opacity-90 shadow-md hover:cursor-pointer hover:opacity-100`}>
       <div className={`bg-[var(--${section.color})] h-1 w-full rounded-t-3xl`}></div>

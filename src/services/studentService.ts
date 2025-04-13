@@ -1,16 +1,9 @@
 import axios from "axios";
-import { StudentType } from "../types/student";
+import { StudentFormData } from "../types/student";
 
 const URL = import.meta.env.VITE_BACKEND_TEST_URI;
 
-export const addStudent = async (student: StudentType) => {
-  try {
-    const res = await axios.post(`${URL}/api/web/students/add`, {
-      student,
-    });
-
-    return res.data.message;
-  } catch (error) {
-    console.error(error);
-  }
+export const createStudentService = async (studentData: StudentFormData) => {
+  const res = await axios.post(`${URL}/api/web/students/`, studentData);
+  return res.data;
 };

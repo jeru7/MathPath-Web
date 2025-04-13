@@ -1,19 +1,23 @@
 import { useState, useEffect, useRef, type ReactElement } from "react";
-import { useParams } from "react-router-dom";
-
-import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
-import StudentTable from "./StudentTable";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat"; import StudentTable from "./StudentTable";
 import AddButton from "../AddButton";
-import AddStudentForm from "./AddStudentForm";
+import AddStudent from "./AddStudent";
 
 export default function Students(): ReactElement {
   const { teacherId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const showForm = location.pathname.endsWith("/add-students")
+  const mode: string | null = searchParams.get('mode');
+
   const [stats, setStats] = useState({
     totalStudents: 0,
     onlineStudents: 0,
     averageLevel: 0,
   });
-  const [showForm, setShowForm] = useState<boolean>(false);
 
   const primaryStats: IPrimaryStatProps[] = [
     {
@@ -31,8 +35,8 @@ export default function Students(): ReactElement {
       averageLevel: stats.averageLevel,
     }
   ]
-  const wsRef = useRef<WebSocket | null>(null);
 
+  const wsRef = useRef<WebSocket | null>(null);
   useEffect(() => {
     const connectWebSocket = () => {
       if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
@@ -70,7 +74,6 @@ export default function Students(): ReactElement {
         };
       }
     };
-
     connectWebSocket();
 
     return () => {
@@ -81,12 +84,20 @@ export default function Students(): ReactElement {
     };
   }, [teacherId]);
 
+  const handleAddStudent = () => {
+    navigate('add-students');
+  }
+
+  const handleCloseForm = () => {
+    navigate('students');
+  }
+
   return (
     <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
       {/* Header */}
       <header className="flex w-full items-center justify-between">
         <h3 className="text-2xl font-bold">Students</h3>
-        <AddButton text={"Add Student"} action={() => setShowForm(true)} />
+        <AddButton text={"Add Student"} action={handleAddStudent} />
       </header>
 
       {/* Students overall stats */}
@@ -108,7 +119,7 @@ export default function Students(): ReactElement {
         <StudentTable />
       </section>
 
-      {showForm && <AddStudentForm />}
+      {showForm && <AddStudent setShowForm={handleCloseForm} navigate={navigate} initialMode={mode as "manual" | "generate" | null} />}
     </main>
   );
 }
