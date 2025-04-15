@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export enum StudentStatusEnum {
+  ONLINE = "Online",
+  OFFLINE = "Offline",
+}
+
 export type StudentType = {
   _id: string;
   studentNumber: string;
@@ -9,27 +14,67 @@ export type StudentType = {
   middleName?: string;
   gender: "male" | "female";
   email: string;
+  level: number;
+  exp: number;
+  quests: unknown;
+  gameLevels: unknown;
   lastPlayed: Date;
   status: "Online" | "Offline";
+  streak: number;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export const studentFormSchema = z.object({
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
-  middleName: z.string().optional(),
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "First name is required")
+    .min(2, "First name must have at least 2 characters")
+    .regex(/^[A-Za-z\s]+$/, "First name must contain only letters")
+    .transform((val) =>
+      val.toLowerCase().replace(/^\w/, (c) => c.toUpperCase()),
+    ),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Last name is required")
+    .min(2, "Last name must have at least 2 characters")
+    .regex(/^[A-Za-z]+$/, "First name must contain only letters")
+    .transform((val) =>
+      val.toLowerCase().replace(/^\w/, (c) => c.toUpperCase()),
+    ),
+  middleName: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z]*$/, "Middle name must contain only letters")
+    .transform((val) => (val === "" ? undefined : val))
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      return val.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+    }),
   gender: z.enum(["male", "female"], {
     required_error: "Gender is required",
   }),
   email: z.string().email("Invalid email address"),
   studentNumber: z
     .string()
+    .trim()
     .min(1, "Student number is required")
     .min(6, "Student number must have at least 6 characters."),
-  username: z.string().min(4, "Username must have at least 4 characters"),
-  password: z.string().min(8, "Password must have at least 8 characters"),
-  section: z.string().min(1, "Section is required"),
+  username: z
+    .string()
+    .trim()
+    .min(1, "Username is required")
+    .min(4, "Username must have at least 4 characters"),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must have at least 8 characters"),
+  section: z.string({
+    required_error: "Section is required",
+  }),
 });
 
 export type StudentFormData = z.infer<typeof studentFormSchema>;

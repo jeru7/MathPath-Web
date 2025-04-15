@@ -1,13 +1,29 @@
-import { type ReactElement } from "react"
+import { useEffect, useMemo, useState, type ReactElement } from "react"
 
 import { Circle, Settings } from "lucide-react"
 import { format } from "date-fns"
 
-import { Student } from "../../../../types/student"
+import { StudentStatusEnum, StudentType } from "../../../../types/student"
+import { useTeacherContext } from "../../../../hooks/useTeacherData"
+import { SectionType } from "../../../../types/section"
 
-export default function StudentTableItem({ student }: { student: Student }): ReactElement {
+export default function StudentTableItem({ student }: { student: StudentType }): ReactElement {
+  const { sections, onlineStudents } = useTeacherContext();
+  const onlineStudentIds = useMemo(() => new Set(onlineStudents.map(student => student._id)), [onlineStudents])
+  const [status, setStatus] = useState<StudentStatusEnum>(StudentStatusEnum.OFFLINE)
+
+  // get the section name using the section id on the student
+  const getSectionName = (sectionId: string) => {
+    const studentSection: SectionType | undefined = sections.find((section) => section._id === sectionId)
+    return studentSection ? studentSection.name : "Unknown section"
+  }
+
+  useEffect(() => {
+    setStatus(onlineStudentIds.has(student._id) ? StudentStatusEnum.ONLINE : StudentStatusEnum.OFFLINE)
+  }, [onlineStudentIds, student._id])
+
   return (
-    <tr className="hover:bg-[var(--primary-gray)]/10 cursor-pointer text-center" key={student.studentNumber}>
+    <tr className="hover:bg-[var(--primary-gray)]/10 cursor-pointer text-center">
       <td className="px-4 py-2 text-left">{student.studentNumber}</td>
       <td className="max-w-[200px] truncate px-4 py-2 text-left">
         <div className="flex items-center gap-2">
@@ -17,9 +33,9 @@ export default function StudentTableItem({ student }: { student: Student }): Rea
           </p>
         </div>
       </td>
-      <td className="px-4 py-2">{student.section}</td>
-      <td className={`px-4 py-2 font-bold ${student.status === "Online" ? "text-[var(--tertiary-green)]" : "text-[var(--primary-red)]"}`}>
-        {student.status}
+      <td className="px-4 py-2">{getSectionName(student.section)}</td>
+      <td className={`px-4 py-2 font-bold ${status === StudentStatusEnum.ONLINE ? "text-[var(--tertiary-green)]" : "text-[var(--primary-red)]"}`}>
+        {status}
       </td>
       <td className="px-4 py-2">{format(new Date(student.createdAt.toString()), "MMMM d, yyyy")}</td>
       <td className="px-4 py-2">{format(new Date(student.lastPlayed?.toString()), "MMMM d, yyyy")}</td>

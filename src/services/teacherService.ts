@@ -45,26 +45,12 @@ export const getStudentsByTeacherId = async (teacherId: string) => {
   }
 };
 
-export const getOnlineStudentsByTeacherId = async (teacherId: string) => {
-  try {
-    const res = await axios.get<{ data: StudentType[] | null }>(
-      `${URL}/api/web/teachers/${teacherId}/students/online`,
-    );
-
-    return res.data.data ?? [];
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch online students.");
-  }
-};
-
 export const getSectionsByTeacherId = async (teacherId: string) => {
   try {
     const res = await axios.get<{ data: SectionType[] | null }>(
       `${URL}/api/web/teachers/${teacherId}/sections`,
     );
 
-    console.log(res.data);
     return res.data.data ?? [];
   } catch (error) {
     console.error(error);

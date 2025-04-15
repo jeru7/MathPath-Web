@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useTeacherContext } from "../../../../hooks/useTeacherData";
 import { StudentType } from "../../../../types/student";
@@ -6,13 +6,6 @@ import StudentTableItem from "./StudentTableItem";
 
 export default function StudentTable(): ReactElement {
   const { students } = useTeacherContext()
-  const [studentsList, setStudentsList] = useState<StudentType[]>([])
-
-  useEffect(() => {
-    if (students.length === 0) return;
-
-    setStudentsList(students);
-  }, [students])
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof StudentType;
@@ -26,34 +19,29 @@ export default function StudentTable(): ReactElement {
       direction = "descending";
     }
 
-    const sortedStudents = [...studentsList].sort((a, b) => {
-      let comparison = 0;
-
-      if (a[column] instanceof Date && b[column] instanceof Date) {
-        const dateA = new Date(a[column]);
-        const dateB = new Date(b[column]);
-        comparison = dateA.getTime() - dateB.getTime();
-      } else if (typeof a[column] === "string" && typeof b[column] === "string") {
-        comparison = a[column].localeCompare(b[column]);
-      } else if (typeof a[column] === "number" && typeof b[column] === "number") {
-        comparison = a[column] - b[column];
-      }
-
-      return direction === "ascending" ? -comparison : comparison;
-    });
-
-    setStudentsList(sortedStudents);
-    setSortConfig({ key: column, direction });
+    setSortConfig({ key: column, direction })
   };
 
-  useEffect(() => {
-    handleSort("status")
-  }, [])
+  const sortedStudents = [...students].sort((a, b) => {
+    const column = sortConfig.key;
+    let comparison = 0;
 
+    if (a[column] instanceof Date && b[column] instanceof Date) {
+      const dateA = new Date(a[column]);
+      const dateB = new Date(b[column]);
+      comparison = dateA.getTime() - dateB.getTime();
+    } else if (typeof a[column] === "string" && typeof b[column] === "string") {
+      comparison = a[column].localeCompare(b[column]);
+    } else if (typeof a[column] === "number" && typeof b[column] === "number") {
+      comparison = a[column] - b[column];
+    }
+
+    return sortConfig.direction === "ascending" ? comparison : -comparison
+  });
 
   return (
     <div className="h-full overflow-x-auto">
-      {studentsList.length === 0 ? (
+      {students.length === 0 ? (
         <div className="flex h-full w-full items-center justify-center">
           <p className="font-bold text-[var(--primary-gray)]">Students List is empty.</p>
         </div>
@@ -114,8 +102,8 @@ export default function StudentTable(): ReactElement {
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
-              <StudentTableItem student={student} />
+            {sortedStudents.map((student) => (
+              <StudentTableItem student={student} key={student.studentNumber} />
             ))}
           </tbody>
         </table>

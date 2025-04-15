@@ -24,7 +24,6 @@ export default function PrimaryStat({
   const location = useLocation();
 
   const navigateClickHandler = () => {
-    console.log(location)
     if (title === "Students") {
       navigate(`${location.pathname}/students`)
     } else if (title === "Sections") {

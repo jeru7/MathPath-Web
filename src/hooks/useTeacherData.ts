@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { TeacherContext } from "../context/TeacherContext";
 import {
   getAssessmentsByTeacherId,
-  getOnlineStudentsByTeacherId,
   getSectionsByTeacherId,
   getStudentsByTeacherId,
   getTeacherById,
@@ -36,14 +35,6 @@ export const useTeacherStudents = (teacherId: string) => {
   return useQuery<StudentType[]>({
     queryKey: ["teacher", teacherId, "students"],
     queryFn: () => getStudentsByTeacherId(teacherId),
-    staleTime: 1000 * 60 * 5,
-  });
-};
-
-export const useTeacherOnlineStudents = (teacherId: string) => {
-  return useQuery<StudentType[]>({
-    queryKey: ["teacher", teacherId, "onlineStudents"],
-    queryFn: () => getOnlineStudentsByTeacherId(teacherId),
     staleTime: 1000 * 60 * 5,
   });
 };
