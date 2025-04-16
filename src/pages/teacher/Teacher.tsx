@@ -13,7 +13,7 @@ export default function Teacher(): ReactElement {
 
   return (
     <TeacherProvider teacherId={user?._id}>
-      <div className="font-openSans pl-18 h-screen bg-gray-200 text-[var(--primary-black)]">
+      <div className="font-openSans pl-18 h-screen w-full max-w-[2000px] bg-gray-200 text-[var(--primary-black)]">
         <Nav />
         <Outlet />
       </div>

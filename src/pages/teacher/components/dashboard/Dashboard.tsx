@@ -4,6 +4,7 @@ import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
 
 import { useAuth } from "../../../../hooks/useAuth";
 import { useTeacherContext } from "../../../../hooks/useTeacherData";
+import MainChart from "./MainChart";
 
 export default function Dashboard(): ReactElement {
   const { logout } = useAuth();
@@ -35,7 +36,7 @@ export default function Dashboard(): ReactElement {
   }
 
   return (
-    <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
+    <main className="flex h-full w-full max-w-[2200px] flex-col gap-4 bg-inherit p-4">
       {/* Header */}
       <header className="flex items-center justify-between">
         <h3 className="text-2xl font-bold">Dashboard</h3>
@@ -51,7 +52,7 @@ export default function Dashboard(): ReactElement {
       </header>
 
       {/* Stats */}
-      <section className="flex grow-[2] gap-4">
+      <section className="flex max-h-[200px] grow-[2] gap-4">
         {primaryStats.map((stat, index) => (
           <PrimaryStat
             key={index}
@@ -66,9 +67,9 @@ export default function Dashboard(): ReactElement {
       </section>
 
       {/* Charts */}
-      <section className="flex grow-[10] gap-4">
+      <section className="flex max-h-[600px] min-h-[400px] grow-[10] gap-4">
         {/* Main Chart */}
-        <div className="grow-[3] border-2"></div>
+        <MainChart classNames="max-w-[1300px] grow-[3]" />
         {/* Student activity */}
         <div className="grow-[1] border-2"></div>
       </section>

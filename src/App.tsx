@@ -10,22 +10,25 @@ import { AuthProvider } from "./providers/AuthProvider";
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element=<Login /> />
+    <div className="flex flex-col items-center">
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element=<Login /> />
 
-        <Route element={<PrivateRoute />}>
-          {teacherRoutes}
-          <Route
-            path="/students/:studentId/dashboard"
-            element={<StudentDashboard />}
-          />
-        </Route>
+          <Route element={<PrivateRoute />}>
+            {teacherRoutes}
+            <Route
+              path="/students/:studentId/dashboard"
+              element={<StudentDashboard />}
+            />
+          </Route>
 
-        <Route path="*" element={<Landing />} />
-      </Routes>
-    </AuthProvider>
+          <Route path="*" element={<Landing />} />
+        </Routes>
+      </AuthProvider>
+
+    </div>
   );
 }
 
