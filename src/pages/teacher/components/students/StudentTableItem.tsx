@@ -3,23 +3,23 @@ import { useEffect, useMemo, useState, type ReactElement } from "react"
 import { Circle, Settings } from "lucide-react"
 import { format } from "date-fns"
 
-import { StudentStatusEnum, StudentType } from "../../../../types/student"
+import { IStudent, StudentStatusType } from "../../../../types/student.type"
 import { useTeacherContext } from "../../../../hooks/useTeacherData"
-import { SectionType } from "../../../../types/section"
+import { ISection } from "../../../../types/section.type"
 
-export default function StudentTableItem({ student }: { student: StudentType }): ReactElement {
+export default function StudentTableItem({ student }: { student: IStudent }): ReactElement {
   const { sections, onlineStudents } = useTeacherContext();
   const onlineStudentIds = useMemo(() => new Set(onlineStudents.map(student => student._id)), [onlineStudents])
-  const [status, setStatus] = useState<StudentStatusEnum>(StudentStatusEnum.OFFLINE)
+  const [status, setStatus] = useState<StudentStatusType>("Offline")
 
   // get the section name using the section id on the student
   const getSectionName = (sectionId: string) => {
-    const studentSection: SectionType | undefined = sections.find((section) => section._id === sectionId)
+    const studentSection: ISection | undefined = sections.find((section) => section._id === sectionId)
     return studentSection ? studentSection.name : "Unknown section"
   }
 
   useEffect(() => {
-    setStatus(onlineStudentIds.has(student._id) ? StudentStatusEnum.ONLINE : StudentStatusEnum.OFFLINE)
+    setStatus(onlineStudentIds.has(student._id) ? "Online" : "Offline")
   }, [onlineStudentIds, student._id])
 
   return (
@@ -34,7 +34,7 @@ export default function StudentTableItem({ student }: { student: StudentType }):
         </div>
       </td>
       <td className="px-4 py-2">{getSectionName(student.section)}</td>
-      <td className={`px-4 py-2 font-bold ${status === StudentStatusEnum.ONLINE ? "text-[var(--tertiary-green)]" : "text-[var(--primary-red)]"}`}>
+      <td className={`px-4 py-2 font-bold ${status === "Online" ? "text-[var(--tertiary-green)]" : "text-[var(--primary-red)]"}`}>
         {status}
       </td>
       <td className="px-4 py-2">{format(new Date(student.createdAt.toString()), "MMMM d, yyyy")}</td>

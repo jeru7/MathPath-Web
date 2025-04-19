@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import { UserLoginType } from "../types/user";
+import { IUserLogin } from "../types/user.type";
 
 type AuthContextType = {
-  user: UserLoginType | null;
+  user: IUserLogin | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: (userId: string) => void;

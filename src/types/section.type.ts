@@ -1,25 +1,25 @@
-export type SectionType = {
+export interface ISection {
   _id: string;
   name: string;
   teacher: string;
-  color: SectionColor;
-  banner: SectionBanner;
+  color: SectionColorType;
+  banner: SectionBannerType;
   lastChecked: Date;
   students?: string[];
   assessments?: string[];
   createdAt: string | Date;
   updatedAt: string | Date;
-};
+}
 
-export type AddSectionType = {
+export interface IAddSection {
   name: string;
   teacher: string;
-  color: SectionColor;
-  banner: SectionBanner;
+  color: SectionColorType;
+  banner: SectionBannerType;
   lastChecked: Date;
   students?: string[];
   assessments?: string[];
-};
+}
 
 export type SectionBannerType = "SBanner_1" | "SBanner_2" | "SBanner_3";
 

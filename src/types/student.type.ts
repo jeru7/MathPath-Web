@@ -1,11 +1,8 @@
 import { z } from "zod";
 
-export enum StudentStatusEnum {
-  ONLINE = "Online",
-  OFFLINE = "Offline",
-}
+export type StudentStatusType = "Online" | "Offline";
 
-export type StudentType = {
+export interface IStudent {
   _id: string;
   studentNumber: string;
   section: string;
@@ -19,11 +16,11 @@ export type StudentType = {
   quests: unknown;
   gameLevels: unknown;
   lastPlayed: Date;
-  status: "Online" | "Offline";
+  status: StudentStatusType;
   streak: number;
   createdAt: Date;
   updatedAt: Date;
-};
+}
 
 export const studentFormSchema = z.object({
   firstName: z

@@ -10,7 +10,7 @@ import { AuthProvider } from "./providers/AuthProvider";
 
 function App() {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center border-2">
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Landing />} />

@@ -1,4 +1,4 @@
-export type AssessmentType = {
+export interface IAssessment {
   _id: string;
   name: string;
   teachers: string[];
@@ -6,10 +6,10 @@ export type AssessmentType = {
   questions: QuestionType[];
   createdAt: string | Date;
   updatedAt: string | Date;
-};
+}
 
-export type QuestionType = {
+export interface QuestionType {
   question: string;
   choices: string[];
   answer: string;
-};
+}

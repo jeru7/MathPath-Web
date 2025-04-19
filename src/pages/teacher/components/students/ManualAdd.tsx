@@ -8,13 +8,13 @@ import { toast } from 'react-toastify'
 
 import FormButtons from "../FormButtons";
 import { getCustomSelectColor } from "../../../../utils/selectStyles";
-import { StudentFormData, studentFormSchema } from "../../../../types/student";
+import { StudentFormData, studentFormSchema } from "../../../../types/student.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createStudentService } from "../../../../services/studentService";
+import { createStudentService } from "../../../../services/student.service";
 import { useTeacherContext } from "../../../../hooks/useTeacherData";
-import { SectionType } from "../../../../types/section";
+import { ISection } from "../../../../types/section.type";
 import { isAxiosError } from "axios";
-import { IErrorResponse } from "../../../../types/apiResponse";
+import { IErrorResponse } from "../../../../types/api-response.type";
 
 interface IManualAddProps {
   handleBack: () => void
@@ -256,13 +256,13 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
               name="section"
               control={control}
               render={({ field }) => (
-                <Select<SectionType>
+                <Select<ISection>
                   {...field}
                   id="section"
                   name="section"
                   options={sections}
-                  getOptionLabel={(option: SectionType) => option.name}
-                  getOptionValue={(option: SectionType) => option._id}
+                  getOptionLabel={(option: ISection) => option.name}
+                  getOptionValue={(option: ISection) => option._id}
                   styles={getCustomSelectColor()}
                   className="basic-select"
                   classNamePrefix="select"

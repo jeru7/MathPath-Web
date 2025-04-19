@@ -1,4 +1,4 @@
-export type UserLoginType = {
+export interface IUserLogin {
   _id: string;
   role: "teacher" | "student";
   firstName: string;
@@ -6,4 +6,4 @@ export type UserLoginType = {
   middleName?: string;
   email: string;
   profilePicture?: string;
-};
+}

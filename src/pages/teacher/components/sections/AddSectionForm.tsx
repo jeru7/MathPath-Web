@@ -6,14 +6,14 @@ import luffy1 from "../../../../assets/images/luffyBanner.jpg"
 import luffy2 from "../../../../assets/images/luffyBnWBanner.jpg"
 import luffy3 from "../../../../assets/images/luffyGear4Banner.jpg"
 
-import { AddSectionType, SectionBannerType, SectionColorType } from "../../../../types/section"
-import { addSection } from "../../../../services/sectionService";
+import { IAddSection, SectionBannerType, SectionColorType } from "../../../../types/section.type"
+import { addSection } from "../../../../services/section.service";
 
 export default function AddSectionForm({ setShowForm }: { setShowForm: (show: boolean) => void }): ReactElement {
   const { teacherId } = useParams();
   const queryClient = useQueryClient();
 
-  const [sectionData, setSectionData] = useState<AddSectionType>({
+  const [sectionData, setSectionData] = useState<IAddSection>({
     name: "",
     teacher: "",
     color: "primary-green",
@@ -25,7 +25,7 @@ export default function AddSectionForm({ setShowForm }: { setShowForm: (show: bo
   const [showError, setShowError] = useState(false);
 
   const addSectionMutation = useMutation({
-    mutationFn: (sectionData: AddSectionType) => addSection(sectionData),
+    mutationFn: (sectionData: IAddSection) => addSection(sectionData),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["teacher", teacherId, 'sections'],

@@ -9,10 +9,6 @@ import {
   useTeacherStudents
 } from "../hooks/useTeacherData";
 
-import { TeacherType } from "../types/teacher"; import { StudentType } from "../types/student";
-import { SectionType } from "../types/section";
-import { AssessmentType } from "../types/assessment";
-
 export function TeacherProvider({
   teacherId,
   children,
@@ -27,10 +23,13 @@ export function TeacherProvider({
   const reconnectInterval = 3000;
   const isMounted = useRef(true)
 
+  // react query
   const { data: teacher } = useTeacher(teacherId);
   const { data: students } = useTeacherStudents(teacherId);
   const { data: sections } = useTeacherSections(teacherId);
   const { data: assessments } = useTeacherAssessments(teacherId);
+
+  // track student online status
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
 
   const onlineStudents = useMemo(() => {
@@ -71,22 +70,6 @@ export function TeacherProvider({
       const { type, data } = JSON.parse(e.data);
       console.log("Received message: ", type, data);
 
-      if (type === "TEACHER_INITIAL_DATA") {
-        queryClient.setQueryData<TeacherType>(["teacher", teacherId], data.teacher);
-        queryClient.setQueryData<StudentType[]>(
-          ["teacher", teacherId, "students"],
-          data.students
-        );
-        queryClient.setQueryData<SectionType[]>(
-          ["teacher", teacherId, "sections"],
-          data.sections
-        );
-        queryClient.setQueryData<AssessmentType[]>(
-          ["teacher", teacherId, "assessments"],
-          data.assessments
-        );
-        setOnlineStudentIds(data.onlineStudents);
-      }
 
       if (type === "STUDENT_ONLINE" || type === "STUDENT_OFFLINE") {
         queryClient.invalidateQueries({
