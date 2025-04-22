@@ -1,18 +1,20 @@
 import { useState, type ReactElement } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useTeacherContext } from "../../../../hooks/useTeacherData";
-import { StudentType } from "../../../../types/student";
+import { IStudent } from "../../../../types/student.type";
 import StudentTableItem from "./StudentTableItem";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentTable(): ReactElement {
   const { students } = useTeacherContext()
+  const navigate = useNavigate();
 
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof StudentType;
+    key: keyof IStudent;
     direction: "ascending" | "descending";
   }>({ key: "status", direction: "descending" });
 
-  const handleSort = (column: keyof StudentType) => {
+  const handleSort = (column: keyof IStudent) => {
     let direction: "ascending" | "descending" = "ascending";
 
     if (sortConfig.key === column && sortConfig.direction === "ascending") {
@@ -38,6 +40,10 @@ export default function StudentTable(): ReactElement {
 
     return sortConfig.direction === "ascending" ? comparison : -comparison
   });
+
+  const handleItemOnclick = (studentId: string) => {
+    navigate(`${studentId}`, { replace: true })
+  }
 
   return (
     <div className="h-full overflow-x-auto">
@@ -103,7 +109,7 @@ export default function StudentTable(): ReactElement {
           </thead>
           <tbody>
             {sortedStudents.map((student) => (
-              <StudentTableItem student={student} key={student.studentNumber} />
+              <StudentTableItem student={student} key={student.studentNumber} onClick={handleItemOnclick} />
             ))}
           </tbody>
         </table>

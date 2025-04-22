@@ -7,7 +7,12 @@ import { IStudent, StudentStatusType } from "../../../../types/student.type"
 import { useTeacherContext } from "../../../../hooks/useTeacherData"
 import { ISection } from "../../../../types/section.type"
 
-export default function StudentTableItem({ student }: { student: IStudent }): ReactElement {
+interface IStudentTableItemProps {
+  student: IStudent,
+  onClick: (studentId: string) => void
+}
+
+export default function StudentTableItem({ student, onClick }: IStudentTableItemProps): ReactElement {
   const { sections, onlineStudents } = useTeacherContext();
   const onlineStudentIds = useMemo(() => new Set(onlineStudents.map(student => student._id)), [onlineStudents])
   const [status, setStatus] = useState<StudentStatusType>("Offline")
@@ -23,7 +28,9 @@ export default function StudentTableItem({ student }: { student: IStudent }): Re
   }, [onlineStudentIds, student._id])
 
   return (
-    <tr className="hover:bg-[var(--primary-gray)]/10 cursor-pointer text-center">
+    <tr className="hover:bg-[var(--primary-gray)]/10 cursor-pointer text-center"
+      onClick={() => onClick(student._id)}
+    >
       <td className="px-4 py-2 text-left">{student.studentNumber}</td>
       <td className="max-w-[200px] truncate px-4 py-2 text-left">
         <div className="flex items-center gap-2">

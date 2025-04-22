@@ -4,7 +4,7 @@ import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
 
 import { useAuth } from "../../../../hooks/useAuth";
 import { useTeacherContext } from "../../../../hooks/useTeacherData";
-import MainChart from "./MainChart";
+import TeacherChart from "./TeacherChart";
 
 export default function Dashboard(): ReactElement {
   const { logout } = useAuth();
@@ -68,8 +68,9 @@ export default function Dashboard(): ReactElement {
 
       {/* Charts */}
       <section className="flex max-h-[600px] min-h-[400px] grow-[10] gap-4">
-        {/* Main Chart */}
-        <MainChart classNames="max-w-[1300px] grow-[3]" />
+        {/* Chart */}
+        <TeacherChart classNames="max-w-[1300px] grow-[3]" />
+
         {/* Student activity */}
         <div className="grow-[1] border-2"></div>
       </section>

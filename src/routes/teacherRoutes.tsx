@@ -4,6 +4,7 @@ import Dashboard from "../pages/teacher/components/dashboard/Dashboard";
 import Students from "../pages/teacher/components/students/Students";
 import Sections from "../pages/teacher/components/sections/Sections";
 import Assessments from "../pages/teacher/components/assessments/Assessments";
+import Student from "../pages/teacher/components/students/Student";
 
 export const teacherRoutes = (
   <Route path="/teachers/:teacherId" element={<Teacher />}>
@@ -11,6 +12,7 @@ export const teacherRoutes = (
     <Route path="students">
       <Route index element={<Students />} />
       <Route path="add-students" element={<Students />} />
+      <Route path=":studentId" element={<Student />} />
     </Route>
     <Route path="sections" element={<Sections />} />
     <Route path="assessments" element={<Assessments />} />

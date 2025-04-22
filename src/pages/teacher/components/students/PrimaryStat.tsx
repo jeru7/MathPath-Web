@@ -1,11 +1,11 @@
 import { type ReactElement } from "react";
-import { StudentType } from "../../../../types/student";
+import { IStudent } from "../../../../types/student.type";
 
 export interface IPrimaryStatProps {
   color: string;
   title: "Total Students" | "Online Students" | "Average Level";
-  students?: StudentType[];
-  onlineStudents?: StudentType[];
+  students?: IStudent[];
+  onlineStudents?: IStudent[];
 }
 
 export default function PrimaryStat({

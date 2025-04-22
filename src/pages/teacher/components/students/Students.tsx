@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, type ReactElement } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { type ReactElement } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat"; import StudentTable from "./StudentTable";
 import AddButton from "../AddButton";
 import AddStudent from "./AddStudent";

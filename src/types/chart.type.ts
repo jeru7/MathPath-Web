@@ -1,3 +1,4 @@
+// topic stats
 // used for section topic stats
 export interface ISectionTopicResponse {
   success: string;
@@ -39,3 +40,15 @@ export interface ICorrectness {
     correctPercentage: number;
   };
 }
+
+// question stats
+export interface IQuestionStats {
+  question: string;
+  difficulty: DifficultyType;
+  totalAttempts: number;
+  correctCount: number;
+  gameLevel: number;
+  correctnessPercentage: number;
+}
+
+export type DifficultyType = "easy" | "medium" | "hard";

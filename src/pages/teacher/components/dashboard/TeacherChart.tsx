@@ -2,7 +2,6 @@ import {
   BarChart,
   Bar,
   XAxis,
-  YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
@@ -51,7 +50,7 @@ function getSectionChartData(data: ISectionTopicStats[] = [], selectedSection: s
     );
 }
 
-export default function MainChart({ classNames }: { classNames: string }): ReactElement {
+export default function TeacherChart({ classNames }: { classNames: string }): ReactElement {
   const [viewMode, setViewMode] = useState<"overall" | "by section">("overall");
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const { teacherId } = useParams();
@@ -112,7 +111,6 @@ export default function MainChart({ classNames }: { classNames: string }): React
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
-            <YAxis />
             <Tooltip
               labelFormatter={(label) => `Topic: ${chartData.find(item => item.name === label)?.topic}`}
             />

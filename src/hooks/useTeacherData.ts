@@ -12,11 +12,7 @@ import { IStudent } from "../types/student.type";
 import { ISection } from "../types/section.type";
 import { IAssessment } from "../types/assessment.type";
 import { useContext } from "react";
-import {
-  ISectionTopicStats,
-  IStudentTopicResponse,
-  ITopicStats,
-} from "../types/chart.type";
+import { ISectionTopicStats, ITopicStats } from "../types/chart.type";
 import {
   getOverallTopicStats,
   getPerSectionsTopicStats,
