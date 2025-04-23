@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat"; import StudentTable from "./StudentTable";
 import AddButton from "../AddButton";
 import AddStudent from "./AddStudent";
-import { useTeacherContext } from "../../../../hooks/useTeacherData";
+import { useTeacherContext } from "../../../../hooks/useTeacher";
 
 export default function Students(): ReactElement {
   const navigate = useNavigate();

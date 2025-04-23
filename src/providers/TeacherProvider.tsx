@@ -7,7 +7,7 @@ import {
   useTeacherAssessments,
   useTeacherSections,
   useTeacherStudents
-} from "../hooks/useTeacherData";
+} from "../hooks/useTeacher";
 
 export function TeacherProvider({
   teacherId,

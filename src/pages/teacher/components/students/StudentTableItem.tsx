@@ -4,7 +4,7 @@ import { Circle, Settings } from "lucide-react"
 import { format } from "date-fns"
 
 import { IStudent, StudentStatusType } from "../../../../types/student.type"
-import { useTeacherContext } from "../../../../hooks/useTeacherData"
+import { useTeacherContext } from "../../../../hooks/useTeacher"
 import { ISection } from "../../../../types/section.type"
 
 interface IStudentTableItemProps {

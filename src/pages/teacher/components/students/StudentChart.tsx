@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import { useStudentQuestionStats } from "../../../../hooks/useStudentData";
+import { useStudentQuestionStats } from "../../../../hooks/useStudent";
 import {
   BarChart,
   Bar,
@@ -42,6 +42,7 @@ function QuestionCustomTooltip({
         {/* Difficulty - naka uppercase lang yung first letter */}
         <p>Difficulty: {data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}</p>
         <p className="text-[var(--primary-yellow)]">Total Attempts: {data.totalAttempts}</p>
+        <p className="text-[var(--primary-red)]">Wrong: {data.totalAttempts - data.correctCount}</p>
         <p className="text-[var(--tertiary-green)]">Correctness: {data.correctnessPercentage}%</p>
       </div>
     );

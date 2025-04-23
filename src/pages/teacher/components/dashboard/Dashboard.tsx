@@ -3,7 +3,7 @@ import { type ReactElement } from "react";
 import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
 
 import { useAuth } from "../../../../hooks/useAuth";
-import { useTeacherContext } from "../../../../hooks/useTeacherData";
+import { useTeacherContext } from "../../../../hooks/useTeacher";
 import TeacherChart from "./TeacherChart";
 
 export default function Dashboard(): ReactElement {

@@ -72,3 +72,24 @@ body {
   width: 100vw;
   overflow-x: hidden;
 }
+
+/* heatmap */
+.color-empty {
+  fill: #eee;
+}
+
+.color-low {
+  fill: var(--secondary-green);
+}
+
+.color-medium {
+  fill: var(--tertiary-green);
+}
+
+.color-high {
+  fill: var(--primary-green);
+}
+
+.react-calendar-heatmap text {
+  font-size: 0.5rem !important;
+}

@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from "react"
 import AddButton from "../AddButton"
 import AddSectionForm from "./AddSectionForm";
-import { useTeacherContext } from "../../../../hooks/useTeacherData";
+import { useTeacherContext } from "../../../../hooks/useTeacher";
 import SectionCard from "./SectionCard";
 
 export default function Sections(): ReactElement {

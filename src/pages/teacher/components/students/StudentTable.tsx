@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useTeacherContext } from "../../../../hooks/useTeacherData";
+import { useTeacherContext } from "../../../../hooks/useTeacher";
 import { IStudent } from "../../../../types/student.type";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";

@@ -8,11 +8,11 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useState, useEffect, type ReactElement } from "react";
-import { useTeacherOverallTopicStats, useTeacherSectionTopicStats } from '../../../../hooks/useTeacherData';
+import { useTeacherOverallTopicStats, useTeacherSectionTopicStats } from '../../../../hooks/useTeacher';
 import { ITopicStats, ISectionTopicStats } from '../../../../types/chart.type';
 import { useParams } from 'react-router-dom';
 
-// normalized overall topic data per topic - pang transform lang for easy access
+// normalized overall topic data per topic - pang transform lang para marender nang maayos 
 function getOverallChartData(data: ITopicStats[] = []) {
   return data.map((topic) => ({
     name: `Level ${topic.level}`,
@@ -29,7 +29,7 @@ function getOverallChartData(data: ITopicStats[] = []) {
   }));
 }
 
-// normalized section topic data per topic - pang transform lang for easy access
+// normalized section topic data per topic - pang transform lang para marender nang maayos
 function getSectionChartData(data: ISectionTopicStats[] = [], selectedSection: string | null) {
   return data
     .filter((section) => section.sectionName === selectedSection)
@@ -105,7 +105,7 @@ export default function TeacherChart({ classNames }: { classNames: string }): Re
       </div>
 
       {/* Basic metrics chart */}
-      <div className="flex h-full max-h-[400px] w-full flex-col rounded-lg bg-inherit p-4 shadow">
+      <div className="flex h-full max-h-[400px] w-full flex-col rounded-lg bg-white p-4 shadow">
         <h3 className="mb-2 text-lg font-medium">Basic Topic Metrics</h3>
         <ResponsiveContainer className="h-full w-full">
           <BarChart data={chartData}>
@@ -124,7 +124,7 @@ export default function TeacherChart({ classNames }: { classNames: string }): Re
       </div>
 
       {/* Correctness chart */}
-      <div className="flex h-full max-h-[400px] w-full flex-col rounded-lg bg-inherit p-4 shadow">
+      <div className="flex h-full max-h-[400px] w-full flex-col rounded-lg bg-white p-4 shadow">
         <h3 className="mb-2 text-lg font-medium">Correctness</h3>
         <ResponsiveContainer className="h-full w-full">
           <BarChart data={chartData}>

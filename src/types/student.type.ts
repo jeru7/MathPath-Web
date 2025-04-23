@@ -11,15 +11,47 @@ export interface IStudent {
   middleName?: string;
   gender: "male" | "female";
   email: string;
+  username: string;
+  assessments: IStudentAssessment[];
   level: number;
   exp: number;
   quests: unknown;
-  gameLevels: unknown;
+  gameLevels: IStudentGameLevel[];
   lastPlayed: Date;
   status: StudentStatusType;
   streak: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface IStudentAssessment {
+  assessmentId: string;
+  score: number;
+  timeSpent: number;
+  completed: boolean;
+  dateAttempted: Date;
+  dateCompleted: Date;
+}
+
+interface IStudentGameLevel {
+  gameLevelId: string;
+  level: number;
+  unlocked: boolean;
+  completed: boolean;
+  dateCompleted?: Date;
+  dateUnlocked?: Date;
+}
+
+export interface IDifficultyFrequency {
+  easy: { count: number; percentage: number };
+  medium: { count: number; percentage: number };
+  hard: { count: number; percentage: number };
+}
+
+export interface IStudentAttempt {
+  totalAttempts: number;
+  completedAttempts: number;
+  winRate: number;
 }
 
 export const studentFormSchema = z.object({

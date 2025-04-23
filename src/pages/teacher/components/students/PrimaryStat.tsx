@@ -23,7 +23,7 @@ export default function PrimaryStat({
   }
 
   return (
-    <div className="flex w-full rounded-sm bg-[var(--primary-white)] px-16 py-8 drop-shadow-sm">
+    <div className="flex w-full rounded-sm bg-white px-16 py-8 drop-shadow-sm">
       <div className="flex w-full flex-col">
         <p className="font-semibold text-[var(--primary-gray)]">
           {title}

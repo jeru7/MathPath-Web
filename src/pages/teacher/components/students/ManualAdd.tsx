@@ -11,7 +11,7 @@ import { getCustomSelectColor } from "../../../../utils/selectStyles";
 import { StudentFormData, studentFormSchema } from "../../../../types/student.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createStudentService } from "../../../../services/student.service";
-import { useTeacherContext } from "../../../../hooks/useTeacherData";
+import { useTeacherContext } from "../../../../hooks/useTeacher";
 import { ISection } from "../../../../types/section.type";
 import { isAxiosError } from "axios";
 import { IErrorResponse } from "../../../../types/api-response.type";
