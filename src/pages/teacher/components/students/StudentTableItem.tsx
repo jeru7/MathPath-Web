@@ -6,6 +6,7 @@ import { format } from "date-fns"
 import { IStudent, StudentStatusType } from "../../../../types/student.type"
 import { useTeacherContext } from "../../../../hooks/useTeacher"
 import { ISection } from "../../../../types/section.type"
+import { convertToPhilippinesDate } from "../../../../utils/date.util"
 
 interface IStudentTableItemProps {
   student: IStudent,
@@ -44,8 +45,8 @@ export default function StudentTableItem({ student, onClick }: IStudentTableItem
       <td className={`px-4 py-2 font-bold ${status === "Online" ? "text-[var(--tertiary-green)]" : "text-[var(--primary-red)]"}`}>
         {status}
       </td>
-      <td className="px-4 py-2">{format(new Date(student.createdAt.toString()), "MMMM d, yyyy")}</td>
-      <td className="px-4 py-2">{format(new Date(student.lastPlayed?.toString()), "MMMM d, yyyy")}</td>
+      <td className="px-4 py-2">{format(convertToPhilippinesDate(student.createdAt.toString()), "MMMM d, yyyy")}</td>
+      <td className="px-4 py-2">{format(convertToPhilippinesDate(student.lastPlayed?.toString()), "MMMM d, yyyy")}</td>
       <td className="px-4 py-2">
         <div className="hover:scale-101 flex w-full cursor-pointer items-center justify-center hover:text-[var(--primary-green)]">
           <Settings />

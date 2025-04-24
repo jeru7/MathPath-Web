@@ -14,7 +14,7 @@ export interface IProgressLog {
   updatedAt: Date;
 }
 
-interface IAnswerCorrectness {
+export interface IAnswerCorrectness {
   easy: {
     correctAnswers: number;
     attempts: number;

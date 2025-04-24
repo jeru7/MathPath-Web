@@ -7,6 +7,7 @@ import { useTeacherSections } from "../../../../hooks/useTeacher"
 import { ISection } from "../../../../types/section.type"
 import { IDifficultyFrequency } from "../../../../types/student.type"
 import StudentHeatmap from "./StudentHeatmap"
+import StudentAttemptHistory from "./StudentAttemptHistory"
 
 const getDifficultyFrequency = (data: IDifficultyFrequency | undefined) => {
   if (!data) {
@@ -195,10 +196,8 @@ export default function Student(): ReactElement {
       </section>
 
       {/* Recent attempt history section */}
-      <section className="col-span-full row-span-2 rounded-sm bg-white drop-shadow-sm">
-        {/* TODO: */}
-        {/* History */}
-        <p>History</p>
+      <section className="col-span-full rounded-sm bg-white drop-shadow-sm">
+        <StudentAttemptHistory />
       </section>
     </main>
   </div>

@@ -11,6 +11,7 @@ import { format } from "date-fns";
 
 // normalization ng data para madali ma access sa heatmap
 function getQuestionStats(data: IProgressLog[] = []) {
+  console.log(data)
   return data.map((progressLog) => ({
     date: progressLog.date.slice(0, 10),
     count: progressLog.gameLevelsPlayed + progressLog.totalWins + progressLog.completedQuest.length,
@@ -23,7 +24,7 @@ function getQuestionStats(data: IProgressLog[] = []) {
 
 // error siya sa library - https://github.com/kevinsqi/react-calendar-heatmap/issues/146
 // @ts-expect-error: override internal method to adjust heatmap height
-CalendarHeatmap.prototype.getHeight = function () {
+CalendarHeatmap.prototype.getHeight = function() {
   // @ts-expect-error: override internal method to adjust heatmap height
   return this.getWeekWidth() + (this.getMonthLabelSize() - this.props.gutterSize);
 };
@@ -71,9 +72,9 @@ export default function StudentHeatmap(): ReactElement {
         showWeekdayLabels={true}
         weekdayLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
         classForValue={(value) => {
-          if (!value) return 'color-empty';
+          if (!value || value.count === 0) return 'color-empty';
           if (value.count > 15) return 'color-high';
-          if (value.count > 7) return 'color-mid';
+          if (value.count > 7) return 'color-medium';
           return 'color-low'
         }}
         tooltipDataAttrs={tooltipDataAttrs}

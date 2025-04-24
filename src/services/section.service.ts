@@ -1,7 +1,12 @@
 import axios from "axios";
 import { IAddSection } from "../types/section.type";
 
-const URL = import.meta.env.VITE_BACKEND_TEST_URI;
+// import.meta.env.MODE = "production";
+
+const URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_BACKEND_PROD_URI
+    : import.meta.env.VITE_BACKEND_DEV_URI;
 
 export const addSection = async (sectionData: IAddSection) => {
   try {
@@ -14,3 +19,17 @@ export const addSection = async (sectionData: IAddSection) => {
     throw new Error("Failed in creating section.");
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+

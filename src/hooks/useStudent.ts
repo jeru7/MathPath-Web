@@ -7,6 +7,7 @@ import {
 import {
   getStudent,
   getStudentDifficultyFrequency,
+  getStudentProgressLogService,
   getStudentTotalAttempts,
 } from "../services/student.service";
 import {
@@ -15,7 +16,6 @@ import {
   IStudentAttempt,
 } from "../types/student.type";
 import { IProgressLog } from "../types/progress-log.type";
-import { getStudentProgressLogService } from "../services/progress-log.service";
 
 export const useStudentData = (studentId: string) => {
   return useQuery<IStudent>({

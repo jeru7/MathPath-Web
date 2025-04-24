@@ -1,7 +1,12 @@
 import axios from "axios";
 import { IUserLogin } from "../types/user.type";
 
-const URL = import.meta.env.VITE_BACKEND_TEST_URI;
+// import.meta.env.MODE = "production";
+
+const URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_BACKEND_PROD_URI
+    : import.meta.env.VITE_BACKEND_DEV_URI;
 
 export const loginService = async (email: string, password: string) => {
   try {

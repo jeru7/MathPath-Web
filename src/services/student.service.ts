@@ -1,7 +1,12 @@
 import axios from "axios";
 import { StudentFormData } from "../types/student.type";
 
-const URL = import.meta.env.VITE_BACKEND_TEST_URI;
+// import.meta.env.MODE = "production";
+
+const URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_BACKEND_PROD_URI
+    : import.meta.env.VITE_BACKEND_DEV_URI;
 
 export const createStudentService = async (studentData: StudentFormData) => {
   const res = await axios.post(`${URL}/api/web/students/`, studentData);
@@ -25,5 +30,12 @@ export const getStudentDifficultyFrequency = async (studentId: string) => {
     `${URL}/api/web/students/${studentId}/stats/difficulty-frequency`,
   );
 
+  return res.data.data;
+};
+
+export const getStudentProgressLogService = async (studentId: string) => {
+  const res = await axios.get(
+    `${URL}/api/web/students/${studentId}/progress-log`,
+  );
   return res.data.data;
 };

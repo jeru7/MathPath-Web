@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom';
 
 // normalized overall topic data per topic - pang transform lang para marender nang maayos 
 function getOverallChartData(data: ITopicStats[] = []) {
+  console.log(data)
   return data.map((topic) => ({
     name: `Level ${topic.level}`,
     topic: topic.topic,

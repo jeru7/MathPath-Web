@@ -79,15 +79,15 @@ body {
 }
 
 .color-low {
-  fill: var(--secondary-green);
+  fill: #b7ffbf;
 }
 
 .color-medium {
-  fill: var(--tertiary-green);
+  fill: #95f985;
 }
 
 .color-high {
-  fill: var(--primary-green);
+  fill: #4ded30;
 }
 
 .react-calendar-heatmap text {
