@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { TeacherContext } from "../context/TeacherContext";
 import {
@@ -16,7 +15,6 @@ export function TeacherProvider({
   teacherId: string;
   children: React.ReactNode;
 }) {
-  const queryClient = useQueryClient();
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
@@ -53,6 +51,7 @@ export function TeacherProvider({
         : import.meta.env.VITE_WSS_DEV_URI
 
     wsRef.current = new WebSocket(WSS);
+    console.log(WSS)
     const ws = wsRef.current;
 
     ws.onopen = () => {
@@ -77,12 +76,8 @@ export function TeacherProvider({
       const { type, data } = JSON.parse(e.data);
       console.log("Received message: ", type, data);
 
-
-      if (type === "STUDENT_ONLINE" || type === "STUDENT_OFFLINE") {
-        queryClient.invalidateQueries({
-          queryKey: ["teacher", teacherId, "onlineStudents"],
-          refetchType: "active",
-        });
+      if (type === "TEACHER_INITIAL_DATA") {
+        setOnlineStudentIds(data.onlineStudents);
       }
 
       if (type === "STUDENT_ONLINE") {
@@ -113,7 +108,7 @@ export function TeacherProvider({
 
       console.error("WebSocket error:", error);
     };
-  }, [teacherId, queryClient]);
+  }, [teacherId]);
 
   useEffect(() => {
     isMounted.current = true

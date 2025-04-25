@@ -2,12 +2,12 @@ import { useEffect, useState, type ReactElement } from "react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts"
 import StudentChart from "./StudentChart"
 import { useNavigate, useParams } from "react-router-dom"
-import { useStudentData, useStudentDifficultyFrequency, useStudentTotalGameAttempt } from "../../../../hooks/useStudent"
+import { useStudentAttemptStats, useStudentData, useStudentDifficultyFrequency } from "../../../../hooks/useStudent"
 import { useTeacherSections } from "../../../../hooks/useTeacher"
 import { ISection } from "../../../../types/section.type"
 import { IDifficultyFrequency } from "../../../../types/student.type"
 import StudentHeatmap from "./StudentHeatmap"
-import StudentAttemptHistory from "./StudentAttemptHistory"
+import AttemptHistory from "./AttemptHistory"
 
 const getDifficultyFrequency = (data: IDifficultyFrequency | undefined) => {
   if (!data) {
@@ -27,7 +27,7 @@ export default function Student(): ReactElement {
   const navigate = useNavigate();
   const { studentId, teacherId } = useParams();
   const { data: studentData, isLoading: studentDataLoading } = useStudentData(studentId || "")
-  const { data: studentAttempt } = useStudentTotalGameAttempt(studentId || "")
+  const { data: studentAttempt } = useStudentAttemptStats(studentId || "")
   const { data: difficultyFrequency, isLoading: difficultyLoading } = useStudentDifficultyFrequency(studentId || "")
   const { data: sections } = useTeacherSections(teacherId || "")
 
@@ -40,17 +40,12 @@ export default function Student(): ReactElement {
     const getCurrentGameLevel = () => {
       const allLevels = studentData?.gameLevels ?? [];
 
-      console.log("all:", allLevels)
-
       const unlockedLevels = allLevels.filter(level => level.unlocked);
-
-      console.log("unlocked:", unlockedLevels)
 
       const latest = unlockedLevels.length
         ? unlockedLevels[unlockedLevels.length - 1]
         : undefined;
 
-      console.log("latest", studentData?.gameLevels)
       setCurrentGameLevel(latest?.level);
     };
 
@@ -86,7 +81,7 @@ export default function Student(): ReactElement {
         Back
       </button>
     </div>
-    <main className="grid h-fit w-full auto-rows-auto grid-cols-4 gap-4 px-32">
+    <main className="grid h-fit min-h-full w-full auto-rows-auto grid-cols-4 gap-4">
 
       {/* Student info section */}
       <section className="col-span-3 flex gap-4 rounded-sm bg-white p-8 drop-shadow-sm">
@@ -176,7 +171,7 @@ export default function Student(): ReactElement {
         {/* Assessments taken */}
         <div className="flex w-full flex-col items-center justify-center rounded-sm bg-white py-4 drop-shadow-sm">
           <p className="text-xl">Assessments Taken</p>
-          <p className="text-2xl font-bold">3</p>
+          <p className="text-2xl font-bold">{studentData?.assessments.length}</p>
         </div>
         {/* Streak */}
         <div className="flex w-full flex-col items-center justify-center rounded-sm bg-white py-4 drop-shadow-sm">
@@ -196,8 +191,11 @@ export default function Student(): ReactElement {
       </section>
 
       {/* Recent attempt history section */}
-      <section className="col-span-full rounded-sm bg-white drop-shadow-sm">
-        <StudentAttemptHistory />
+      <section className="col-span-full rounded-sm flex flex-col bg-white min-h-[600px] max-h-[600px] drop-shadow-sm">
+        <header className="p-8 font-bold">
+          <h3 className="text-2xl">Attempt History</h3>
+        </header>
+        <AttemptHistory />
       </section>
     </main>
   </div>

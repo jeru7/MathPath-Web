@@ -7,9 +7,19 @@ import luffy3 from "../../../../assets/images/luffyGear4Banner.jpg"
 import { Ellipsis } from "lucide-react"
 import { format } from 'date-fns'
 
-import { SectionType } from "../../../../types/section"
+import { ISection } from "../../../../types/section.type"
+import { convertToPhilippinesDate } from "../../../../utils/date.util"
+import { useParams } from "react-router-dom"
+import { useTeacherContext } from "../../../../hooks/useTeacher"
 
-export default function SectionCard({ section }: { section: SectionType }): ReactElement {
+export default function SectionCard({ section }: { section: ISection }): ReactElement {
+  const { teacherId } = useParams();
+  const { onlineStudents } = useTeacherContext()
+  console.log(onlineStudents)
+
+  if (!teacherId) {
+    return <p>Loading...</p>
+  }
   return (
     <section className={`flex max-w-lg flex-col rounded-md bg-white opacity-90 shadow-md hover:cursor-pointer hover:opacity-100`}>
       <div className={`bg-[var(--${section.color})] h-1 w-full rounded-t-3xl`}></div>
@@ -31,7 +41,7 @@ export default function SectionCard({ section }: { section: SectionType }): Reac
             <h3 className="text-xl font-semibold">{section.name}</h3>
             <Ellipsis className="h-8 w-12 hover:scale-105 hover:cursor-pointer" />
           </div>
-          <p className="text-xs text-[var(--primary-gray)]">{`Last checked on ${format(new Date(section.lastChecked), 'MMMM d, yyyy')}`}</p>
+          <p className="text-xs text-[var(--primary-gray)]">{`Last checked on ${format(convertToPhilippinesDate(section.lastChecked.toString()), 'MMMM d, yyyy')}`}</p>
         </header>
         {/* Section details - Top */}
         <div className="flex items-center justify-between">
@@ -57,7 +67,7 @@ export default function SectionCard({ section }: { section: SectionType }): Reac
             </div>
             <div className={`bg-[var(--${section.color})] h-full w-[0%] rounded-full`}></div>
           </div>
-          <p className="text-right text-xs text-[var(--primary-gray)]">{`Created on ${format(new Date(section.createdAt), "MMMM d, yyyy")}`}</p>
+          <p className="text-right text-xs text-[var(--primary-gray)]">{`Created on ${format(convertToPhilippinesDate(section.createdAt.toString()), "MMMM d, yyyy")}`}</p>
         </div>
       </div>
     </section >

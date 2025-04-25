@@ -18,7 +18,12 @@ export const getStudent = async (studentId: string) => {
   return res.data.data;
 };
 
-export const getStudentTotalAttempts = async (studentId: string) => {
+export const getStudentAttempts = async (studentId: string) => {
+  const res = await axios.get(`${URL}/api/web/students/${studentId}/attempt`);
+  return res.data.data;
+};
+
+export const getStudentAttemptStats = async (studentId: string) => {
   const res = await axios.get(
     `${URL}/api/web/students/${studentId}/stats/attempt`,
   );

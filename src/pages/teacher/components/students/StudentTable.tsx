@@ -4,6 +4,7 @@ import { useTeacherContext } from "../../../../hooks/useTeacher";
 import { IStudent } from "../../../../types/student.type";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
+import "../../../../styles/customTable.css"
 
 export default function StudentTable(): ReactElement {
   const { students } = useTeacherContext()
@@ -46,73 +47,70 @@ export default function StudentTable(): ReactElement {
   }
 
   return (
-    <div className="h-full overflow-x-auto">
+    <div className="table-container h-full">
       {students.length === 0 ? (
-        <div className="flex h-full w-full items-center justify-center">
-          <p className="font-bold text-[var(--primary-gray)]">Students List is empty.</p>
+        <div className="flex w-full h-full flex-1 items-center justify-center text-[var(--primary-gray)] italic">
+          No data available.
         </div>
       ) : (
-        <table className="font-primary min-w-full table-auto">
-          <thead className="border-b-2 border-b-[var(--primary-gray)]">
-            <tr className="text-center text-[var(--primary-gray)]">
-              <th
-                className="px-4 py-2 text-left"
-              >
-                Student Number
-              </th>
-              <th
-                className="cursor-pointer px-4 py-2"
-                onClick={() => handleSort("lastName")}
-              >
-                <div className={`flex items-center justify-start gap-2 ${sortConfig.key === "lastName" ? "text-[var(--primary-black)]" : ""}`}>
-                  Name
-                  {sortConfig.key === "lastName" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
-                </div>
-              </th>
-              <th
-                className="cursor-pointer px-4 py-2"
-                onClick={() => handleSort("section")}
-              >
-                <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "section" ? "text-[var(--primary-black)]" : ""}`}>
-                  Section
-                  {sortConfig.key === "section" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
-                </div>
-              </th>
-              <th
-                className="cursor-pointer px-4 py-2"
-                onClick={() => handleSort("status")}
-              >
-                <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "status" ? "text-[var(--primary-black)]" : ""}`}>
-                  Status
-                  {sortConfig.key === "status" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
-                </div>
-              </th>
-              <th className="cursor-pointer px-4 py-2"
-                onClick={() => handleSort("createdAt")}
-              >
-                <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)]" : ""}`}>
-                  Date Created
-                  {sortConfig.key === "createdAt" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
-                </div>
-              </th>
-              <th
-                className="cursor-pointer px-4 py-2"
-                onClick={() => handleSort("lastPlayed")}
-              >
-                <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "lastPlayed" ? "text-[var(--primary-black)]" : ""}`}>
-                  Last Played
-                  {sortConfig.key === "lastPlayed" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
-                </div>
-              </th>
-              <th className="px-4 py-2 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedStudents.map((student) => (
-              <StudentTableItem student={student} key={student.studentNumber} onClick={handleItemOnclick} />
-            ))}
-          </tbody>
-        </table>
+        <div className="min-h-full">
+          {/* Table */}
+          <table className="font-primary table-auto">
+            <thead>
+              <tr className="text-[var(--primary-gray)]">
+                <th className="text-left">Student Number</th>
+                <th
+                  className="cursor-pointer px-4 py-2"
+                  onClick={() => handleSort("lastName")}
+                >
+                  <div className={`flex items-center justify-start gap-2 ${sortConfig.key === "lastName" ? "text-[var(--primary-black)]" : ""}`}>
+                    Name
+                    {sortConfig.key === "lastName" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
+                  </div>
+                </th>
+                <th
+                  className="cursor-pointer px-4 py-2"
+                  onClick={() => handleSort("section")}
+                >
+                  <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "section" ? "text-[var(--primary-black)]" : ""}`}>
+                    Section
+                    {sortConfig.key === "section" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
+                  </div>
+                </th>
+                <th
+                  className="cursor-pointer px-4 py-2"
+                  onClick={() => handleSort("status")}
+                >
+                  <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "status" ? "text-[var(--primary-black)]" : ""}`}>
+                    Status
+                    {sortConfig.key === "status" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
+                  </div>
+                </th>
+                <th className="cursor-pointer px-4 py-2" onClick={() => handleSort("createdAt")}>
+                  <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)]" : ""}`}>
+                    Date Created
+                    {sortConfig.key === "createdAt" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
+                  </div>
+                </th>
+                <th
+                  className="cursor-pointer px-4 py-2"
+                  onClick={() => handleSort("lastPlayed")}
+                >
+                  <div className={`flex items-center justify-center gap-2 ${sortConfig.key === "lastPlayed" ? "text-[var(--primary-black)]" : ""}`}>
+                    Last Played
+                    {sortConfig.key === "lastPlayed" ? sortConfig.direction === "ascending" ? <ChevronUp /> : <ChevronDown /> : <ChevronDown />}
+                  </div>
+                </th>
+                <th className="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedStudents.map((student) => (
+                <StudentTableItem student={student} key={student.studentNumber} onClick={handleItemOnclick} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

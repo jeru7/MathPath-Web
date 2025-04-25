@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { IAnswerCorrectness } from "./progress-log.type";
+import { IQuestionAttempt } from "./chart.type";
 
 export type StudentStatusType = "Online" | "Offline";
 
@@ -42,13 +44,28 @@ interface IStudentGameLevel {
   dateUnlocked?: Date;
 }
 
+export interface IStudentAttempt {
+  _id: string;
+  gameLevelId: string;
+  secondsPlayed: number;
+  dateTaken: Date;
+  fled: boolean;
+  died: boolean;
+  completed: boolean;
+  questionAttempts: IQuestionAttempt[];
+  answerCorrectness: IAnswerCorrectness;
+  hintUsed: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IDifficultyFrequency {
   easy: { count: number; percentage: number };
   medium: { count: number; percentage: number };
   hard: { count: number; percentage: number };
 }
 
-export interface IStudentAttempt {
+export interface IStudentAttemptStats {
   totalAttempts: number;
   completedAttempts: number;
   winRate: number;

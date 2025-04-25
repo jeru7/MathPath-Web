@@ -1,0 +1,37 @@
+.table-container {
+  max-width: 100%;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar {
+  width: 2px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1;
+  border-bottom: 1px solid gray;
+}
+
+th,
+td {
+  padding: 0.8rem;
+}
+
+tbody {
+  height: 100%;
+}

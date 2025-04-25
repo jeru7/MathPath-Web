@@ -37,7 +37,7 @@ export default function Students(): ReactElement {
   }
 
   return (
-    <main className="flex h-full w-full flex-col gap-4 bg-inherit p-4">
+    <main className="flex w-full flex-col gap-4 bg-inherit p-4 h-full">
       {/* Header */}
       <header className="flex w-full items-center justify-between">
         <h3 className="text-2xl font-bold">Students</h3>
@@ -58,7 +58,7 @@ export default function Students(): ReactElement {
       </section>
 
       {/* Student Table */}
-      <section className="h-full w-full">
+      <section className="overflow-y-hidden w-full h-full bg-white shadow-sm rounded-xl">
         <StudentTable />
       </section>
 

@@ -16,22 +16,24 @@ import { IQuestionStats } from "../../../../types/chart.type";
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 // Normalize question stats para sa pag render sa chart 
-function getQuestionStats(data: IQuestionStats[] = []) {
-  return data.map((question, index) => ({
+const getQuestionStats = (questions: IQuestionStats[] = []) => {
+  return questions.map((question, index) => ({
     questionNumber: `Question ${index + 1}`,
     question: question.question,
     difficulty: question.difficulty,
     totalAttempts: question.totalAttempts,
     correctCount: question.correctCount,
+    wrongCount: question.totalAttempts > 0 ? question.totalAttempts - question.correctCount : 0,
     gameLevel: question.gameLevel,
     correctnessPercentage: question.correctnessPercentage,
   }));
 }
 
-function QuestionCustomTooltip({
+// custom tooltip
+const QuestionCustomTooltip = ({
   active,
   payload,
-}: TooltipProps<ValueType, NameType>) {
+}: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length > 0) {
     const data = payload[0].payload;
 
@@ -43,7 +45,8 @@ function QuestionCustomTooltip({
         <p>Difficulty: {data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}</p>
         <p className="text-[var(--primary-yellow)]">Total Attempts: {data.totalAttempts}</p>
         <p className="text-[var(--primary-red)]">Wrong: {data.totalAttempts - data.correctCount}</p>
-        <p className="text-[var(--tertiary-green)]">Correctness: {data.correctnessPercentage}%</p>
+        <p className="text-[var(--tertiary-green)]">Correct: {data.correctCount}</p>
+        <p className="text-[var(--primary-green)]">Correct Percentage: {data.correctnessPercentage}%</p>
       </div>
     );
   }
@@ -101,16 +104,30 @@ export default function StudentChart({
       {/* Question Chart */}
       <div className="w-full h-72">
         <ResponsiveContainer className="w-full h-full">
-          <BarChart data={chartData}>
+          <BarChart data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="questionNumber" />
-            <YAxis domain={[0, 100]} />
             <Tooltip content={<QuestionCustomTooltip />} />
             <Legend />
+            <YAxis domain={[0, 'dataMax']} />
             <Bar
-              dataKey="correctnessPercentage"
+              dataKey="correctCount"
               fill="#99d58d"
-              name="Correctness"
+              stackId="a"
+              name="Correct"
+            />
+            <Bar
+              dataKey="wrongCount"
+              fill="#FF8383"
+              stackId="a"
+              name="Wrong"
             />
           </BarChart>
         </ResponsiveContainer>

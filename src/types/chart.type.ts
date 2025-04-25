@@ -23,7 +23,7 @@ export interface ITopicStats {
   totalAttempts: number;
   topic: string;
   level: number;
-  avgTimeSpent: number;
+  avgSecondsPlayed: number;
   avgHintUsed: number;
   completionRate: number;
   correctness: ICorrectness;
@@ -49,6 +49,14 @@ export interface IQuestionStats {
   correctCount: number;
   gameLevel: number;
   correctnessPercentage: number;
+}
+
+export interface IQuestionAttempt {
+  question: string;
+  selectedAnswer: string;
+  isCorrect: boolean;
+  difficulty: DifficultyType;
+  hintUsed: boolean;
 }
 
 export type DifficultyType = "easy" | "medium" | "hard";

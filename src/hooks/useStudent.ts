@@ -6,14 +6,16 @@ import {
 } from "../services/chart.service";
 import {
   getStudent,
+  getStudentAttempts,
+  getStudentAttemptStats,
   getStudentDifficultyFrequency,
   getStudentProgressLogService,
-  getStudentTotalAttempts,
 } from "../services/student.service";
 import {
   IDifficultyFrequency,
   IStudent,
   IStudentAttempt,
+  IStudentAttemptStats,
 } from "../types/student.type";
 import { IProgressLog } from "../types/progress-log.type";
 
@@ -21,6 +23,14 @@ export const useStudentData = (studentId: string) => {
   return useQuery<IStudent>({
     queryKey: ["student", studentId, "student-data"],
     queryFn: () => getStudent(studentId),
+    enabled: !!studentId,
+  });
+};
+
+export const useStudentAttempts = (studentId: string) => {
+  return useQuery<IStudentAttempt[]>({
+    queryKey: ["student", studentId, "attempts"],
+    queryFn: () => getStudentAttempts(studentId),
     enabled: !!studentId,
   });
 };
@@ -41,10 +51,10 @@ export const useStudentQuestionStats = (studentId: string) => {
   });
 };
 
-export const useStudentTotalGameAttempt = (studentId: string) => {
-  return useQuery<IStudentAttempt>({
-    queryKey: ["student", studentId, "total-attempts"],
-    queryFn: () => getStudentTotalAttempts(studentId),
+export const useStudentAttemptStats = (studentId: string) => {
+  return useQuery<IStudentAttemptStats>({
+    queryKey: ["student", studentId, "attempt-stats"],
+    queryFn: () => getStudentAttemptStats(studentId),
     enabled: !!studentId,
   });
 };

@@ -6,11 +6,55 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  TooltipProps,
+  YAxis,
 } from 'recharts';
 import { useState, useEffect, type ReactElement } from "react";
 import { useTeacherOverallTopicStats, useTeacherSectionTopicStats } from '../../../../hooks/useTeacher';
 import { ITopicStats, ISectionTopicStats } from '../../../../types/chart.type';
 import { useParams } from 'react-router-dom';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+function TopicStatsCustomTooltip({
+  active,
+  payload,
+}: TooltipProps<ValueType, NameType>) {
+  if (active && payload && payload.length > 0) {
+    const data = payload[0].payload;
+
+    return (
+      <div className="bg-white flex flex-col gap-1 p-2 rounded shadow border text-sm max-w-xs">
+        <p className="italic text-[var(--primary-black)]">"{data.topic}"</p>
+        <p className="text-[var(--primary-black)]">Total Attempts: {data.totalAttempts}</p>
+        <p className="text-[var(--primary-black)]">Avg Time Spent: {data.avgMinsPlayed}</p>
+        <p className="text-[var(--tertiary-green)]">Completion Rate: {data.completionRate}%</p>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function CorrectnessCustomTooltip({
+  active,
+  payload,
+}: TooltipProps<ValueType, NameType>) {
+  if (active && payload && payload.length > 0) {
+    const data = payload[0].payload;
+
+    return (
+      <div className="bg-white flex flex-col gap-1 p-2 rounded shadow border text-sm max-w-xs">
+        <p className="italic text-[var(--primary-black)]">"{data.topic}"</p>
+        <p className="text-[var(--tertiary-green)]">Easy: {data.correctness.easy}%</p>
+        <p className="text-[var(--primary-yellow)]">Medium: {data.correctness.medium}%</p>
+        <p className="text-[var(--primary-red)]">Hard: {data.correctness.hard}%</p>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 
 // normalized overall topic data per topic - pang transform lang para marender nang maayos 
 function getOverallChartData(data: ITopicStats[] = []) {
@@ -19,13 +63,13 @@ function getOverallChartData(data: ITopicStats[] = []) {
     name: `Level ${topic.level}`,
     topic: topic.topic,
     totalAttempts: topic.totalAttempts,
-    avgTimeSpent: topic.avgTimeSpent,
+    avgMinsPlayed: (topic.avgSecondsPlayed / 60).toFixed(1),
     avgHintUsed: topic.avgHintUsed,
     completionRate: topic.completionRate,
     correctness: {
-      Easy: topic.correctness.easy.correctPercentage,
-      Medium: topic.correctness.medium.correctPercentage,
-      Hard: topic.correctness.hard.correctPercentage,
+      easy: topic.correctness.easy.correctPercentage,
+      medium: topic.correctness.medium.correctPercentage,
+      hard: topic.correctness.hard.correctPercentage,
     },
   }));
 }
@@ -39,13 +83,13 @@ function getSectionChartData(data: ISectionTopicStats[] = [], selectedSection: s
         name: `Level ${topic.level}`,
         topic: topic.topic,
         totalAttempts: topic.totalAttempts,
-        avgTimeSpent: topic.avgTimeSpent,
+        avgMinsPlayed: (topic.avgSecondsPlayed / 60).toFixed(1),
         avgHintUsed: topic.avgHintUsed,
         completionRate: topic.completionRate,
         correctness: {
-          Easy: topic.correctness.easy.correctPercentage,
-          Medium: topic.correctness.medium.correctPercentage,
-          Hard: topic.correctness.hard.correctPercentage,
+          easy: topic.correctness.easy.correctPercentage,
+          medium: topic.correctness.medium.correctPercentage,
+          hard: topic.correctness.hard.correctPercentage,
         },
       }))
     );
@@ -108,39 +152,45 @@ export default function TeacherChart({ classNames }: { classNames: string }): Re
       {/* Basic metrics chart */}
       <div className="flex h-full max-h-[400px] w-full flex-col rounded-lg bg-white p-4 shadow">
         <h3 className="mb-2 text-lg font-medium">Basic Topic Metrics</h3>
-        <ResponsiveContainer className="h-full w-full">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <Tooltip
-              labelFormatter={(label) => `Topic: ${chartData.find(item => item.name === label)?.topic}`}
-            />
-            <Legend />
-            <Bar dataKey="totalAttempts" fill="#60a5fa" name="Total Attempts" />
-            <Bar dataKey="avgTimeSpent" fill="#34d399" name="Avg Time Spent" />
-            <Bar dataKey="avgHintUsed" fill="#fbbf24" name="Avg Hints Used" />
-            <Bar dataKey="completionRate" fill="#c084fc" name="Completion Rate" />
-          </BarChart>
-        </ResponsiveContainer>
+        {chartData.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center text-[var(--primary-gray)] italic">
+            No data available.
+          </div>
+        ) : (
+          <ResponsiveContainer className="h-full w-full">
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis domain={[0, 100]} />
+              <Tooltip content={<TopicStatsCustomTooltip />} />
+              <Legend />
+              <Bar dataKey="completionRate" fill="#99d58d" name="Completion Rate" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       {/* Correctness chart */}
       <div className="flex h-full max-h-[400px] w-full flex-col rounded-lg bg-white p-4 shadow">
         <h3 className="mb-2 text-lg font-medium">Correctness</h3>
-        <ResponsiveContainer className="h-full w-full">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <Tooltip
-              formatter={(value: number) => `${value.toFixed(1)}%`}
-              labelFormatter={(label) => `Topic: ${chartData.find(item => item.name === label)?.topic}`}
-            />
-            <Legend />
-            <Bar dataKey="correctness.Easy" stackId="a" fill="#a0e0a9" name="Easy" />
-            <Bar dataKey="correctness.Medium" stackId="a" fill="#f0c929" name="Medium" />
-            <Bar dataKey="correctness.Hard" stackId="a" fill="#f87171" name="Hard" />
-          </BarChart>
-        </ResponsiveContainer>
+        {chartData.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center text-[var(--primary-gray)] italic">
+            No data available.
+          </div>
+        ) : (
+          <ResponsiveContainer className="h-full w-full">
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis domain={[0, 100]} />
+              <Tooltip content={<CorrectnessCustomTooltip />} />
+              <Legend />
+              <Bar dataKey="correctness.easy" fill="#99d58d" name="Easy" />
+              <Bar dataKey="correctness.medium" fill="#fbc93d" name="Medium" />
+              <Bar dataKey="correctness.hard" fill="#ff8383" name="Hard" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </section>
   );
