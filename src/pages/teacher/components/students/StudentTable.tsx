@@ -50,7 +50,7 @@ export default function StudentTable(): ReactElement {
     <div className="table-container h-full">
       {students.length === 0 ? (
         <div className="flex w-full h-full flex-1 items-center justify-center text-[var(--primary-gray)] italic">
-          No data available.
+          Student list is currently empty.
         </div>
       ) : (
         <div className="min-h-full">

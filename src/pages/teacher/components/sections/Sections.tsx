@@ -17,11 +17,14 @@ export default function Sections(): ReactElement {
     </header>
 
     {/* Section lists */}
-    <section className="grid grid-cols-4 gap-4 overflow-y-auto p-2">
-      {sections.map((section) => (
-        < SectionCard key={section._id} section={section} />
-      ))}
-    </section>
+    {sections.length === 0
+      ? (<div className="text-[var(--primary-gray)] flex h-full w-full items-center justify-center italic">Section list is currently empty.</div>) : (
+        <section className="grid grid-cols-4 gap-4 overflow-y-auto p-2">
+          {sections.map((section) => (
+            < SectionCard key={section._id} section={section} />
+          ))}
+        </section>
+      )}
 
     {showForm && <AddSectionForm setShowForm={setShowForm} />}
   </main>

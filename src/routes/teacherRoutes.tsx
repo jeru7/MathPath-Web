@@ -5,6 +5,7 @@ import Students from "../pages/teacher/components/students/Students";
 import Sections from "../pages/teacher/components/sections/Sections";
 import Assessments from "../pages/teacher/components/assessments/Assessments";
 import Student from "../pages/teacher/components/students/Student";
+import CreateAssessment from "../pages/teacher/components/assessments/CreateAssessment";
 
 export const teacherRoutes = (
   <Route path="/teachers/:teacherId" element={<Teacher />}>
@@ -15,6 +16,9 @@ export const teacherRoutes = (
       <Route path=":studentId" element={<Student />} />
     </Route>
     <Route path="sections" element={<Sections />} />
-    <Route path="assessments" element={<Assessments />} />
+    <Route path="assessments">
+      <Route index element={<Assessments />} />
+      <Route path="create" element={<CreateAssessment />} />
+    </Route>
   </Route>
 );

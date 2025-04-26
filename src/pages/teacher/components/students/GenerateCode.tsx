@@ -3,7 +3,7 @@ import { useState, type ReactElement } from "react"
 import Select from 'react-select'
 
 import { useNavigate } from "react-router-dom";
-import FormButtons from "../FormButtons";
+// import FormButtons from "../FormButtons";
 import { getCustomSelectColor } from "../../../../utils/selectStyles";
 
 interface IGenerateCodeProps {
