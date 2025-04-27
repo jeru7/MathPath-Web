@@ -1,0 +1,47 @@
+/* issue: highlighted yung selected day sa outside months, fix: https://github.com/Hacker0x01/react-datepicker/issues/4015 (yung disabledKeyboardNavigation) */
+
+.react-datepicker__triangle {
+  display: none;
+}
+
+.react-datepicker {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.react-datepicker__header {
+  background-color: var(--primary-green);
+  color: #fff;
+}
+
+.react-datepicker__current-month {
+  color: #fff;
+}
+
+.react-datepicker__day {
+  color: #000;
+}
+
+.react-datepicker__day--outside-month {
+  color: #878686;
+}
+
+.react-datepicker__day-name {
+  color: #fff;
+  font-size: 14px;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--tertiary-green);
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--primary-green);
+  color: #fff;
+}
+
+.react-datepicker__day--disabled {
+  color: #d3d3d3;
+  background-color: transparent;
+}

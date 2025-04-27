@@ -8,7 +8,8 @@ import TeacherChart from "./TeacherChart";
 
 export default function Dashboard(): ReactElement {
   const { logout } = useAuth();
-  const { teacher, students, sections, assessments, onlineStudents } = useTeacherContext();
+  const { teacher, students, sections, assessments, onlineStudents } =
+    useTeacherContext();
 
   const primaryStats: IPrimaryStatProps[] = [
     {
@@ -31,16 +32,17 @@ export default function Dashboard(): ReactElement {
 
   const handleLogoutClick = async () => {
     if (teacher) {
-      logout(teacher._id)
+      logout(teacher._id);
     }
-  }
+  };
 
   return (
     <main className="flex h-full w-full max-w-[2200px] flex-col gap-4 bg-inherit p-4">
       {/* Header */}
       <header className="flex items-center justify-between">
         <h3 className="text-2xl font-bold">Dashboard</h3>
-        <button className="rounded-sm bg-red-400 px-4 py-1 hover:scale-105 hover:cursor-pointer"
+        <button
+          className="rounded-sm bg-red-400 px-4 py-1 hover:scale-105 hover:cursor-pointer"
           onClick={handleLogoutClick}
         >
           Logout
@@ -69,10 +71,10 @@ export default function Dashboard(): ReactElement {
       {/* Charts */}
       <section className="flex max-h-[600px] min-h-[400px] grow-[10] gap-4">
         {/* Chart */}
-        <TeacherChart classNames="max-w-[1300px] grow-[3]" />
+        <TeacherChart classNames="max-w-[1300px] w-full" />
 
         {/* Student activity */}
-        <div className="grow-[1] border-2"></div>
+        <div className="grow-[1] rounded-md bg-white shadow-sm"></div>
       </section>
     </main>
   );

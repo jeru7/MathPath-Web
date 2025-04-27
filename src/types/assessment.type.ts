@@ -1,15 +1,29 @@
 export interface IAssessment {
   _id: string;
   name: string;
-  teachers: string[];
+  topic: string;
+  description: string;
+  teacher: string;
   sections: string[];
-  questions: QuestionType[];
-  createdAt: string | Date;
-  updatedAt: string | Date;
+  questions: IQuestion[];
+  deadline: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface QuestionType {
+export interface IQuestion {
   question: string;
+  points: number;
   choices: string[];
   answer: string;
+}
+
+export interface ICreateAssessment {
+  name: string;
+  topic: string;
+  description: string;
+  teacher: string;
+  sections: string[];
+  questions: IQuestion[];
+  deadline: Date;
 }

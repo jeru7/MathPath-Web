@@ -21,6 +21,7 @@
     "lucide-react": "^0.474.0",
     "react": "^18.3.1",
     "react-calendar-heatmap": "^1.10.0",
+    "react-datepicker": "^8.3.0",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.55.0",
     "react-router-dom": "^7.1.5",
@@ -44,6 +45,7 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "postcss": "^8.5.1",
+    "prettier": "^3.5.3",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5"

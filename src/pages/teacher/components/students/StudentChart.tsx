@@ -13,9 +13,12 @@ import {
   YAxis,
 } from "recharts";
 import { IQuestionStats } from "../../../../types/chart.type";
-import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
-// Normalize question stats para sa pag render sa chart 
+// Normalize question stats para sa pag render sa chart
 const getQuestionStats = (questions: IQuestionStats[] = []) => {
   return questions.map((question, index) => ({
     questionNumber: `Question ${index + 1}`,
@@ -23,11 +26,14 @@ const getQuestionStats = (questions: IQuestionStats[] = []) => {
     difficulty: question.difficulty,
     totalAttempts: question.totalAttempts,
     correctCount: question.correctCount,
-    wrongCount: question.totalAttempts > 0 ? question.totalAttempts - question.correctCount : 0,
+    wrongCount:
+      question.totalAttempts > 0
+        ? question.totalAttempts - question.correctCount
+        : 0,
     gameLevel: question.gameLevel,
     correctnessPercentage: question.correctnessPercentage,
   }));
-}
+};
 
 // custom tooltip
 const QuestionCustomTooltip = ({
@@ -42,17 +48,28 @@ const QuestionCustomTooltip = ({
         {/* Question */}
         <p className="italic text-gray-600">"{data.question}"</p>
         {/* Difficulty - naka uppercase lang yung first letter */}
-        <p>Difficulty: {data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}</p>
-        <p className="text-[var(--primary-yellow)]">Total Attempts: {data.totalAttempts}</p>
-        <p className="text-[var(--primary-red)]">Wrong: {data.totalAttempts - data.correctCount}</p>
-        <p className="text-[var(--tertiary-green)]">Correct: {data.correctCount}</p>
-        <p className="text-[var(--primary-green)]">Correct Percentage: {data.correctnessPercentage}%</p>
+        <p>
+          Difficulty:{" "}
+          {data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}
+        </p>
+        <p className="text-[var(--primary-yellow)]">
+          Total Attempts: {data.totalAttempts}
+        </p>
+        <p className="text-[var(--primary-red)]">
+          Wrong: {data.totalAttempts - data.correctCount}
+        </p>
+        <p className="text-[var(--tertiary-green)]">
+          Correct: {data.correctCount}
+        </p>
+        <p className="text-[var(--primary-green)]">
+          Correct Percentage: {data.correctnessPercentage}%
+        </p>
       </div>
     );
   }
 
   return null;
-}
+};
 
 export default function StudentChart({
   classNames,
@@ -60,10 +77,9 @@ export default function StudentChart({
   classNames: string;
 }): ReactElement {
   const { studentId } = useParams();
-  const {
-    data: studentQuestionStats,
-    isLoading,
-  } = useStudentQuestionStats(studentId || "");
+  const { data: studentQuestionStats, isLoading } = useStudentQuestionStats(
+    studentId || "",
+  );
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
 
   if (isLoading) {
@@ -75,12 +91,14 @@ export default function StudentChart({
   ];
 
   const filteredStats = studentQuestionStats?.filter(
-    (stat) => stat.gameLevel === selectedLevel
+    (stat) => stat.gameLevel === selectedLevel,
   );
 
   const chartData = getQuestionStats(filteredStats || []);
 
-  if (!chartData.length) {
+  console.log("chart data: ", chartData);
+
+  if (chartData.length === 0) {
     return <p className={`${classNames}`}>No chart data available.</p>;
   }
 
@@ -102,37 +120,46 @@ export default function StudentChart({
         </select>
       </header>
       {/* Question Chart */}
-      <div className="w-full h-72">
-        <ResponsiveContainer className="w-full h-full">
-          <BarChart data={chartData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="questionNumber" />
-            <Tooltip content={<QuestionCustomTooltip />} />
-            <Legend />
-            <YAxis domain={[0, 'dataMax']} />
-            <Bar
-              dataKey="correctCount"
-              fill="#99d58d"
-              stackId="a"
-              name="Correct"
-            />
-            <Bar
-              dataKey="wrongCount"
-              fill="#FF8383"
-              stackId="a"
-              name="Wrong"
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {chartData.length === 0 ||
+      chartData.every(
+        (item) => item.correctCount === 0 && item.wrongCount === 0,
+      ) ? (
+        <div className="flex h-72 items-center justify-center italic text-[var(--primary-gray)]">
+          No data available
+        </div>
+      ) : (
+        <div className="w-full h-72">
+          <ResponsiveContainer className="w-full h-full">
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="questionNumber" />
+              <Tooltip content={<QuestionCustomTooltip />} />
+              <Legend />
+              <YAxis domain={[0, "dataMax"]} />
+              <Bar
+                dataKey="correctCount"
+                fill="#99d58d"
+                stackId="a"
+                name="Correct"
+              />
+              <Bar
+                dataKey="wrongCount"
+                fill="#FF8383"
+                stackId="a"
+                name="Wrong"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }
-

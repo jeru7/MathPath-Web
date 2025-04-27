@@ -8,10 +8,16 @@ const URL =
     ? import.meta.env.VITE_BACKEND_PROD_URI
     : import.meta.env.VITE_BACKEND_DEV_URI;
 
-export const addSection = async (sectionData: IAddSection) => {
+export const addSection = async (
+  teacherId: string,
+  sectionData: IAddSection,
+) => {
   try {
     console.log(sectionData);
-    const res = await axios.post(`${URL}/api/web/sections/create`, sectionData);
+    const res = await axios.post(
+      `${URL}/api/web/teachers/${teacherId}/create`,
+      sectionData,
+    );
 
     return res.data.data;
   } catch (error) {
@@ -19,17 +25,3 @@ export const addSection = async (sectionData: IAddSection) => {
     throw new Error("Failed in creating section.");
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
