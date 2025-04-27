@@ -8,9 +8,7 @@ import { useTeacherContext } from "../../../../hooks/useTeacher";
 import { ISection } from "../../../../types/section.type";
 import { convertToPhilippinesDate } from "../../../../utils/date.util";
 
-interface IStudentTableItemProps {
-  student: IStudent;
-  onClick: (studentId: string) => void;
+interface IStudentTableItemProps { student: IStudent; onClick: (studentId: string) => void;
 }
 
 const formatFirstName = (student: IStudent) => {
@@ -72,10 +70,12 @@ export default function StudentTableItem({
         )}
       </td>
       <td className="px-4 py-2">
-        {format(
-          convertToPhilippinesDate(student.lastPlayed?.toString()),
-          "MMMM d, yyyy",
-        )}
+        {student.lastPlayed
+          ? format(
+              convertToPhilippinesDate(student.lastPlayed?.toString()),
+              "MMMM d, yyyy",
+            )
+          : "N/A"}
       </td>
       <td className="px-4 py-2">
         <div className="hover:scale-101 flex w-full cursor-pointer items-center justify-center hover:text-[var(--primary-green)]">
