@@ -5,7 +5,7 @@ import { IStudent } from "../types/student.type";
 import { ISection } from "../types/section.type";
 import { IAssessment } from "../types/assessment.type";
 
-// import.meta.env.MODE = "production";
+import.meta.env.MODE = "production";
 
 const URL =
   import.meta.env.MODE === "production"

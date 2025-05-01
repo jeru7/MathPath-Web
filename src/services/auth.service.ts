@@ -1,7 +1,7 @@
 import axios from "axios";
 import { IUserLogin } from "../types/user.type";
 
-// import.meta.env.MODE = "production";
+import.meta.env.MODE = "production";
 
 const URL =
   import.meta.env.MODE === "production"
@@ -39,13 +39,15 @@ export const checkAuthService = async () => {
 
 export const logoutService = async (userId: string) => {
   try {
-    const _res = await axios.post(
+    const res = await axios.post(
       `${URL}/api/web/auth/logout`,
       { userId },
       {
         withCredentials: true,
       },
     );
+
+    console.log(res.data.message);
   } catch (error) {
     console.error(error);
     throw new Error("Logout failed.");

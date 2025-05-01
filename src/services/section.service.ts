@@ -1,7 +1,7 @@
 import axios from "axios";
 import { IAddSection } from "../types/section.type";
 
-// import.meta.env.MODE = "production";
+import.meta.env.MODE = "production";
 
 const URL =
   import.meta.env.MODE === "production"

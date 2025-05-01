@@ -5,7 +5,7 @@ import {
   useTeacher,
   useTeacherAssessments,
   useTeacherSections,
-  useTeacherStudents
+  useTeacherStudents,
 } from "../hooks/useTeacher";
 
 export function TeacherProvider({
@@ -19,7 +19,7 @@ export function TeacherProvider({
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
   const reconnectInterval = 3000;
-  const isMounted = useRef(true)
+  const isMounted = useRef(true);
 
   // react query
   const { data: teacher } = useTeacher(teacherId);
@@ -43,15 +43,15 @@ export function TeacherProvider({
       wsRef.current.close();
     }
 
-    // import.meta.env.MODE = 'production';
+    import.meta.env.MODE = "production";
 
     const WSS =
       import.meta.env.MODE === "production"
         ? import.meta.env.VITE_WSS_PROD_URI
-        : import.meta.env.VITE_WSS_DEV_URI
+        : import.meta.env.VITE_WSS_DEV_URI;
 
     wsRef.current = new WebSocket(WSS);
-    console.log(WSS)
+    console.log(WSS);
     const ws = wsRef.current;
 
     ws.onopen = () => {
@@ -67,7 +67,7 @@ export function TeacherProvider({
         JSON.stringify({
           type: "TEACHER_LOGIN",
           data: teacherId,
-        })
+        }),
       );
     };
 
@@ -82,12 +82,14 @@ export function TeacherProvider({
 
       if (type === "STUDENT_ONLINE") {
         setOnlineStudentIds((prev) =>
-          prev.includes(data.studentId) ? prev : [...prev, data.studentId]
+          prev.includes(data.studentId) ? prev : [...prev, data.studentId],
         );
       }
 
       if (type === "STUDENT_OFFLINE") {
-        setOnlineStudentIds((prev) => prev.filter((id) => id !== data.studentId));
+        setOnlineStudentIds((prev) =>
+          prev.filter((id) => id !== data.studentId),
+        );
       }
     };
 
@@ -98,7 +100,9 @@ export function TeacherProvider({
 
       if (reconnectAttempts.current < maxReconnectAttempts) {
         reconnectAttempts.current += 1;
-        console.log(`Attempting to reconnect (${reconnectAttempts.current}/${maxReconnectAttempts})...`);
+        console.log(
+          `Attempting to reconnect (${reconnectAttempts.current}/${maxReconnectAttempts})...`,
+        );
         setTimeout(connectWebSocket, reconnectInterval);
       }
     };
@@ -111,7 +115,7 @@ export function TeacherProvider({
   }, [teacherId]);
 
   useEffect(() => {
-    isMounted.current = true
+    isMounted.current = true;
     connectWebSocket();
 
     return () => {
