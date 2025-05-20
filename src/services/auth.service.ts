@@ -21,7 +21,6 @@ export const loginService = async (email: string, password: string) => {
 
     return res.data.data;
   } catch (error) {
-    console.error(error);
     throw new Error("Failed to log in.");
   }
 };

@@ -6,18 +6,20 @@ import bottomBush from "../../assets/svgs/bottomBush.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { toast } from "react-toastify";
 
 export default function Login(): ReactElement {
   const navigate = useNavigate();
   const { user, login, isLoading } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && user) {
-      navigate(`/${user.role}s/${user._id}`)
+      navigate(`/${user.role}s/${user._id}`);
     }
-  }, [user, isLoading, navigate])
+  }, [user, isLoading, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,7 +40,17 @@ export default function Login(): ReactElement {
 
     if (isInputEmpty.email || isInputEmpty.password) return;
 
-    login(formData.email, formData.password);
+    try {
+      await login(formData.email, formData.password);
+      toast.success("Logged in successfully!");
+      setLoginError(null);
+    } catch (error: any) {
+      if (error.message === "Failed to log in.") {
+        toast.error("Invalid email or password");
+      } else {
+        toast.error(error.message || "An unexpected error occurred");
+      }
+    }
   };
 
   return (
@@ -88,6 +100,13 @@ export default function Login(): ReactElement {
 
       {/* login form */}
       <main className="fixed inset-0 z-30 m-auto flex h-fit w-[90%] min-w-[300px] max-w-sm flex-col gap-8 rounded-xl border border-white/20 bg-white/10 p-8 shadow-lg backdrop-blur-lg sm:max-w-md md:max-w-lg">
+        {/* Login error */}
+        {loginError && (
+          <div className="text-sm text-red-500 font-semibold text-center">
+            {loginError}
+          </div>
+        )}
+
         <h1 className="text-center text-2xl font-bold text-white md:text-4xl">
           Login
         </h1>
