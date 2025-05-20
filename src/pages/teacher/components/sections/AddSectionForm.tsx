@@ -2,9 +2,9 @@ import { useEffect, useState, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import luffy1 from "../../../../assets/images/luffyBanner.jpg";
-import luffy2 from "../../../../assets/images/luffyBnWBanner.jpg";
-import luffy3 from "../../../../assets/images/luffyGear4Banner.jpg";
+import SBanner_1 from "../../../../assets/images/Banner_1.jpg";
+import SBanner_2 from "../../../../assets/images/Banner_2.jpg";
+import SBanner_3 from "../../../../assets/images/Banner_3.jpg";
 
 import {
   IAddSection,
@@ -140,13 +140,13 @@ export default function AddSectionForm({
                       <img
                         src={
                           banner === "SBanner_1"
-                            ? luffy1
+                            ? SBanner_1
                             : banner === "SBanner_2"
-                              ? luffy2
-                              : luffy3
+                              ? SBanner_2
+                              : SBanner_3
                         }
                         alt="section banner"
-                        className="h-full w-full rounded-lg object-cover"
+                        className="h-full w-full rounded-sm object-cover"
                       />
                     </div>
                   </label>

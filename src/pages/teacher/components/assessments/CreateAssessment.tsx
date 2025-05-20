@@ -108,7 +108,7 @@ export default function CreateAssessment(): ReactElement {
         <AddButton text="Create Assessment Form" action={handleCreateBtn} />
       </div>
 
-      <main className="flex flex-col gap-4">
+      <main className="flex flex-col gap-4 px-32">
         <section className="bg-white rounded-sm shadow-sm py-4 px-8 flex flex-col gap-2">
           <div className="mb-4">
             <input

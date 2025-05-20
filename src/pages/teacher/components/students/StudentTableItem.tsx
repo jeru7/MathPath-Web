@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactElement } from "react";
 
 import { Circle, Settings } from "lucide-react";
 import { format } from "date-fns";
-import { formatInTimeZone, formatInTimezone } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 import { IStudent, StudentStatusType } from "../../../../types/student.type";
 import { useTeacherContext } from "../../../../hooks/useTeacher";

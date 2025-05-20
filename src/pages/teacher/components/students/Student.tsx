@@ -118,7 +118,7 @@ export default function Student(): ReactElement {
 
             {/* Student No. */}
             <div className="flex items-center gap-2 text-xl">
-              <p className="font-bold">Student No:</p>
+              <p className="font-bold">LRN:</p>
               <p>{studentData?.studentNumber}</p>
             </div>
 

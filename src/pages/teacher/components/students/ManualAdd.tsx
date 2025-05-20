@@ -1,14 +1,17 @@
-import { useState, type ReactElement } from "react"
+import { useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Controller, useForm } from 'react-hook-form'
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { X, Eye, EyeOff } from "lucide-react";
-import Select from 'react-select'
-import { toast } from 'react-toastify'
+import Select from "react-select";
+import { toast } from "react-toastify";
 
 import FormButtons from "../FormButtons";
 import { getCustomSelectColor } from "../../../../utils/selectStyles";
-import { StudentFormData, studentFormSchema } from "../../../../types/student.type";
+import {
+  StudentFormData,
+  studentFormSchema,
+} from "../../../../types/student.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createStudentService } from "../../../../services/student.service";
 import { useTeacherContext } from "../../../../hooks/useTeacher";
@@ -17,11 +20,13 @@ import { isAxiosError } from "axios";
 import { IErrorResponse } from "../../../../types/api-response.type";
 
 interface IManualAddProps {
-  handleBack: () => void
+  handleBack: () => void;
 }
 
-export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement {
-  const { teacherId } = useParams()
+export default function ManualAdd({
+  handleBack,
+}: IManualAddProps): ReactElement {
+  const { teacherId } = useParams();
   const { sections } = useTeacherContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -31,67 +36,74 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
     register,
     handleSubmit,
     control,
-    formState: {
-      errors,
-      isSubmitting },
-  }
-    = useForm<StudentFormData>({
-      resolver: zodResolver(studentFormSchema),
-      defaultValues: {
-        middleName: undefined,
-      }
-    })
+    formState: { errors, isSubmitting },
+  } = useForm<StudentFormData>({
+    resolver: zodResolver(studentFormSchema),
+    defaultValues: {
+      middleName: undefined,
+    },
+  });
 
   const handleClose = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate("..")
-  }
+    navigate("..");
+  };
 
   const createStudent = useMutation({
     mutationFn: createStudentService,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["teacher", teacherId, 'students'],
+        queryKey: ["teacher", teacherId, "students"],
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["teacher", teacherId, 'sections'],
+        queryKey: ["teacher", teacherId, "sections"],
       });
-      toast.success("New student created successfully")
+      toast.success("New student created successfully");
       navigate("..");
     },
     onError: (error: unknown) => {
       if (isAxiosError(error)) {
-        const customError: IErrorResponse = error?.response?.data
-        toast.error(customError.message || "Failed to create student")
+        const customError: IErrorResponse = error?.response?.data;
+        toast.error(customError.message || "Failed to create student");
       }
-    }
+    },
   });
 
   const onSubmit = async (data: StudentFormData) => {
     createStudent.mutate(data);
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="relative flex h-[100vh] w-[100vw] max-w-[1000px] flex-col gap-4 overflow-y-auto rounded-lg bg-[var(--primary-white)] p-8 shadow-sm md:h-fit md:w-[80vw] md:overflow-x-hidden lg:w-[60vw]">
-        <button className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
+        <button
+          className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
           onClick={handleClose}
-        ><X className="h-4 w-4" /></button>
+        >
+          <X className="h-4 w-4" />
+        </button>
         <header>
-          <h3 className="border-b border-b-[var(--primary-gray)] pb-2 text-2xl font-bold">Add Student - Manual</h3>
+          <h3 className="border-b border-b-[var(--primary-gray)] pb-2 text-2xl font-bold">
+            Add Student - Manual
+          </h3>
         </header>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2 md:flex-row">
             {/* First name */}
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
-                <label htmlFor="firstName" className="font-bold">First Name</label>
+                <label htmlFor="firstName" className="font-bold">
+                  First Name
+                </label>
                 {errors.firstName && (
-                  <p className="text-xs text-red-500">{errors?.firstName?.message}</p>
+                  <p className="text-xs text-red-500">
+                    {errors?.firstName?.message}
+                  </p>
                 )}
               </div>
-              <input type="text"
+              <input
+                type="text"
                 {...register("firstName")}
                 name="firstName"
                 placeholder="Enter first name"
@@ -102,12 +114,16 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
                 <label htmlFor="lastName" className="font-bold">
-                  Last Name </label>
+                  Last Name{" "}
+                </label>
                 {errors.lastName && (
-                  <p className="text-xs text-red-500">{errors?.lastName?.message}</p>
+                  <p className="text-xs text-red-500">
+                    {errors?.lastName?.message}
+                  </p>
                 )}
               </div>
-              <input type="text"
+              <input
+                type="text"
                 {...register("lastName")}
                 name="lastName"
                 placeholder="Enter last name"
@@ -122,15 +138,19 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
                 <label htmlFor="middleName" className="font-bold">
                   Middle Name
                   <span className="ml-1 inline-flex items-center gap-1">
-                    <span className="text-xs font-normal text-gray-500">(Optional)
+                    <span className="text-xs font-normal text-gray-500">
+                      (Optional)
                     </span>
                     {errors.middleName && (
-                      <span className="text-xs font-normal text-red-500">{errors?.middleName?.message}</span>
+                      <span className="text-xs font-normal text-red-500">
+                        {errors?.middleName?.message}
+                      </span>
                     )}
                   </span>
                 </label>
               </div>
-              <input type="text"
+              <input
+                type="text"
                 {...register("middleName")}
                 name="middleName"
                 placeholder="Enter middle name"
@@ -140,9 +160,13 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
             {/* Gender */}
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
-                <label htmlFor="gender" className="text-md font-bold">Gender</label>
+                <label htmlFor="gender" className="text-md font-bold">
+                  Gender
+                </label>
                 {errors.gender && (
-                  <span className="text-xs text-red-500">{errors?.gender?.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors?.gender?.message}
+                  </span>
                 )}
               </div>
               <Controller
@@ -166,7 +190,10 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
                     onChange={(selected) => field.onChange(selected?.value)}
                     value={
                       field.value
-                        ? { value: field.value, label: field.value === "male" ? "Male" : "Female" }
+                        ? {
+                            value: field.value,
+                            label: field.value === "male" ? "Male" : "Female",
+                          }
                         : null
                     }
                   />
@@ -177,12 +204,15 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
           {/* Email */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <label htmlFor="email" className="font-bold">Email</label>
+              <label htmlFor="email" className="font-bold">
+                Email
+              </label>
               {errors.email && (
                 <p className="text-xs text-red-500">{errors?.email?.message}</p>
               )}
             </div>
-            <input type="email"
+            <input
+              type="email"
               {...register("email")}
               name="email"
               placeholder="Enter email"
@@ -192,12 +222,18 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
           {/* Student Number */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <label htmlFor="studentNumber" className="font-bold">Student Number</label>
+              <label htmlFor="studentNumber" className="font-bold">
+                LRN
+                <span className="font-medium"> (Learner Reference Number)</span>
+              </label>
               {errors.studentNumber && (
-                <p className="text-xs text-red-500">{errors?.studentNumber?.message}</p>
+                <p className="text-xs text-red-500">
+                  {errors?.studentNumber?.message}
+                </p>
               )}
             </div>
-            <input type="text"
+            <input
+              type="text"
               {...register("studentNumber")}
               name="studentNumber"
               placeholder="Enter student number"
@@ -207,12 +243,17 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
           {/* Username */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <label htmlFor="username" className="font-bold">Username</label>
+              <label htmlFor="username" className="font-bold">
+                Username
+              </label>
               {errors.username && (
-                <p className="text-xs text-red-500">{errors?.username?.message}</p>
+                <p className="text-xs text-red-500">
+                  {errors?.username?.message}
+                </p>
               )}
             </div>
-            <input type="text"
+            <input
+              type="text"
               {...register("username")}
               name="username"
               placeholder="Enter username"
@@ -222,9 +263,13 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
           {/* Password */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <label htmlFor="password" className="font-bold">Password</label>
+              <label htmlFor="password" className="font-bold">
+                Password
+              </label>
               {errors.password && (
-                <p className="text-xs text-red-500">{errors?.password?.message}</p>
+                <p className="text-xs text-red-500">
+                  {errors?.password?.message}
+                </p>
               )}
             </div>
             <div className="relative">
@@ -247,9 +292,13 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
           {/* Section */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <label htmlFor="section" className="text-md font-bold">Section</label>
+              <label htmlFor="section" className="text-md font-bold">
+                Section
+              </label>
               {errors.section && (
-                <p className="text-xs text-red-500">{errors?.section?.message}</p>
+                <p className="text-xs text-red-500">
+                  {errors?.section?.message}
+                </p>
               )}
             </div>
             <Controller
@@ -268,14 +317,21 @@ export default function ManualAdd({ handleBack }: IManualAddProps): ReactElement
                   classNamePrefix="select"
                   placeholder="Select a section..."
                   onChange={(selected) => field.onChange(selected?._id)}
-                  value={sections.find(section => section._id === field.value) || null}
+                  value={
+                    sections.find((section) => section._id === field.value) ||
+                    null
+                  }
                 />
               )}
             />
           </div>
         </div>
-        <FormButtons handleBack={handleBack} text={isSubmitting ? "Creating..." : "Complete"} disabled={isSubmitting} />
+        <FormButtons
+          handleBack={handleBack}
+          text={isSubmitting ? "Creating..." : "Complete"}
+          disabled={isSubmitting}
+        />
       </div>
     </form>
-  )
+  );
 }

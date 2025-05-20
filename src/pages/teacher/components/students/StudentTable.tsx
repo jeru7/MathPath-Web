@@ -58,7 +58,7 @@ export default function StudentTable(): ReactElement {
           <table className="font-primary table-auto">
             <thead>
               <tr className="text-[var(--primary-gray)]">
-                <th className="text-left">Student Number</th>
+                <th className="text-left">LRN</th>
                 <th
                   className="cursor-pointer px-4 py-2"
                   onClick={() => handleSort("lastName")}
