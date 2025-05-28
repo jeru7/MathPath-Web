@@ -1,0 +1,16 @@
+.react-calendar {
+  border: none;
+  box-shadow: none;
+  height: 320px;
+  width: 100%;
+}
+
+.react-calendar__month-view {
+  height: 100%;
+}
+
+.react-calendar__month-view__days {
+  flex-grow: 1;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+}
