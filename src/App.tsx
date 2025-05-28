@@ -3,10 +3,12 @@ import { Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/landing/Landing";
 import Login from "./pages/login/Login";
-import { teacherRoutes } from "./routes/teacherRoutes";
-import StudentDashboard from "./pages/student/pages/dashboard/StudentDashboard";
+
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./providers/AuthProvider";
+
+import { teacherRoutes } from "./routes/teacherRoutes";
+import { studentRoutes } from "./routes/studentRoutes";
 
 function App() {
   return (
@@ -18,16 +20,12 @@ function App() {
 
           <Route element={<PrivateRoute />}>
             {teacherRoutes}
-            <Route
-              path="/students/:studentId/dashboard"
-              element={<StudentDashboard />}
-            />
+            {studentRoutes}
           </Route>
 
           <Route path="*" element={<Landing />} />
         </Routes>
       </AuthProvider>
-
     </div>
   );
 }
