@@ -4,7 +4,7 @@ import { IUserLogin } from "../types/user.type";
 type AuthContextType = {
   user: IUserLogin | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: (userId: string) => void;
 };
 

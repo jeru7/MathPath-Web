@@ -1,7 +1,8 @@
 import axios from "axios";
 import { IUserLogin } from "../types/user.type";
 
-import.meta.env.MODE = "production";
+// i-comment pag rrun locally for testing
+// import.meta.env.MODE = "production";
 
 const URL =
   import.meta.env.MODE === "production"
@@ -20,7 +21,7 @@ export const loginService = async (email: string, password: string) => {
     );
 
     return res.data.data;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to log in.");
   }
 };

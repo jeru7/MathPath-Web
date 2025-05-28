@@ -30,10 +30,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (identifier: string, password: string) => {
     setIsLoading(true);
     try {
-      const user = await loginService(email, password);
+      const user = await loginService(identifier, password);
       setUser(user);
       navigate(`/${user.role}s/${user._id}`);
     } catch (error) {
