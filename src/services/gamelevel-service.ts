@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // i-comment pag rrun locally for testing
-// import.meta.env.MODE = "production";
+import.meta.env.MODE = "production";
 
 const URL =
   import.meta.env.MODE === "production"

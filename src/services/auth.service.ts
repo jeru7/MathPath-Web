@@ -2,7 +2,7 @@ import axios from "axios";
 import { IUserLogin } from "../types/user.type";
 
 // i-comment pag rrun locally for testing
-// import.meta.env.MODE = "production";
+import.meta.env.MODE = "production";
 
 const URL =
   import.meta.env.MODE === "production"
