@@ -58,14 +58,14 @@ export default function Home(): ReactElement {
           </section>
 
           {/* Section: Calendar and To-do*/}
-          <section className="w-[20%] h-full flex flex-col gap-2">
+          <section className="w-[20%] h-full flex flex-col gap-3">
             {/* Calendar */}
             <article className="w-full h-fit rounded-md bg-white shadow-md p-4 flex flex-col gap-8">
               <Calendar />
             </article>
 
             {/* To-do */}
-            <article className="w-full h-full rounded-md shadow-md px-4 py-2 bg-white flex flex-col">
+            <article className="w-full h-full rounded-md shadow-md px-4 py-2 bg-white flex flex-col gap-1">
               <p className="font-semibold">To-do</p>
               <div className="w-full h-full flex items-center justify-start">
                 <div className="flex gap-2 items-center justify-center">
@@ -87,10 +87,131 @@ export default function Home(): ReactElement {
               <p className="font-semibold">Quests</p>
             </article>
 
-            {/* Achievements */}
-            <article className="w-[40%] h-full bg-white rounded-md shadow-md px-4 py-2">
-              <p className="font-semibold">Achievements</p>
-            </article>
+            {/* Badges */}
+            <section className="w-[40%] h-full bg-white rounded-md shadow-md px-4 py-2 gap-2 flex flex-col">
+              <div className="w-full flex justify-between items-center">
+                <p className="font-semibold">Badges</p>
+                <p className="text-gray-400 text-xs">3/7</p>
+              </div>
+
+              <div className="grid grid-cols-3 auto-rows-min overflow-y-auto gap-2 h-[400px] p-2">
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-sm">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
+                    <p className="text-gray-400 text-xs">05/07/2025</p>
+                  </div>
+                </article>
+
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-sm">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
+                    <p className="text-gray-400 text-xs">05/07/2025</p>
+                  </div>
+                </article>
+
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-sm">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
+                    <p className="text-gray-400 text-xs">05/07/2025</p>
+                  </div>
+                </article>
+
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  {/* Badges name and description */}
+                  <div className="flex flex-col items-center">
+                    <p className="font-semibold text-sm">Badges Name</p>
+                    <p className="text-xs text-gray-400">Badges Description</p>
+                  </div>
+
+                  {/* Badges progress */}
+                  <div className="rounded-full bg-gray-200 w-full h-2">
+                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  </div>
+                </article>
+
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  {/* Badges name and description */}
+                  <div className="flex flex-col items-center">
+                    <p className="font-semibold text-sm">Badges Name</p>
+                    <p className="text-xs text-gray-400">Badges Description</p>
+                  </div>
+
+                  {/* Badges progress */}
+                  <div className="rounded-full bg-gray-200 w-full h-2">
+                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  </div>
+                </article>
+
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  {/* Badges name and description */}
+                  <div className="flex flex-col items-center">
+                    <p className="font-semibold text-sm">Badges Name</p>
+                    <p className="text-xs text-gray-400">Badges Description</p>
+                  </div>
+
+                  {/* Badges progress */}
+                  <div className="rounded-full bg-gray-200 w-full h-2">
+                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  </div>
+                </article>
+
+                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                  <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                    <IoGameController className="h-12 w-12" />
+                  </div>
+
+                  {/* Badges name and description */}
+                  <div className="flex flex-col items-center">
+                    <p className="font-semibold text-sm">Badges Name</p>
+                    <p className="text-xs text-gray-400">Badges Description</p>
+                  </div>
+
+                  {/* Badges progress */}
+                  <div className="rounded-full bg-gray-200 w-full h-2">
+                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  </div>
+                </article>
+              </div>
+            </section>
 
             {/* Section: Assessment, Game Levels, and Achievements */}
             <section className="w-[20%] h-full flex flex-col gap-3">
@@ -112,7 +233,7 @@ export default function Home(): ReactElement {
           </section>
 
           {/* Recent Activity */}
-          <article className="w-[20%] p-4 flex flex-col h-full bg-white rounded-md shadow-md gap-2">
+          <article className="w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md shadow-md gap-2">
             <div className="w-full flex items-center justify-between border-b-gray-300 border-b-2 pb-2">
               <p className="font-semibold">Recent Activity</p>
               <div className="flex items-center">
