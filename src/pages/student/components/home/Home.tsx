@@ -23,7 +23,7 @@ export default function Home(): ReactElement {
             {/* Section: Name and level */}
             <section className="w-[30%] h-full flex flex-col gap-3">
               {/* Name and section */}
-              <article className="w-full h-full bg-white rounded-md shadow-md flex-col items-center justify-center flex gap-1">
+              <article className="w-full h-full bg-white rounded-md drop-shadow-sm flex-col items-center justify-center flex gap-1">
                 <div className="rounded-full bg-gray-100 h-[100px] w-[100px]"></div>
                 <div className="flex flex-col items-center">
                   <p className="font-semibold text-lg">
@@ -34,7 +34,7 @@ export default function Home(): ReactElement {
               </article>
 
               {/* Level */}
-              <article className="w-full h-full bg-white rounded-md shadow-md flex flex-col items-center justify-between gap-2 py-3 px-5">
+              <article className="w-full h-full bg-white rounded-md drop-shadow-sm flex flex-col items-center justify-between gap-2 py-3 px-5">
                 <p className="font-semibold">Level</p>
                 <div className="rounded-full bg-[var(--secondary-green)] h-[100px] w-[100px] flex items-center justify-center">
                   <p className="text-white text-4xl">18</p>
@@ -52,7 +52,7 @@ export default function Home(): ReactElement {
             </section>
 
             {/* Character, IGN, and Inventory */}
-            <article className="w-[70%] h-full bg-white rounded-md shadow-md p-2">
+            <article className="w-[70%] h-full bg-white rounded-md drop-shadow-sm p-2">
               <p className="font-semibold">Character and game stats</p>
             </article>
           </section>
@@ -60,12 +60,12 @@ export default function Home(): ReactElement {
           {/* Section: Calendar and To-do*/}
           <section className="w-[20%] h-full flex flex-col gap-3">
             {/* Calendar */}
-            <article className="w-full h-fit rounded-md bg-white shadow-md p-4 flex flex-col gap-8">
+            <article className="w-full h-fit rounded-md bg-white drop-shadow-sm p-4 flex flex-col gap-8">
               <Calendar />
             </article>
 
             {/* To-do */}
-            <article className="w-full h-full rounded-md shadow-md px-4 py-2 bg-white flex flex-col gap-1">
+            <article className="w-full h-full rounded-md drop-shadow-sm px-4 py-2 bg-white flex flex-col gap-1">
               <p className="font-semibold">To-do</p>
               <div className="w-full h-full flex items-center justify-start">
                 <div className="flex gap-2 items-center justify-center">
@@ -80,134 +80,262 @@ export default function Home(): ReactElement {
         </section>
 
         {/* Bottom section */}
-        <section className="w-full h-full flex gap-3">
-          <section className="w-[80%] h-full flex gap-3">
+        <div className="w-full h-full flex gap-3">
+          <div className="w-[80%] h-full flex gap-2">
             {/* Quests */}
-            <article className="w-[40%] h-full bg-white rounded-md shadow-md px-4 py-2">
-              <p className="font-semibold">Quests</p>
-            </article>
-
-            {/* Badges */}
-            <section className="w-[40%] h-full bg-white rounded-md shadow-md px-4 py-2 gap-2 flex flex-col">
-              <div className="w-full flex justify-between items-center">
-                <p className="font-semibold">Badges</p>
-                <p className="text-gray-400 text-xs">3/7</p>
+            <section className="w-[40%] h-full bg-white rounded-md drop-shadow-sm px-4 py-2 gap-2 flex flex-col">
+              <div className="w-full flex justify-between items-start pb-1 border-b-2 border-gray-300">
+                <p className="font-semibold">Quests</p>
+                <div className="flex items-center self-center">
+                  <p className="text-xs">Completed</p>
+                  <RiArrowDropDownLine className="w-5 h-5" />
+                </div>
               </div>
 
-              <div className="grid grid-cols-3 auto-rows-min overflow-y-auto gap-2 h-[400px] p-2">
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+              <div className="flex-col gap-4 flex pb-2 pt-3 px-2 overflow-y-auto h-[390px]">
+                {/* Quest Progress - Chest  */}
+                <article className="w-full py-2 h-10 flex items-center">
+                  <div className="w-full h-2 rounded-full bg-[var(--secondary-orange)] relative">
+                    <div className="h-full bg-[var(--primary-orange)] rounded-full w-[50%]"></div>
+
+                    <div className="w-full flex items-center justify-around absolute inset-0 top-0">
+                      <div className="rounded-md h-10 w-10 bg-[var(--primary-orange)]"></div>
+                      <div className="rounded-md h-10 w-10 bg-[var(--primary-orange)]"></div>
+                      <div className="rounded-md h-10 w-10 bg-[var(--primary-orange)]"></div>
+                    </div>
+                  </div>
+                </article>
+
+                {/* Quest List - Grid */}
+                <section className="grid grid-cols-3 auto-rows-min gap-2 w-full h-auto bg-white">
+                  <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
+                    <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                      <IoGameController className="h-12 w-12" />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="flex flex-col items-center">
+                        <p className="font-semibold text-md">Quest Name</p>
+                        <p className="text-xs text-gray-400">Claimed</p>
+                      </div>
+                    </div>
+
+                    <div className="w-full flex gap-1 items-center">
+                      <div className="w-full rounded-full bg-gray-200 h-2">
+                        <div className="h-full bg-[var(--primary-green)] rounded-full w-full"></div>
+                      </div>
+
+                      <div className="text-xs text-gray-400">1/1</div>
+                    </div>
+                  </article>
+
+                  <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
+                    <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                      <IoGameController className="h-12 w-12" />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="flex flex-col items-center">
+                        <p className="font-semibold text-md">Quest Name</p>
+                        <p className="text-xs text-gray-400">Claimed</p>
+                      </div>
+                    </div>
+
+                    <div className="w-full flex gap-1 items-center">
+                      <div className="w-full rounded-full bg-gray-200 h-2">
+                        <div className="h-full bg-[var(--primary-green)] rounded-full w-full"></div>
+                      </div>
+
+                      <div className="text-xs text-gray-400">1/1</div>
+                    </div>
+                  </article>
+
+                  <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
+                    <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                      <IoGameController className="h-12 w-12" />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="flex flex-col items-center">
+                        <p className="font-semibold text-md">Quest Name</p>
+                        <p className="text-xs text-gray-400">Not claimed yet</p>
+                      </div>
+                    </div>
+
+                    <div className="w-full flex gap-1 items-center">
+                      <div className="w-full rounded-full bg-gray-200 h-2">
+                        <div className="h-full bg-[var(--primary-green)] rounded-full w-[0%]"></div>
+                      </div>
+
+                      <div className="text-xs text-gray-400">0/1</div>
+                    </div>
+                  </article>
+
+                  <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
+                    <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
+                      <IoGameController className="h-12 w-12" />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="flex flex-col items-center">
+                        <p className="font-semibold text-md">Quest Name</p>
+                        <p className="text-xs text-gray-400">Not claimed yet</p>
+                      </div>
+                    </div>
+
+                    <div className="w-full flex gap-1 items-center">
+                      <div className="w-full rounded-full bg-gray-200 h-2">
+                        <div className="h-full bg-[var(--secondary-green)] rounded-full w-[66%]"></div>
+                      </div>
+
+                      <div className="text-xs text-gray-400">2/3</div>
+                    </div>
+                  </article>
+                </section>
+              </div>
+            </section>
+
+            {/* Badges */}
+            <section className="w-[40%] h-full bg-white rounded-md drop-shadow-sm flex flex-col px-4 py-2">
+              <div className="w-full flex justify-between items-start pb-1 border-b-2 border-gray-300">
+                <p className="font-semibold">Badges</p>
+                <div className="flex items-center self-center">
+                  <p className="text-xs">Achieved</p>
+                  <RiArrowDropDownLine className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 auto-rows-min overflow-y-auto gap-2 h-[400px] p-2 bg-white">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex flex-col items-center">
-                      <p className="font-semibold text-sm">Badges Name</p>
+                      <p className="font-semibold text-md">Badges Name</p>
                       <p className="text-xs text-gray-400">
                         Badges Description
                       </p>
                     </div>
-                    <p className="text-gray-400 text-xs">05/07/2025</p>
+                  </div>
+
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--primary-green)] rounded-full w-full"></div>
                   </div>
                 </article>
 
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex flex-col items-center">
-                      <p className="font-semibold text-sm">Badges Name</p>
+                      <p className="font-semibold text-base">Badges Name</p>
                       <p className="text-xs text-gray-400">
                         Badges Description
                       </p>
                     </div>
-                    <p className="text-gray-400 text-xs">05/07/2025</p>
+                  </div>
+
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--primary-green)] rounded-full w-full"></div>
                   </div>
                 </article>
 
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex flex-col items-center">
-                      <p className="font-semibold text-sm">Badges Name</p>
+                      <p className="font-semibold text-base">Badges Name</p>
                       <p className="text-xs text-gray-400">
                         Badges Description
                       </p>
                     </div>
-                    <p className="text-gray-400 text-xs">05/07/2025</p>
+                  </div>
+
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--primary-green)] rounded-full w-full"></div>
                   </div>
                 </article>
 
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
-                  {/* Badges name and description */}
-                  <div className="flex flex-col items-center">
-                    <p className="font-semibold text-sm">Badges Name</p>
-                    <p className="text-xs text-gray-400">Badges Description</p>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-base">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Badges progress */}
-                  <div className="rounded-full bg-gray-200 w-full h-2">
-                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--secondary-green)] rounded-full w-[50%]"></div>
                   </div>
                 </article>
 
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
-                  {/* Badges name and description */}
-                  <div className="flex flex-col items-center">
-                    <p className="font-semibold text-sm">Badges Name</p>
-                    <p className="text-xs text-gray-400">Badges Description</p>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-base">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Badges progress */}
-                  <div className="rounded-full bg-gray-200 w-full h-2">
-                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--secondary-green)] rounded-full w-[50%]"></div>
                   </div>
                 </article>
 
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
-                  {/* Badges name and description */}
-                  <div className="flex flex-col items-center">
-                    <p className="font-semibold text-sm">Badges Name</p>
-                    <p className="text-xs text-gray-400">Badges Description</p>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-base">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Badges progress */}
-                  <div className="rounded-full bg-gray-200 w-full h-2">
-                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--secondary-green)] rounded-full w-[50%]"></div>
                   </div>
                 </article>
 
-                <article className="flex flex-col border-1 items-center px-3 py-5 rounded-lg border-gray-400 gap-4">
+                <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
                   <div className="rounded-full flex items-center h-fit w-fit justify-center p-3 bg-amber-400">
                     <IoGameController className="h-12 w-12" />
                   </div>
 
-                  {/* Badges name and description */}
-                  <div className="flex flex-col items-center">
-                    <p className="font-semibold text-sm">Badges Name</p>
-                    <p className="text-xs text-gray-400">Badges Description</p>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center">
+                      <p className="font-semibold text-base">Badges Name</p>
+                      <p className="text-xs text-gray-400">
+                        Badges Description
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Badges progress */}
-                  <div className="rounded-full bg-gray-200 w-full h-2">
-                    <div className="h-full w-[50%] bg-[var(--secondary-green)] rounded-full"></div>
+                  <div className="w-full rounded-full bg-gray-200 h-2">
+                    <div className="h-full bg-[var(--secondary-green)] rounded-full w-[50%]"></div>
                   </div>
                 </article>
               </div>
@@ -230,15 +358,15 @@ export default function Home(): ReactElement {
                 </div>
               </article>
             </section>
-          </section>
+          </div>
 
           {/* Recent Activity */}
-          <article className="w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md shadow-md gap-2">
-            <div className="w-full flex items-center justify-between border-b-gray-300 border-b-2 pb-2">
+          <article className="w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2">
+            <div className="w-full flex items-start justify-between border-b-gray-300 border-b-2 pb-1">
               <p className="font-semibold">Recent Activity</p>
-              <div className="flex items-center">
-                <p className="text-sm">Today</p>
-                <RiArrowDropDownLine className="w-7 h-7" />
+              <div className="flex items-center self-center">
+                <p className="text-xs">Today</p>
+                <RiArrowDropDownLine className="w-5 h-5" />
               </div>
             </div>
 
@@ -355,7 +483,7 @@ export default function Home(): ReactElement {
               View all
             </p>
           </article>
-        </section>
+        </div>
       </div>
     </main>
   );
