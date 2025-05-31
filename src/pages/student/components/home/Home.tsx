@@ -7,6 +7,14 @@ import HalfCircleProgress from "./HalfCircleProgress";
 import { IoGameController } from "react-icons/io5";
 import { FaEnvelopeOpenText } from "react-icons/fa6";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import mainBackground from "../../../../assets/backgroundImage/mainBackground.png";
+import characterBoy from "../../../../assets/gifs/characterBoy.gif";
+import levelIcon from "../../../../assets/icons/levelIcon.png";
+import hourglassIcon from "../../../../assets/icons/hourglassIcon.png";
+import skullIcon from "../../../../assets/icons/skullIcon.png";
+import trophyIcon from "../../../../assets/icons/trophyIcon.png";
+import loseIcon from "../../../../assets/icons/loseIcon.png";
+import skillIcon from "../../../../assets/icons/skillIcon.png";
 
 export default function Home(): ReactElement {
   return (
@@ -52,9 +60,67 @@ export default function Home(): ReactElement {
             </section>
 
             {/* Character, IGN, and Inventory */}
-            <article className="w-[70%] h-full bg-white rounded-md drop-shadow-sm p-2">
-              <p className="font-semibold">Character and game stats</p>
-            </article>
+            <section
+              className="w-[70%] h-full bg-white bg-cover bg-center rounded-md drop-shadow-sm p-2 relative flex justify-center gap-24"
+              style={{ backgroundImage: `url(${mainBackground})` }}
+            >
+              {/* Overlay for vignette effect */}
+              <div
+                className="absolute inset-0 from-transparent via-transparent to-black opacity-80 rounded-md"
+                style={{ background: "var(--vignette-gradient)" }}
+              ></div>
+
+              <article className="flex flex-col items-center justify-center w-90 h-full gap-4 font-jersey">
+                <p className="text-6xl text-white font-bold pb-1 border-b-white border-b-2 w-full text-center">
+                  Jeru07
+                </p>
+                <div className="flex gap-2 items-center w-full border-b border-b-white/50">
+                  <img src={levelIcon} alt="Level Icon" className="w-8 h-8" />
+                  <p className="text-white font-semibold text-xl">Level: 4</p>
+                </div>
+                <div className="flex gap-2 items-center w-full border-b border-b-white/50">
+                  <img
+                    src={hourglassIcon}
+                    alt="Hourglass Icon"
+                    className="w-8 h-8"
+                  />
+                  <p className="text-white font-semibold text-xl">
+                    Total Playtime: 4
+                  </p>
+                </div>
+                <div className="flex gap-2 items-center w-full border-b border-b-white/50">
+                  <img
+                    src={skullIcon}
+                    alt="Hourglass Icon"
+                    className="w-8 h-8"
+                  />
+                  <p className="text-white font-semibold text-xl">
+                    Completed Level: 4
+                  </p>
+                </div>
+                <div className="flex gap-2 items-center w-full border-b border-b-white/50">
+                  <img src={trophyIcon} alt="Trophy Icon" className="w-8 h-8" />
+                  <p className="text-white font-semibold text-xl">
+                    Most Played Stage: 1
+                  </p>
+                </div>
+                <div className="flex gap-2 items-center w-full border-b border-b-white/50">
+                  <img src={loseIcon} alt="Lose Icon" className="w-8 h-8" />
+                  <p className="text-white font-semibold text-xl">
+                    Most Failed Stage: 2
+                  </p>
+                </div>
+                <div className="flex gap-2 items-center w-full border-b border-b-white/50">
+                  <img src={skillIcon} alt="Skill Icon" className="w-8 h-8" />
+                  <p className="text-white font-semibold text-xl">
+                    Most Used Skill: Ember Skill
+                  </p>
+                </div>
+              </article>
+              <article className="flex justify-center items-end w-fit pb-8">
+                <img src={characterBoy} alt="character boy" />
+              </article>
+            </section>
           </section>
 
           {/* Section: Calendar and To-do*/}
@@ -81,7 +147,7 @@ export default function Home(): ReactElement {
 
         {/* Bottom section */}
         <div className="w-full h-full flex gap-3">
-          <div className="w-[80%] h-full flex gap-2">
+          <div className="w-[80%] h-full flex gap-3">
             {/* Quests */}
             <section className="w-[40%] h-full bg-white rounded-md drop-shadow-sm px-4 py-2 gap-2 flex flex-col">
               <div className="w-full flex justify-between items-start pb-1 border-b-2 border-gray-300">

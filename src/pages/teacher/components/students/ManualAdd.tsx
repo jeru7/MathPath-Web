@@ -7,7 +7,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 
 import FormButtons from "../FormButtons";
-import { getCustomSelectColor } from "../../../../utils/selectStyles";
+import { getCustomSelectColor } from "../../../../styles/selectStyles";
 import {
   StudentFormData,
   studentFormSchema,

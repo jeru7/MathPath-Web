@@ -34,7 +34,7 @@ export default function Nav(): ReactElement {
   };
 
   return (
-    <nav className="w-fit px-2 flex h-screen flex-col items-end rounded-r-sm bg-[var(--tertiary-green)] py-4 text-white drop-shadow-md">
+    <nav className="fixed left-0 z-30 w-fit px-2 flex h-screen flex-col items-end rounded-r-sm bg-[var(--tertiary-green)] py-4 text-white drop-shadow-md">
       <div className="flex flex-col items-center justify-between h-full">
         {/* Nav Items */}
         <div className="flex flex-col gap-4">

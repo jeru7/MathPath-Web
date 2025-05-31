@@ -12,7 +12,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../../../styles/customDatePopper.css";
 
 import Select from "react-select";
-import { getCustomSelectColor } from "../../../../utils/selectStyles";
+import { getCustomSelectColor } from "../../../../styles/selectStyles";
 import { Calendar } from "lucide-react";
 
 export default function CreateAssessment(): ReactElement {

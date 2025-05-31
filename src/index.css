@@ -8,6 +8,7 @@
   --font-gummy: "Sour Gummy", sans-serif;
   --font-plexMono: "IBM Plex Mono", sans-serif;
   --font-openSans: "Open Sans", sans-serif;
+  --font-jersey: "Jersey 25", sans-serif;
 
   /* color palette */
   --primary-white: #f5f7f8;
@@ -22,7 +23,7 @@
   --fourth-green: #0d4715;
 
   --primary-orange: #f09319;
-  --secondary-orange: #ffa725;
+  --secondary-orange: #fbc93d;
 
   --primary-black: #2c2c2c;
   --secondary-black: #222121;
@@ -31,6 +32,13 @@
   --primary-gray: #9c9a9a;
 
   --primary-red: #ff8383;
+
+  /* vignette effect */
+  --vignette-gradient: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
 }
 
 @layer utilities {

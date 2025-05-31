@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/landing/Landing";
 import Login from "./pages/login/Login";
 
-import PrivateRoute from "./utils/PrivateRoutes";
+import PrivateRoute from "./routes/PrivateRoutes";
 import { AuthProvider } from "./providers/AuthProvider";
 
 import { teacherRoutes } from "./routes/teacherRoutes";
