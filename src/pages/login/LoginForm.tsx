@@ -18,7 +18,7 @@ export default function LoginForm(): ReactElement {
   useEffect(() => {
     if (!isLoading && user) {
       if (accountType === AccountType.Teacher) {
-        navigate(`/${user.role}s/${user._id}`);
+        navigate(`/${user.role}/${user._id}`);
       } else if (accountType === AccountType.Student) {
         navigate(`/${user.role}/${user._id}`);
       }
