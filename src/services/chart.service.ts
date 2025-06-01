@@ -1,12 +1,5 @@
 import axios from "axios";
-
-// i-comment pag rrun locally for testing
-import.meta.env.MODE = "production";
-
-const URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_BACKEND_PROD_URI
-    : import.meta.env.VITE_BACKEND_DEV_URI;
+import { URL } from "../utils/mode.utils";
 
 export const getPerSectionsTopicStats = async (teacherId: string) => {
   try {

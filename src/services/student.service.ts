@@ -1,13 +1,6 @@
 import axios from "axios";
 import { StudentFormData } from "../types/student.type";
-
-// i-comment pag rrun locally for testing
-import.meta.env.MODE = "production";
-
-const URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_BACKEND_PROD_URI
-    : import.meta.env.VITE_BACKEND_DEV_URI;
+import { URL } from "../utils/mode.utils";
 
 export const createStudentService = async (studentData: StudentFormData) => {
   const res = await axios.post(`${URL}/api/web/students/`, studentData);
