@@ -2,28 +2,98 @@ import { z } from "zod";
 import { IAnswerCorrectness } from "./progress-log.type";
 import { IQuestionAttempt } from "./chart.type";
 
+export enum QuestType {
+  Level = "Level",
+  Shop = "Shop",
+  Skill = "Skill",
+  GameLevel = "GameLevel",
+  Monster = "Monster",
+  Item = "Item",
+  Sunny = "Sunny",
+  MagicBook = "MagicBook",
+}
+
+export interface IStudentQuestList {
+  questProgress: IQuestProgress;
+  questList: IStudentQuestListItem[];
+}
+
+export interface IStudentQuestListItem {
+  questName: string;
+  questType: string;
+  isClaimed: boolean;
+  reqCompleted: number;
+  req: number;
+}
+
+export interface IQuestProgress {
+  quest25: {
+    completed: boolean;
+    rewards: IQuestProgressReward;
+    claimed: boolean;
+  };
+  quest50: {
+    completed: boolean;
+    rewards: IQuestProgressReward;
+    claimed: boolean;
+  };
+  quest100: {
+    completed: boolean;
+    rewards: IQuestProgressReward;
+    claimed: boolean;
+  };
+}
+
+export interface IQuestProgressReward {
+  exp: number;
+  coins: number;
+}
+
+export interface IPlayerCard {
+  playerLevel: number;
+  totalPlaytime: number;
+  completedStagesCount: number;
+  mostPlayedStage: number;
+  mostFailedStage: number;
+  mostUsedSkill: string;
+}
+
 export type StudentStatusType = "Online" | "Offline";
 
 export interface IStudent {
   _id: string;
-  studentNumber: string;
+  role: "student";
+  referenceNumber: string;
   section: string;
   firstName: string;
   lastName: string;
   middleName?: string;
+  characterName: string;
   gender: "male" | "female";
   email: string;
-  username: string;
   assessments: IStudentAssessment[];
+  username: string;
+  character: "male" | "female";
   level: number;
-  exp: number;
-  quests: unknown;
+  exp: IStudentExp;
+  hp: number;
+  quests: IStudentQuest[];
   gameLevels: IStudentGameLevel[];
   lastPlayed: Date;
-  status: StudentStatusType;
   streak: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface IStudentExp {
+  currentExp: number;
+  nextLevelExp: number;
+}
+
+interface IStudentQuest {
+  questId: string;
+  questReqCompleted: number;
+  isClaimed: boolean;
 }
 
 interface IStudentAssessment {
@@ -104,11 +174,11 @@ export const studentFormSchema = z.object({
     required_error: "Gender is required",
   }),
   email: z.string().email("Invalid email address"),
-  studentNumber: z
+  referenceNumber: z
     .string()
     .trim()
-    .min(1, "Student number is required")
-    .min(6, "Student number must have at least 6 characters."),
+    .min(1, "Student reference number is required")
+    .min(6, "Student reference number must have at least 6 characters."),
   username: z
     .string()
     .trim()
