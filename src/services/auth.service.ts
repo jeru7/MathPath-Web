@@ -2,12 +2,12 @@ import axios from "axios";
 import { IUserLogin } from "../types/user.type";
 import { URL } from "../utils/mode.utils";
 
-export const loginService = async (email: string, password: string) => {
+export const loginService = async (identifier: string, password: string) => {
   try {
     const res = await axios.post<{ data: IUserLogin }>(
       `${URL}/api/web/auth/login`,
       {
-        email,
+        identifier,
         password,
       },
       { withCredentials: true },

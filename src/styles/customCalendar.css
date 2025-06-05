@@ -14,3 +14,19 @@
   display: grid;
   grid-template-rows: repeat(6, 1fr);
 }
+
+/* today tile */
+.react-calendar__tile--now {
+  background: var(--secondary-green);
+  border-radius: 20%;
+}
+/* today tile on hover */
+.react-calendar__tile--now:hover {
+  background: var(--secondary-orange) !important;
+}
+
+/* clicked title */
+.react-calendar__tile--active {
+  background: var(--primary-green) !important;
+  border-radius: 20%;
+}

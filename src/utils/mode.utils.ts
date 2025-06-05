@@ -1,5 +1,5 @@
 // i-comment pag rrun locally for testing
-import.meta.env.MODE = "production";
+// import.meta.env.MODE = "production";
 
 export const URL =
   import.meta.env.MODE === "production"

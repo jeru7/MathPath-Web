@@ -101,7 +101,9 @@ export default function Student(): ReactElement {
       <main className="grid h-fit min-h-full w-full auto-rows-auto grid-cols-4 gap-4">
         {/* Student info section */}
         <section className="col-span-3 flex gap-4 rounded-sm bg-white p-8 shadow-sm">
-          {/* TODO: */}
+          {/* TODO:
+           * Profile Photo Display
+           */}
           <div className="w-fit">
             <div className="h-56 w-56 rounded-sm bg-black"></div>
           </div>
@@ -119,7 +121,7 @@ export default function Student(): ReactElement {
             {/* Student No. */}
             <div className="flex items-center gap-2 text-xl">
               <p className="font-bold">LRN:</p>
-              <p>{studentData?.studentNumber}</p>
+              <p>{studentData?.referenceNumber}</p>
             </div>
 
             {/* Username */}

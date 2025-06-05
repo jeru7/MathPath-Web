@@ -53,7 +53,7 @@ export default function StudentTableItem({
         className="hover:bg-[var(--primary-gray)]/10 cursor-pointer text-center"
         onClick={() => onClick(student._id)}
       >
-        <td className="px-4 py-2 text-left">{student.studentNumber}</td>
+        <td className="px-4 py-2 text-left">{student.referenceNumber}</td>
         <td className="max-w-[200px] truncate px-4 py-2 text-left">
           <div className="flex items-center gap-2">
             <Circle className="h-10 w-10" />

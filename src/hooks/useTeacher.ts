@@ -33,9 +33,6 @@ export function useTeacherContext() {
 }
 
 // react queries
-
-// initial data for teachers
-
 // get teacher data - teacher info
 export const useTeacher = (teacherId: string) => {
   return useQuery<ITeacher | null>({

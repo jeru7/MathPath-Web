@@ -11,20 +11,20 @@ export default function Nav(): ReactElement {
 
   const navItems = [
     {
-      to: `/teachers/${teacherId}`,
+      to: `/teacher/${teacherId}`,
       icon: <LayoutDashboard className="h-8 w-8" />,
       defaultPage: true,
     },
     {
-      to: `/teachers/${teacherId}/students`,
+      to: `/teacher/${teacherId}/students`,
       icon: <User className="h-8 w-8" />,
     },
     {
-      to: `/teachers/${teacherId}/sections`,
+      to: `/teacher/${teacherId}/sections`,
       icon: <Users className="h-8 w-8" />,
     },
     {
-      to: `/teachers/${teacherId}/assessments`,
+      to: `/teacher/${teacherId}/assessments`,
       icon: <FileText className="h-8 w-8" />,
     },
   ];

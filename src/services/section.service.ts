@@ -2,6 +2,11 @@ import axios from "axios";
 import { IAddSection } from "../types/section.type";
 import { URL } from "../utils/mode.utils";
 
+export const getSection = async (sectionId: string) => {
+  const res = await axios.get(`${URL}/api/web/sections/${sectionId}`);
+  return res.data.data;
+};
+
 export const addSection = async (
   teacherId: string,
   sectionData: IAddSection,

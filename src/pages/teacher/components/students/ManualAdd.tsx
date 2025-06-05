@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X, Eye, EyeOff } from "lucide-react";
 import Select from "react-select";
 import { toast } from "react-toastify";
-
 import FormButtons from "../FormButtons";
 import { getCustomSelectColor } from "../../../../styles/selectStyles";
 import {
@@ -13,7 +12,7 @@ import {
   studentFormSchema,
 } from "../../../../types/student.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createStudentService } from "../../../../services/student.service";
+import { createStudentService } from "../../../../services/student/student.service";
 import { useTeacherContext } from "../../../../hooks/useTeacher";
 import { ISection } from "../../../../types/section.type";
 import { isAxiosError } from "axios";
@@ -98,7 +97,7 @@ export default function ManualAdd({
                 </label>
                 {errors.firstName && (
                   <p className="text-xs text-red-500">
-                    {errors?.firstName?.message}
+                    {errors?.lastName?.message}
                   </p>
                 )}
               </div>
@@ -222,21 +221,21 @@ export default function ManualAdd({
           {/* Student Number */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <label htmlFor="studentNumber" className="font-bold">
+              <label htmlFor="referenceNumber" className="font-bold">
                 LRN
                 <span className="font-medium"> (Learner Reference Number)</span>
               </label>
-              {errors.studentNumber && (
+              {errors.referenceNumber && (
                 <p className="text-xs text-red-500">
-                  {errors?.studentNumber?.message}
+                  {errors?.referenceNumber?.message}
                 </p>
               )}
             </div>
             <input
               type="text"
-              {...register("studentNumber")}
-              name="studentNumber"
-              placeholder="Enter student number"
+              {...register("referenceNumber")}
+              name="referenceNumber"
+              placeholder="Enter reference number"
               className="border-1 rounded-lg p-2 [appearance:textfield] focus:border-[var(--tertiary-green)] focus:outline-none focus:ring-1 focus:ring-[var(--tertiary-green)]"
             />
           </div>
@@ -267,9 +266,7 @@ export default function ManualAdd({
                 Password
               </label>
               {errors.password && (
-                <p className="text-xs text-red-500">
-                  {errors?.password?.message}
-                </p>
+                <p className="text-xs text-red-500">{errors?.email?.message}</p>
               )}
             </div>
             <div className="relative">

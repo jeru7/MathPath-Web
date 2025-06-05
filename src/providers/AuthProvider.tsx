@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const user = await loginService(identifier, password);
       setUser(user);
-      navigate(`/${user.role}s/${user._id}`);
+      navigate(`/${user.role}/${user._id}`);
     } catch (error) {
       setUser(null);
       throw error;
@@ -52,7 +52,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout }}>
-      {" "}
       {children}
     </AuthContext.Provider>
   );
