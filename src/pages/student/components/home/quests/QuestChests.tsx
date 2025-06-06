@@ -1,18 +1,21 @@
 import { type ReactElement } from "react";
 import chestIcon from "../../../../../assets/icons/chestIcon.png";
-import { IQuestProgress } from "../../../../../types/student.type";
+import { IStudentQuestList } from "../../../../../types/student.type";
 
 export default function QuestChests({
-  questData,
+  quest,
 }: {
-  questData: IQuestProgress | undefined;
+  quest: IStudentQuestList | undefined;
 }): ReactElement {
   return (
-    <article className="w-full py-2 h-10 flex items-center">
-      {/* Progress line */}
+    <article className="w-full py-2 h-12 flex items-center absolute top-0 inset-0">
+      {/* Progress bar */}
       <div className="w-full h-2 rounded-full bg-[var(--secondary-orange)] relative">
         {/* Progress Fill */}
-        <div className="h-full bg-[var(--primary-orange)] rounded-full w-[50%]"></div>
+        <div
+          className="h-full bg-[var(--primary-orange)] rounded-full"
+          style={{ width: `${quest?.questProgressPercentage}%` }}
+        ></div>
 
         {/* Quest chests */}
         <div className="w-full flex items-center justify-around absolute inset-0 top-0">

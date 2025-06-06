@@ -101,9 +101,7 @@ export default function Student(): ReactElement {
       <main className="grid h-fit min-h-full w-full auto-rows-auto grid-cols-4 gap-4">
         {/* Student info section */}
         <section className="col-span-3 flex gap-4 rounded-sm bg-white p-8 shadow-sm">
-          {/* TODO:
-           * Profile Photo Display
-           */}
+          {/* TODO: Profile Photo Display */}
           <div className="w-fit">
             <div className="h-56 w-56 rounded-sm bg-black"></div>
           </div>
@@ -187,7 +185,6 @@ export default function Student(): ReactElement {
 
         {/* Stats section */}
         <section className="col-span-full flex h-fit w-full gap-4">
-          {/* TODO: */}
           {/* Total attempts */}
           <div className="flex w-full flex-col items-center justify-center rounded-sm bg-white py-4 shadow-sm">
             <p className="text-xl">Total Attempts</p>

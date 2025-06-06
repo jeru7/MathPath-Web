@@ -14,6 +14,7 @@ export enum QuestType {
 }
 
 export interface IStudentQuestList {
+  questProgressPercentage: number;
   questProgress: IQuestProgress;
   questList: IStudentQuestListItem[];
 }

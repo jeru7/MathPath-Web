@@ -2,6 +2,7 @@ import { StylesConfig } from "react-select";
 
 export interface SelectStyleOptions {
   borderRadius?: string;
+  minHeight?: string;
 }
 
 export const getCustomSelectColor = <T>(
@@ -12,7 +13,7 @@ export const getCustomSelectColor = <T>(
     backgroundColor: "inherit",
     borderColor: "var(--primary-gray)",
     borderRadius: options?.borderRadius || "0.500rem",
-    minHeight: "42px",
+    minHeight: options?.minHeight || "42px",
     "&:hover": {
       borderColor: "var(--primary-gray)",
     },
