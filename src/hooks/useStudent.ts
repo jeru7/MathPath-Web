@@ -5,6 +5,8 @@ import {
   getStudentTopicStats,
 } from "../services/chart.service";
 import {
+  getAssessmentTrackerService,
+  getStagesTrackerService,
   getStudent,
   getStudentAttempts,
   getStudentAttemptStats,
@@ -24,6 +26,10 @@ import {
 import { IProgressLog } from "../types/progress-log.type";
 import { StudentContext } from "../context/StudentContext";
 import { useContext } from "react";
+import {
+  IAssessmentTracker,
+  IStagesTracker,
+} from "../types/progress-card.type";
 
 // context
 export function useStudentContext() {
@@ -109,11 +115,29 @@ export const useStudentPlayerCard = (studentId: string) => {
   });
 };
 
-// get student player card stats
+// get student student quest list
 export const useStudentQuestList = (studentId: string) => {
   return useQuery<IStudentQuestList>({
     queryKey: ["student", studentId, "quest-list"],
     queryFn: () => getStudentQuestListService(studentId),
+    enabled: !!studentId,
+  });
+};
+
+// get student assessment tracker
+export const useStudentAssessmentTracker = (studentId: string) => {
+  return useQuery<IAssessmentTracker>({
+    queryKey: ["student", studentId, "assessment-tracker"],
+    queryFn: () => getAssessmentTrackerService(studentId),
+    enabled: !!studentId,
+  });
+};
+
+// get student stages tracker
+export const useStudentStagesTracker = (studentId: string) => {
+  return useQuery<IStagesTracker>({
+    queryKey: ["student", studentId, "stages-tracker"],
+    queryFn: () => getStagesTrackerService(studentId),
     enabled: !!studentId,
   });
 };

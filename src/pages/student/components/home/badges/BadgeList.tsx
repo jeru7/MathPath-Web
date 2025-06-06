@@ -4,6 +4,7 @@ import { filterOptions, FilterOption } from "../../../../../types/select.type";
 import BadgeItem from "./BadgeItem";
 import { getCustomSelectColor } from "../../../../../styles/selectStyles";
 
+// TODO: Badge Tracker (Achievements)
 export default function BadgeList(): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
 
@@ -15,7 +16,7 @@ export default function BadgeList(): ReactElement {
 
   return (
     <section className="w-[40%] h-full bg-white rounded-md drop-shadow-sm flex flex-col px-4 py-2">
-      <div className="w-full flex justify-between items-start pb-1 border-b-2 border-gray-300 hover:cursor-pointer">
+      <div className="w-full flex justify-between items-center pb-1 border-b-2 border-gray-300 hover:cursor-pointer">
         <p className="font-semibold">Badges</p>
         <Select
           options={filterOptions}

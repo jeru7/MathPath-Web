@@ -11,6 +11,7 @@ import { useStudentContext } from "../../../../hooks/useStudent.ts";
 import { capitalizeWord } from "../../../../utils/string.utils.ts";
 import { getSection } from "../../../../services/section.service.ts";
 import { ISection } from "../../../../types/section.type.ts";
+import { titleEnum } from "../../../../types/progress-card.type.ts";
 
 export default function Home(): ReactElement {
   const { student } = useStudentContext();
@@ -109,9 +110,12 @@ export default function Home(): ReactElement {
             {/* Section: Assessment and Stages */}
             <section className="w-[20%] h-full flex flex-col gap-3">
               {/* Assessments */}
-              <ProgressCard title="Assessment" />
+              <ProgressCard
+                title={titleEnum.Assessment}
+                studentId={student._id}
+              />
               {/* Stages */}
-              <ProgressCard title="Stages" />
+              <ProgressCard title={titleEnum.Stage} studentId={student._id} />
             </section>
           </div>
 

@@ -1,16 +1,33 @@
-import { type ReactElement } from "react";
-import { RiArrowDropDownLine } from "react-icons/ri";
+import { useState, type ReactElement } from "react";
 import ActivityItem from "./ActivityItem";
+import Select, { SingleValue, StylesConfig } from "react-select";
+import { FilterOption, filterOptions } from "../../../../../types/select.type";
+import { getCustomSelectColor } from "../../../../../styles/selectStyles";
 
 export default function ActivityList(): ReactElement {
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
+  const customStyles: StylesConfig<FilterOption> =
+    getCustomSelectColor<FilterOption>({
+      borderRadius: "0.5rem",
+      minHeight: "12px",
+    });
+
   return (
     <article className="w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2">
-      <div className="w-full flex items-start justify-between border-b-gray-300 border-b-2 pb-1">
+      <div className="w-full flex items-center justify-between border-b-gray-300 border-b-2 pb-1">
         <p className="font-semibold">Recent Activity</p>
-        <div className="flex items-center self-center hover:cursor-pointer">
-          <p className="text-xs">Today</p>
-          <RiArrowDropDownLine className="w-5 h-5" />
-        </div>
+        <Select
+          options={filterOptions}
+          value={selectedFilter}
+          onChange={(option: SingleValue<FilterOption>) => {
+            if (option) setSelectedFilter(option);
+          }}
+          isMulti={false}
+          styles={customStyles}
+          className="w-32 text-xs"
+          isSearchable={false}
+          menuPlacement="auto"
+        />{" "}
       </div>
 
       <div className="h-full max-h-[350px] overflow-scroll pr-4">

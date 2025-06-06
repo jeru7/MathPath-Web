@@ -5,6 +5,10 @@ import {
   StudentFormData,
 } from "../../types/student.type";
 import { URL } from "../../utils/mode.utils";
+import {
+  IAssessmentTracker,
+  IStagesTracker,
+} from "../../types/progress-card.type";
 
 // create student
 export const createStudentService = async (studentData: StudentFormData) => {
@@ -71,6 +75,28 @@ export const getStudentQuestListService = async (
 ): Promise<IStudentQuestList> => {
   const res = await axios.get(
     `${URL}/api/web/students/${studentId}/tracker/quest-list`,
+  );
+
+  return res.data.data;
+};
+
+// get student assessment tracker
+export const getAssessmentTrackerService = async (
+  studentId: string,
+): Promise<IAssessmentTracker> => {
+  const res = await axios.get(
+    `${URL}/api/web/students/${studentId}/tracker/assessment`,
+  );
+
+  return res.data.data;
+};
+
+// get student stages tracker
+export const getStagesTrackerService = async (
+  studentId: string,
+): Promise<IStagesTracker> => {
+  const res = await axios.get(
+    `${URL}/api/web/students/${studentId}/tracker/stage`,
   );
 
   return res.data.data;
