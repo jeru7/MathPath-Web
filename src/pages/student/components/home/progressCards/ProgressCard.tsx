@@ -6,7 +6,7 @@ import {
   useStudentStagesTracker,
 } from "../../../../../hooks/useStudent";
 
-// TODO: Progress Card
+// DONE: Progress Card
 export default function ProgressCard({
   title,
   studentId,
@@ -14,10 +14,8 @@ export default function ProgressCard({
   title: titleEnum;
   studentId: string;
 }): ReactElement {
-  const { data: assessments, isLoading: assessmentLoading } =
-    useStudentAssessmentTracker(studentId);
-  const { data: stages, isLoading: stagesLoading } =
-    useStudentStagesTracker(studentId);
+  const { data: assessments } = useStudentAssessmentTracker(studentId);
+  const { data: stages } = useStudentStagesTracker(studentId);
 
   console.log(stages);
 

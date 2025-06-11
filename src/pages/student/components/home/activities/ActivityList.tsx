@@ -4,6 +4,7 @@ import Select, { SingleValue, StylesConfig } from "react-select";
 import { FilterOption, filterOptions } from "../../../../../types/select.type";
 import { getCustomSelectColor } from "../../../../../styles/selectStyles";
 
+// TODO: Activity List
 export default function ActivityList(): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const customStyles: StylesConfig<FilterOption> =
