@@ -8,11 +8,11 @@ export default function Teacher(): ReactElement {
   const { user } = useAuth();
 
   if (!user) {
-    return <div>Loading..</div>
+    return <div>Loading..</div>;
   }
 
   return (
-    <TeacherProvider teacherId={user?._id}>
+    <TeacherProvider teacherId={user?.id}>
       <div className="font-openSans pl-18 h-screen w-full max-w-[2000px] bg-inherit text-[var(--primary-black)]">
         <Nav />
         <Outlet />

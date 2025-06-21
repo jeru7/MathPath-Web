@@ -1,39 +1,39 @@
 type EnemyType = "Ghost" | "Slime" | "Jiji" | "Random";
 
-export interface IQuestion {
+export type StageQuestion = {
   question: string;
   answer: string;
   choices: string[];
   explanation: string;
   answered: boolean;
-}
+};
 
-export interface IQuestions {
-  easy: IQuestion[];
-  medium: IQuestion[];
-  hard: IQuestion[];
-}
+export type StageQuestions = {
+  easy: StageQuestion[];
+  medium: StageQuestion[];
+  hard: StageQuestion[];
+};
 
-export interface IEnemy {
+export type Enemy = {
   type: EnemyType;
   health: number;
-}
+};
 
-export interface IReward {
+export type StageReward = {
   coins: number;
   exp: number;
-}
+};
 
-export interface IGameLevel {
-  _id: string;
+export type Stage = {
+  id: string;
   level: number;
-  isBossLevel: boolean;
+  bossLevel: boolean;
   name: string;
   description: string;
   topic: string;
-  enemy: IEnemy;
-  questions: IQuestions;
-  rewards: IReward;
+  enemy: Enemy;
+  questions: StageQuestions;
+  rewards: StageReward;
   createdAt: Date;
   updatedAt: Date;
-}
+};

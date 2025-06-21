@@ -29,7 +29,7 @@ export default function AttemptHistory(): ReactElement {
           </thead>
           <tbody>
             {attempts.map((attempt) => (
-              <AttemptHistoryItem attempt={attempt} key={attempt._id} />
+              <AttemptHistoryItem attempt={attempt} key={attempt.id} />
             ))}
           </tbody>
         </table>

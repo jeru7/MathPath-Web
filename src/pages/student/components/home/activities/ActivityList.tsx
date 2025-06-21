@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from "react";
 import ActivityItem from "./ActivityItem";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { FilterOption, filterOptions } from "../../../../../types/select.type";
+import { FilterOption, filterOptions } from "../../../../../types/select.types";
 import { getCustomSelectColor } from "../../../../../styles/selectStyles";
 
 // TODO: Activity List

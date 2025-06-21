@@ -1,9 +1,11 @@
-import { IQuestion } from "../../../../types/assessment.type";
 import { Trash2 } from "lucide-react";
+import * as assessmentType from "../../../../types/assessment/assessment.types";
 
 interface AssessmentQuestionProps {
-  question: IQuestion;
-  updateQuestion: (updatedData: Partial<IQuestion>) => void;
+  question: assessmentType.AssessmentQuestion;
+  updateQuestion: (
+    updatedData: Partial<assessmentType.AssessmentQuestion>,
+  ) => void;
   deleteQuestion: () => void;
   questionIndex: string;
 }
@@ -15,7 +17,7 @@ export default function AssessmentQuestion({
   questionIndex,
 }: AssessmentQuestionProps) {
   const handleInputChange = (
-    field: keyof IQuestion,
+    field: keyof assessmentType.AssessmentQuestion,
     value: string | number | string[],
   ) => {
     updateQuestion({ [field]: value });

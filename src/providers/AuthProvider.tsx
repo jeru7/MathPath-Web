@@ -6,18 +6,18 @@ import {
 } from "../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { IUserLogin } from "../types/user.type";
+import { User } from "../types/user.type";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<IUserLogin | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await checkAuthService();
-        if (user._id && user.role) {
+        const user: User = await checkAuthService();
+        if (user.id && user.role) {
           setUser(user);
         }
       } catch {
@@ -33,9 +33,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (identifier: string, password: string) => {
     setIsLoading(true);
     try {
-      const user = await loginService(identifier, password);
+      const user: User = await loginService(identifier, password);
       setUser(user);
-      navigate(`/${user.role}/${user._id}`);
+      navigate(`/${user.role}/${user.id}`);
     } catch (error) {
       setUser(null);
       throw error;

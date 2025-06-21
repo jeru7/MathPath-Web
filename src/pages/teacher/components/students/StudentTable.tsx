@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useTeacherContext } from "../../../../hooks/useTeacher";
-import { IStudent } from "../../../../types/student.type";
+import { Student } from "../../../../types/student/student.types";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
 import "../../../../styles/customTable.css";
@@ -11,11 +11,11 @@ export default function StudentTable(): ReactElement {
   const navigate = useNavigate();
 
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof IStudent;
+    key: keyof Student;
     direction: "ascending" | "descending";
   }>({ key: "status", direction: "descending" });
 
-  const handleSort = (column: keyof IStudent) => {
+  const handleSort = (column: keyof Student) => {
     let direction: "ascending" | "descending" = "ascending";
 
     if (sortConfig.key === column && sortConfig.direction === "ascending") {
@@ -80,13 +80,13 @@ export default function StudentTable(): ReactElement {
                 </th>
                 <th
                   className="cursor-pointer px-4 py-2"
-                  onClick={() => handleSort("section")}
+                  onClick={() => handleSort("sectionId")}
                 >
                   <div
-                    className={`flex items-center justify-center gap-2 ${sortConfig.key === "section" ? "text-[var(--primary-black)]" : ""}`}
+                    className={`flex items-center justify-center gap-2 ${sortConfig.key === "sectionId" ? "text-[var(--primary-black)]" : ""}`}
                   >
                     Section
-                    {sortConfig.key === "section" ? (
+                    {sortConfig.key === "sectionId" ? (
                       sortConfig.direction === "ascending" ? (
                         <ChevronUp />
                       ) : (
@@ -161,7 +161,7 @@ export default function StudentTable(): ReactElement {
               {sortedStudents.map((student) => (
                 <StudentTableItem
                   student={student}
-                  key={student.studentNumber}
+                  key={student.referenceNumber}
                   onClick={handleItemOnclick}
                 />
               ))}

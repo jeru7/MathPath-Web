@@ -7,14 +7,14 @@ import crownIcon from "../../../../../assets/icons/crownIcon.png";
 import trophyIcon from "../../../../../assets/icons/trophyIcon.png";
 import skullIcon from "../../../../../assets/icons/skullIcon.png";
 import {
-  IStudentQuestListItem,
+  QuestListItem,
   QuestType,
-} from "../../../../../types/student.type";
+} from "../../../../../types/quest/quest.types";
 
 export default function QuestItem({
   quest,
 }: {
-  quest: IStudentQuestListItem;
+  quest: QuestListItem;
 }): ReactElement {
   // quest progress percentage
   const questProgressPercentage = Math.round(
@@ -22,23 +22,23 @@ export default function QuestItem({
   );
 
   // return icon path based on the quest type
-  const displayIcon = (questType: string) => {
+  const displayIcon = (questType: QuestType) => {
     switch (questType) {
-      case QuestType.Item:
+      case "Item":
         return bagIcon;
-      case QuestType.Sunny:
+      case "Sunny":
         return pawIcon;
-      case QuestType.Monster:
+      case "Monster":
         return skullIcon;
-      case QuestType.MagicBook:
+      case "MagicBook":
         return bookIcon;
-      case QuestType.Level:
+      case "Level":
         return starIcon;
-      case QuestType.GameLevel:
+      case "Stage":
         return trophyIcon;
-      case QuestType.Skill:
+      case "Skill":
         return crownIcon;
-      case QuestType.Shop:
+      case "Shop":
         return bagIcon;
     }
   };

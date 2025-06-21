@@ -1,35 +1,34 @@
-// topic stats
-// used for section topic stats
-export interface ISectionTopicResponse {
+import { QuestionDifficulty } from "./stage_attempt/stage_attempt.types";
+
+export type SectionTopicResponse = {
   success: string;
   message: string;
-  data: ISectionTopicStats[];
-}
+  data: SectionTopicStats[];
+};
 
-export interface ISectionTopicStats {
+export type SectionTopicStats = {
   sectionId: string;
   sectionName: string;
-  topicStats: ITopicStats[];
-}
+  topicStats: TopicStats[];
+};
 
-// can be used for student and overall
-export interface IStudentTopicResponse {
+export type StudentTopicResponse = {
   success: string;
   message: string;
-  data: ITopicStats[];
-}
+  data: TopicStats[];
+};
 
-export interface ITopicStats {
+export type TopicStats = {
   totalAttempts: number;
   topic: string;
   level: number;
   avgSecondsPlayed: number;
   avgHintUsed: number;
   completionRate: number;
-  correctness: ICorrectness;
-}
+  correctness: TopicCorrectness;
+};
 
-export interface ICorrectness {
+export type TopicCorrectness = {
   easy: {
     correctPercentage: number;
   };
@@ -39,24 +38,21 @@ export interface ICorrectness {
   hard: {
     correctPercentage: number;
   };
-}
+};
 
-// question stats
-export interface IQuestionStats {
+export type QuestionStats = {
   question: string;
-  difficulty: DifficultyType;
+  difficulty: QuestionDifficulty;
   totalAttempts: number;
   correctCount: number;
   gameLevel: number;
   correctnessPercentage: number;
-}
+};
 
-export interface IQuestionAttempt {
+export type QuestionAttempt = {
   question: string;
   selectedAnswer: string;
   isCorrect: boolean;
-  difficulty: DifficultyType;
+  difficulty: QuestionDifficulty;
   hintUsed: boolean;
-}
-
-export type DifficultyType = "easy" | "medium" | "hard";
+};

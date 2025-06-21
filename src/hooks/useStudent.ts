@@ -1,37 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { IQuestionStats, ITopicStats } from "../types/chart.type";
-import {
-  getStudentQuestionStats,
-  getStudentTopicStats,
-} from "../services/chart.service";
-import {
-  getAssessmentTrackerService,
-  getStagesTrackerService,
-  getStudent,
-  getStudentAttempts,
-  getStudentAttemptStats,
-  getStudentDifficultyFrequency,
-  getStudentPlayerCardStatsService,
-  getStudentProgressLogService,
-  getStudentQuestListService,
-} from "../services/student/student.service";
-import {
-  IDifficultyFrequency,
-  IPlayerCard,
-  IStudent,
-  IStudentAttempt,
-  IStudentAttemptStats,
-  IStudentQuestList,
-} from "../types/student.type";
-import { IProgressLog } from "../types/progress-log.type";
-import { StudentContext } from "../context/StudentContext";
 import { useContext } from "react";
+import { QuestionStats, TopicStats } from "../types/chart.types";
+import * as chartService from "../services/chart.service";
+import * as studentService from "../services/student/student.service";
+import * as studentType from "../types/student/student.types";
+import * as progressCardType from "../types/progress_card.types";
+import { ProgressLog } from "../types/progress_log/progress_log.types";
+import { StudentContext } from "../context/StudentContext";
+import { StageAttempt } from "../types/stage_attempt/stage_attempt.types";
 import {
-  IAssessmentTracker,
-  IStagesTracker,
-} from "../types/progress-card.type";
+  DifficultyFrequency,
+  PlayerCard,
+  StudentAttemptStats,
+} from "../types/student/student_stats.types";
+import { QuestList } from "../types/quest/quest.types";
 
-// context
 export function useStudentContext() {
   const context = useContext(StudentContext);
   if (!context) {
@@ -41,103 +24,100 @@ export function useStudentContext() {
   }
   return context;
 }
-
-// react queries
-// get student data
 export const useStudentData = (studentId: string) => {
-  return useQuery<IStudent>({
+  return useQuery<studentType.Student>({
     queryKey: ["student", studentId, "student-data"],
-    queryFn: () => getStudent(studentId),
+    queryFn: () => studentService.getStudent(studentId),
     enabled: !!studentId,
   });
 };
 
 // get studet attempts
 export const useStudentAttempts = (studentId: string) => {
-  return useQuery<IStudentAttempt[]>({
+  return useQuery<StageAttempt[]>({
     queryKey: ["student", studentId, "attempts"],
-    queryFn: () => getStudentAttempts(studentId),
+    queryFn: () => studentService.getStudentAttempts(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student stats on topic
 export const useStudentTopicStats = (studentId: string) => {
-  return useQuery<ITopicStats[]>({
+  return useQuery<TopicStats[]>({
     queryKey: ["student", studentId, "topic-stats"],
-    queryFn: () => getStudentTopicStats(studentId),
+    queryFn: () => chartService.getStudentTopicStats(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student stats on question
 export const useStudentQuestionStats = (studentId: string) => {
-  return useQuery<IQuestionStats[]>({
+  return useQuery<QuestionStats[]>({
     queryKey: ["student", studentId, "question-stats"],
-    queryFn: () => getStudentQuestionStats(studentId),
+    queryFn: () => chartService.getStudentQuestionStats(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student stats on attempt
 export const useStudentAttemptStats = (studentId: string) => {
-  return useQuery<IStudentAttemptStats>({
+  return useQuery<StudentAttemptStats>({
     queryKey: ["student", studentId, "attempt-stats"],
-    queryFn: () => getStudentAttemptStats(studentId),
+    queryFn: () => studentService.getStudentAttemptStats(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student chosen difficulty frequency stats
 export const useStudentDifficultyFrequency = (studentId: string) => {
-  return useQuery<IDifficultyFrequency>({
+  return useQuery<DifficultyFrequency>({
     queryKey: ["student", studentId, "difficulty-frequency"],
-    queryFn: () => getStudentDifficultyFrequency(studentId),
+    queryFn: () => studentService.getStudentDifficultyFrequency(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student progress log
 export const useStudentProgressLog = (studentId: string) => {
-  return useQuery<IProgressLog[]>({
+  return useQuery<ProgressLog[]>({
     queryKey: ["student", studentId, "progress-log"],
-    queryFn: () => getStudentProgressLogService(studentId),
+    queryFn: () => studentService.getStudentProgressLogService(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student player card stats
 export const useStudentPlayerCard = (studentId: string) => {
-  return useQuery<IPlayerCard>({
+  return useQuery<PlayerCard>({
     queryKey: ["student", studentId, "player-card"],
-    queryFn: () => getStudentPlayerCardStatsService(studentId),
+    queryFn: () => studentService.getStudentPlayerCardStatsService(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student student quest list
 export const useStudentQuestList = (studentId: string) => {
-  return useQuery<IStudentQuestList>({
+  return useQuery<QuestList>({
     queryKey: ["student", studentId, "quest-list"],
-    queryFn: () => getStudentQuestListService(studentId),
+    queryFn: () => studentService.getStudentQuestListService(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student assessment tracker
 export const useStudentAssessmentTracker = (studentId: string) => {
-  return useQuery<IAssessmentTracker>({
+  return useQuery<progressCardType.AssessmentTracker>({
     queryKey: ["student", studentId, "assessment-tracker"],
-    queryFn: () => getAssessmentTrackerService(studentId),
+    queryFn: () => studentService.getAssessmentTrackerService(studentId),
     enabled: !!studentId,
   });
 };
 
 // get student stages tracker
 export const useStudentStagesTracker = (studentId: string) => {
-  return useQuery<IStagesTracker>({
+  return useQuery<progressCardType.StagesTracker>({
     queryKey: ["student", studentId, "stages-tracker"],
-    queryFn: () => getStagesTrackerService(studentId),
+    queryFn: () => studentService.getStagesTrackerService(studentId),
     enabled: !!studentId,
   });
 };

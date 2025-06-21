@@ -1,15 +1,15 @@
 import axios from "axios";
 
-import { ITeacher } from "../types/teacher.type";
-import { IStudent } from "../types/student.type";
-import { ISection } from "../types/section.type";
-import { IAssessment } from "../types/assessment.type";
+import { Teacher } from "../types/teacher/teacher.types";
+import { Student } from "../types/student/student.types";
+import { Section } from "../types/section/section.types";
+import { Assessment } from "../types/assessment/assessment.types";
 
 import { URL } from "../utils/mode.utils";
 
 export const getTeacherById = async (teacherId: string) => {
   try {
-    const res = await axios.get<{ data: ITeacher | null }>(
+    const res = await axios.get<{ data: Teacher | null }>(
       `${URL}/api/web/teachers/${teacherId}`,
     );
 
@@ -22,7 +22,7 @@ export const getTeacherById = async (teacherId: string) => {
 
 export const getTeachers = async () => {
   try {
-    const res = await axios.get<{ data: ITeacher[] | null }>(
+    const res = await axios.get<{ data: Teacher[] | null }>(
       `${URL}/api/web/teachers/`,
     );
 
@@ -35,7 +35,7 @@ export const getTeachers = async () => {
 
 export const getStudentsByTeacherId = async (teacherId: string) => {
   try {
-    const res = await axios.get<{ data: IStudent[] | null }>(
+    const res = await axios.get<{ data: Student[] | null }>(
       `${URL}/api/web/teachers/${teacherId}/students`,
     );
 
@@ -48,7 +48,7 @@ export const getStudentsByTeacherId = async (teacherId: string) => {
 
 export const getSectionsByTeacherId = async (teacherId: string) => {
   try {
-    const res = await axios.get<{ data: ISection[] | null }>(
+    const res = await axios.get<{ data: Section[] | null }>(
       `${URL}/api/web/teachers/${teacherId}/sections`,
     );
 
@@ -61,7 +61,7 @@ export const getSectionsByTeacherId = async (teacherId: string) => {
 
 export const getAssessmentsByTeacherId = async (teacherId: string) => {
   try {
-    const res = await axios.get<{ data: IAssessment[] | null }>(
+    const res = await axios.get<{ data: Assessment[] | null }>(
       `${URL}/api/web/teachers/${teacherId}/assessments`,
     );
 

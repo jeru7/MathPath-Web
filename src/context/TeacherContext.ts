@@ -1,19 +1,19 @@
 import { createContext } from "react";
 
-import { IStudent } from "../types/student.type";
-import { ISection } from "../types/section.type";
-import { IAssessment } from "../types/assessment.type";
-import { ITeacher } from "../types/teacher.type";
+import { Student } from "../types/student/student.types";
+import { Section } from "../types/section/section.types";
+import { Assessment } from "../types/assessment/assessment.types";
+import { Teacher } from "../types/teacher/teacher.types";
 
-interface TeacherContextType {
-  teacher: ITeacher | null;
-  students: IStudent[];
-  sections: ISection[];
-  assessments: IAssessment[];
-  onlineStudents: IStudent[];
-}
+type TeacherContext = {
+  teacher: Teacher | null;
+  students: Student[];
+  sections: Section[];
+  assessments: Assessment[];
+  onlineStudents: Student[];
+};
 
-export const TeacherContext = createContext<TeacherContextType>({
+export const TeacherContext = createContext<TeacherContext>({
   teacher: null,
   students: [],
   sections: [],

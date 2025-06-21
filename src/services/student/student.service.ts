@@ -1,17 +1,14 @@
 import axios from "axios";
-import {
-  IPlayerCard,
-  IStudentQuestList,
-  StudentFormData,
-} from "../../types/student.type";
+import * as studentType from "../../types/student/student.types";
 import { URL } from "../../utils/mode.utils";
-import {
-  IAssessmentTracker,
-  IStagesTracker,
-} from "../../types/progress-card.type";
+import * as progressCardType from "../../types/progress_card.types";
+import { PlayerCard } from "../../types/student/student_stats.types";
+import { QuestList } from "../../types/quest/quest.types";
 
 // create student
-export const createStudentService = async (studentData: StudentFormData) => {
+export const createStudentService = async (
+  studentData: studentType.StudentFormData,
+) => {
   const res = await axios.post(`${URL}/api/web/students/`, studentData);
 
   return res.data;
@@ -61,7 +58,7 @@ export const getStudentProgressLogService = async (studentId: string) => {
 // get student player card stats
 export const getStudentPlayerCardStatsService = async (
   studentId: string,
-): Promise<IPlayerCard> => {
+): Promise<PlayerCard> => {
   const res = await axios.get(
     `${URL}/api/web/students/${studentId}/stats/player-card`,
   );
@@ -72,7 +69,7 @@ export const getStudentPlayerCardStatsService = async (
 // get student quest list tracker
 export const getStudentQuestListService = async (
   studentId: string,
-): Promise<IStudentQuestList> => {
+): Promise<QuestList> => {
   const res = await axios.get(
     `${URL}/api/web/students/${studentId}/tracker/quest-list`,
   );
@@ -83,7 +80,7 @@ export const getStudentQuestListService = async (
 // get student assessment tracker
 export const getAssessmentTrackerService = async (
   studentId: string,
-): Promise<IAssessmentTracker> => {
+): Promise<progressCardType.AssessmentTracker> => {
   const res = await axios.get(
     `${URL}/api/web/students/${studentId}/tracker/assessment`,
   );
@@ -94,7 +91,7 @@ export const getAssessmentTrackerService = async (
 // get student stages tracker
 export const getStagesTrackerService = async (
   studentId: string,
-): Promise<IStagesTracker> => {
+): Promise<progressCardType.StagesTracker> => {
   const res = await axios.get(
     `${URL}/api/web/students/${studentId}/tracker/stage`,
   );

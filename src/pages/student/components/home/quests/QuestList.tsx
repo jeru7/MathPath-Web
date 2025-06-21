@@ -7,16 +7,15 @@ import {
   useStudentContext,
   useStudentQuestList,
 } from "../../../../../hooks/useStudent";
-import { IStudentQuestListItem } from "../../../../../types/student.type";
-import { filterOptions, FilterOption } from "../../../../../types/select.type";
+import { QuestListItem } from "../../../../../types/quest/quest.types";
+import { filterOptions, FilterOption } from "../../../../../types/select.types";
 
-// DONE: Quest Tracker
 export default function QuestList(): ReactElement {
   const { student } = useStudentContext();
-  const { data: questList } = useStudentQuestList(student ? student?._id : "");
+  const { data: questList } = useStudentQuestList(student ? student?.id : "");
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const filteredQuestList = questList?.questList.filter(
-    (quest: IStudentQuestListItem) => {
+    (quest: QuestListItem) => {
       if (selectedFilter.value === "all") return true;
       const isCompleted = quest.req === quest.reqCompleted;
 
@@ -56,7 +55,7 @@ export default function QuestList(): ReactElement {
         <QuestChests quest={questList} />
         {/* Quest List - Grid */}
         <section className="grid grid-cols-3 gap-3 auto-rows-min w-full h-auto bg-white">
-          {filteredQuestList?.map((quest: IStudentQuestListItem) => (
+          {filteredQuestList?.map((quest: QuestListItem) => (
             <QuestItem key={quest.questName} quest={quest} />
           ))}
         </section>{" "}

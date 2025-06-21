@@ -6,14 +6,11 @@ import SBanner_1 from "../../../../assets/images/Banner_1.jpg";
 import SBanner_2 from "../../../../assets/images/Banner_2.jpg";
 import SBanner_3 from "../../../../assets/images/Banner_3.jpg";
 
-import {
-  IAddSection,
-  SectionBannerType,
-  SectionColorType,
-} from "../../../../types/section.type";
-import { addSection } from "../../../../services/section.service";
+import * as sectionType from "../../../../types/section/section.types";
+import { createSection } from "../../../../services/section.service";
+import { CreateSectionDto } from "../../../../types/section/section.dto";
 
-export default function AddSectionForm({
+export default function CreateSectionForm({
   setShowForm,
 }: {
   setShowForm: (show: boolean) => void;
@@ -21,20 +18,20 @@ export default function AddSectionForm({
   const { teacherId } = useParams();
   const queryClient = useQueryClient();
 
-  const [sectionData, setSectionData] = useState<IAddSection>({
+  const [sectionData, setSectionData] = useState<CreateSectionDto>({
     name: "",
-    teacher: "",
+    teacherId: teacherId as string,
     color: "primary-green",
     banner: "SBanner_1",
-    lastChecked: new Date(),
-    students: [] as string[],
-    assessments: [] as string[],
+    lastChecked: new Date().toString(),
+    studentIds: [] as string[],
+    assessmentIds: [] as string[],
   });
   const [showError, setShowError] = useState(false);
 
   const addSectionMutation = useMutation({
-    mutationFn: (sectionData: IAddSection) =>
-      addSection(teacherId || "", sectionData),
+    mutationFn: (sectionData: CreateSectionDto) =>
+      createSection(teacherId as string, sectionData),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["teacher", teacherId, "sections"],
@@ -69,7 +66,7 @@ export default function AddSectionForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!sectionData.name.trim()) {
+    if (!sectionData.name?.trim()) {
       setSectionData((prev) => ({
         ...prev,
         name: "",
@@ -84,6 +81,8 @@ export default function AddSectionForm({
   const handleCancel = () => {
     setShowForm(false);
   };
+
+  if (!teacherId) return <div>Loading...</div>;
 
   return (
     <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-black/20">
@@ -129,7 +128,7 @@ export default function AddSectionForm({
                       onChange={() =>
                         setSectionData((prev) => ({
                           ...prev,
-                          banner: banner as SectionBannerType,
+                          banner: banner as sectionType.SectionBanner,
                         }))
                       }
                       className="hidden"
@@ -177,7 +176,7 @@ export default function AddSectionForm({
                       onChange={() =>
                         setSectionData((prev) => ({
                           ...prev,
-                          color: color as SectionColorType,
+                          color: color as sectionType.SectionColor,
                         }))
                       }
                       className="hidden"

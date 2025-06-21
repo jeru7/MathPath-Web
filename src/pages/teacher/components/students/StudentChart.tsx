@@ -12,14 +12,14 @@ import {
   TooltipProps,
   YAxis,
 } from "recharts";
-import { IQuestionStats } from "../../../../types/chart.type";
+import { QuestionStats } from "../../../../types/chart.types";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
 // Normalize question stats para sa pag render sa chart
-const getQuestionStats = (questions: IQuestionStats[] = []) => {
+const getQuestionStats = (questions: QuestionStats[] = []) => {
   return questions.map((question, index) => ({
     questionNumber: `Question ${index + 1}`,
     question: question.question,

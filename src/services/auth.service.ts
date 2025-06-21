@@ -1,10 +1,10 @@
 import axios from "axios";
-import { IUserLogin } from "../types/user.type";
+import { User } from "../types/user.type";
 import { URL } from "../utils/mode.utils";
 
 export const loginService = async (identifier: string, password: string) => {
   try {
-    const res = await axios.post<{ data: IUserLogin }>(
+    const res = await axios.post<{ data: User }>(
       `${URL}/api/web/auth/login`,
       {
         identifier,
@@ -20,7 +20,7 @@ export const loginService = async (identifier: string, password: string) => {
 };
 
 export const checkAuthService = async () => {
-  const res = await axios.get<{ data: IUserLogin }>(
+  const res = await axios.get<{ data: User }>(
     `${URL}/api/web/auth/auth-check`,
     {
       withCredentials: true,

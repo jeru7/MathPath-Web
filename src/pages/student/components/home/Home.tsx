@@ -10,12 +10,11 @@ import ActivityList from "./activities/ActivityList.tsx";
 import { useStudentContext } from "../../../../hooks/useStudent.ts";
 import { capitalizeWord } from "../../../../utils/string.utils.ts";
 import { getSection } from "../../../../services/section.service.ts";
-import { ISection } from "../../../../types/section.type.ts";
-import { titleEnum } from "../../../../types/progress-card.type.ts";
+import { Section } from "../../../../types/section/section.types.ts";
 
 export default function Home(): ReactElement {
   const { student } = useStudentContext();
-  const [section, setSection] = useState<ISection | null>(null);
+  const [section, setSection] = useState<Section | null>(null);
 
   const currentExp = student?.exp.currentExp ?? 0;
   const nextLevelExp = student?.exp.nextLevelExp ?? 1;
@@ -23,16 +22,16 @@ export default function Home(): ReactElement {
 
   useEffect(() => {
     const fetchSection = async () => {
-      if (student?.section) {
-        const data = await getSection(student.section);
+      if (student?.sectionId) {
+        const data = await getSection(student.sectionId);
         setSection(data);
       }
     };
 
     fetchSection();
-  }, [student?.section]);
+  }, [student?.sectionId]);
 
-  if (!student?._id) return <div>Loading...</div>;
+  if (!student?.id) return <div>Loading...</div>;
 
   return (
     <main className="flex flex-col h-full w-full p-4 gap-4">
@@ -85,7 +84,7 @@ export default function Home(): ReactElement {
             </section>
 
             {/* PlayerCard: Player info and Player character display */}
-            <PlayerCard studentId={student._id} />
+            <PlayerCard studentId={student.id} />
           </section>
 
           {/* Section: Calendar and To-do*/}
@@ -110,12 +109,9 @@ export default function Home(): ReactElement {
             {/* Section: Assessment and Stages */}
             <section className="w-[20%] h-full flex flex-col gap-3">
               {/* Assessments */}
-              <ProgressCard
-                title={titleEnum.Assessment}
-                studentId={student._id}
-              />
+              <ProgressCard title={"Assessment"} studentId={student.id} />
               {/* Stages */}
-              <ProgressCard title={titleEnum.Stage} studentId={student._id} />
+              <ProgressCard title={"Stage"} studentId={student.id} />
             </section>
           </div>
 

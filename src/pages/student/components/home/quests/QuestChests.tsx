@@ -1,11 +1,11 @@
 import { type ReactElement } from "react";
 import chestIcon from "../../../../../assets/icons/chestIcon.png";
-import { IStudentQuestList } from "../../../../../types/student.type";
+import { QuestList } from "../../../../../types/quest/quest.types";
 
 export default function QuestChests({
   quest,
 }: {
-  quest: IStudentQuestList | undefined;
+  quest: QuestList | undefined;
 }): ReactElement {
   return (
     <article className="w-full py-2 h-12 flex items-center absolute top-0 inset-0">
@@ -14,7 +14,7 @@ export default function QuestChests({
         {/* Progress Fill */}
         <div
           className="h-full bg-[var(--primary-orange)] rounded-full"
-          style={{ width: `${quest?.questProgressPercentage}%` }}
+          style={{ width: `${quest?.questChestPercentage}%` }}
         ></div>
 
         {/* Quest chests */}

@@ -1,29 +1,29 @@
-export interface IAssessment {
+export type Assessment = {
   _id: string;
   name: string;
   topic: string;
   description: string;
   teacher: string;
   sections: string[];
-  questions: IQuestion[];
+  questions: AssessmentQuestion[];
   deadline: Date;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
-export interface IQuestion {
+export type AssessmentQuestion = {
   question: string;
   points: number;
   choices: string[];
   answer: string;
-}
+};
 
-export interface ICreateAssessment {
+export type CreateAssessment = {
   name: string;
   topic: string;
   description: string;
   teacher: string;
   sections: string[];
-  questions: IQuestion[];
+  questions: AssessmentQuestion[];
   deadline: Date;
-}
+};

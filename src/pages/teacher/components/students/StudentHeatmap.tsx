@@ -6,22 +6,22 @@ import "react-calendar-heatmap/dist/styles.css";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { useParams } from "react-router-dom";
-import { IProgressLog } from "../../../../types/progress-log.type";
 import { useStudentProgressLog } from "../../../../hooks/useStudent";
 import "../../../../index.css";
 import { format } from "date-fns";
+import { ProgressLog } from "../../../../types/progress_log/progress_log.types";
 
 // normalization ng data para madali ma access sa heatmap
-function getQuestionStats(data: IProgressLog[] = []) {
+function getQuestionStats(data: ProgressLog[] = []) {
   return data.map((progressLog) => ({
     date: progressLog.date.slice(0, 10),
     count:
-      progressLog.gameLevelsPlayed +
-      progressLog.totalWins +
+      progressLog.stagesPlayed +
+      progressLog.totalStageWins +
       progressLog.completedQuest.length,
     minutesPlayed: Math.floor(progressLog.secondsPlayed / 60),
-    gameLevelsPlayed: progressLog.gameLevelsPlayed,
-    totalWins: progressLog.totalWins,
+    stagesPlayed: progressLog.stagesPlayed,
+    totalWins: progressLog.totalStageWins,
     completedQuest: progressLog.completedQuest,
   }));
 }
@@ -29,8 +29,8 @@ function getQuestionStats(data: IProgressLog[] = []) {
 // error siya sa library - https://github.com/kevinsqi/react-calendar-heatmap/issues/146
 // @ts-expect-error: override internal method to adjust heatmap height
 CalendarHeatmap.prototype.getHeight = function () {
-  // @ts-expect-error: override internal method to adjust heatmap height
   return (
+    // @ts-expect-error: override internal method to adjust heatmap height
     this.getWeekWidth() + (this.getMonthLabelSize() - this.props.gutterSize)
   );
 };

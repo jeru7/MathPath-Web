@@ -7,7 +7,7 @@ import SBanner_3 from "../../../../assets/images/Banner_3.jpg";
 import { Ellipsis } from "lucide-react";
 import { format } from "date-fns";
 
-import { ISection } from "../../../../types/section.type";
+import { Section } from "../../../../types/section/section.types";
 import { convertToPhilippinesDate } from "../../../../utils/date.util";
 import { useParams } from "react-router-dom";
 import { useTeacherContext } from "../../../../hooks/useTeacher";
@@ -15,14 +15,14 @@ import { useTeacherContext } from "../../../../hooks/useTeacher";
 export default function SectionCard({
   section,
 }: {
-  section: ISection;
+  section: Section;
 }): ReactElement {
   const { teacherId } = useParams();
   const { onlineStudents, students } = useTeacherContext();
 
   const getOnlineStudentsCount = () => {
     const onlineInSection = onlineStudents.filter((student) =>
-      section.students?.includes(student._id),
+      section.studentIds?.includes(student.id),
     );
 
     return onlineInSection.length;
@@ -71,13 +71,13 @@ export default function SectionCard({
         <div className="flex items-center justify-between">
           <div className="flex items-end gap-1">
             <p className="text-4xl font-bold">
-              {section.students?.length ?? 0}
+              {section.studentIds?.length ?? 0}
             </p>
             <p className="text-[var(--primary-gray)]">Students</p>
           </div>
           <div className="flex items-end gap-1">
             <p className="text-4xl font-bold">
-              {section.assessments?.length ?? 0}
+              {section.assessmentIds?.length ?? 0}
             </p>
             <p className="text-[var(--primary-gray)]">Assessments</p>
           </div>

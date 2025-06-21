@@ -1,17 +1,16 @@
 import { type ReactElement } from "react";
 import HalfCircleProgress from "./HalfCircleProgress";
-import { titleEnum } from "../../../../../types/progress-card.type";
+import { ProgressType } from "../../../../../types/progress_card.types";
 import {
   useStudentAssessmentTracker,
   useStudentStagesTracker,
 } from "../../../../../hooks/useStudent";
 
-// DONE: Progress Card
 export default function ProgressCard({
   title,
   studentId,
 }: {
-  title: titleEnum;
+  title: ProgressType;
   studentId: string;
 }): ReactElement {
   const { data: assessments } = useStudentAssessmentTracker(studentId);
@@ -19,7 +18,7 @@ export default function ProgressCard({
 
   console.log(stages);
 
-  const data = title === titleEnum.Assessment ? assessments : stages;
+  const data = title === "Assessment" ? assessments : stages;
 
   return (
     <article className="w-full h-full rounded-md shadow-sm bg-white px-4 py-2 flex flex-col items-center">

@@ -8,12 +8,18 @@ import {
   ResponsiveContainer,
   TooltipProps,
   YAxis,
-} from 'recharts';
+} from "recharts";
 import { useState, useEffect, type ReactElement } from "react";
-import { useTeacherOverallTopicStats, useTeacherSectionTopicStats } from '../../../../hooks/useTeacher';
-import { ITopicStats, ISectionTopicStats } from '../../../../types/chart.type';
-import { useParams } from 'react-router-dom';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import {
+  useTeacherOverallTopicStats,
+  useTeacherSectionTopicStats,
+} from "../../../../hooks/useTeacher";
+import { TopicStats, SectionTopicStats } from "../../../../types/chart.types";
+import { useParams } from "react-router-dom";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 function TopicStatsCustomTooltip({
   active,
@@ -25,9 +31,15 @@ function TopicStatsCustomTooltip({
     return (
       <div className="bg-white flex flex-col gap-1 p-2 rounded shadow border text-sm max-w-xs">
         <p className="italic text-[var(--primary-black)]">"{data.topic}"</p>
-        <p className="text-[var(--primary-black)]">Total Attempts: {data.totalAttempts}</p>
-        <p className="text-[var(--primary-black)]">Avg Time Spent: {data.avgMinsPlayed}</p>
-        <p className="text-[var(--tertiary-green)]">Completion Rate: {data.completionRate}%</p>
+        <p className="text-[var(--primary-black)]">
+          Total Attempts: {data.totalAttempts}
+        </p>
+        <p className="text-[var(--primary-black)]">
+          Avg Time Spent: {data.avgMinsPlayed}
+        </p>
+        <p className="text-[var(--tertiary-green)]">
+          Completion Rate: {data.completionRate}%
+        </p>
       </div>
     );
   }
@@ -45,9 +57,15 @@ function CorrectnessCustomTooltip({
     return (
       <div className="bg-white flex flex-col gap-1 p-2 rounded shadow border text-sm max-w-xs">
         <p className="italic text-[var(--primary-black)]">"{data.topic}"</p>
-        <p className="text-[var(--tertiary-green)]">Easy: {data.correctness.easy}%</p>
-        <p className="text-[var(--primary-yellow)]">Medium: {data.correctness.medium}%</p>
-        <p className="text-[var(--primary-red)]">Hard: {data.correctness.hard}%</p>
+        <p className="text-[var(--tertiary-green)]">
+          Easy: {data.correctness.easy}%
+        </p>
+        <p className="text-[var(--primary-yellow)]">
+          Medium: {data.correctness.medium}%
+        </p>
+        <p className="text-[var(--primary-red)]">
+          Hard: {data.correctness.hard}%
+        </p>
       </div>
     );
   }
@@ -55,10 +73,9 @@ function CorrectnessCustomTooltip({
   return null;
 }
 
-
-// normalized overall topic data per topic - pang transform lang para marender nang maayos 
-function getOverallChartData(data: ITopicStats[] = []) {
-  console.log(data)
+// normalized overall topic data per topic - pang transform lang para marender nang maayos
+function getOverallChartData(data: TopicStats[] = []) {
+  console.log(data);
   return data.map((topic) => ({
     name: `Level ${topic.level}`,
     topic: topic.topic,
@@ -75,7 +92,10 @@ function getOverallChartData(data: ITopicStats[] = []) {
 }
 
 // normalized section topic data per topic - pang transform lang para marender nang maayos
-function getSectionChartData(data: ISectionTopicStats[] = [], selectedSection: string | null) {
+function getSectionChartData(
+  data: SectionTopicStats[] = [],
+  selectedSection: string | null,
+) {
   return data
     .filter((section) => section.sectionName === selectedSection)
     .flatMap((section) =>
@@ -91,16 +111,24 @@ function getSectionChartData(data: ISectionTopicStats[] = [], selectedSection: s
           medium: topic.correctness.medium.correctPercentage,
           hard: topic.correctness.hard.correctPercentage,
         },
-      }))
+      })),
     );
 }
 
-export default function TeacherChart({ classNames }: { classNames: string }): ReactElement {
+export default function TeacherChart({
+  classNames,
+}: {
+  classNames: string;
+}): ReactElement {
   const [viewMode, setViewMode] = useState<"overall" | "by section">("overall");
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const { teacherId } = useParams();
-  const { data: overallTopicStats } = useTeacherOverallTopicStats(teacherId || "");
-  const { data: sectionTopicStats = [] } = useTeacherSectionTopicStats(teacherId || "");
+  const { data: overallTopicStats } = useTeacherOverallTopicStats(
+    teacherId || "",
+  );
+  const { data: sectionTopicStats = [] } = useTeacherSectionTopicStats(
+    teacherId || "",
+  );
 
   useEffect(() => {
     if (viewMode === "by section" && sectionTopicStats.length > 0) {
@@ -126,7 +154,9 @@ export default function TeacherChart({ classNames }: { classNames: string }): Re
           <select
             className="rounded-md border px-3 py-2"
             value={viewMode}
-            onChange={(e) => setViewMode(e.target.value as "overall" | "by section")}
+            onChange={(e) =>
+              setViewMode(e.target.value as "overall" | "by section")
+            }
           >
             <option value="overall">All</option>
             <option value="by section">By Section</option>
@@ -164,7 +194,11 @@ export default function TeacherChart({ classNames }: { classNames: string }): Re
               <YAxis domain={[0, 100]} />
               <Tooltip content={<TopicStatsCustomTooltip />} />
               <Legend />
-              <Bar dataKey="completionRate" fill="#99d58d" name="Completion Rate" />
+              <Bar
+                dataKey="completionRate"
+                fill="#99d58d"
+                name="Completion Rate"
+              />
             </BarChart>
           </ResponsiveContainer>
         )}

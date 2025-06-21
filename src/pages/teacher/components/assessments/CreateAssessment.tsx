@@ -2,25 +2,23 @@ import { useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AddButton from "../AddButton";
 import AssessmentQuestion from "./AssessmentQuestion";
-import {
-  ICreateAssessment,
-  IQuestion,
-} from "../../../../types/assessment.type";
+import * as assessmentType from "../../../../types/assessment/assessment.types";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../styles/customDatePopper.css";
 
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import { getCustomSelectColor } from "../../../../styles/selectStyles";
 import { Calendar } from "lucide-react";
+import { SectionSelection } from "../../../../types/section/section.types";
 
 export default function CreateAssessment(): ReactElement {
   const navigate = useNavigate();
   const { teacherId } = useParams();
 
-  const [assessmentDetails, setAssessmentDetails] = useState<ICreateAssessment>(
-    {
+  const [assessmentDetails, setAssessmentDetails] =
+    useState<assessmentType.CreateAssessment>({
       name: "",
       topic: "",
       description: "",
@@ -28,10 +26,11 @@ export default function CreateAssessment(): ReactElement {
       sections: [],
       questions: [],
       deadline: new Date(),
-    },
-  );
+    });
 
-  const [questions, setQuestions] = useState<IQuestion[]>([]);
+  const [questions, setQuestions] = useState<
+    assessmentType.AssessmentQuestion[]
+  >([]);
 
   const handleCreateBtn = () => {
     alert("Created");
@@ -53,7 +52,10 @@ export default function CreateAssessment(): ReactElement {
     ]);
   };
 
-  const updateQuestion = (id: number, updatedData: Partial<IQuestion>) => {
+  const updateQuestion = (
+    id: number,
+    updatedData: Partial<assessmentType.AssessmentQuestion>,
+  ) => {
     setQuestions((prev) =>
       prev.map((q, index) => (index === id ? { ...q, ...updatedData } : q)),
     );
@@ -79,8 +81,10 @@ export default function CreateAssessment(): ReactElement {
     }));
   };
 
-  const handleSectionChange = (selectedOptions: any) => {
-    const selectedSections = selectedOptions.map((option: any) => option.value);
+  const handleSectionChange = (
+    selectedOptions: MultiValue<SectionSelection>,
+  ) => {
+    const selectedSections = selectedOptions.map((option) => option.value);
     setAssessmentDetails((prev) => ({
       ...prev,
       sections: selectedSections,
@@ -150,7 +154,7 @@ export default function CreateAssessment(): ReactElement {
               <label htmlFor="sections" className="block font-semibold">
                 Sections
               </label>
-              <Select
+              <Select<SectionSelection, true>
                 isMulti
                 name="sections"
                 options={[

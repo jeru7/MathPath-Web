@@ -14,12 +14,12 @@ import {
   useStudentDifficultyFrequency,
 } from "../../../../hooks/useStudent";
 import { useTeacherSections } from "../../../../hooks/useTeacher";
-import { ISection } from "../../../../types/section.type";
-import { IDifficultyFrequency } from "../../../../types/student.type";
+import { Section } from "../../../../types/section/section.types";
 import StudentHeatmap from "./StudentHeatmap";
 import AttemptHistory from "./AttemptHistory";
+import { DifficultyFrequency } from "../../../../types/student/student_stats.types";
 
-const getDifficultyFrequency = (data: IDifficultyFrequency | undefined) => {
+const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
   if (!data) {
     return (["easy", "medium", "hard"] as const).map((level) => ({
       frequency: level,
@@ -45,28 +45,28 @@ export default function Student(): ReactElement {
   const { data: sections } = useTeacherSections(teacherId || "");
 
   const [studentSection, setStudentSection] = useState<string>("");
-  const [currentGameLevel, setCurrentGameLevel] = useState<number | undefined>(
+  const [currentStage, setCurrentStage] = useState<number | undefined>(
     undefined,
   );
 
   const difficultyFrequencyData = getDifficultyFrequency(difficultyFrequency);
 
   useEffect(() => {
-    const getCurrentGameLevel = () => {
-      const allLevels = studentData?.gameLevels ?? [];
+    const getCurrentStage = () => {
+      const allStages = studentData?.stages ?? [];
 
-      const unlockedLevels = allLevels.filter((level) => level.unlocked);
+      const unlockedLevels = allStages.filter((stage) => stage.unlocked);
 
       const latest = unlockedLevels.length
         ? unlockedLevels[unlockedLevels.length - 1]
         : undefined;
 
-      setCurrentGameLevel(latest?.level);
+      setCurrentStage(latest?.level);
     };
 
     const getStudentSection = () => {
-      const currentSection: ISection | undefined = sections?.find(
-        (section) => section._id === studentData?.section,
+      const currentSection: Section | undefined = sections?.find(
+        (section) => section.id === studentData?.sectionId,
       );
 
       if (currentSection) {
@@ -75,7 +75,7 @@ export default function Student(): ReactElement {
     };
 
     if (!studentDataLoading) {
-      getCurrentGameLevel();
+      getCurrentStage();
       getStudentSection();
     }
   }, [studentData, sections, studentDataLoading]);
@@ -122,16 +122,10 @@ export default function Student(): ReactElement {
               <p>{studentData?.referenceNumber}</p>
             </div>
 
-            {/* Username */}
+            {/* Current Stage */}
             <div className="flex items-center gap-2 text-xl">
-              <p className="font-bold">Username:</p>
-              <p>{studentData?.username}</p>
-            </div>
-
-            {/* Current Game Level */}
-            <div className="flex items-center gap-2 text-xl">
-              <p className="font-bold">Current Game Level:</p>
-              <p>{currentGameLevel}</p>
+              <p className="font-bold">Current Stage:</p>
+              <p>{currentStage}</p>
             </div>
 
             {/* Section */}

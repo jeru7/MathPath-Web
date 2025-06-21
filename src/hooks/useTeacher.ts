@@ -1,27 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { TeacherContext } from "../context/TeacherContext";
-import {
-  getAssessmentsByTeacherId,
-  getSectionsByTeacherId,
-  getStudentsByTeacherId,
-  getTeacherById,
-} from "../services/teacher.service";
-
-import { ITeacher } from "../types/teacher.type";
-import { IStudent } from "../types/student.type";
-import { ISection } from "../types/section.type";
-import { IAssessment } from "../types/assessment.type";
 import { useContext } from "react";
-import { ISectionTopicStats, ITopicStats } from "../types/chart.type";
-import {
-  getOverallTopicStats,
-  getPerSectionsTopicStats,
-} from "../services/chart.service";
+import { TeacherContext } from "../context/TeacherContext";
+import * as teacherService from "../services/teacher.service";
+import { Teacher } from "../types/teacher/teacher.types";
+import { Student } from "../types/student/student.types";
+import { Section } from "../types/section/section.types";
+import { Assessment } from "../types/assessment/assessment.types";
+import { SectionTopicStats, TopicStats } from "../types/chart.types";
+import * as chartService from "../services/chart.service";
 
-// 5 mins
-const DATA_STALE_TIME = 1000 * 60 * 5;
+const DATA_STALE_TIME = 1000 * 60 * 5; // 5 mins
 
-// context
 export function useTeacherContext() {
   const context = useContext(TeacherContext);
   if (!context) {
@@ -32,39 +21,38 @@ export function useTeacherContext() {
   return context;
 }
 
-// react queries
 // get teacher data - teacher info
 export const useTeacher = (teacherId: string) => {
-  return useQuery<ITeacher | null>({
+  return useQuery<Teacher | null>({
     queryKey: ["teacher", teacherId],
-    queryFn: () => getTeacherById(teacherId),
+    queryFn: () => teacherService.getTeacherById(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };
 
 // get teacher students
 export const useTeacherStudents = (teacherId: string) => {
-  return useQuery<IStudent[]>({
+  return useQuery<Student[]>({
     queryKey: ["teacher", teacherId, "students"],
-    queryFn: () => getStudentsByTeacherId(teacherId),
+    queryFn: () => teacherService.getStudentsByTeacherId(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };
 
 // get teacher sections
 export const useTeacherSections = (teacherId: string) => {
-  return useQuery<ISection[]>({
+  return useQuery<Section[]>({
     queryKey: ["teacher", teacherId, "sections"],
-    queryFn: () => getSectionsByTeacherId(teacherId),
+    queryFn: () => teacherService.getSectionsByTeacherId(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };
 
 // get teacher assessments
 export const useTeacherAssessments = (teacherId: string) => {
-  return useQuery<IAssessment[]>({
+  return useQuery<Assessment[]>({
     queryKey: ["teacher", teacherId, "assessments"],
-    queryFn: () => getAssessmentsByTeacherId(teacherId),
+    queryFn: () => teacherService.getAssessmentsByTeacherId(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };
@@ -73,18 +61,18 @@ export const useTeacherAssessments = (teacherId: string) => {
 
 // get overall topic stats - all students handled by the teacher
 export const useTeacherOverallTopicStats = (teacherId: string) => {
-  return useQuery<ITopicStats[]>({
+  return useQuery<TopicStats[]>({
     queryKey: ["teacher", teacherId, "overall-topic-stats"],
-    queryFn: () => getOverallTopicStats(teacherId),
+    queryFn: () => chartService.getOverallTopicStats(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };
 
 // get overall topic stats per section - all students (grouped by section) that is handled by the teacher
 export const useTeacherSectionTopicStats = (teacherId: string) => {
-  return useQuery<ISectionTopicStats[]>({
+  return useQuery<SectionTopicStats[]>({
     queryKey: ["teacher", teacherId, "section-topic-stats"],
-    queryFn: () => getPerSectionsTopicStats(teacherId),
+    queryFn: () => chartService.getPerSectionsTopicStats(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };

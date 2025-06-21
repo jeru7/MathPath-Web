@@ -31,7 +31,7 @@ export function TeacherProvider({
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
 
   const onlineStudents = useMemo(() => {
-    return students?.filter((s) => onlineStudentIds.includes(s._id));
+    return students?.filter((s) => onlineStudentIds.includes(s.id));
   }, [students, onlineStudentIds]);
 
   const connectWebSocket = useCallback(() => {

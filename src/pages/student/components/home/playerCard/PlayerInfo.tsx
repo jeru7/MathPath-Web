@@ -32,7 +32,10 @@ export default function PlayerInfo({
       <div className="flex gap-2 items-center w-full border-b pb-1 border-b-white/50">
         <img src={hourglassIcon} alt="Hourglass Icon" className="w-8 h-8" />
         <p className="text-white font-semibold text-xl">
-          Total Playtime: {playerCardStats?.totalPlaytime ?? "???"}hrs
+          Total Playtime:{" "}
+          {playerCardStats?.totalPlaytime
+            ? "???"
+            : `${playerCardStats?.totalPlaytime}hrs`}
         </p>
       </div>
       <div className="flex gap-2 items-center w-full border-b pb-1 border-b-white/50">

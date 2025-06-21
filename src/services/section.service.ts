@@ -1,15 +1,15 @@
 import axios from "axios";
-import { IAddSection } from "../types/section.type";
 import { URL } from "../utils/mode.utils";
+import { CreateSectionDto } from "../types/section/section.dto";
 
 export const getSection = async (sectionId: string) => {
   const res = await axios.get(`${URL}/api/web/sections/${sectionId}`);
   return res.data.data;
 };
 
-export const addSection = async (
+export const createSection = async (
   teacherId: string,
-  sectionData: IAddSection,
+  sectionData: CreateSectionDto,
 ) => {
   try {
     console.log(sectionData);

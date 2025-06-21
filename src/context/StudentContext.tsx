@@ -1,11 +1,11 @@
 import { createContext } from "react";
 
-import { IStudent } from "../types/student.type";
+import { Student } from "../types/student/student.types";
 
-interface StudentContextType {
-  student: IStudent | null;
-}
+type StudentContext = {
+  student: Student | null;
+};
 
-export const StudentContext = createContext<StudentContextType>({
+export const StudentContext = createContext<StudentContext>({
   student: null,
 });

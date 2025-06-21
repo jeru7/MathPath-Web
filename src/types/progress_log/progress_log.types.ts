@@ -1,20 +1,18 @@
-export interface IProgressLog {
+export type ProgressLog = {
   studentId: string;
   date: string;
-  gameLevelsPlayed: number;
+  stagesPlayed: number;
   secondsPlayed: number;
   completedQuest: string[];
   currentLevel: number;
-  totalExp: number;
-  totalCoins: number;
-  totalWins: number;
+  totalExpGained: number;
+  totalCoinsGained: number;
+  totalStageWins: number;
   winRate: number;
-  answerCorrectness: IAnswerCorrectness;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  answerCorrectness: AnswerCorrectness;
+};
 
-export interface IAnswerCorrectness {
+export interface AnswerCorrectness {
   easy: {
     correctAnswers: number;
     attempts: number;

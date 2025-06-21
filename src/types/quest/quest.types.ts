@@ -1,0 +1,52 @@
+export type StudentQuest = {
+  questId: string;
+  questReqCompleted: number;
+  isClaimed: boolean;
+};
+
+export type QuestType =
+  | "Level"
+  | "Shop"
+  | "Skill"
+  | "Stage"
+  | "Monster"
+  | "Item"
+  | "Sunny"
+  | "MagicBook";
+
+export type QuestList = {
+  questChestPercentage: number;
+  questChest: QuestChests;
+  questList: QuestListItem[];
+};
+
+export type QuestListItem = {
+  questName: string;
+  questType: QuestType;
+  isClaimed: boolean;
+  reqCompleted: number;
+  req: number;
+};
+
+export type QuestChests = {
+  quest25: {
+    completed: boolean;
+    rewards: QuestChestReward;
+    claimed: boolean;
+  };
+  quest50: {
+    completed: boolean;
+    rewards: QuestChestReward;
+    claimed: boolean;
+  };
+  quest100: {
+    completed: boolean;
+    rewards: QuestChestReward;
+    claimed: boolean;
+  };
+};
+
+export type QuestChestReward = {
+  exp: number;
+  coins: number;
+};

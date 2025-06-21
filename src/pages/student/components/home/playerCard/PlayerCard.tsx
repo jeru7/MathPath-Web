@@ -2,6 +2,7 @@ import { type ReactElement } from "react";
 import mainBackground from "../../../../../assets/backgroundImage/mainBackground.png";
 import characterMale from "../../../../../assets/gifs/characterBoy.gif";
 import characterFemale from "../../../../../assets/gifs/characterGirl.gif";
+import undefinedCharacter from "../../../../../assets/gifs/characterUndefined.gif";
 import PlayerInfo from "./PlayerInfo";
 import { useStudentContext } from "../../../../../hooks/useStudent";
 
@@ -12,7 +13,11 @@ export default function PlayerCard({
 }): ReactElement {
   const { student } = useStudentContext();
   const character =
-    student?.character === "male" ? characterMale : characterFemale;
+    student?.character === "Male"
+      ? characterMale
+      : student?.character === "Female"
+        ? characterFemale
+        : undefinedCharacter;
   return (
     <section
       className="w-[70%] h-full bg-white bg-cover bg-center rounded-md drop-shadow-sm p-2 relative flex justify-center gap-24"
@@ -28,8 +33,18 @@ export default function PlayerCard({
       <PlayerInfo studentId={studentId} />
 
       {/* Player character display */}
-      <article className="flex justify-center items-end w-fit pb-8">
-        <img src={character} alt="character gif" />
+      <article
+        className={`flex justify-center items-end w-56 ${student?.character ? "pb-8" : "pb-24"}`}
+      >
+        <img
+          src={character}
+          className="h-72 w-56 border-amber-100"
+          alt="character gif"
+          style={{
+            width: !student?.character ? "120px" : "",
+            height: !student?.character ? "200px" : "",
+          }}
+        />
       </article>
     </section>
   );

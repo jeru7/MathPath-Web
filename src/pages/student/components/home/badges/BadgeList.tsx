@@ -1,10 +1,9 @@
 import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { filterOptions, FilterOption } from "../../../../../types/select.type";
+import { filterOptions, FilterOption } from "../../../../../types/select.types";
 import BadgeItem from "./BadgeItem";
 import { getCustomSelectColor } from "../../../../../styles/selectStyles";
 
-// DONE: Badge Tracker (Achievements)
 export default function BadgeList(): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
 

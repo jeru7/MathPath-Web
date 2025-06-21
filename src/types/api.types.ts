@@ -1,4 +1,4 @@
-export interface ISuccessReponse {
+export type SuccessReponse = {
   success: boolean;
   data: unknown | null;
   message: string;
@@ -7,9 +7,9 @@ export interface ISuccessReponse {
     errorCode?: string;
     details: unknown;
   };
-}
+};
 
-export interface IErrorResponse {
+export type ErrorResponse = {
   success: boolean;
   error: string;
   message: string;
@@ -19,4 +19,4 @@ export interface IErrorResponse {
     errorCode?: string;
     details: unknown;
   };
-}
+};

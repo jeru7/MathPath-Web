@@ -10,13 +10,14 @@ import { getCustomSelectColor } from "../../../../styles/selectStyles";
 import {
   StudentFormData,
   studentFormSchema,
-} from "../../../../types/student.type";
+  StudentGender,
+} from "../../../../types/student/student.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createStudentService } from "../../../../services/student/student.service";
 import { useTeacherContext } from "../../../../hooks/useTeacher";
-import { ISection } from "../../../../types/section.type";
+import { Section } from "../../../../types/section/section.types";
 import { isAxiosError } from "axios";
-import { IErrorResponse } from "../../../../types/api-response.type";
+import { ErrorResponse } from "../../../../types/api.types";
 
 interface IManualAddProps {
   handleBack: () => void;
@@ -63,7 +64,7 @@ export default function ManualAdd({
     },
     onError: (error: unknown) => {
       if (isAxiosError(error)) {
-        const customError: IErrorResponse = error?.response?.data;
+        const customError: ErrorResponse = error?.response?.data;
         toast.error(customError.message || "Failed to create student");
       }
     },
@@ -172,13 +173,13 @@ export default function ManualAdd({
                 name="gender"
                 control={control}
                 render={({ field }) => (
-                  <Select<{ value: "male" | "female"; label: string }>
+                  <Select<{ value: StudentGender; label: string }>
                     {...field}
                     id="gender"
                     name="gender"
                     options={[
-                      { value: "male", label: "Male" },
-                      { value: "female", label: "Female" },
+                      { value: "Male", label: "Male" },
+                      { value: "Female", label: "Female" },
                     ]}
                     getOptionLabel={(option) => option.label}
                     getOptionValue={(option) => option.value}
@@ -191,7 +192,7 @@ export default function ManualAdd({
                       field.value
                         ? {
                             value: field.value,
-                            label: field.value === "male" ? "Male" : "Female",
+                            label: field.value === "Male" ? "Male" : "Female",
                           }
                         : null
                     }
@@ -292,30 +293,30 @@ export default function ManualAdd({
               <label htmlFor="section" className="text-md font-bold">
                 Section
               </label>
-              {errors.section && (
+              {errors.sectionId && (
                 <p className="text-xs text-red-500">
-                  {errors?.section?.message}
+                  {errors?.sectionId?.message}
                 </p>
               )}
             </div>
             <Controller
-              name="section"
+              name="sectionId"
               control={control}
               render={({ field }) => (
-                <Select<ISection>
+                <Select<Section>
                   {...field}
                   id="section"
                   name="section"
                   options={sections}
-                  getOptionLabel={(option: ISection) => option.name}
-                  getOptionValue={(option: ISection) => option._id}
+                  getOptionLabel={(option: Section) => option.name}
+                  getOptionValue={(option: Section) => option.id}
                   styles={getCustomSelectColor()}
                   className="basic-select"
                   classNamePrefix="select"
                   placeholder="Select a section..."
-                  onChange={(selected) => field.onChange(selected?._id)}
+                  onChange={(selected) => field.onChange(selected?.id)}
                   value={
-                    sections.find((section) => section._id === field.value) ||
+                    sections.find((section) => section.id === field.value) ||
                     null
                   }
                 />

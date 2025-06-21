@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ShieldX } from "lucide-react";
-import { AccountType } from "../../types/auth.type";
+import { AccountType } from "../../types/auth.types";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function LoginForm(): ReactElement {
@@ -11,16 +11,14 @@ export default function LoginForm(): ReactElement {
   const [formData, setFormData] = useState({ identifier: "", password: "" });
   const [errors, setErrors] = useState({ identifier: false, password: false });
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [accountType, setAccountType] = useState<AccountType>(
-    AccountType.Student,
-  );
+  const [accountType, setAccountType] = useState<AccountType>("Student");
 
   useEffect(() => {
     if (!isLoading && user) {
-      if (accountType === AccountType.Teacher) {
-        navigate(`/${user.role}/${user._id}`);
-      } else if (accountType === AccountType.Student) {
-        navigate(`/${user.role}/${user._id}`);
+      if (accountType === "Teacher") {
+        navigate(`/${user.role}/${user.id}`);
+      } else if (accountType === "Student") {
+        navigate(`/${user.role}/${user.id}`);
       }
     }
   }, [user, isLoading, accountType, navigate]);
@@ -29,7 +27,7 @@ export default function LoginForm(): ReactElement {
     const { name, value } = e.target;
 
     let newValue = value;
-    if (name === "identifier" && accountType === AccountType.Student) {
+    if (name === "identifier" && accountType === "Student") {
       newValue = value.replace(/\D/g, "");
     }
 
@@ -54,9 +52,9 @@ export default function LoginForm(): ReactElement {
     } catch (error: unknown) {
       if (error instanceof Error) {
         if (error.message === "Failed to log in.") {
-          if (accountType === AccountType.Teacher) {
+          if (accountType === "Teacher") {
             setLoginError("Invalid email or password. Try again.");
-          } else if (accountType === AccountType.Student) {
+          } else if (accountType === "Student") {
             setLoginError("Invalid LRN or password. Try again.");
           }
         }
@@ -78,10 +76,10 @@ export default function LoginForm(): ReactElement {
               type="radio"
               name="accountType"
               id="student"
-              value={AccountType.Student}
+              value={"Student"}
               className="peer hidden"
               onChange={() => {
-                setAccountType(AccountType.Student);
+                setAccountType("Student");
                 setLoginError(null);
                 setFormData({ identifier: "", password: "" });
                 setErrors({ identifier: false, password: false });
@@ -102,10 +100,10 @@ export default function LoginForm(): ReactElement {
               type="radio"
               name="accountType"
               id="teacher"
-              value={AccountType.Teacher}
+              value={"Teacher"}
               className="peer hidden"
               onChange={() => {
-                setAccountType(AccountType.Teacher);
+                setAccountType("Teacher");
                 setLoginError(null);
                 setFormData({ identifier: "", password: "" });
                 setErrors({ identifier: false, password: false });
@@ -121,9 +119,7 @@ export default function LoginForm(): ReactElement {
         </div>
 
         <div className="text-white font-normal text-center">
-          <p>
-            Hi {accountType === AccountType.Student ? "student" : "teacher"}!
-          </p>
+          <p>Hi {accountType === "Student" ? "student" : "teacher"}!</p>
           <p>Please fill out the form below to get started</p>
         </div>
 
@@ -150,22 +146,20 @@ export default function LoginForm(): ReactElement {
         {/* Identifier - Email/LRN */}
         <div className="relative">
           <input
-            type={accountType === AccountType.Student ? "text" : "email"}
+            type={accountType === "Student" ? "text" : "email"}
             name="identifier"
             value={formData.identifier}
             onChange={handleChange}
             className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:outline-none focus:ring-0 
                 ${errors.identifier ? "" : "border-transparent bg-gray-100/30 focus:border-black"}`}
             placeholder=" "
-            inputMode={
-              accountType === AccountType.Student ? "numeric" : undefined
-            }
+            inputMode={accountType === "Student" ? "numeric" : undefined}
           />
           <label
             className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 
                 ${errors.identifier ? "font-bold text-red-500" : "text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]"}`}
           >
-            {accountType === "student" ? "LRN" : "Email"}
+            {accountType === "Student" ? "LRN" : "Email"}
           </label>
         </div>
 

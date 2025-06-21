@@ -13,16 +13,16 @@ export default function PrivateRoute() {
   }
 
   if (
-    user.role === "teacher" &&
+    user.role === "Teacher" &&
     !window.location.pathname.includes("/teacher/")
   ) {
-    return <Navigate to={`/teacher/${user._id}`} replace />;
+    return <Navigate to={`/teacher/${user.id}`} replace />;
   }
   if (
-    user.role === "student" &&
+    user.role === "Student" &&
     !window.location.pathname.includes("/student/")
   ) {
-    return <Navigate to={`/student/${user._id}`} replace />;
+    return <Navigate to={`/student/${user.id}`} replace />;
   }
 
   return <Outlet />;
