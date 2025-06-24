@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 
 import Select, { MultiValue } from "react-select";
-import { Calendar } from "lucide-react";
+import { CiCalendar } from "react-icons/ci";
 import { SectionSelection } from "../../../../core/types/section/section.types";
 import AddButton from "../../../../core/components/buttons/AddButton";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
@@ -188,7 +188,7 @@ export default function CreateAssessment(): ReactElement {
                     <span className="">
                       {assessmentDetails.deadline.toLocaleDateString()}
                     </span>
-                    <Calendar className="" size={20} />
+                    <CiCalendar className="" size={20} />
                   </button>
                 }
               />

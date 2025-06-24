@@ -1,7 +1,8 @@
 import { type ReactElement, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
 import mathPathLogo from "../../../assets/svgs/mathPathTitle.svg";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { IoIosClose } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
 export default function LandingNav(): ReactElement {
@@ -49,7 +50,11 @@ export default function LandingNav(): ReactElement {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden"
         >
-          {isMenuOpen ? <X size={36} /> : <Menu size={36} />}
+          {isMenuOpen ? (
+            <IoIosClose size={36} />
+          ) : (
+            <GiHamburgerMenu size={36} />
+          )}
         </button>
         <button
           className="font-baloo hidden text-4xl font-bold hover:cursor-pointer md:block md:text-3xl"
@@ -100,7 +105,7 @@ export default function LandingNav(): ReactElement {
       >
         <div className="flex flex-col items-center gap-6 p-6">
           <button onClick={() => setIsMenuOpen(false)} className="self-end">
-            <X size={30} />
+            <IoIosClose size={30} />
           </button>
           <button onClick={() => scrollToSection("hero")}>
             <img src={mathPathLogo} className="h-[10vh]" />

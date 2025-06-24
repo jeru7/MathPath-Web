@@ -4,15 +4,15 @@ import PlayerCard from "./playerCard/PlayerCard.tsx";
 import QuestList from "./quests/QuestList.tsx";
 import BadgeList from "./badges/BadgeList.tsx";
 import ProgressCard from "./progressCards/ProgressCard.tsx";
-import ActivityList from "./activities/ActivityList.tsx";
 import { useStudentContext } from "../../hooks/useStudent.ts";
 import { Section } from "../../../core/types/section/section.types.ts";
 import { getSection } from "../../../core/services/section.service.ts";
 import { capitalizeWord } from "../../../core/utils/string.utils.ts";
 import StudentCalendar from "./calendar/StudentCalendar.tsx";
 import Todo from "./todo/Todo.tsx";
+import ActivityList from "../../../core/components/activity/ActivityList.tsx";
 
-export default function Home(): ReactElement {
+export default function StudentDashboard(): ReactElement {
   const { student } = useStudentContext();
   const [section, setSection] = useState<Section | null>(null);
 
@@ -116,7 +116,7 @@ export default function Home(): ReactElement {
           </div>
 
           {/* Recent Activity */}
-          <ActivityList />
+          <ActivityList type="Student" />
         </div>
       </div>
     </main>

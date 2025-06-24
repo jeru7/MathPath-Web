@@ -1,16 +1,13 @@
 import { type ReactElement } from "react";
-
 import SBanner_1 from "../../../../../assets/images/Banner_1.jpg";
 import SBanner_2 from "../../../../../assets/images/Banner_2.jpg";
 import SBanner_3 from "../../../../../assets/images/Banner_3.jpg";
-
-import { Ellipsis } from "lucide-react";
 import { format } from "date-fns";
-
 import { useParams } from "react-router-dom";
 import { Section } from "../../../../core/types/section/section.types";
 import { useTeacherContext } from "../../../hooks/useTeacher";
 import { formatToPhDate } from "../../../../date/utils/date.util";
+import { FaEllipsisH } from "react-icons/fa";
 
 export default function SectionCard({
   section,
@@ -63,7 +60,7 @@ export default function SectionCard({
         <header className="flex flex-col">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">{section.name}</h3>
-            <Ellipsis className="h-8 w-12 hover:scale-105 hover:cursor-pointer" />
+            <FaEllipsisH className="h-8 w-12 hover:scale-105 hover:cursor-pointer" />
           </div>
           <p className="text-xs text-[var(--primary-gray)]">{`Last checked on ${format(formatToPhDate(section.lastChecked.toString()), "MMMM d, yyyy")}`}</p>
         </header>

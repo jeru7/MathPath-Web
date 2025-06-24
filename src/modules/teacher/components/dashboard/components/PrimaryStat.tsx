@@ -1,6 +1,9 @@
 import { type ReactElement } from "react";
 
-import { User, Users, FileText, ChevronRight } from "lucide-react";
+import { PiStudent } from "react-icons/pi";
+import { GrGroup } from "react-icons/gr";
+import { IoIosDocument } from "react-icons/io";
+import { FaChevronRight } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export interface IPrimaryStatProps {
@@ -25,13 +28,13 @@ export default function PrimaryStat({
 
   const navigateClickHandler = () => {
     if (title === "Students") {
-      navigate(`${location.pathname}/students`)
+      navigate(`${location.pathname}/students`);
     } else if (title === "Sections") {
-      navigate(`${location.pathname}/sections`)
+      navigate(`${location.pathname}/sections`);
     } else {
-      navigate(`${location.pathname}/assessments`)
+      navigate(`${location.pathname}/assessments`);
     }
-  }
+  };
   return (
     <div
       className={`flex w-full flex-col rounded-sm bg-[var(--primary-green)] p-4 text-white shadow-sm ${color}`}
@@ -41,11 +44,11 @@ export default function PrimaryStat({
         <div className="flex w-full items-center justify-center">
           <div className="bg-[var(--primary-white)]/50 flex h-fit w-fit rounded-full p-4 text-white">
             {title === "Students" ? (
-              <User className="h-20 w-20" />
+              <PiStudent className="h-20 w-20" />
             ) : title === "Sections" ? (
-              <Users className="h-20 w-20" />
+              <GrGroup className="h-20 w-20" />
             ) : (
-              <FileText className="h-20 w-20" />
+              <IoIosDocument className="h-20 w-20" />
             )}
           </div>
         </div>
@@ -73,8 +76,10 @@ export default function PrimaryStat({
               : `${assessments ?? 0} Active`}
         </p>
         {/* Quick nav button */}
-        <button className="bg-[var(--primary-white)]/50 hover:bg-[var(--primary-white)]/60 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold hover:cursor-pointer"
-          onClick={navigateClickHandler}>
+        <button
+          className="bg-[var(--primary-white)]/50 hover:bg-[var(--primary-white)]/60 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold hover:cursor-pointer"
+          onClick={navigateClickHandler}
+        >
           <p>
             {title === "Students"
               ? "Check Students"
@@ -82,7 +87,7 @@ export default function PrimaryStat({
                 ? "Check Sections"
                 : "Check Assessments"}
           </p>
-          <ChevronRight />
+          <FaChevronRight />
         </button>
       </div>
     </div>

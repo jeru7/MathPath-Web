@@ -1,7 +1,7 @@
 import { type ReactElement } from "react";
 import { NavLink, useParams } from "react-router-dom";
-// icons
-import { FileText, LayoutDashboard, House } from "lucide-react";
+import { IoIosDocument, IoIosStats } from "react-icons/io";
+import { RxDashboard } from "react-icons/rx";
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 export default function Nav(): ReactElement {
@@ -11,17 +11,17 @@ export default function Nav(): ReactElement {
   const navItems = [
     {
       to: `/student/${studentId}`,
-      icon: <House className="h-8 w-8" />,
+      icon: <RxDashboard className="h-8 w-8" />,
       defaultPage: true,
     },
     {
       to: `/student/${studentId}/dashboard`,
-      icon: <LayoutDashboard className="h-8 w-8" />,
+      icon: <IoIosStats className="h-8 w-8" />,
       defaultPage: true,
     },
     {
       to: `/student/${studentId}/assessments`,
-      icon: <FileText className="h-8 w-8" />,
+      icon: <IoIosDocument className="h-8 w-8" />,
     },
   ];
 

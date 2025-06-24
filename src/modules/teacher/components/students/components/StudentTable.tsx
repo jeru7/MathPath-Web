@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
 import "../../../../core/styles/customTable.css";
@@ -69,12 +69,12 @@ export default function StudentTable(): ReactElement {
                     Name
                     {sortConfig.key === "lastName" ? (
                       sortConfig.direction === "ascending" ? (
-                        <ChevronUp />
+                        <FaChevronUp />
                       ) : (
-                        <ChevronDown />
+                        <FaChevronDown />
                       )
                     ) : (
-                      <ChevronDown />
+                      <FaChevronDown />
                     )}
                   </div>
                 </th>
@@ -88,12 +88,12 @@ export default function StudentTable(): ReactElement {
                     Section
                     {sortConfig.key === "sectionId" ? (
                       sortConfig.direction === "ascending" ? (
-                        <ChevronUp />
+                        <FaChevronUp />
                       ) : (
-                        <ChevronDown />
+                        <FaChevronDown />
                       )
                     ) : (
-                      <ChevronDown />
+                      <FaChevronDown />
                     )}
                   </div>
                 </th>
@@ -107,12 +107,12 @@ export default function StudentTable(): ReactElement {
                     Status
                     {sortConfig.key === "status" ? (
                       sortConfig.direction === "ascending" ? (
-                        <ChevronUp />
+                        <FaChevronUp />
                       ) : (
-                        <ChevronDown />
+                        <FaChevronDown />
                       )
                     ) : (
-                      <ChevronDown />
+                      <FaChevronDown />
                     )}
                   </div>
                 </th>
@@ -126,12 +126,12 @@ export default function StudentTable(): ReactElement {
                     Date Created
                     {sortConfig.key === "createdAt" ? (
                       sortConfig.direction === "ascending" ? (
-                        <ChevronUp />
+                        <FaChevronUp />
                       ) : (
-                        <ChevronDown />
+                        <FaChevronDown />
                       )
                     ) : (
-                      <ChevronDown />
+                      <FaChevronDown />
                     )}
                   </div>
                 </th>
@@ -145,12 +145,12 @@ export default function StudentTable(): ReactElement {
                     Last Played
                     {sortConfig.key === "lastPlayed" ? (
                       sortConfig.direction === "ascending" ? (
-                        <ChevronUp />
+                        <FaChevronUp />
                       ) : (
-                        <ChevronDown />
+                        <FaChevronDown />
                       )
                     ) : (
-                      <ChevronDown />
+                      <FaChevronDown />
                     )}
                   </div>
                 </th>

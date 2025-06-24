@@ -1,7 +1,7 @@
 import { type ReactElement } from "react";
 import { FaEnvelopeOpenText } from "react-icons/fa6";
 
-export default function ActivityItem(): ReactElement {
+export default function Activity(): ReactElement {
   return (
     <article className="flex gap-2 items-center py-2 border-b border-b-gray-300 justify-between">
       <div className="absolute left-0.5 w-4 h-4 bg-[var(--secondary-green)] rounded-full z-10 transform"></div>

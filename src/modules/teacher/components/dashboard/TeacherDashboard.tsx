@@ -2,9 +2,10 @@ import { type ReactElement } from "react";
 import { useTeacherContext } from "../../hooks/useTeacher";
 import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
 import TeacherChart from "./components/TeacherChart";
+import ActivityList from "../../../core/components/activity/ActivityList";
 
 export default function TeacherDashboard(): ReactElement {
-  const { teacher, students, sections, assessments, onlineStudents } =
+  const { students, sections, assessments, onlineStudents } =
     useTeacherContext();
 
   const primaryStats: IPrimaryStatProps[] = [
@@ -27,18 +28,14 @@ export default function TeacherDashboard(): ReactElement {
   ];
 
   return (
-    <main className="flex h-full w-full max-w-[2200px] flex-col gap-4 bg-inherit p-4">
+    <main className="flex h-screen w-full max-w-[2200px] flex-col gap-2 bg-inherit p-4">
       {/* Header */}
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between h-[5%]">
         <h3 className="text-2xl font-bold">Dashboard</h3>
-        <div className="flex w-fit items-center gap-2">
-          <p>{`${teacher?.firstName}, ${teacher?.lastName}`}</p>
-          <div className="border-1 w-15 h-15 rounded-full"></div>
-        </div>
       </header>
 
       {/* Stats */}
-      <section className="flex max-h-[200px] grow-[2] gap-4">
+      <section className="flex max-h-[200px] h-[20%] gap-2">
         {primaryStats.map((stat, index) => (
           <PrimaryStat
             key={index}
@@ -53,12 +50,15 @@ export default function TeacherDashboard(): ReactElement {
       </section>
 
       {/* Charts */}
-      <section className="flex max-h-[600px] min-h-[400px] grow-[10] gap-4">
+      <section className="flex max-h-[1000px] h-[75%] gap-2">
         {/* Chart */}
-        <TeacherChart classNames="max-w-[1300px] w-full" />
+        <TeacherChart classNames="w-[80%] h-full" />
 
         {/* Student activity */}
-        <div className="grow-[1] rounded-md bg-white shadow-sm"></div>
+        <ActivityList
+          classes="rounded-md bg-white shadow-sm w-[20%]"
+          type="Teacher"
+        ></ActivityList>
       </section>
     </main>
   );

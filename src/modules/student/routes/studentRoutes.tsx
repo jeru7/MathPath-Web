@@ -1,13 +1,13 @@
 import { Route } from "react-router-dom";
 import Student from "../components/student/Student";
-import Home from "../components/overview/Overview";
-import Dashboard from "../components/stats/Dashboard";
 import Assessments from "../components/assessment/Assessments";
+import StudentAnalytics from "../components/analytics/StudentAnalytics";
+import StudentDashboard from "../components/dashboard/StudentDashboard";
 
 export const studentRoutes = (
   <Route path="/student/:studentId" element={<Student />}>
-    <Route index element={<Home />} />
-    <Route path="dashboard" element={<Dashboard />} />
+    <Route index element={<StudentDashboard />} />
+    <Route path="analytics" element={<StudentAnalytics />} />
     <Route path="assessments" element={<Assessments />} />
   </Route>
 );

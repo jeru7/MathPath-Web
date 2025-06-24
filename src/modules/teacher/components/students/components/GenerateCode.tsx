@@ -1,9 +1,9 @@
-import { X, Plus, Minus } from "lucide-react";
 import { useState, type ReactElement } from "react";
 import Select from "react-select";
-
 import { useNavigate } from "react-router-dom";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { IoIosClose } from "react-icons/io";
+import { FaPlus, FaMinus } from "react-icons/fa6";
 // import FormButtons from "../FormButtons";
 
 interface IGenerateCodeProps {
@@ -76,7 +76,7 @@ export default function GenerateCode({
           className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
           onClick={handleClose}
         >
-          <X className="h-4 w-4" />
+          <IoIosClose className="h-4 w-4" />
         </button>
         {/* Header */}
         <header>
@@ -123,14 +123,14 @@ export default function GenerateCode({
                     onClick={handleDecrementStudents}
                     className="flex h-6 w-6 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                   >
-                    <Minus className="h-4 w-4" />
+                    <FaMinus className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={handleIncrementStudents}
                     className="flex h-6 w-6 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                   >
-                    <Plus className="h-4 w-4" />
+                    <FaPlus className="h-4 w-4" />
                   </button>
                 </div>
               </div>

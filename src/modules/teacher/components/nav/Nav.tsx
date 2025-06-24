@@ -1,9 +1,10 @@
 import { type ReactElement } from "react";
-
 import { NavLink, useParams } from "react-router-dom";
-
-import { User, Users, FileText, LayoutDashboard } from "lucide-react";
 import { useAuth } from "../../../auth/hooks/useAuth";
+import { RxDashboard } from "react-icons/rx";
+import { IoIosStats, IoIosDocument } from "react-icons/io";
+import { PiStudent } from "react-icons/pi";
+import { GrGroup } from "react-icons/gr";
 
 export default function Nav(): ReactElement {
   const { teacherId } = useParams();
@@ -12,20 +13,24 @@ export default function Nav(): ReactElement {
   const navItems = [
     {
       to: `/teacher/${teacherId}`,
-      icon: <LayoutDashboard className="h-8 w-8" />,
+      icon: <RxDashboard className="h-8 w-8" />,
       defaultPage: true,
     },
     {
+      to: `/teacher/${teacherId}/analytics`,
+      icon: <IoIosStats className="h-8 w-8" />,
+    },
+    {
       to: `/teacher/${teacherId}/students`,
-      icon: <User className="h-8 w-8" />,
+      icon: <PiStudent className="h-8 w-8" />,
     },
     {
       to: `/teacher/${teacherId}/sections`,
-      icon: <Users className="h-8 w-8" />,
+      icon: <GrGroup className="h-8 w-8" />,
     },
     {
       to: `/teacher/${teacherId}/assessments`,
-      icon: <FileText className="h-8 w-8" />,
+      icon: <IoIosDocument className="h-8 w-8" />,
     },
   ];
 

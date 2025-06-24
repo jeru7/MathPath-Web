@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, type ReactElement } from "react";
-
-import { Circle, Settings } from "lucide-react";
+import { IoIosSettings } from "react-icons/io";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import {
@@ -58,7 +57,6 @@ export default function StudentTableItem({
         <td className="px-4 py-2 text-left">{student.referenceNumber}</td>
         <td className="max-w-[200px] truncate px-4 py-2 text-left">
           <div className="flex items-center gap-2">
-            <Circle className="h-10 w-10" />
             <p>{`${student.lastName}, ${formatFirstName(student)}`}</p>
           </div>
         </td>
@@ -84,7 +82,7 @@ export default function StudentTableItem({
         </td>
         <td className="px-4 py-2">
           <div className="hover:scale-101 flex w-full cursor-pointer items-center justify-center hover:text-[var(--primary-green)]">
-            <Settings />
+            <IoIosSettings />
           </div>
         </td>
       </tr>

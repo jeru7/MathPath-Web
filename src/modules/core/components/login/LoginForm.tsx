@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShieldX } from "lucide-react";
+import { GoShieldX } from "react-icons/go";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "../../../auth/hooks/useAuth";
 import { AccountType } from "../../../auth/types/auth.types";
@@ -137,7 +137,7 @@ export default function LoginForm(): ReactElement {
               transition={{ duration: 0.3 }}
               className="bg-red-300 text-red-500 rounded-md py-3 px-1 flex items-center gap-2 w-full"
             >
-              <ShieldX className="h-8 w-8" />
+              <GoShieldX className="h-8 w-8" />
               <p className="text-sm">{loginError}</p>
             </motion.div>
           )}

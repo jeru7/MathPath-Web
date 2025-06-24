@@ -2,7 +2,8 @@ import { useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Eye, EyeOff } from "lucide-react";
+import { IoIosClose } from "react-icons/io";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -80,7 +81,7 @@ export default function ManualAdd({
           className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
           onClick={handleClose}
         >
-          <X className="h-4 w-4" />
+          <IoIosClose className="h-4 w-4" />
         </button>
         <header>
           <h3 className="border-b border-b-[var(--primary-gray)] pb-2 text-2xl font-bold">
@@ -282,7 +283,11 @@ export default function ManualAdd({
                 className="absolute right-3 top-3 text-gray-500 hover:cursor-pointer hover:text-gray-700"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                {showPassword ? (
+                  <FaRegEye size={20} />
+                ) : (
+                  <FaRegEyeSlash size={20} />
+                )}
               </button>
             </div>
           </div>

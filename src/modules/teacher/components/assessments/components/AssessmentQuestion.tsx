@@ -1,5 +1,5 @@
-import { Trash2 } from "lucide-react";
 import * as assessmentType from "../../../../core/types/assessment/assessment.types";
+import { MdDelete } from "react-icons/md";
 
 interface AssessmentQuestionProps {
   question: assessmentType.AssessmentQuestion;
@@ -87,7 +87,7 @@ export default function AssessmentQuestion({
                 onClick={() => deleteChoice(index)}
                 className="text-red-500 ml-2 hover:cursor-pointer"
               >
-                <Trash2 />
+                <MdDelete />
               </button>
             )}
           </div>

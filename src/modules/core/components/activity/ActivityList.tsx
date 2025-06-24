@@ -1,13 +1,18 @@
 import { useState, type ReactElement } from "react";
-import ActivityItem from "./ActivityItem";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import {
-  FilterOption,
-  filterOptions,
-} from "../../../../core/types/select.types";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { FilterOption, filterOptions } from "../../types/select.types";
+import { getCustomSelectColor } from "../../styles/selectStyles";
+import Activity from "./Activity";
 
-export default function ActivityList(): ReactElement {
+interface IActivityListProps {
+  classes?: string;
+  type: "Student" | "Teacher";
+}
+
+export default function ActivityList({
+  classes,
+  type,
+}: IActivityListProps): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const customStyles: StylesConfig<FilterOption> =
     getCustomSelectColor<FilterOption>({
@@ -16,7 +21,9 @@ export default function ActivityList(): ReactElement {
     });
 
   return (
-    <article className="w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2">
+    <article
+      className={`${classes} w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2`}
+    >
       <div className="w-full flex items-center justify-between border-b-gray-300 border-b-2 pb-1">
         <p className="font-semibold">Recent Activity</p>
         <Select
@@ -33,7 +40,12 @@ export default function ActivityList(): ReactElement {
         />{" "}
       </div>
 
-      <div className="h-full max-h-[350px] overflow-scroll pr-4">
+      <div
+        className="h-full overflow-scroll pr-4"
+        style={{
+          maxHeight: `${type === "Teacher" ? "600px" : "350px"}`,
+        }}
+      >
         <div className="relative flex flex-col w-full h-fit">
           {/* Vertical Line */}
           <div
@@ -43,16 +55,19 @@ export default function ActivityList(): ReactElement {
 
           {/* Activity List */}
           <div className="flex-col flex pl-8 h-fit">
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
-            <ActivityItem />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
+            <Activity />
           </div>
         </div>
       </div>
