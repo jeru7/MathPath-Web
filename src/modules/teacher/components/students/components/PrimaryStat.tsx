@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import { Student } from "../../../../types/student/student.types";
+import { Student } from "../../../../core/types/student/student.types";
 
 export interface IPrimaryStatProps {
   color: string;

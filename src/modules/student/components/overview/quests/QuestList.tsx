@@ -1,30 +1,31 @@
 import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { getCustomSelectColor } from "../../../../../styles/selectStyles";
 import QuestChests from "./QuestChests";
 import QuestItem from "./QuestItem";
 import {
   useStudentContext,
   useStudentQuestList,
-} from "../../../../../hooks/useStudent";
-import { QuestListItem } from "../../../../../types/quest/quest.types";
-import { filterOptions, FilterOption } from "../../../../../types/select.types";
+} from "../../../hooks/useStudent";
+import {
+  FilterOption,
+  filterOptions,
+} from "../../../../core/types/select.types";
+import { QuestListItem } from "../../../../core/types/quest/quest.types";
+import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 
 export default function QuestList(): ReactElement {
   const { student } = useStudentContext();
   const { data: questList } = useStudentQuestList(student ? student?.id : "");
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
-  const filteredQuestList = questList?.questList.filter(
-    (quest: QuestListItem) => {
-      if (selectedFilter.value === "all") return true;
-      const isCompleted = quest.req === quest.reqCompleted;
+  const filteredQuestList = questList?.quests.filter((quest: QuestListItem) => {
+    if (selectedFilter.value === "all") return true;
+    const isCompleted = quest.req === quest.reqCompleted;
 
-      if (selectedFilter.value === "completed") return isCompleted;
-      if (selectedFilter.value === "ongoing") return !isCompleted;
+    if (selectedFilter.value === "completed") return isCompleted;
+    if (selectedFilter.value === "ongoing") return !isCompleted;
 
-      return true;
-    },
-  );
+    return true;
+  });
 
   const customStyles: StylesConfig<FilterOption> =
     getCustomSelectColor<FilterOption>({
@@ -56,7 +57,7 @@ export default function QuestList(): ReactElement {
         {/* Quest List - Grid */}
         <section className="grid grid-cols-3 gap-3 auto-rows-min w-full h-auto bg-white">
           {filteredQuestList?.map((quest: QuestListItem) => (
-            <QuestItem key={quest.questName} quest={quest} />
+            <QuestItem key={quest.name} quest={quest} />
           ))}
         </section>{" "}
       </div>

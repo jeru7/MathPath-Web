@@ -15,15 +15,15 @@ export type QuestType =
   | "MagicBook";
 
 export type QuestList = {
-  questChestPercentage: number;
-  questChest: QuestChests;
-  questList: QuestListItem[];
+  percentage: number;
+  chests: QuestChests;
+  quests: QuestListItem[];
 };
 
 export type QuestListItem = {
-  questName: string;
-  questType: QuestType;
-  isClaimed: boolean;
+  name: string;
+  type: QuestType;
+  claimed: boolean;
   reqCompleted: number;
   req: number;
 };

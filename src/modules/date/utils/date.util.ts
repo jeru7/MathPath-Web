@@ -1,9 +1,7 @@
-export const convertToPhilippinesDate = (dateString: string): Date => {
+import { toZonedTime } from "date-fns-tz";
+
+export const formatToPhDate = (dateString: string): Date => {
   const date = new Date(dateString);
 
-  const philippinesTime = new Date(
-    date.toLocaleString("en-US", { timeZone: "Asia/Manila" }),
-  );
-
-  return philippinesTime;
+  return toZonedTime(date, "Asia/Manila");
 };

@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
 import { ShieldX } from "lucide-react";
-import { AccountType } from "../../types/auth.types";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuth } from "../../../auth/hooks/useAuth";
+import { AccountType } from "../../../auth/types/auth.types";
 
 export default function LoginForm(): ReactElement {
   const navigate = useNavigate();

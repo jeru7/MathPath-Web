@@ -1,9 +1,8 @@
 import { Route } from "react-router-dom";
-
-import Student from "../pages/student/Student";
-import Dashboard from "../pages/student/components/dashboard/Dashboard";
-import Assessments from "../pages/student/components/assessment/Assessments";
-import Home from "../pages/student/components/home/Home";
+import Student from "../components/student/Student";
+import Home from "../components/overview/Overview";
+import Dashboard from "../components/stats/Dashboard";
+import Assessments from "../components/assessment/Assessments";
 
 export const studentRoutes = (
   <Route path="/student/:studentId" element={<Student />}>

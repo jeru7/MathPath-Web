@@ -3,8 +3,8 @@ import { useState, type ReactElement } from "react";
 import Select from "react-select";
 
 import { useNavigate } from "react-router-dom";
+import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 // import FormButtons from "../FormButtons";
-import { getCustomSelectColor } from "../../../../styles/selectStyles";
 
 interface IGenerateCodeProps {
   handleBack: () => void;

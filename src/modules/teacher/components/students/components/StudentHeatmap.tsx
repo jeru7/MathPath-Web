@@ -6,10 +6,10 @@ import "react-calendar-heatmap/dist/styles.css";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { useParams } from "react-router-dom";
-import { useStudentProgressLog } from "../../../../hooks/useStudent";
-import "../../../../index.css";
+import "../../../../../index.css";
 import { format } from "date-fns";
-import { ProgressLog } from "../../../../types/progress_log/progress_log.types";
+import { ProgressLog } from "../../../../core/types/progress_log/progress_log.types";
+import { useStudentProgressLog } from "../../../../student/hooks/useStudent";
 
 // normalization ng data para madali ma access sa heatmap
 function getQuestionStats(data: ProgressLog[] = []) {
@@ -64,7 +64,7 @@ export default function StudentHeatmap(): ReactElement {
       "data-tooltip-html": `
       <div>
         <span>Date: ${formattedDate}</span><br />
-        <span>Game Levels Played: ${value.gameLevelsPlayed}</span><br />
+        <span>Stages Played: ${value.stagesPlayed}</span><br />
         <span>Wins: ${value.totalWins}</span><br />
         <span>Quests Completed: ${value.completedQuest.length}</span><br />
         <span>Minutes: ${value.minutesPlayed}</span>

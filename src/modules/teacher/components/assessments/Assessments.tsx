@@ -1,7 +1,7 @@
 import { type ReactElement } from "react";
-import AddButton from "../AddButton";
 import { useNavigate } from "react-router-dom";
-import AssessmentTable from "./AssessmentTable";
+import AddButton from "../../../core/components/buttons/AddButton";
+import AssessmentTable from "./components/AssessmentTable";
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { type ReactElement } from "react";
 import { NavLink, useParams } from "react-router-dom";
 
 import { User, Users, FileText, LayoutDashboard } from "lucide-react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../auth/hooks/useAuth";
 
 export default function Nav(): ReactElement {
   const { teacherId } = useParams();

@@ -1,16 +1,16 @@
 import { useEffect, useState, type ReactElement } from "react";
 
 import PlayerCard from "./playerCard/PlayerCard.tsx";
-import Todo from "./Todo.tsx";
-import StudentCalendar from "./StudentCalendar.tsx";
 import QuestList from "./quests/QuestList.tsx";
 import BadgeList from "./badges/BadgeList.tsx";
 import ProgressCard from "./progressCards/ProgressCard.tsx";
 import ActivityList from "./activities/ActivityList.tsx";
-import { useStudentContext } from "../../../../hooks/useStudent.ts";
-import { capitalizeWord } from "../../../../utils/string.utils.ts";
-import { getSection } from "../../../../services/section.service.ts";
-import { Section } from "../../../../types/section/section.types.ts";
+import { useStudentContext } from "../../hooks/useStudent.ts";
+import { Section } from "../../../core/types/section/section.types.ts";
+import { getSection } from "../../../core/services/section.service.ts";
+import { capitalizeWord } from "../../../core/utils/string.utils.ts";
+import StudentCalendar from "./calendar/StudentCalendar.tsx";
+import Todo from "./todo/Todo.tsx";
 
 export default function Home(): ReactElement {
   const { student } = useStudentContext();

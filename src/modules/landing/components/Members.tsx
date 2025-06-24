@@ -3,8 +3,8 @@ import kathImage from "../../../assets/teamMembers/kath.png";
 import samImage from "../../../assets/teamMembers/sam.png";
 import emmanImage from "../../../assets/teamMembers/emman.png";
 import laImage from "../../../assets/teamMembers/la.png";
-import MemberCard from "./components/MemberCard.js";
 import { motion } from "framer-motion";
+import MemberCard from "./MemberCard";
 
 export default function Members(): ReactElement {
   const members = [
@@ -41,9 +41,11 @@ export default function Members(): ReactElement {
   ];
 
   return (
-    <section className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]" id="members">
+    <section
+      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]"
+      id="members"
+    >
       <div className="flex flex-col gap-8">
-
         {/* title */}
         <div className="flex flex-col items-center">
           <motion.h2

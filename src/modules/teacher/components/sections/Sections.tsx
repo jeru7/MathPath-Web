@@ -1,8 +1,8 @@
 import { useState, type ReactElement } from "react";
-import AddButton from "../AddButton";
-import CreateSectionForm from "./CreateSectionForm";
-import { useTeacherContext } from "../../../../hooks/useTeacher";
-import SectionCard from "./SectionCard";
+import { useTeacherContext } from "../../hooks/useTeacher";
+import AddButton from "../../../core/components/buttons/AddButton";
+import SectionCard from "./components/SectionCard";
+import CreateSectionForm from "./components/CreateSectionForm";
 
 export default function Sections(): ReactElement {
   const { sections } = useTeacherContext();

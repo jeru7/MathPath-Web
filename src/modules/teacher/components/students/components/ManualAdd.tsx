@@ -5,19 +5,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X, Eye, EyeOff } from "lucide-react";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import FormButtons from "../FormButtons";
-import { getCustomSelectColor } from "../../../../styles/selectStyles";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import { useTeacherContext } from "../../../hooks/useTeacher";
 import {
   StudentFormData,
   studentFormSchema,
   StudentGender,
-} from "../../../../types/student/student.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createStudentService } from "../../../../services/student/student.service";
-import { useTeacherContext } from "../../../../hooks/useTeacher";
-import { Section } from "../../../../types/section/section.types";
-import { isAxiosError } from "axios";
-import { ErrorResponse } from "../../../../types/api.types";
+} from "../../../../core/types/student/student.types";
+import { createStudentService } from "../../../../student/services/student.service";
+import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { Section } from "../../../../core/types/section/section.types";
+import FormButtons from "../../../../core/components/buttons/FormButtons";
 
 interface IManualAddProps {
   handleBack: () => void;
@@ -64,7 +63,7 @@ export default function ManualAdd({
     },
     onError: (error: unknown) => {
       if (isAxiosError(error)) {
-        const customError: ErrorResponse = error?.response?.data;
+        const customError: Error = error?.response?.data;
         toast.error(customError.message || "Failed to create student");
       }
     },

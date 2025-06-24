@@ -1,10 +1,10 @@
 import { useState, type ReactElement } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useTeacherContext } from "../../../../hooks/useTeacher";
-import { Student } from "../../../../types/student/student.types";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
-import "../../../../styles/customTable.css";
+import "../../../../core/styles/customTable.css";
+import { Student } from "../../../../core/types/student/student.types";
+import { useTeacherContext } from "../../../hooks/useTeacher";
 
 export default function StudentTable(): ReactElement {
   const { students } = useTeacherContext();

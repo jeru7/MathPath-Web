@@ -1,15 +1,15 @@
 import { Route } from "react-router-dom";
-import Teacher from "../pages/teacher/Teacher";
-import Overview from "../pages/teacher/pages/overview/Overview";
-import Students from "../pages/teacher/pages/students/Students";
-import Sections from "../pages/teacher/pages/sections/Sections";
-import Assessments from "../pages/teacher/pages/assessments/Assessments";
-import Student from "../pages/teacher/pages/students/Students";
-import CreateAssessment from "../pages/teacher/pages/assessments/components/CreateAssessment";
+import Teacher from "../components/teacher/Teacher";
+import TeacherDashboard from "../components/dashboard/TeacherDashboard";
+import Students from "../components/students/Students";
+import Student from "../components/students/components/Student";
+import Sections from "../components/sections/Sections";
+import Assessments from "../components/assessments/Assessments";
+import CreateAssessment from "../components/assessments/components/CreateAssessment";
 
 export const teacherRoutes = (
   <Route path="/teacher/:teacherId" element={<Teacher />}>
-    <Route index element={<Overview />} />
+    <Route index element={<TeacherDashboard />} />
     <Route path="students">
       <Route index element={<Students />} />
       <Route path="add-students" element={<Students />} />

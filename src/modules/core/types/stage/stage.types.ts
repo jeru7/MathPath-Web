@@ -4,8 +4,7 @@ export type StageQuestion = {
   question: string;
   answer: string;
   choices: string[];
-  explanation: string;
-  answered: boolean;
+  hint: string;
 };
 
 export type StageQuestions = {
@@ -16,7 +15,9 @@ export type StageQuestions = {
 
 export type Enemy = {
   type: EnemyType;
+  level: number;
   health: number;
+  damage: number;
 };
 
 export type StageReward = {
@@ -26,7 +27,7 @@ export type StageReward = {
 
 export type Stage = {
   id: string;
-  level: number;
+  stage: number;
   bossLevel: boolean;
   name: string;
   description: string;

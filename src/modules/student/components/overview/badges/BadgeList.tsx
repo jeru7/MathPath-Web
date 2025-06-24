@@ -1,8 +1,11 @@
 import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { filterOptions, FilterOption } from "../../../../../types/select.types";
 import BadgeItem from "./BadgeItem";
-import { getCustomSelectColor } from "../../../../../styles/selectStyles";
+import {
+  FilterOption,
+  filterOptions,
+} from "../../../../core/types/select.types";
+import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 
 export default function BadgeList(): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);

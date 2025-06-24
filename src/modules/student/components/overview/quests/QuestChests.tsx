@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
 import chestIcon from "../../../../../assets/icons/chestIcon.png";
-import { QuestList } from "../../../../../types/quest/quest.types";
+import { QuestList } from "../../../../core/types/quest/quest.types";
 
 export default function QuestChests({
   quest,
@@ -14,7 +14,7 @@ export default function QuestChests({
         {/* Progress Fill */}
         <div
           className="h-full bg-[var(--primary-orange)] rounded-full"
-          style={{ width: `${quest?.questChestPercentage}%` }}
+          style={{ width: `${quest?.percentage}%` }}
         ></div>
 
         {/* Quest chests */}

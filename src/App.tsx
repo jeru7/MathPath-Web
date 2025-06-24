@@ -1,14 +1,11 @@
 import "./index.css";
 import { Routes, Route } from "react-router-dom";
-
-import Landing from "./pages/landing/Landing";
-import Login from "./pages/login/Login";
-
-import PrivateRoute from "./routes/PrivateRoutes";
-import { AuthProvider } from "./providers/AuthProvider";
-
-import { teacherRoutes } from "./routes/teacherRoutes";
-import { studentRoutes } from "./routes/studentRoutes";
+import { AuthProvider } from "./modules/auth/providers/AuthProvider";
+import Landing from "./modules/landing/components/Landing";
+import Login from "./modules/core/components/login/Login";
+import PrivateRoute from "./modules/core/routes/PrivateRoutes";
+import { teacherRoutes } from "./modules/teacher/routes/teacherRoutes";
+import { studentRoutes } from "./modules/student/routes/studentRoutes";
 
 function App() {
   return (

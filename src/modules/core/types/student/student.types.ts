@@ -49,7 +49,7 @@ export type StudentAssessment = {
 
 export type StudentStage = {
   stageId: string;
-  level: number;
+  stage: number;
   unlocked: boolean;
   completed: boolean;
   dateCompleted?: string;

@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import mathPathLogo from "../../assets/svgs/mathPathTitle.svg";
+import mathPathLogo from "../../../assets/svgs/mathPathTitle.svg";
 import { useNavigate } from "react-router-dom";
 
 export default function LandingNav(): ReactElement {
@@ -34,8 +34,9 @@ export default function LandingNav(): ReactElement {
 
   return (
     <nav
-      className={`font-gummy fixed left-0 right-0 top-0 z-50 h-fit transition-all duration-300 ${scrolled ? "shadow-lg" : "bg-transparent"
-        }`}
+      className={`font-gummy fixed left-0 right-0 top-0 z-50 h-fit transition-all duration-300 ${
+        scrolled ? "shadow-lg" : "bg-transparent"
+      }`}
       style={scrolled ? { background: "#222222" } : {}}
     >
       <motion.div
@@ -82,7 +83,10 @@ export default function LandingNav(): ReactElement {
             Download
           </button>
         </div>
-        <button className="rounded-full md:border-2 md:border-[var(--primary-white)] md:px-5 md:py-1 md:hover:scale-105 md:hover:cursor-pointer lg:ml-12" onClick={() => navigate("/login")}>
+        <button
+          className="rounded-full md:border-2 md:border-[var(--primary-white)] md:px-5 md:py-1 md:hover:scale-105 md:hover:cursor-pointer lg:ml-12"
+          onClick={() => navigate("/login")}
+        >
           <p className="text-2xl font-bold md:text-3xl">Login</p>
         </button>
       </motion.div>

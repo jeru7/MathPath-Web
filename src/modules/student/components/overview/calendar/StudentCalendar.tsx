@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
 import "react-calendar/dist/Calendar.css";
-import "../../../../styles/customCalendar.css";
+import "../../../../core/styles/customCalendar.css";
 import { Calendar } from "react-calendar";
 
 export default function StudentCalendar(): ReactElement {

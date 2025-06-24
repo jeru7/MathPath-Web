@@ -1,11 +1,11 @@
 import { type ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
-import StudentTable from "./StudentTable";
-import AddButton from "../AddButton";
-import AddStudent from "./AddStudent";
-import { useTeacherContext } from "../../../../hooks/useTeacher";
 import { toast } from "react-toastify";
+import { useTeacherContext } from "../../hooks/useTeacher";
+import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
+import AddButton from "../../../core/components/buttons/AddButton";
+import StudentTable from "./components/StudentTable";
+import AddStudent from "./components/AddStudent";
 
 export default function Students(): ReactElement {
   const navigate = useNavigate();

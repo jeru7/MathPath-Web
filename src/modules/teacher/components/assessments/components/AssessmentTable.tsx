@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import "../../../../styles/customTable.css";
+import "../../../../core/styles/customTable.css";
 
 export default function AssessmentTable(): ReactElement {
   return (

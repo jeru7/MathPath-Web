@@ -10,16 +10,19 @@ import {
   YAxis,
 } from "recharts";
 import { useState, useEffect, type ReactElement } from "react";
-import {
-  useTeacherOverallTopicStats,
-  useTeacherSectionTopicStats,
-} from "../../../../hooks/useTeacher";
-import { TopicStats, SectionTopicStats } from "../../../../types/chart.types";
 import { useParams } from "react-router-dom";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import {
+  SectionTopicStats,
+  TopicStats,
+} from "../../../../core/types/chart.types";
+import {
+  useTeacherOverallTopicStats,
+  useTeacherSectionTopicStats,
+} from "../../../hooks/useTeacher";
 
 function TopicStatsCustomTooltip({
   active,
@@ -30,6 +33,7 @@ function TopicStatsCustomTooltip({
 
     return (
       <div className="bg-white flex flex-col gap-1 p-2 rounded shadow border text-sm max-w-xs">
+        <p>Stage {data.stage}</p>
         <p className="italic text-[var(--primary-black)]">"{data.topic}"</p>
         <p className="text-[var(--primary-black)]">
           Total Attempts: {data.totalAttempts}
@@ -56,6 +60,7 @@ function CorrectnessCustomTooltip({
 
     return (
       <div className="bg-white flex flex-col gap-1 p-2 rounded shadow border text-sm max-w-xs">
+        <p>Stage {data.stage}</p>
         <p className="italic text-[var(--primary-black)]">"{data.topic}"</p>
         <p className="text-[var(--tertiary-green)]">
           Easy: {data.correctness.easy}%
@@ -77,7 +82,7 @@ function CorrectnessCustomTooltip({
 function getOverallChartData(data: TopicStats[] = []) {
   console.log(data);
   return data.map((topic) => ({
-    name: `Level ${topic.stage}`,
+    stage: `${topic.stage}`,
     topic: topic.topic,
     totalAttempts: topic.totalAttempts,
     avgMinsPlayed: (topic.avgSecondsPlayed / 60).toFixed(1),
@@ -100,7 +105,7 @@ function getSectionChartData(
     .filter((section) => section.sectionName === selectedSection)
     .flatMap((section) =>
       section.topicStats.map((topic) => ({
-        name: `Level ${topic.stage}`,
+        stage: `${topic.stage}`,
         topic: topic.topic,
         totalAttempts: topic.totalAttempts,
         avgMinsPlayed: (topic.avgSecondsPlayed / 60).toFixed(1),
@@ -190,7 +195,7 @@ export default function TeacherChart({
           <ResponsiveContainer className="h-full w-full">
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis dataKey="stage" />
               <YAxis domain={[0, 100]} />
               <Tooltip content={<TopicStatsCustomTooltip />} />
               <Legend />
@@ -215,7 +220,7 @@ export default function TeacherChart({
           <ResponsiveContainer className="h-full w-full">
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis dataKey="stage" />
               <YAxis domain={[0, 100]} />
               <Tooltip content={<CorrectnessCustomTooltip />} />
               <Legend />

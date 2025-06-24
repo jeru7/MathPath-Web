@@ -1,10 +1,12 @@
 import { useState, type ReactElement } from "react";
 import ActivityItem from "./ActivityItem";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { FilterOption, filterOptions } from "../../../../../types/select.types";
-import { getCustomSelectColor } from "../../../../../styles/selectStyles";
+import {
+  FilterOption,
+  filterOptions,
+} from "../../../../core/types/select.types";
+import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 
-// TODO: Activity List
 export default function ActivityList(): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const customStyles: StylesConfig<FilterOption> =

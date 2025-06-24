@@ -1,17 +1,17 @@
 import { useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AddButton from "../AddButton";
-import AssessmentQuestion from "./AssessmentQuestion";
-import * as assessmentType from "../../../../types/assessment/assessment.types";
+import * as assessmentType from "../../../../core/types/assessment/assessment.types";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../../../../styles/customDatePopper.css";
+import "../../../../core/styles/customDatePopper.css";
 
 import Select, { MultiValue } from "react-select";
-import { getCustomSelectColor } from "../../../../styles/selectStyles";
 import { Calendar } from "lucide-react";
-import { SectionSelection } from "../../../../types/section/section.types";
+import { SectionSelection } from "../../../../core/types/section/section.types";
+import AddButton from "../../../../core/components/buttons/AddButton";
+import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import AssessmentQuestion from "./AssessmentQuestion";
 
 export default function CreateAssessment(): ReactElement {
   const navigate = useNavigate();

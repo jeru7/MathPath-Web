@@ -3,14 +3,13 @@ import { useEffect, useMemo, useState, type ReactElement } from "react";
 import { Circle, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
-
 import {
   Student,
   StudentStatusType,
-} from "../../../../../types/student/student.types";
-import { useTeacherContext } from "../../../../hooks/useTeacher";
-import { Section } from "../../../../types/section/section.types";
-import { convertToPhilippinesDate } from "../../../../utils/date.util";
+} from "../../../../core/types/student/student.types";
+import { useTeacherContext } from "../../../hooks/useTeacher";
+import { Section } from "../../../../core/types/section/section.types";
+import { formatToPhDate } from "../../../../date/utils/date.util";
 
 interface IStudentTableItemProps {
   student: Student;
@@ -72,10 +71,7 @@ export default function StudentTableItem({
           {status}
         </td>
         <td className="px-4 py-2">
-          {format(
-            convertToPhilippinesDate(student.createdAt.toString()),
-            "MMMM d, yyyy",
-          )}
+          {format(formatToPhDate(student.createdAt.toString()), "MMMM d, yyyy")}
         </td>
         <td className="px-4 py-2">
           {student.lastPlayed

@@ -1,10 +1,8 @@
 import { type ReactElement } from "react";
 import { NavLink, useParams } from "react-router-dom";
-
 // icons
 import { FileText, LayoutDashboard, House } from "lucide-react";
-
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../auth/hooks/useAuth";
 
 export default function Nav(): ReactElement {
   const { studentId } = useParams();

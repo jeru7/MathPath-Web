@@ -1,6 +1,6 @@
 import axios from "axios";
-import { User } from "../types/user.type";
-import { URL } from "../utils/mode.utils";
+import { User } from "../../core/types/user.type";
+import { URL } from "../../core/utils/mode.utils";
 
 export const loginService = async (identifier: string, password: string) => {
   try {

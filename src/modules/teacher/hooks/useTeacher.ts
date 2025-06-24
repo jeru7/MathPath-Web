@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { TeacherContext } from "../context/TeacherContext";
 import * as teacherService from "../services/teacher.service";
-import { Teacher } from "../types/teacher/teacher.types";
-import { Student } from "../types/student/student.types";
-import { Section } from "../types/section/section.types";
-import { Assessment } from "../types/assessment/assessment.types";
-import { SectionTopicStats, TopicStats } from "../types/chart.types";
-import * as chartService from "../services/chart.service";
+import * as chartService from "../../core/services/chart.service";
+import { Teacher } from "../../core/types/teacher/teacher.types";
+import { Student } from "../../core/types/student/student.types";
+import { Section } from "../../core/types/section/section.types";
+import { Assessment } from "../../core/types/assessment/assessment.types";
+import { SectionTopicStats, TopicStats } from "../../core/types/chart.types";
 
 const DATA_STALE_TIME = 1000 * 60 * 5; // 5 mins
 

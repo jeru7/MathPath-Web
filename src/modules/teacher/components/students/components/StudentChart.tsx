@@ -1,6 +1,5 @@
 import { useState, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import { useStudentQuestionStats } from "../../../../hooks/useStudent";
 import {
   BarChart,
   Bar,
@@ -12,11 +11,12 @@ import {
   TooltipProps,
   YAxis,
 } from "recharts";
-import { QuestionStats } from "../../../../types/chart.types";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { QuestionStats } from "../../../../core/types/chart.types";
+import { useStudentQuestionStats } from "../../../../student/hooks/useStudent";
 
 // Normalize question stats para sa pag render sa chart
 const getQuestionStats = (questions: QuestionStats[] = []) => {

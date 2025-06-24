@@ -1,8 +1,9 @@
 import { type ReactElement } from "react";
-import "../../../../styles/customTable.css";
-import { useStudentAttempts } from "../../../../hooks/useStudent";
+import "../../../../core/styles/customTable.css";
 import { useParams } from "react-router-dom";
 import AttemptHistoryItem from "./AttemptHistoryItem";
+import { useStudentAttempts } from "../../../../student/hooks/useStudent";
+import { StageAttempt } from "../../../../core/types/stage_attempt/stage_attempt.types";
 
 export default function AttemptHistory(): ReactElement {
   const { studentId } = useParams();
@@ -20,7 +21,7 @@ export default function AttemptHistory(): ReactElement {
         <table className="font-primary table-auto">
           <thead className="text-[var(--primary-gray)]">
             <tr className="text-center">
-              <th className="">Game Level</th>
+              <th className="">Stage</th>
               <th className="">Topic</th>
               <th className="">Date Taken</th>
               <th className="">Answer Correctness</th>
@@ -28,7 +29,7 @@ export default function AttemptHistory(): ReactElement {
             </tr>
           </thead>
           <tbody>
-            {attempts.map((attempt) => (
+            {attempts.map((attempt: StageAttempt) => (
               <AttemptHistoryItem attempt={attempt} key={attempt.id} />
             ))}
           </tbody>

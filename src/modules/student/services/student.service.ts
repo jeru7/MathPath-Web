@@ -1,9 +1,9 @@
 import axios from "axios";
-import * as studentType from "../../types/student/student.types";
-import { URL } from "../../utils/mode.utils";
-import * as progressCardType from "../../types/progress_card.types";
-import { PlayerCard } from "../../types/student/student_stats.types";
-import { QuestList } from "../../types/quest/quest.types";
+import * as studentType from "../../core/types/student/student.types";
+import * as progressCardType from "../../core/types/progress_card.types";
+import { QuestList } from "../../core/types/quest/quest.types";
+import { PlayerCard } from "../../core/types/student/student_stats.types";
+import { URL } from "../../core/utils/mode.utils";
 
 // create student
 export const createStudentService = async (
@@ -15,7 +15,9 @@ export const createStudentService = async (
 };
 
 // get specific student using student id
-export const getStudent = async (studentId: string) => {
+export const getStudent = async (
+  studentId: string,
+): Promise<studentType.Student> => {
   const res = await axios.get(`${URL}/api/web/students/${studentId}`);
 
   return res.data.data;

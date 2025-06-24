@@ -1,9 +1,8 @@
 import { createContext } from "react";
-
-import { Student } from "../types/student/student.types";
-import { Section } from "../types/section/section.types";
-import { Assessment } from "../types/assessment/assessment.types";
-import { Teacher } from "../types/teacher/teacher.types";
+import { Student } from "../../core/types/student/student.types";
+import { Teacher } from "../../core/types/teacher/teacher.types";
+import { Section } from "../../core/types/section/section.types";
+import { Assessment } from "../../core/types/assessment/assessment.types";
 
 type TeacherContext = {
   teacher: Teacher | null;

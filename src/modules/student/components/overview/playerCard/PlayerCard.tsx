@@ -4,7 +4,7 @@ import characterMale from "../../../../../assets/gifs/characterBoy.gif";
 import characterFemale from "../../../../../assets/gifs/characterGirl.gif";
 import undefinedCharacter from "../../../../../assets/gifs/characterUndefined.gif";
 import PlayerInfo from "./PlayerInfo";
-import { useStudentContext } from "../../../../../hooks/useStudent";
+import { useStudentContext } from "../../../hooks/useStudent";
 
 export default function PlayerCard({
   studentId,

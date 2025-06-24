@@ -1,11 +1,10 @@
 import axios from "axios";
 
-import { Teacher } from "../types/teacher/teacher.types";
-import { Student } from "../types/student/student.types";
-import { Section } from "../types/section/section.types";
-import { Assessment } from "../types/assessment/assessment.types";
-
-import { URL } from "../utils/mode.utils";
+import { URL } from "../../core/utils/mode.utils";
+import { Assessment } from "../../core/types/assessment/assessment.types";
+import { Section } from "../../core/types/section/section.types";
+import { Teacher } from "../../core/types/teacher/teacher.types";
+import { Student } from "../../core/types/student/student.types";
 
 export const getTeacherById = async (teacherId: string) => {
   try {

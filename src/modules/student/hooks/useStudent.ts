@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import { QuestionStats, TopicStats } from "../types/chart.types";
-import * as chartService from "../services/chart.service";
-import * as studentService from "../services/student/student.service";
-import * as studentType from "../types/student/student.types";
-import * as progressCardType from "../types/progress_card.types";
-import { ProgressLog } from "../types/progress_log/progress_log.types";
+import * as chartService from "../../core/services/chart.service";
+import * as studentService from "../../student/services/student.service";
+import * as studentType from "../../core/types/student/student.types";
+import * as progressCardType from "../../core/types/progress_card.types";
 import { StudentContext } from "../context/StudentContext";
-import { StageAttempt } from "../types/stage_attempt/stage_attempt.types";
+import { StageAttempt } from "../../core/types/stage_attempt/stage_attempt.types";
+import { QuestionStats, TopicStats } from "../../core/types/chart.types";
 import {
   DifficultyFrequency,
   PlayerCard,
   StudentAttemptStats,
-} from "../types/student/student_stats.types";
-import { QuestList } from "../types/quest/quest.types";
+} from "../../core/types/student/student_stats.types";
+import { ProgressLog } from "../../core/types/progress_log/progress_log.types";
+import { QuestList } from "../../core/types/quest/quest.types";
 
 export function useStudentContext() {
   const context = useContext(StudentContext);

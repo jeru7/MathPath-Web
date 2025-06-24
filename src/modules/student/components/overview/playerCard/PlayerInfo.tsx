@@ -9,7 +9,7 @@ import skillIcon from "../../../../../assets/icons/skillIcon.png";
 import {
   useStudentContext,
   useStudentPlayerCard,
-} from "../../../../../hooks/useStudent";
+} from "../../../hooks/useStudent";
 
 export default function PlayerInfo({
   studentId,

@@ -6,7 +6,7 @@ import {
 } from "../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { User } from "../types/user.type";
+import { User } from "../../core/types/user.type";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);

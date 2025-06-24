@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
 import samplePic from "../../../assets/images/samplePic.jpg";
-import GameFeatureCard from "./components/GameFeatureCard";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
+import GameFeatureCard from "./GameFeatureCard";
 
 const features = [
   {
@@ -50,7 +50,10 @@ const desktopAnimationValue = {
 
 export default function Features(): ReactElement {
   return (
-    <section className="flex h-fit w-screen flex-col items-center justify-center gap-12 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]" id="features">
+    <section
+      className="flex h-fit w-screen flex-col items-center justify-center gap-12 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]"
+      id="features"
+    >
       <motion.h3
         className="text-4xl font-bold"
         initial={{ opacity: 0, y: 20 }}
@@ -65,7 +68,7 @@ export default function Features(): ReactElement {
       <div className="flex h-fit w-full flex-col gap-16 lg:hidden">
         {features.map((feature, index) => (
           <GameFeatureCard
-          key = {index}
+            key={index}
             className="h-full w-full snap-center flex-col gap-6"
             imgSrc={feature.img}
             title={feature.title}

@@ -1,10 +1,9 @@
 import { type ReactElement } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getGameLevels } from "../../../../services/gamelevel-service";
-import { format } from "date-fns";
-import { convertToPhilippinesDate } from "../../../../utils/date.util";
-import { StageAttempt } from "../../../../types/stage_attempt/stage_attempt.types";
-import { Stage } from "../../../../types/stage/stage.types";
+import { format } from "date-fns-tz";
+import { StageAttempt } from "../../../../core/types/stage_attempt/stage_attempt.types";
+import { Stage } from "../../../../core/types/stage/stage.types";
+import { getStages } from "../../../../core/services/stage/stage.service";
 
 interface IAttemptHistoryItemProps {
   attempt: StageAttempt;
@@ -40,25 +39,24 @@ const getResult = (attempt: StageAttempt) => {
 export default function AttemptHistoryItem({
   attempt,
 }: IAttemptHistoryItemProps): ReactElement {
-  const { data: gameLevels } = useQuery<Stage[]>({
-    queryKey: ["gameLevels"],
-    queryFn: () => getGameLevels(),
+  const { data: stages } = useQuery<Stage[]>({
+    queryKey: ["stages"],
+    queryFn: () => getStages(),
   });
 
-  const gameLevel = gameLevels?.find((level) => level.id === attempt.stageId);
+  const stage = stages?.find((stage) => stage.id === attempt.stageId);
 
   return (
     <tr className="text-center font-primary hover:bg-[var(--primary-gray)]/30 transition duration-200">
-      {/* Game level */}
-      <td className="font-bold">{gameLevel?.level || "Unknown Level"}</td>
+      {/* Stage */}
+      <td className="font-bold">{stage?.stage || "N/A"}</td>
       {/* Topic */}
-      <td className="italic">{gameLevel?.topic || "Unknown Level"}</td>
+      <td className="italic">{stage?.topic || "N/A"}</td>
       {/* Date taken */}
       <td className="text-[var(--primary-gray)]">
-        {format(
-          convertToPhilippinesDate(attempt.date.toString()),
-          "MMMM dd, yyyy 'at' h:mm a",
-        )}
+        {format(new Date(attempt.date), "MMMM dd, yyyy 'at' h:mm a", {
+          timeZone: "Asia/Manila",
+        })}
       </td>
       {/* Correctness */}
       <td className="">{calculateCorrectnessPercentage(attempt)}%</td>

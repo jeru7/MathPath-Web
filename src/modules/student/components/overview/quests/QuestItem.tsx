@@ -9,7 +9,7 @@ import skullIcon from "../../../../../assets/icons/skullIcon.png";
 import {
   QuestListItem,
   QuestType,
-} from "../../../../../types/quest/quest.types";
+} from "../../../../core/types/quest/quest.types";
 
 export default function QuestItem({
   quest,
@@ -46,16 +46,14 @@ export default function QuestItem({
   return (
     <article className="flex flex-col items-center px-3 py-5 rounded-lg gap-4 drop-shadow-sm bg-white">
       {/* Quest icon */}
-      <img src={displayIcon(quest.questType)} alt="" className="h-16 w-16" />
+      <img src={displayIcon(quest.type)} alt="" className="h-16 w-16" />
 
       <div className="flex flex-col items-center gap-2">
         <div className="flex flex-col items-center gap-1">
           {/* Quest name and claim indicator */}
-          <p className="font-semibold text-md text-center h-12">
-            {quest.questName}
-          </p>
+          <p className="font-semibold text-md text-center h-12">{quest.name}</p>
           <p className="text-xs text-gray-400">
-            {quest.isClaimed ? "Claimed" : "Not claimed yet"}
+            {quest.claimed ? "Claimed" : "Not claimed yet"}
           </p>
         </div>
       </div>

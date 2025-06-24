@@ -1,11 +1,9 @@
 import { type ReactElement } from "react";
+import { useTeacherContext } from "../../hooks/useTeacher";
+import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
+import TeacherChart from "./components/TeacherChart";
 
-import PrimaryStat, { IPrimaryStatProps } from "./PrimaryStat";
-
-import { useTeacherContext } from "../../../../hooks/useTeacher";
-import TeacherChart from "./TeacherChart";
-
-export default function Overview(): ReactElement {
+export default function TeacherDashboard(): ReactElement {
   const { teacher, students, sections, assessments, onlineStudents } =
     useTeacherContext();
 

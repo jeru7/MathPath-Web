@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import * as assessmentType from "../../../../types/assessment/assessment.types";
+import * as assessmentType from "../../../../core/types/assessment/assessment.types";
 
 interface AssessmentQuestionProps {
   question: assessmentType.AssessmentQuestion;

@@ -8,16 +8,17 @@ import {
 } from "recharts";
 import StudentChart from "./StudentChart";
 import { useNavigate, useParams } from "react-router-dom";
+import StudentHeatmap from "./StudentHeatmap";
+import AttemptHistory from "./AttemptHistory";
+import { DifficultyFrequency } from "../../../../core/types/student/student_stats.types";
 import {
   useStudentAttemptStats,
   useStudentData,
   useStudentDifficultyFrequency,
-} from "../../../../hooks/useStudent";
-import { useTeacherSections } from "../../../../hooks/useTeacher";
-import { Section } from "../../../../types/section/section.types";
-import StudentHeatmap from "./StudentHeatmap";
-import AttemptHistory from "./AttemptHistory";
-import { DifficultyFrequency } from "../../../../types/student/student_stats.types";
+} from "../../../../student/hooks/useStudent";
+import { useTeacherSections } from "../../../hooks/useTeacher";
+import { StudentStage } from "../../../../core/types/student/student.types";
+import { Section } from "../../../../core/types/section/section.types";
 
 const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
   if (!data) {
@@ -55,13 +56,15 @@ export default function Student(): ReactElement {
     const getCurrentStage = () => {
       const allStages = studentData?.stages ?? [];
 
-      const unlockedLevels = allStages.filter((stage) => stage.unlocked);
+      const unlockedLevels = allStages.filter(
+        (stage: StudentStage) => stage.unlocked,
+      );
 
       const latest = unlockedLevels.length
         ? unlockedLevels[unlockedLevels.length - 1]
         : undefined;
 
-      setCurrentStage(latest?.level);
+      setCurrentStage(latest?.stage);
     };
 
     const getStudentSection = () => {
@@ -110,9 +113,8 @@ export default function Student(): ReactElement {
             <div className="flex items-center gap-2 text-xl">
               <p className="font-bold">Full Name:</p>
               <p>{`${studentData?.lastName}, ${studentData?.firstName
-                // capitalize lang first letter each word
                 .split(" ")
-                .map((word) => word[0].toUpperCase() + word.slice(1))
+                .map((word: string) => word[0].toUpperCase() + word.slice(1))
                 .join(" ")}`}</p>
             </div>
 
@@ -197,13 +199,13 @@ export default function Student(): ReactElement {
           <div className="flex w-full flex-col items-center justify-center rounded-sm bg-white py-4 shadow-sm">
             <p className="text-xl">Assessments Taken</p>
             <p className="text-2xl font-bold">
-              {studentData?.assessments.length}
+              {studentData?.assessments.length ?? 0}
             </p>
           </div>
           {/* Streak */}
           <div className="flex w-full flex-col items-center justify-center rounded-sm bg-white py-4 shadow-sm">
             <p className="text-xl">Streak</p>
-            <p className="text-2xl font-bold">{studentData?.streak}</p>
+            <p className="text-2xl font-bold">{studentData?.streak ?? 0}</p>
           </div>
         </section>
 
