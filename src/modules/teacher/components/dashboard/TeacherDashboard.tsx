@@ -3,7 +3,7 @@ import { useTeacherContext } from "../../hooks/useTeacher";
 import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
 import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
-import StageProgress from "../../../core/components/stats/stage_progress/StageProgress";
+import ActivityTrend from "../../../core/components/stats/activity_trend/ActivityTrend";
 
 export default function TeacherDashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =
@@ -54,15 +54,27 @@ export default function TeacherDashboard(): ReactElement {
 
           {/* Stage progression */}
           <div className="w-full h-[50%]">
-            <StageProgress classes="w-full h-full max-h-[500px]" />
+            <ActivityTrend classes="w-full h-full max-h-[500px]" />
           </div>
 
           {/* Active students, Correct Percentage, Assessment Status */}
           <div className="w-full flex flex-col gap-2 h-[30%]">
-            <div className="h-full w-full flex gap-2 bg-white shadow-sm rounded-md">
-              <section className="h-full w-full">Active Students</section>
-              <section className=" h-full w-full">Correct Percentage</section>
-              <section className=" h-full w-full">Assessment Status</section>
+            <div className="h-full w-full flex gap-2">
+              <section className="h-full w-full bg-white shadow-sm rounded-md p-2">
+                <header className="">
+                  <p className="font-semibold text-lg">Active Students</p>
+                </header>
+              </section>
+              <section className=" h-full w-full bg-white shadow-sm rounded-md p-2">
+                <header>
+                  <p className="font-semibold text-lg">Answer Correctness</p>
+                </header>
+              </section>
+              <section className=" h-full w-full bg-white shadow-sm rounded-md p-2">
+                <header className="border-b-gray-300 border-b-2 pb-1">
+                  <p className="font-semibold text-lg">Active Assessments</p>
+                </header>
+              </section>
             </div>
           </div>
         </div>

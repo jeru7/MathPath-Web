@@ -8,9 +8,9 @@ import { useStudentContext } from "../../hooks/useStudent.ts";
 import { Section } from "../../../core/types/section/section.types.ts";
 import { getSection } from "../../../core/services/section.service.ts";
 import { capitalizeWord } from "../../../core/utils/string.utils.ts";
-import StudentCalendar from "./calendar/StudentCalendar.tsx";
 import Todo from "./todo/Todo.tsx";
 import ActivityList from "../../../core/components/activity/ActivityList.tsx";
+import CustomCalendar from "../../../core/components/calendar/CustomCalendar.tsx";
 
 export default function StudentDashboard(): ReactElement {
   const { student } = useStudentContext();
@@ -90,7 +90,7 @@ export default function StudentDashboard(): ReactElement {
           {/* Section: Calendar and To-do*/}
           <section className="w-[20%] h-full flex flex-col gap-3">
             {/* Calendar */}
-            <StudentCalendar />
+            <CustomCalendar />
 
             {/* To-do */}
             <Todo />
