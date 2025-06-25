@@ -5,8 +5,8 @@ import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
 import ActivityTrend from "../../../core/components/stats/activity_trend/ActivityTrend";
 import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard";
-import ActiveAssessmentsCard from "./components/active_assessments/ActiveAssessmentsCard";
 import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCard";
+import AssessmentStatusCard from "./components/active_assessments/AssessmentStatusCard";
 
 export default function TeacherDashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =
@@ -65,7 +65,7 @@ export default function TeacherDashboard(): ReactElement {
             <section className="h-full w-full flex gap-2">
               <ActiveStudentsCard classes="h-full w-full" />
               <TopicHighlightsCard classes=" h-full w-full" />
-              <ActiveAssessmentsCard classes=" h-full w-full" />
+              <AssessmentStatusCard classes=" h-full w-full" />
             </section>
           </div>
         </div>

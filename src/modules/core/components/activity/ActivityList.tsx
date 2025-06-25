@@ -24,7 +24,7 @@ export default function ActivityList({
     <article
       className={`${classes} w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2`}
     >
-      <header className="w-full flex items-center justify-between border-b-gray-300 border-b-2 pb-1">
+      <header className="w-full flex items-center justify-between border-b-gray-300 border-b-1 pb-1">
         <p className="font-semibold">Recent Activity</p>
         <Select
           options={filterOptions}
@@ -54,7 +54,7 @@ export default function ActivityList({
           ></div>
 
           {/* Activity List */}
-          <div className="flex-col flex pl-8 h-fit">
+          <section className="flex-col flex pl-8 h-fit">
             <Activity />
             <Activity />
             <Activity />
@@ -68,7 +68,7 @@ export default function ActivityList({
             <Activity />
             <Activity />
             <Activity />
-          </div>
+          </section>
         </div>
       </div>
       <p className="ml-auto text-sm underline text-gray-400 hover:cursor-pointer hover:text-gray-500 transition-colors duration-200">
