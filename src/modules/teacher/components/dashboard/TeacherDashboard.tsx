@@ -1,8 +1,9 @@
 import { type ReactElement } from "react";
 import { useTeacherContext } from "../../hooks/useTeacher";
 import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
-import TeacherChart from "./components/TeacherChart";
 import ActivityList from "../../../core/components/activity/ActivityList";
+import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
+import StageProgress from "../../../core/components/stats/stage_progress/StageProgress";
 
 export default function TeacherDashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =
@@ -34,32 +35,49 @@ export default function TeacherDashboard(): ReactElement {
         <h3 className="text-2xl font-bold">Dashboard</h3>
       </header>
 
-      {/* Stats */}
-      <section className="flex max-h-[200px] h-[20%] gap-2">
-        {primaryStats.map((stat, index) => (
-          <PrimaryStat
-            key={index}
-            title={stat.title}
-            color={stat.color}
-            students={stat.students}
-            sections={stat.sections}
-            assessments={stat.assessments}
-            onlineStudents={stat.onlineStudents}
+      <div className="h-[95%] flex gap-2">
+        <div className="w-[80%] h-full flex flex-col gap-2">
+          {/* Stats */}
+          <section className="flex h-[20%] gap-2">
+            {primaryStats.map((stat, index) => (
+              <PrimaryStat
+                key={index}
+                title={stat.title}
+                color={stat.color}
+                students={stat.students}
+                sections={stat.sections}
+                assessments={stat.assessments}
+                onlineStudents={stat.onlineStudents}
+              />
+            ))}
+          </section>
+
+          {/* Stage progression */}
+          <div className="w-full h-[50%]">
+            <StageProgress classes="w-full h-full max-h-[500px]" />
+          </div>
+
+          {/* Active students, Correct Percentage, Assessment Status */}
+          <div className="w-full flex flex-col gap-2 h-[30%]">
+            <div className="h-full w-full flex gap-2 bg-white shadow-sm rounded-md">
+              <section className="h-full w-full">Active Students</section>
+              <section className=" h-full w-full">Correct Percentage</section>
+              <section className=" h-full w-full">Assessment Status</section>
+            </div>
+          </div>
+        </div>
+
+        {/* Calendar and Activity list */}
+        <div className="w-[20%] h-full flex flex-col gap-2">
+          {/* Calendar */}
+          <CustomCalendar />
+          {/* Student activity */}
+          <ActivityList
+            classes="rounded-md bg-white shadow-sm w-full"
+            type="Teacher"
           />
-        ))}
-      </section>
-
-      {/* Charts */}
-      <section className="flex max-h-[1000px] h-[75%] gap-2">
-        {/* Chart */}
-        <TeacherChart classNames="w-[80%] h-full" />
-
-        {/* Student activity */}
-        <ActivityList
-          classes="rounded-md bg-white shadow-sm w-[20%]"
-          type="Teacher"
-        ></ActivityList>
-      </section>
+        </div>
+      </div>
     </main>
   );
 }
