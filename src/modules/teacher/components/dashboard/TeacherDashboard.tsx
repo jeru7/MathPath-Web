@@ -4,6 +4,9 @@ import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
 import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
 import ActivityTrend from "../../../core/components/stats/activity_trend/ActivityTrend";
+import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard";
+import ActiveAssessmentsCard from "./components/active_assessments/ActiveAssessmentsCard";
+import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCard";
 
 export default function TeacherDashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =
@@ -59,23 +62,11 @@ export default function TeacherDashboard(): ReactElement {
 
           {/* Active students, Correct Percentage, Assessment Status */}
           <div className="w-full flex flex-col gap-2 h-[30%]">
-            <div className="h-full w-full flex gap-2">
-              <section className="h-full w-full bg-white shadow-sm rounded-md p-2">
-                <header className="">
-                  <p className="font-semibold text-lg">Active Students</p>
-                </header>
-              </section>
-              <section className=" h-full w-full bg-white shadow-sm rounded-md p-2">
-                <header>
-                  <p className="font-semibold text-lg">Answer Correctness</p>
-                </header>
-              </section>
-              <section className=" h-full w-full bg-white shadow-sm rounded-md p-2">
-                <header className="border-b-gray-300 border-b-2 pb-1">
-                  <p className="font-semibold text-lg">Active Assessments</p>
-                </header>
-              </section>
-            </div>
+            <section className="h-full w-full flex gap-2">
+              <ActiveStudentsCard classes="h-full w-full" />
+              <TopicHighlightsCard classes=" h-full w-full" />
+              <ActiveAssessmentsCard classes=" h-full w-full" />
+            </section>
           </div>
         </div>
 

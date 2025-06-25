@@ -5,3 +5,8 @@ export const URL =
   import.meta.env.MODE === "production"
     ? import.meta.env.VITE_BACKEND_PROD_URI
     : import.meta.env.VITE_BACKEND_DEV_URI;
+
+export const WSS =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_WSS_PROD_URI
+    : import.meta.env.VITE_WSS_DEV_URI;
