@@ -43,7 +43,7 @@ export default function ActivityList({
       <div
         className="h-full overflow-scroll pr-4"
         style={{
-          maxHeight: `${type === "Teacher" ? "600px" : "350px"}`,
+          maxHeight: `${type === "Teacher" ? "420px" : "350px"}`,
         }}
       >
         <div className="relative flex flex-col w-full h-fit">
