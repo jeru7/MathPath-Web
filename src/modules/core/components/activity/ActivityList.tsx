@@ -22,7 +22,7 @@ export default function ActivityList({
 
   return (
     <article
-      className={`${classes} w-[20%] py-2 px-4 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2`}
+      className={`${classes} w-[20%] py-2 px-3 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2`}
     >
       <header className="w-full flex items-center justify-between border-b-gray-300 border-b-1 pb-1">
         <p className="font-semibold">Recent Activity</p>

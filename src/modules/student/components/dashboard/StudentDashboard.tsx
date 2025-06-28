@@ -6,11 +6,11 @@ import BadgeList from "./badges/BadgeList.tsx";
 import ProgressCard from "./progressCards/ProgressCard.tsx";
 import { useStudentContext } from "../../hooks/useStudent.ts";
 import { Section } from "../../../core/types/section/section.types.ts";
-import { getSection } from "../../../core/services/section.service.ts";
 import { capitalizeWord } from "../../../core/utils/string.utils.ts";
 import Todo from "./todo/Todo.tsx";
 import ActivityList from "../../../core/components/activity/ActivityList.tsx";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar.tsx";
+import { getSection } from "../../../core/services/section/section.service.ts";
 
 export default function StudentDashboard(): ReactElement {
   const { student } = useStudentContext();

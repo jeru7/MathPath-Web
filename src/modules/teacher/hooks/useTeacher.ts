@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { TeacherContext } from "../context/TeacherContext";
 import * as teacherService from "../services/teacher.service";
-import * as chartService from "../../core/services/chart.service";
+import * as statsService from "../../core/services/stats/stats.service";
 import { Teacher } from "../../core/types/teacher/teacher.types";
 import { Student } from "../../core/types/student/student.types";
 import { Section } from "../../core/types/section/section.types";
@@ -63,7 +63,7 @@ export const useTeacherAssessments = (teacherId: string) => {
 export const useTeacherOverallTopicStats = (teacherId: string) => {
   return useQuery<TopicStats[]>({
     queryKey: ["teacher", teacherId, "overall-topic-stats"],
-    queryFn: () => chartService.getOverallTopicStats(teacherId),
+    queryFn: () => statsService.getOverallTopicStats(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };
@@ -72,7 +72,7 @@ export const useTeacherOverallTopicStats = (teacherId: string) => {
 export const useTeacherSectionTopicStats = (teacherId: string) => {
   return useQuery<SectionTopicStats[]>({
     queryKey: ["teacher", teacherId, "section-topic-stats"],
-    queryFn: () => chartService.getPerSectionsTopicStats(teacherId),
+    queryFn: () => statsService.getPerSectionsTopicStats(teacherId),
     staleTime: DATA_STALE_TIME,
   });
 };

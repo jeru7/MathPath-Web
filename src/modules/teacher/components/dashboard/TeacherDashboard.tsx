@@ -3,10 +3,10 @@ import { useTeacherContext } from "../../hooks/useTeacher";
 import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
 import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
-import ActivityTrend from "../../../core/components/stats/activity_trend/ActivityTrend";
+import ActivityTrend from "./components/activity_trend/ActivityTrend";
 import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard";
 import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCard";
-import AssessmentStatusCard from "./components/active_assessments/AssessmentStatusCard";
+import AssessmentStatusCard from "./components/assessment_status/AssessmentStatusCard";
 
 export default function TeacherDashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =

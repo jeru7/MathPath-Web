@@ -2,16 +2,14 @@ import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
 import QuestChests from "./QuestChests";
 import QuestItem from "./QuestItem";
-import {
-  useStudentContext,
-  useStudentQuestList,
-} from "../../../hooks/useStudent";
+import { useStudentContext } from "../../../hooks/useStudent";
 import {
   FilterOption,
   filterOptions,
 } from "../../../../core/types/select.types";
 import { QuestListItem } from "../../../../core/types/quest/quest.types";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { useStudentQuestList } from "../../../hooks/useStudentStats";
 
 export default function QuestList(): ReactElement {
   const { student } = useStudentContext();

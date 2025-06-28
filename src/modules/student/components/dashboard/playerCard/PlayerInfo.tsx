@@ -6,10 +6,8 @@ import skullIcon from "../../../../../assets/icons/skullIcon.png";
 import trophyIcon from "../../../../../assets/icons/trophyIcon.png";
 import loseIcon from "../../../../../assets/icons/loseIcon.png";
 import skillIcon from "../../../../../assets/icons/skillIcon.png";
-import {
-  useStudentContext,
-  useStudentPlayerCard,
-} from "../../../hooks/useStudent";
+import { useStudentContext } from "../../../hooks/useStudent";
+import { useStudentPlayerCard } from "../../../hooks/useStudentStats";
 
 export default function PlayerInfo({
   studentId,

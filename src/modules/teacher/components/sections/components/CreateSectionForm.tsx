@@ -8,7 +8,7 @@ import SBanner_3 from "../../../../../assets/images/Banner_3.jpg";
 
 import * as sectionType from "../../../../core/types/section/section.types";
 import { CreateSectionDto } from "../../../../core/types/section/section.dto";
-import { createSection } from "../../../../core/services/section.service";
+import { createSection } from "../../../../core/services/section/section.service";
 
 export default function CreateSectionForm({
   setShowForm,

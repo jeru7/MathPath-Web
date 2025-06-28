@@ -11,14 +11,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import StudentHeatmap from "./StudentHeatmap";
 import AttemptHistory from "./AttemptHistory";
 import { DifficultyFrequency } from "../../../../core/types/student/student_stats.types";
-import {
-  useStudentAttemptStats,
-  useStudentData,
-  useStudentDifficultyFrequency,
-} from "../../../../student/hooks/useStudent";
+import { useStudentData } from "../../../../student/hooks/useStudent";
 import { useTeacherSections } from "../../../hooks/useTeacher";
 import { StudentStage } from "../../../../core/types/student/student.types";
 import { Section } from "../../../../core/types/section/section.types";
+import {
+  useStudentAttemptStats,
+  useStudentDifficultyFrequency,
+} from "../../../../student/hooks/useStudentStats";
 
 const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
   if (!data) {

@@ -4,7 +4,7 @@ import { ProgressType } from "../../../../core/types/progress_card.types";
 import {
   useStudentAssessmentTracker,
   useStudentStagesTracker,
-} from "../../../hooks/useStudent";
+} from "../../../hooks/useStudentStats";
 
 export default function ProgressCard({
   title,
