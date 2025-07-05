@@ -13,6 +13,7 @@ export type Student = {
   lastName: string;
   middleName?: string;
   status?: "Online" | "Offline";
+  profilePicture: StudentProfilePictures;
   role: "Student";
   referenceNumber: string;
   sectionId: string;
@@ -32,6 +33,16 @@ export type Student = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type StudentProfilePictures =
+  | "Boy_1"
+  | "Boy_2"
+  | "Boy_3"
+  | "Boy_4"
+  | "Girl_1"
+  | "Girl_2"
+  | "Girl_3"
+  | "Girl_4";
 
 export type StudentExp = {
   currentExp: number;

@@ -1,3 +1,5 @@
+import { StudentProfilePictures } from "../student/student.types";
+
 export type Teacher = {
   id: string;
   email: string;
@@ -5,4 +7,10 @@ export type Teacher = {
   lastName: string;
   middleName?: string;
   profilePicture?: string;
+};
+
+export type TeacherActivity = {
+  profilePicture: StudentProfilePictures;
+  title: string;
+  date: string;
 };

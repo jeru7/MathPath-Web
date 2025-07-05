@@ -7,11 +7,7 @@ export type Activity = {
   level?: number;
 };
 
-export type ActivityTypes =
-  | "AssessmentCompleted"
-  | "StageCompleted"
-  | "BadgeUnlocked"
-  | "LeveledUp";
+export type ActivityTypes = "Assessment" | "Stage" | "Badge" | "Level";
 
 export type StudentActivity = {
   activityId: string;

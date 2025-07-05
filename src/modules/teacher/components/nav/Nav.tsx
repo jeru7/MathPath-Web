@@ -17,7 +17,7 @@ export default function Nav(): ReactElement {
       defaultPage: true,
     },
     {
-      to: `/teacher/${teacherId}/analytics`,
+      to: `/teacher/${teacherId}/statistics`,
       icon: <IoIosStats className="h-8 w-8" />,
     },
     {

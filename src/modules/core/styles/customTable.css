@@ -24,7 +24,7 @@ thead th {
   top: 0;
   background-color: white;
   z-index: 1;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 th,

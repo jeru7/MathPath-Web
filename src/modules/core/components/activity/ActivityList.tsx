@@ -1,8 +1,10 @@
 import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { FilterOption, filterOptions } from "../../types/select.types";
+import { FilterOption, teacherActivityFilter } from "../../types/select.types";
 import { getCustomSelectColor } from "../../styles/selectStyles";
-import Activity from "./Activity";
+// import StudentActivity from "./StudentActivity";
+import StudentActivity from "./StudentActivity";
+import TeacherActivity from "../../../teacher/pages/dashboard_page/components/activity_list/TeacherActivity";
 
 interface IActivityListProps {
   classes?: string;
@@ -13,28 +15,30 @@ export default function ActivityList({
   classes,
   type,
 }: IActivityListProps): ReactElement {
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
+  const [selectedFilter, setSelectedFilter] = useState(
+    teacherActivityFilter[0],
+  );
   const customStyles: StylesConfig<FilterOption> =
     getCustomSelectColor<FilterOption>({
-      borderRadius: "0.5rem",
-      minHeight: "12px",
+      minHeight: "24px",
+      border: false,
     });
 
   return (
     <article
-      className={`${classes} w-[20%] py-2 px-3 flex flex-col h-full bg-white rounded-md drop-shadow-sm gap-2`}
+      className={`${classes} w-[20%] py-2 px-3 flex flex-col h-full bg-white rounded-md gap-2 shadow-xs`}
     >
       <header className="w-full flex items-center justify-between border-b-gray-300 border-b-1 pb-1">
         <p className="font-semibold">Recent Activity</p>
         <Select
-          options={filterOptions}
+          options={teacherActivityFilter}
           value={selectedFilter}
           onChange={(option: SingleValue<FilterOption>) => {
             if (option) setSelectedFilter(option);
           }}
           isMulti={false}
           styles={customStyles}
-          className="w-32 text-xs"
+          className="text-xs w-28"
           isSearchable={false}
           menuPlacement="auto"
         />{" "}
@@ -43,7 +47,7 @@ export default function ActivityList({
       <div
         className="h-full overflow-scroll pr-4"
         style={{
-          maxHeight: `${type === "Teacher" ? "420px" : "350px"}`,
+          maxHeight: `${type === "Teacher" ? "430px" : "350px"}`,
         }}
       >
         <div className="relative flex flex-col w-full h-fit">
@@ -55,19 +59,8 @@ export default function ActivityList({
 
           {/* Activity List */}
           <section className="flex-col flex pl-8 h-fit">
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
-            <Activity />
+            <TeacherActivity />
+            <StudentActivity />
           </section>
         </div>
       </div>

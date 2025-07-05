@@ -3,6 +3,7 @@ import { StylesConfig } from "react-select";
 export interface SelectStyleOptions {
   borderRadius?: string;
   minHeight?: string;
+  border?: boolean;
 }
 
 export const getCustomSelectColor = <T>(
@@ -11,16 +12,36 @@ export const getCustomSelectColor = <T>(
   control: (base) => ({
     ...base,
     backgroundColor: "inherit",
-    borderColor: "var(--primary-gray)",
+    border:
+      options?.border === false ? "none" : `1px solid var(--primary-gray)`,
+    boxShadow: "none",
     borderRadius: options?.borderRadius || "0.500rem",
     minHeight: options?.minHeight || "42px",
     "&:hover": {
-      borderColor: "var(--primary-gray)",
+      border:
+        options?.border === false ? "none" : `1px solid var(--primary-gray)`,
     },
     "&:focus-within": {
-      borderColor: "var(--tertiary-green)",
-      boxShadow: "0 0 0 1px var(--tertiary-green)",
+      border:
+        options?.border === false ? "none" : `1px solid var(--tertiary-green)`,
+      boxShadow:
+        options?.border === false ? "none" : `0 0 0 1px var(--tertiary-green)`,
     },
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    padding: "0 4px",
+    gap: "2px",
+    display: "flex",
+    justifyContent: "flex-end",
+    flex: 1,
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    padding: "0 2px",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
   }),
   option: (base, state) => ({
     ...base,
@@ -30,6 +51,7 @@ export const getCustomSelectColor = <T>(
         ? "#ceffc7"
         : "inherit",
     color: state.isSelected ? "white" : "inherit",
+    fontSize: "0.875rem",
   }),
   menu: (base) => ({
     ...base,
