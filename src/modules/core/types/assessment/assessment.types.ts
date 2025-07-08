@@ -34,13 +34,32 @@ export type QuestionType =
   | "identification"
   | "single_choice";
 
-export type AssessmentQuestion = {
-  question: string;
-  points: number;
-  type: QuestionType;
-  choices?: AssessmentQuestionChoice[];
-  answer: string | string[];
-};
+export type AssessmentQuestion =
+  | {
+      type: "single_choice" | "multiple_choice";
+      question: string;
+      points: number;
+      choices: AssessmentQuestionChoice[];
+      answers: string[];
+    }
+  | {
+      type: "fill_in_the_blanks";
+      question: string;
+      points: number;
+      answers: FillInTheBlankAnswerType[];
+    }
+  | {
+      type: "true_or_false";
+      question: string;
+      points: number;
+      answers: boolean;
+    }
+  | {
+      type: "identification";
+      question: string;
+      points: number;
+      answers: string;
+    };
 
 export type AssessmentQuestionChoice = {
   id: string;
