@@ -43,9 +43,9 @@ type QuestionTypeOption = {
 };
 
 const questionTypeOptions: { value: QuestionType; label: string }[] = [
-  { value: "multiple_choice", label: "Multiple Choice" },
-  { value: "fill_in_the_blanks", label: "Fill in the blanks" },
-  { value: "true_or_false", label: "True or False" },
-  { value: "identification", label: "Identification" },
   { value: "single_choice", label: "Single Choice" },
+  { value: "multiple_choice", label: "Multiple Choice" },
+  { value: "identification", label: "Identification" },
+  { value: "true_or_false", label: "True or False" },
+  { value: "fill_in_the_blanks", label: "Fill in the blanks" },
 ];

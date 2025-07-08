@@ -9,7 +9,7 @@ import {
 } from "../../../../../core/types/assessment/assessment.types";
 
 type AnswersProp = {
-  answers?: FillInTheBlankAnswerType[];
+  answers?: string[] | FillInTheBlankAnswerType[];
   type?: QuestionType;
 };
 export default function Answers({ answers, type }: AnswersProp): ReactElement {
@@ -29,14 +29,16 @@ export default function Answers({ answers, type }: AnswersProp): ReactElement {
             <AnimatePresence>
               {answers?.map((answer) => (
                 <motion.div
-                  key={answer.id}
+                  key={(answer as FillInTheBlankAnswerType).id}
                   layout
                   initial={{ opacity: 0, scale: 1 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.25 }}
                 >
-                  <FillInTheBlankAnswer answer={answer} />
+                  <FillInTheBlankAnswer
+                    answer={answer as FillInTheBlankAnswerType}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>

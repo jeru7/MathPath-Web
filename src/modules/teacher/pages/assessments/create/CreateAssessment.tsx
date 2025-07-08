@@ -5,9 +5,30 @@ import Stepper from "./Stepper";
 import PageCard from "./PageCard";
 import Actions from "./Actions";
 import AddQuestionModal from "./add_question/AddQuestionModal";
+import {
+  AssessmentPage,
+  AssessmentQuestion,
+} from "../../../../core/types/assessment/assessment.types";
 
 export default function CreateAssessment(): ReactElement {
+  // states
   const [showAddQuestion, setShowAddQuestion] = useState<boolean>(false);
+  const [pages, setPages] = useState<AssessmentPage[]>([
+    { title: "Page 1", contents: [] },
+  ]);
+
+  // handlers
+  const handleAddQuestion = (question: AssessmentQuestion) => {
+    setPages((prev) => {
+      const newPages = [...prev];
+      newPages[0].contents.push({
+        type: "question",
+        data: question,
+      });
+
+      return newPages;
+    });
+  };
 
   return (
     <main className="flex h-full w-full flex-col gap-2 bg-inherit p-4">
@@ -24,14 +45,17 @@ export default function CreateAssessment(): ReactElement {
         </section>
         <section className="bg-white shadow-sm rounded-sm h-full px-96 py-12 flex flex-col gap-4">
           {/* Initial page card */}
-          <PageCard setShowAddQuestion={setShowAddQuestion} />
-
-          {/* Actions */}
+          {pages.map((page) => (
+            <PageCard pageData={page} onShowAddQuestion={setShowAddQuestion} />
+          ))}
           <Actions />
         </section>
       </div>
       {showAddQuestion && (
-        <AddQuestionModal setShowAddQuestion={setShowAddQuestion} />
+        <AddQuestionModal
+          setShowAddQuestion={setShowAddQuestion}
+          onAddQuestion={handleAddQuestion}
+        />
       )}
     </main>
   );

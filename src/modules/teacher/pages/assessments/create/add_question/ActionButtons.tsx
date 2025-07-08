@@ -1,6 +1,11 @@
 import { type ReactElement } from "react";
 
-export default function ActionButtons(): ReactElement {
+type ActionButtonsProps = {
+  onAddQuestion: () => void;
+};
+export default function ActionButtons({
+  onAddQuestion,
+}: ActionButtonsProps): ReactElement {
   return (
     <div className="flex items-center justify-between gap-2">
       {/* Cancel */}
@@ -14,6 +19,7 @@ export default function ActionButtons(): ReactElement {
       <button
         className="flex items-center justify-center py-2 px-5 rounded-sm bg-[var(--primary-green)] text-white opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
         type="button"
+        onClick={onAddQuestion}
       >
         <p>Add</p>
       </button>

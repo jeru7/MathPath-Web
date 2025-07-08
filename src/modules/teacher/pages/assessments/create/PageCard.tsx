@@ -5,17 +5,22 @@ import { TbEdit } from "react-icons/tb";
 import { BsPatchQuestion } from "react-icons/bs";
 import { CiImageOn } from "react-icons/ci";
 import { MdOutlineTextSnippet } from "react-icons/md";
+import { AssessmentPage } from "../../../../core/types/assessment/assessment.types";
 
 type PageCardProps = {
-  setShowAddQuestion: (show: boolean) => void;
+  pageData: AssessmentPage;
+  onShowAddQuestion: (show: boolean) => void;
 };
 export default function PageCard({
-  setShowAddQuestion,
+  pageData,
+  onShowAddQuestion,
 }: PageCardProps): ReactElement {
   return (
     <article className="flex flex-col rounded-t-sm border border-gray-300 rounded-b-sm">
       <header className="flex justify-between items-center p-4 rounded-t-xs bg-[var(--tertiary-green)]">
-        <p className="text-white font-semibold">Page: 1</p>
+        <p className="text-white font-semibold">
+          {pageData.title ?? "No title"}
+        </p>
         <div className="flex items-center gap-2">
           <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
             <TbEdit className="h-6 w-6" />
@@ -32,7 +37,7 @@ export default function PageCard({
         <div className="flex justify-center gap-8">
           <button
             className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
-            onClick={() => setShowAddQuestion(true)}
+            onClick={() => onShowAddQuestion(true)}
           >
             <BsPatchQuestion />
             <p>Add question</p>
