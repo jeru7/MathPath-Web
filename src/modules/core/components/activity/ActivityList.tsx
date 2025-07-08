@@ -4,7 +4,7 @@ import { FilterOption, teacherActivityFilter } from "../../types/select.types";
 import { getCustomSelectColor } from "../../styles/selectStyles";
 // import StudentActivity from "./StudentActivity";
 import StudentActivity from "./StudentActivity";
-import TeacherActivity from "../../../teacher/pages/dashboard_page/components/activity_list/TeacherActivity";
+import TeacherActivity from "../../../teacher/pages/dashboard/components/activity_list/TeacherActivity";
 
 interface IActivityListProps {
   classes?: string;

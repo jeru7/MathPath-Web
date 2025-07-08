@@ -1,12 +1,12 @@
 import { Route } from "react-router-dom";
 import Teacher from "../components/Teacher";
-import Dashboard from "../pages/dashboard_page/DashboardPage";
-import Students from "../pages/students_page/StudentsPage";
-import Student from "../pages/students_page/student_page/Student";
-import Sections from "../pages/sections_page/SectionsPage";
-import Assessments from "../pages/assessments_page/AssessmentsPage";
-import Statistics from "../pages/statistics_page/StatisticsPage";
-import CreateAssessment from "../pages/assessments_page/components/create_assessment/CreateAssessment";
+import Dashboard from "../pages/dashboard/DashboardPage";
+import Students from "../pages/students/StudentsPage";
+import Student from "../pages/students/student/StudentPage";
+import Sections from "../pages/sections/SectionsPage";
+import Assessments from "../pages/assessments/AssessmentsPage";
+import Statistics from "../pages/statistics/StatisticsPage";
+import CreateAssessment from "../pages/assessments/create/CreateAssessment";
 
 export const teacherRoutes = (
   <Route path="/teacher/:teacherId" element={<Teacher />}>

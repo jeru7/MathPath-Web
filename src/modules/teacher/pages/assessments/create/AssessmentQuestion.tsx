@@ -1,4 +1,4 @@
-import * as assessmentType from "../../../../../core/types/assessment/assessment.types";
+import * as assessmentType from "../../../../core/types/assessment/assessment.types";
 import { MdDelete } from "react-icons/md";
 
 interface AssessmentQuestionProps {

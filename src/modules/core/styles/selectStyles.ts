@@ -4,6 +4,7 @@ export interface SelectStyleOptions {
   borderRadius?: string;
   minHeight?: string;
   border?: boolean;
+  justifyContent?: "flex-start" | "flex-end" | "center";
 }
 
 export const getCustomSelectColor = <T>(
@@ -33,12 +34,13 @@ export const getCustomSelectColor = <T>(
     padding: "0 4px",
     gap: "2px",
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: options?.justifyContent || "flex-end",
     flex: 1,
   }),
   dropdownIndicator: (base) => ({
     ...base,
     padding: "0 2px",
+    cursor: "pointer",
   }),
   indicatorSeparator: () => ({
     display: "none",
