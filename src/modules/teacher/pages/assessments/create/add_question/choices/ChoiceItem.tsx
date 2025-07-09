@@ -9,14 +9,18 @@ type ChoiceItemProps = {
   choice: AssessmentQuestionChoice;
   type: "multiple_choice" | "single_choice";
   onTextChange: (id: string, value: string) => void;
+  onCorrectChange: (choiceId: string, checked: boolean) => void;
   dragOverlay?: boolean;
+  isChecked: boolean;
 };
 
 export default function ChoiceItem({
   choice,
   onTextChange,
+  onCorrectChange,
   dragOverlay,
   type,
+  isChecked,
 }: ChoiceItemProps): ReactElement {
   const {
     attributes,
@@ -63,6 +67,8 @@ export default function ChoiceItem({
             type={type === "single_choice" ? "radio" : "checkbox"}
             name="choices"
             className="hover:cursor-pointer"
+            checked={isChecked}
+            onChange={(e) => onCorrectChange(choice.id, e.target.checked)}
           />
           <label htmlFor="choices" className="text-xs">
             Correct

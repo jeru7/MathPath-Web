@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./Stepper";
@@ -9,13 +9,18 @@ import {
   AssessmentPage,
   AssessmentQuestion,
 } from "../../../../core/types/assessment/assessment.types";
+import { nanoid } from "nanoid";
 
 export default function CreateAssessment(): ReactElement {
   // states
   const [showAddQuestion, setShowAddQuestion] = useState<boolean>(false);
   const [pages, setPages] = useState<AssessmentPage[]>([
-    { title: "Page 1", contents: [] },
+    { id: nanoid(), title: "Page 1", contents: [] },
   ]);
+
+  useEffect(() => {
+    console.log(pages);
+  }, [pages]);
 
   // handlers
   const handleAddQuestion = (question: AssessmentQuestion) => {

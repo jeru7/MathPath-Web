@@ -1,3 +1,4 @@
+// assessment
 export type Assessment = {
   id: string;
   title: string;
@@ -17,16 +18,7 @@ export type Assessment = {
   updatedAt: string;
 };
 
-export type CreateAssessment = {
-  name: string;
-  topic: string;
-  description: string;
-  teacher: string;
-  sections: string[];
-  questions: AssessmentQuestion[];
-  deadline: Date;
-};
-
+// assessment question types
 export type QuestionType =
   | "multiple_choice"
   | "fill_in_the_blanks"
@@ -34,6 +26,7 @@ export type QuestionType =
   | "identification"
   | "single_choice";
 
+// assessment question structure based on types
 export type AssessmentQuestion =
   | {
       type: "single_choice" | "multiple_choice";
@@ -61,24 +54,41 @@ export type AssessmentQuestion =
       answers: string;
     };
 
+// assessment question choice for multi or single choice
 export type AssessmentQuestionChoice = {
   id: string;
   text: string;
 };
 
+// assessment answer type for fill in the blanks
 export type FillInTheBlankAnswerType = {
   id: string;
   label: string;
   value: string;
 };
 
+// assessment page content
 export type AssessmentContent = {
   _id?: string;
   type: "image" | "question" | "text";
   data: string | AssessmentQuestion;
 };
 
+// assessment page
 export type AssessmentPage = {
+  id: string;
   title?: string;
   contents: AssessmentContent[];
+};
+
+// DTO
+// create assessment
+export type CreateAssessment = {
+  name: string;
+  topic: string;
+  description: string;
+  teacher: string;
+  sections: string[];
+  questions: AssessmentQuestion[];
+  deadline: Date;
 };

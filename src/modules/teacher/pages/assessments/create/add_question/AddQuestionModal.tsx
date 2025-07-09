@@ -1,10 +1,10 @@
 import { useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
-import QuestionTypeSelect from "./QuestionTypeSelect";
-import ActionButtons from "./ActionButtons";
+import QuestionTypeSelect from "./components/QuestionTypeSelect";
+import ActionButtons from "./components/ActionButtons";
 import RichTextField from "./editor/RichTextField";
 import Choices from "./choices/Choices";
-import Answers from "./Answers";
+import Answers from "./components/Answers";
 import {
   AssessmentQuestion,
   AssessmentQuestionChoice,
@@ -13,6 +13,7 @@ import {
 } from "../../../../../core/types/assessment/assessment.types";
 import { nanoid } from "nanoid";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 type AddQuestionModalProps = {
   setShowAddQuestion: (show: boolean) => void;
@@ -28,25 +29,20 @@ export default function AddQuestionModal({
     question: "",
     type: "single_choice",
     points: 1,
-    choices: [],
+    choices: [{ id: nanoid(), text: "" }],
     answers: [],
   });
 
-  const handleQuestionTextChange = (text: string) => {
-    setQuestion((prev) => ({
-      ...prev,
-      question: text,
-    }));
-  };
-
   const handleTypeChange = (newType: QuestionType) => {
+    if (newType === question.type) return;
+
     setQuestion(() => {
       if (newType === "single_choice" || newType === "multiple_choice") {
         return {
           type: newType,
           question: "",
           points: 1,
-          choices: [],
+          choices: [{ id: nanoid(), text: "" }],
           answers: [],
         };
       } else if (newType === "fill_in_the_blanks") {
@@ -82,6 +78,46 @@ export default function AddQuestionModal({
     }));
   };
 
+  const handleContentChange = (text: string) => {
+    const matches = text.match(/\[(\d+)\]/g) || [];
+    const uniqueMatches = Array.from(new Set(matches));
+
+    setQuestion((prev) => {
+      if (prev.type !== "fill_in_the_blanks") {
+        return {
+          ...prev,
+          question: text,
+        };
+      } else {
+        const existing = new Map(
+          (prev.answers as FillInTheBlankAnswerType[]).map((p) => [p.label, p]),
+        );
+
+        const updatedAnswers = uniqueMatches
+          .map((label) => {
+            const number = label.match(/^\[(\d+)\]$/)?.[1];
+            if (!number) return null;
+
+            const existingLabel = existing.get(number);
+            return existingLabel
+              ? existingLabel
+              : {
+                  id: nanoid(),
+                  label: number.toString(),
+                  value: "",
+                };
+          })
+          .filter(Boolean) as FillInTheBlankAnswerType[];
+
+        return {
+          ...prev,
+          question: text,
+          answers: updatedAnswers,
+        };
+      }
+    });
+  };
+
   const handleChoicesChange = (newChoices: AssessmentQuestionChoice[]) => {
     setQuestion((prev) => ({
       ...prev,
@@ -109,44 +145,18 @@ export default function AddQuestionModal({
     );
   };
 
-  const handleFillInTheBlankAnswerChange = (id: string, value: string) => {
-    setQuestion((prev) =>
-      prev.type === "fill_in_the_blanks"
-        ? {
-            ...prev,
-            answers: (prev.answers as FillInTheBlankAnswerType[]).map(
-              (answer) => (answer.id === id ? { ...answer, value } : answer),
-            ),
-          }
-        : prev,
-    );
-  };
-  const handleContentChange = (text: string) => {
-    const matches = text.match(/\[(\d+)\]/g) || [];
-    const uniqueMatches = Array.from(new Set(matches));
-
+  const handleFillInTheBlankAnswerChange = (
+    newAnswer: FillInTheBlankAnswerType,
+  ) => {
     setQuestion((prev) => {
       if (prev.type !== "fill_in_the_blanks") return prev;
 
-      const existing = new Map(
-        (prev.answers as FillInTheBlankAnswerType[]).map((p) => [p.label, p]),
+      const updatedAnswers = (prev.answers as FillInTheBlankAnswerType[]).map(
+        (answer) =>
+          answer.id === newAnswer.id
+            ? { ...answer, value: newAnswer.value }
+            : answer,
       );
-
-      const updatedAnswers = uniqueMatches
-        .map((label) => {
-          const number = label.match(/^\[(\d+)\]$/)?.[1];
-          if (!number) return null;
-
-          const existingLabel = existing.get(number);
-          return existingLabel
-            ? existingLabel
-            : {
-                id: nanoid(),
-                label: number.toString(),
-                value: "",
-              };
-        })
-        .filter(Boolean) as FillInTheBlankAnswerType[];
 
       return {
         ...prev,
@@ -158,6 +168,88 @@ export default function AddQuestionModal({
   const handleClose = () => setIsVisible(false);
 
   const handleAddQuestion = () => {
+    if (question.question === "") {
+      toast.error("Question content cannot be empty.");
+      return;
+    }
+
+    if (question.type === "single_choice") {
+      if (question.answers.length !== 1) {
+        toast.error("Please select a single correct answer.");
+        return;
+      }
+
+      if (question.choices.length < 2) {
+        toast.error("Please provide at least 2 choices.");
+        return;
+      }
+
+      let flag: boolean = false;
+
+      question.choices.forEach((choice) => {
+        if (choice.text === "") {
+          flag = true;
+        }
+      });
+
+      if (flag) {
+        toast.error("Please provide answers for all choices.");
+        return;
+      }
+    }
+
+    if (question.type === "multiple_choice") {
+      if (question.answers.length === 0) {
+        toast.error("Please select at least one correct answer.");
+        return;
+      } else if (question.answers.length === question.choices.length) {
+        toast.error("Please leave at least one wrong answer.");
+        return;
+      }
+
+      let flag: boolean = false;
+
+      question.choices.forEach((choice) => {
+        if (choice.text === "") {
+          flag = true;
+        }
+      });
+
+      if (flag) {
+        toast.error("Please provide answers for all choices.");
+        return;
+      }
+    }
+
+    if (question.type === "fill_in_the_blanks") {
+      if (question.answers.length < 1) {
+        toast.error(
+          "Please add at least one blank in your question using [1], [2], etc.",
+        );
+        return;
+      }
+
+      let flag: boolean = false;
+
+      question.answers.forEach((answer) => {
+        if (answer.value === "") {
+          flag = true;
+        }
+      });
+
+      if (flag) {
+        toast.error("Please provide answers for all blanks.");
+        return;
+      }
+    }
+
+    if (question.type === "identification") {
+      if ((question.answers as string) === "") {
+        toast.error("Please provide an answer.");
+        return;
+      }
+    }
+
     onAddQuestion(question);
     handleClose();
   };
@@ -168,8 +260,11 @@ export default function AddQuestionModal({
       onExitComplete={() => setShowAddQuestion(false)}
     >
       {isVisible && (
+        // overlay
         <div className="fixed w-screen h-screen bg-black/20 z-50 top-0 left-0">
+          {/* wrapper */}
           <div className="w-full h-full relative">
+            {/* modal */}
             <motion.article
               className="w-[800px] h-fit rounded-sm drop-shadow-sm top-1/2 -translate-y-[60%] left-1/2 right-1/2 -translate-x-1/2 absolute"
               key="add-question-modal"
@@ -178,8 +273,10 @@ export default function AddQuestionModal({
               exit={{ opacity: 0, scale: 1, y: 50 }}
               transition={{ duration: 0.25 }}
             >
+              {/* header */}
               <header className="p-4 bg-white rounded-t-sm flex items-center justify-between border-b border-b-gray-300">
                 <h3>New Question</h3>
+                {/* close button */}
                 <button
                   className="opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
                   type="button"
@@ -216,7 +313,7 @@ export default function AddQuestionModal({
                           const value = Number(e.target.value);
                           handlePointsChange(isNaN(value) ? 1 : value);
                         }}
-                        min={0}
+                        min={1}
                         max={100}
                       />
                     </div>
@@ -233,8 +330,8 @@ export default function AddQuestionModal({
                       <RichTextField
                         key={question.type}
                         onContentChange={handleContentChange}
-                        questionData={question}
                       />
+                      {/* info for fill in the blanks */}
                       {question.type === "fill_in_the_blanks" && (
                         <motion.div
                           className="p-2 bg-[var(--primary-yellow)]/80"
@@ -254,9 +351,12 @@ export default function AddQuestionModal({
                       )}
                     </div>
                   </div>
+                  {/* divider */}
                   <div className="border-b border-b-gray-300 "></div>
+                  {/* bottom section */}
                   <AnimatePresence mode="wait">
                     <div className="gap-4 flex flex-col">
+                      {/* choices for single or multiple choice */}
                       {question.type === "single_choice" ||
                       question.type === "multiple_choice" ? (
                         <motion.div
@@ -266,9 +366,18 @@ export default function AddQuestionModal({
                           exit={{ opacity: 0, scale: 0.8 }}
                           transition={{ duration: 0.25 }}
                         >
-                          <Choices type={question.type} />
+                          <Choices
+                            type={question.type}
+                            choices={question.choices}
+                            onSingleOrMultipleAnswerChange={
+                              handleSingleOrMultipleChoiceAnswerChange
+                            }
+                            onChoicesChange={handleChoicesChange}
+                            answers={question.answers}
+                          />
                         </motion.div>
                       ) : (
+                        // answer fields for the rest of types
                         (((
                           question.answers as
                             | string[]
@@ -288,13 +397,25 @@ export default function AddQuestionModal({
                               answers={
                                 question.answers as FillInTheBlankAnswerType[]
                               }
+                              onFillInTheBlankAnswerChange={
+                                handleFillInTheBlankAnswerChange
+                              }
+                              onIdentificationAnswerChange={
+                                handleIdentificationAnswerChange
+                              }
+                              onTrueOrFalseAnswerChange={
+                                handleTrueOrFalseAnswerChange
+                              }
                               type={question.type}
                             />
                           </motion.div>
                         )
                       )}
                       {/* Action Buttons */}
-                      <ActionButtons onAddQuestion={handleAddQuestion} />
+                      <ActionButtons
+                        onAddQuestion={handleAddQuestion}
+                        onCancelClick={handleClose}
+                      />
                     </div>
                   </AnimatePresence>
                 </form>

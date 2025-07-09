@@ -19,23 +19,40 @@ import { nanoid } from "nanoid";
 import { createPortal } from "react-dom";
 import ChoiceItem from "./ChoiceItem";
 
-const dummyChoices: AssessmentQuestionChoice[] = [{ id: "id1", text: "" }];
-
 type ChoicesProps = {
   type: "multiple_choice" | "single_choice";
+  choices: AssessmentQuestionChoice[];
+  onSingleOrMultipleAnswerChange: (newAnswers: string[]) => void;
+  onChoicesChange: (choices: AssessmentQuestionChoice[]) => void;
+  answers: string[];
 };
 
-export default function Choices({ type }: ChoicesProps): ReactElement {
-  const [choices, setChoices] =
-    useState<AssessmentQuestionChoice[]>(dummyChoices);
+export default function Choices({
+  type,
+  onSingleOrMultipleAnswerChange,
+  choices,
+  onChoicesChange,
+  answers,
+}: ChoicesProps): ReactElement {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   const handleChoiceTextChange = (id: string, value: string) => {
-    setChoices((prev) =>
-      prev.map((choice) =>
+    onChoicesChange(
+      choices.map((choice) =>
         choice.id === id ? { ...choice, text: value } : choice,
       ),
     );
+  };
+
+  const handleCorrectChange = (choiceId: string, checked: boolean) => {
+    if (type === "single_choice") {
+      onSingleOrMultipleAnswerChange([choiceId]);
+    } else {
+      const updatedAnswers = checked
+        ? [...answers, choiceId]
+        : answers.filter((id) => id !== choiceId);
+      onSingleOrMultipleAnswerChange(updatedAnswers);
+    }
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -43,23 +60,21 @@ export default function Choices({ type }: ChoicesProps): ReactElement {
   };
 
   const addChoice = (choice: AssessmentQuestionChoice) => {
-    setChoices((prev) => [...prev, choice]);
+    onChoicesChange([...choices, choice]);
   };
 
   const getTaskPos = (id: number | string) => {
     return choices.findIndex((choice) => id === choice.id);
   };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (active.id === over?.id || !over) return;
 
-    setChoices((choices) => {
-      const originalPos = getTaskPos(active.id);
-      const newPos = getTaskPos(over?.id);
+    const originalPos = getTaskPos(active.id);
+    const newPos = getTaskPos(over.id);
 
-      return arrayMove(choices, originalPos, newPos);
-    });
+    onChoicesChange(arrayMove(choices, originalPos, newPos));
   };
 
   return (
@@ -99,7 +114,9 @@ export default function Choices({ type }: ChoicesProps): ReactElement {
                     <ChoiceItem
                       choice={choice}
                       onTextChange={handleChoiceTextChange}
+                      onCorrectChange={handleCorrectChange}
                       type={type}
+                      isChecked={answers.includes(choice.id)}
                     />
                   </motion.div>
                 ))}
@@ -108,14 +125,24 @@ export default function Choices({ type }: ChoicesProps): ReactElement {
 
             {createPortal(
               <DragOverlay>
-                {activeId ? (
-                  <ChoiceItem
-                    choice={choices.find((c) => c.id === activeId)!}
-                    onTextChange={handleChoiceTextChange}
-                    dragOverlay
-                    type={type}
-                  />
-                ) : null}
+                {activeId
+                  ? (() => {
+                      const activeChoice = choices.find(
+                        (c) => c.id === activeId,
+                      );
+                      if (!activeChoice) return null;
+                      return (
+                        <ChoiceItem
+                          choice={activeChoice}
+                          onTextChange={handleChoiceTextChange}
+                          onCorrectChange={handleCorrectChange}
+                          dragOverlay
+                          type={type}
+                          isChecked={answers.includes(activeChoice.id)}
+                        />
+                      );
+                    })()
+                  : null}
               </DragOverlay>,
               document.body,
             )}

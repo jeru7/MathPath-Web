@@ -1,20 +1,17 @@
-import { useEffect, type ReactElement } from "react";
+import { type ReactElement } from "react";
 import { useEditor, EditorContent, Extensions } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { FaBold } from "react-icons/fa";
 import { FaItalic } from "react-icons/fa";
 import { FaUnderline } from "react-icons/fa";
-import { AssessmentQuestion } from "../../../../../../core/types/assessment/assessment.types";
 
 type RichTextFieldProps = {
-  questionData: AssessmentQuestion;
   onContentChange?: (content: string) => void;
   extensions?: Extensions;
 };
 
 export default function RichTextField({
-  questionData,
   onContentChange,
   extensions,
 }: RichTextFieldProps): ReactElement {
