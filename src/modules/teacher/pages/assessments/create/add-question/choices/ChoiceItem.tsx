@@ -12,6 +12,8 @@ type ChoiceItemProps = {
   onCorrectChange: (choiceId: string, checked: boolean) => void;
   dragOverlay?: boolean;
   isChecked: boolean;
+  onDeleteChoice: (choiceId: string) => void;
+  isSingle: boolean;
 };
 
 export default function ChoiceItem({
@@ -21,6 +23,8 @@ export default function ChoiceItem({
   dragOverlay,
   type,
   isChecked,
+  onDeleteChoice,
+  isSingle,
 }: ChoiceItemProps): ReactElement {
   const {
     attributes,
@@ -45,13 +49,14 @@ export default function ChoiceItem({
       {...attributes}
       style={style}
     >
-      <button
-        className="hover:cursor-grab active:cursor-grabbing"
-        type="button"
+      {/* drag indicator */}
+      <div
+        className="hover:cursor-grab active:cursor-grabbing flex items-center justify-center"
         {...(!dragOverlay ? listeners : {})}
       >
         <MdOutlineDragIndicator />
-      </button>
+      </div>
+      {/* text input */}
       <div className="bg-white border rounded-xs border-gray-300 p-2 w-full">
         <input
           type="text"
@@ -61,6 +66,7 @@ export default function ChoiceItem({
           onChange={(e) => onTextChange(choice.id, e.target.value)}
         />
       </div>
+      {/* checkbox or radio button */}
       <div className="flex gap-2">
         <section className="flex gap-1 items-center">
           <input
@@ -74,9 +80,11 @@ export default function ChoiceItem({
             Correct
           </label>
         </section>
+        {/* delete button */}
         <button
-          className="hover:cursor-pointer text-gray-400 hover:text-black"
+          className={`text-gray-400 hover:text-black ${isSingle ? "opacity-0" : "hover:cursor-pointer"}`}
           type="button"
+          onClick={() => onDeleteChoice(choice.id)}
         >
           <IoClose />
         </button>

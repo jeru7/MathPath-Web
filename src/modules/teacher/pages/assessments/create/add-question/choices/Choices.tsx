@@ -34,8 +34,10 @@ export default function Choices({
   onChoicesChange,
   answers,
 }: ChoicesProps): ReactElement {
+  // states
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
+  // handlers
   const handleChoiceTextChange = (id: string, value: string) => {
     onChoicesChange(
       choices.map((choice) =>
@@ -55,12 +57,24 @@ export default function Choices({
     }
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id);
+  const handleAddChoice = (choice: AssessmentQuestionChoice) => {
+    onChoicesChange([...choices, choice]);
   };
 
-  const addChoice = (choice: AssessmentQuestionChoice) => {
-    onChoicesChange([...choices, choice]);
+  const handleDeleteChoice = (choiceId: string) => {
+    if (choices.length === 1) return;
+
+    const newChoices: AssessmentQuestionChoice[] = choices.filter(
+      (choice) => choice.id !== choiceId,
+    );
+    const newAnswers = answers.filter((answer) => answer !== choiceId);
+
+    onChoicesChange(newChoices);
+    onAnswersChange(newAnswers);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id);
   };
 
   const getTaskPos = (id: number | string) => {
@@ -117,6 +131,8 @@ export default function Choices({
                       onCorrectChange={handleCorrectChange}
                       type={type}
                       isChecked={answers.includes(choice.id)}
+                      onDeleteChoice={handleDeleteChoice}
+                      isSingle={choices.length === 1}
                     />
                   </motion.div>
                 ))}
@@ -139,6 +155,8 @@ export default function Choices({
                           dragOverlay
                           type={type}
                           isChecked={answers.includes(activeChoice.id)}
+                          onDeleteChoice={handleDeleteChoice}
+                          isSingle={choices.length === 1}
                         />
                       );
                     })()
@@ -151,7 +169,7 @@ export default function Choices({
             <div className="flex w-full justify-center">
               <button
                 type="button"
-                onClick={() => addChoice({ id: nanoid(), text: "" })}
+                onClick={() => handleAddChoice({ id: nanoid(), text: "" })}
                 className="rounded-full h-8 w-8 flex items-center justify-center border-gray-400 border hover:cursor-pointer hover:text-black text-[var(--primary-green)] hover:border-[var(--primary-green)] transition-colors duration-200"
               >
                 <FaPlus className="w-2 h-2" />
