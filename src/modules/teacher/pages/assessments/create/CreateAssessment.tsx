@@ -1,10 +1,10 @@
 import { useEffect, useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
-import Stepper from "./Stepper";
-import PageCard from "./PageCard";
-import Actions from "./Actions";
-import AddQuestionModal from "./add_question/AddQuestionModal";
+import Stepper from "./components/Stepper";
+import PageCard from "./components/PageCard";
+import Actions from "./components/Actions";
+import AddQuestionModal from "./add-question/AddQuestionModal";
 import {
   AssessmentPage,
   AssessmentQuestion,
@@ -49,9 +49,12 @@ export default function CreateAssessment(): ReactElement {
           <Stepper currentStep={1} />
         </section>
         <section className="bg-white shadow-sm rounded-sm h-full px-96 py-12 flex flex-col gap-4">
-          {/* Initial page card */}
           {pages.map((page) => (
-            <PageCard pageData={page} onShowAddQuestion={setShowAddQuestion} />
+            <PageCard
+              key={page.id}
+              pageData={page}
+              onShowAddQuestion={setShowAddQuestion}
+            />
           ))}
           <Actions />
         </section>

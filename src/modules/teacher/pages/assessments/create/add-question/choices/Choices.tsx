@@ -22,15 +22,15 @@ import ChoiceItem from "./ChoiceItem";
 type ChoicesProps = {
   type: "multiple_choice" | "single_choice";
   choices: AssessmentQuestionChoice[];
-  onSingleOrMultipleAnswerChange: (newAnswers: string[]) => void;
+  onAnswersChange: (answer: string[]) => void;
   onChoicesChange: (choices: AssessmentQuestionChoice[]) => void;
   answers: string[];
 };
 
 export default function Choices({
   type,
-  onSingleOrMultipleAnswerChange,
   choices,
+  onAnswersChange,
   onChoicesChange,
   answers,
 }: ChoicesProps): ReactElement {
@@ -46,12 +46,12 @@ export default function Choices({
 
   const handleCorrectChange = (choiceId: string, checked: boolean) => {
     if (type === "single_choice") {
-      onSingleOrMultipleAnswerChange([choiceId]);
+      onAnswersChange([choiceId]);
     } else {
       const updatedAnswers = checked
         ? [...answers, choiceId]
         : answers.filter((id) => id !== choiceId);
-      onSingleOrMultipleAnswerChange(updatedAnswers);
+      onAnswersChange(updatedAnswers);
     }
   };
 

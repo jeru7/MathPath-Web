@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
 
-export default function StatisticsPage(): ReactElement {
+export default function Statistics(): ReactElement {
   return (
     <main className="flex w-full flex-col gap-2 bg-inherit p-4 h-full">
       {/* Header */}

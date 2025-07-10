@@ -7,16 +7,14 @@ import {
 } from "../../../../../../core/types/assessment/assessment.types";
 
 type AnswersProp = {
-  onFillInTheBlankAnswerChange: (answer: FillInTheBlankAnswerType) => void;
-  onIdentificationAnswerChange: (answer: string) => void;
-  onTrueOrFalseAnswerChange: (answer: boolean) => void;
+  onAnswersChange: (
+    answer: string | boolean | FillInTheBlankAnswerType[],
+  ) => void;
   answers?: string[] | FillInTheBlankAnswerType[] | string | boolean;
   type?: QuestionType;
 };
 export default function Answers({
-  onFillInTheBlankAnswerChange,
-  onIdentificationAnswerChange,
-  onTrueOrFalseAnswerChange,
+  onAnswersChange,
   answers,
   type,
 }: AnswersProp): ReactElement {
@@ -48,12 +46,14 @@ export default function Answers({
                     label={answer.label}
                     type="text"
                     value={answer.value}
-                    onChange={(val) =>
-                      onFillInTheBlankAnswerChange({
-                        ...answer,
-                        value: val as string,
-                      })
-                    }
+                    onChange={(val) => {
+                      const updatedAnswers = (
+                        answers as FillInTheBlankAnswerType[]
+                      ).map((a) =>
+                        a.id === answer.id ? { ...a, value: val as string } : a,
+                      );
+                      onAnswersChange(updatedAnswers);
+                    }}
                   />
                 </motion.div>
               ))}
@@ -70,9 +70,7 @@ export default function Answers({
                 <AnswerField
                   type="text"
                   value={answers as string}
-                  onChange={(val) =>
-                    onIdentificationAnswerChange(val as string)
-                  }
+                  onChange={(val) => onAnswersChange(val as string)}
                 />
               </motion.div>
             )}
@@ -92,7 +90,7 @@ export default function Answers({
                   name="true-or-false"
                   value={true}
                   checked={answers === true}
-                  onChange={() => onTrueOrFalseAnswerChange(true)}
+                  onChange={() => onAnswersChange(true)}
                   radioLabel="True"
                 />
 
@@ -101,7 +99,7 @@ export default function Answers({
                   name="true-or-false"
                   value={false}
                   checked={answers === false}
-                  onChange={() => onTrueOrFalseAnswerChange(false)}
+                  onChange={() => onAnswersChange(false)}
                   radioLabel="False"
                 />
               </motion.div>

@@ -8,7 +8,7 @@ import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard"
 import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCard";
 import AssessmentStatusCard from "./components/assessment_status/AssessmentStatusCard";
 
-export default function DashboardPage(): ReactElement {
+export default function Dashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =
     useTeacherContext();
 

@@ -5,7 +5,7 @@ import { useTeacherContext } from "../../hooks/useTeacher";
 import StudentTable from "./components/StudentTable";
 import AddStudent from "./components/AddStudent";
 
-export default function StudentsPage(): ReactElement {
+export default function Students(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);

@@ -70,9 +70,11 @@ export type FillInTheBlankAnswerType = {
 // assessment page content
 export type AssessmentContent = {
   _id?: string;
-  type: "image" | "question" | "text";
+  type: AssessmentContentTypes;
   data: string | AssessmentQuestion;
 };
+
+export type AssessmentContentTypes = "image" | "question" | "text";
 
 // assessment page
 export type AssessmentPage = {

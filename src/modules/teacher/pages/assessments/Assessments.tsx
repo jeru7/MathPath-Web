@@ -2,7 +2,7 @@ import { type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import AssessmentTable from "./components/assessment_table/AssessmentTable";
 
-export default function AssessmentsPage(): ReactElement {
+export default function Assessments(): ReactElement {
   const navigate = useNavigate();
 
   return (

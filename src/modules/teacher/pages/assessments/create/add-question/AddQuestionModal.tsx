@@ -11,160 +11,49 @@ import {
   FillInTheBlankAnswerType,
   QuestionType,
 } from "../../../../../core/types/assessment/assessment.types";
-import { nanoid } from "nanoid";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { useQuestionReducer } from "./hooks/useQuestionReducer";
 
+// types
 type AddQuestionModalProps = {
   setShowAddQuestion: (show: boolean) => void;
   onAddQuestion: (question: AssessmentQuestion) => void;
 };
 
+// default
 export default function AddQuestionModal({
   setShowAddQuestion,
   onAddQuestion,
 }: AddQuestionModalProps): ReactElement {
+  // states
   const [isVisible, setIsVisible] = useState<boolean>(true);
-  const [question, setQuestion] = useState<AssessmentQuestion>({
-    question: "",
-    type: "single_choice",
-    points: 1,
-    choices: [{ id: nanoid(), text: "" }],
-    answers: [],
-  });
+  const { question, dispatch } = useQuestionReducer();
 
-  const handleTypeChange = (newType: QuestionType) => {
-    if (newType === question.type) return;
-
-    setQuestion(() => {
-      if (newType === "single_choice" || newType === "multiple_choice") {
-        return {
-          type: newType,
-          question: "",
-          points: 1,
-          choices: [{ id: nanoid(), text: "" }],
-          answers: [],
-        };
-      } else if (newType === "fill_in_the_blanks") {
-        return {
-          type: newType,
-          question: "",
-          points: 1,
-          answers: [],
-        };
-      } else if (newType === "true_or_false") {
-        return {
-          type: newType,
-          question: "",
-          points: 1,
-          answers: true,
-        };
-      } else {
-        // identification
-        return {
-          type: newType,
-          question: "",
-          points: 1,
-          answers: "",
-        };
-      }
-    });
+  // handlers
+  const handleTypeChange = (type: QuestionType) => {
+    dispatch({ type: "SET_TYPE", payload: type });
   };
 
-  const handlePointsChange = (newPoints: number) => {
-    setQuestion((prev) => ({
-      ...prev,
-      points: newPoints,
-    }));
+  const handlePointsChange = (points: number) => {
+    dispatch({ type: "SET_POINTS", payload: points });
   };
 
-  const handleContentChange = (text: string) => {
-    const matches = text.match(/\[(\d+)\]/g) || [];
-    const uniqueMatches = Array.from(new Set(matches));
-
-    setQuestion((prev) => {
-      if (prev.type !== "fill_in_the_blanks") {
-        return {
-          ...prev,
-          question: text,
-        };
-      } else {
-        const existing = new Map(
-          (prev.answers as FillInTheBlankAnswerType[]).map((p) => [p.label, p]),
-        );
-
-        const updatedAnswers = uniqueMatches
-          .map((label) => {
-            const number = label.match(/^\[(\d+)\]$/)?.[1];
-            if (!number) return null;
-
-            const existingLabel = existing.get(number);
-            return existingLabel
-              ? existingLabel
-              : {
-                  id: nanoid(),
-                  label: number.toString(),
-                  value: "",
-                };
-          })
-          .filter(Boolean) as FillInTheBlankAnswerType[];
-
-        return {
-          ...prev,
-          question: text,
-          answers: updatedAnswers,
-        };
-      }
-    });
+  const handleQuestionContentChange = (text: string) => {
+    dispatch({ type: "SET_QUESTION", payload: text });
   };
 
-  const handleChoicesChange = (newChoices: AssessmentQuestionChoice[]) => {
-    setQuestion((prev) => ({
-      ...prev,
-      choices: newChoices,
-    }));
+  const handleChoicesChange = (choices: AssessmentQuestionChoice[]) => {
+    dispatch({ type: "SET_CHOICES", payload: choices });
   };
 
-  const handleSingleOrMultipleChoiceAnswerChange = (newAnswers: string[]) => {
-    setQuestion((prev) =>
-      prev.type === "multiple_choice" || prev.type === "single_choice"
-        ? { ...prev, answers: newAnswers }
-        : prev,
-    );
-  };
-
-  const handleTrueOrFalseAnswerChange = (answer: boolean) => {
-    setQuestion((prev) =>
-      prev.type === "true_or_false" ? { ...prev, answers: answer } : prev,
-    );
-  };
-
-  const handleIdentificationAnswerChange = (answer: string) => {
-    setQuestion((prev) =>
-      prev.type === "identification" ? { ...prev, answers: answer } : prev,
-    );
-  };
-
-  const handleFillInTheBlankAnswerChange = (
-    newAnswer: FillInTheBlankAnswerType,
+  const handleAnswersChange = (
+    answers: string | string[] | boolean | FillInTheBlankAnswerType[],
   ) => {
-    setQuestion((prev) => {
-      if (prev.type !== "fill_in_the_blanks") return prev;
-
-      const updatedAnswers = (prev.answers as FillInTheBlankAnswerType[]).map(
-        (answer) =>
-          answer.id === newAnswer.id
-            ? { ...answer, value: newAnswer.value }
-            : answer,
-      );
-
-      return {
-        ...prev,
-        answers: updatedAnswers,
-      };
-    });
+    dispatch({ type: "SET_ANSWERS", payload: answers });
   };
 
+  // modal handlers
   const handleClose = () => setIsVisible(false);
 
   const handleAddQuestion = () => {
@@ -329,7 +218,7 @@ export default function AddQuestionModal({
                     <div className="flex flex-col w-full gap-2">
                       <RichTextField
                         key={question.type}
-                        onContentChange={handleContentChange}
+                        onContentChange={handleQuestionContentChange}
                       />
                       {/* info for fill in the blanks */}
                       {question.type === "fill_in_the_blanks" && (
@@ -369,9 +258,7 @@ export default function AddQuestionModal({
                           <Choices
                             type={question.type}
                             choices={question.choices}
-                            onSingleOrMultipleAnswerChange={
-                              handleSingleOrMultipleChoiceAnswerChange
-                            }
+                            onAnswersChange={handleAnswersChange}
                             onChoicesChange={handleChoicesChange}
                             answers={question.answers}
                           />
@@ -397,15 +284,7 @@ export default function AddQuestionModal({
                               answers={
                                 question.answers as FillInTheBlankAnswerType[]
                               }
-                              onFillInTheBlankAnswerChange={
-                                handleFillInTheBlankAnswerChange
-                              }
-                              onIdentificationAnswerChange={
-                                handleIdentificationAnswerChange
-                              }
-                              onTrueOrFalseAnswerChange={
-                                handleTrueOrFalseAnswerChange
-                              }
+                              onAnswersChange={handleAnswersChange}
                               type={question.type}
                             />
                           </motion.div>

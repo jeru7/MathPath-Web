@@ -1,11 +1,11 @@
 import { Route } from "react-router-dom";
 import Teacher from "../components/Teacher";
-import Dashboard from "../pages/dashboard/DashboardPage";
-import Students from "../pages/students/StudentsPage";
-import Student from "../pages/students/student/StudentPage";
-import Sections from "../pages/sections/SectionsPage";
-import Assessments from "../pages/assessments/AssessmentsPage";
-import Statistics from "../pages/statistics/StatisticsPage";
+import Dashboard from "../pages/dashboard/Dashboard";
+import Students from "../pages/students/Students";
+import Student from "../pages/students/student/Student";
+import Sections from "../pages/sections/Sections";
+import Assessments from "../pages/assessments/Assessments";
+import Statistics from "../pages/statistics/Statistics";
 import CreateAssessment from "../pages/assessments/create/CreateAssessment";
 
 export const teacherRoutes = (

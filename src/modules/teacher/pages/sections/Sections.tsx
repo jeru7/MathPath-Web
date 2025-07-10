@@ -3,7 +3,7 @@ import { useTeacherContext } from "../../hooks/useTeacher";
 import CreateSectionForm from "./components/CreateSectionForm";
 import SectionGrid from "./components/section_grid/SectionGrid";
 
-export default function SectionsPage(): ReactElement {
+export default function Sections(): ReactElement {
   const { sections } = useTeacherContext();
   const [showForm, setShowForm] = useState(false);
 
