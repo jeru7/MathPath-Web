@@ -24,7 +24,9 @@ type ChoicesProps = {
   choices: AssessmentQuestionChoice[];
   onAnswersChange: (answer: string[]) => void;
   onChoicesChange: (choices: AssessmentQuestionChoice[]) => void;
+  onToggleRandom: (value: boolean) => void;
   answers: string[];
+  isRandom: boolean;
 };
 
 export default function Choices({
@@ -32,7 +34,9 @@ export default function Choices({
   choices,
   onAnswersChange,
   onChoicesChange,
+  onToggleRandom,
   answers,
+  isRandom,
 }: ChoicesProps): ReactElement {
   // states
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
@@ -96,8 +100,14 @@ export default function Choices({
       <label className="font-semibold w-32 min-w-32 text-right">Options</label>
       <section className="border border-gray-300 rounded-sm bg-white w-full h-fit flex flex-col">
         <div className="w-full flex justify-end p-1 bg-gray-100 border-b border-b-gray-300 h-[40px] px-2">
+          {/* random position checkbox */}
           <div className="flex gap-1 items-center">
-            <input type="checkbox" className="hover:cursor-pointer" />
+            <input
+              type="checkbox"
+              className="hover:cursor-pointer"
+              checked={isRandom}
+              onChange={(e) => onToggleRandom(e.target.checked)}
+            />
             <p className="text-[10px] font-medium">Randomize position</p>
           </div>
         </div>

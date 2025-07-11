@@ -16,7 +16,8 @@ type Action =
   | {
       type: "SET_ANSWERS";
       payload: string | boolean | string[] | FillInTheBlankAnswerType[];
-    };
+    }
+  | { type: "SET_RANDOM"; payload: boolean };
 
 // use reducer method
 export const useQuestionReducer = (type: QuestionType = "single_choice") => {
@@ -90,6 +91,11 @@ const reducer = (
         return { ...state, answers: action.payload as string };
       }
       return state;
+    case "SET_RANDOM":
+      if (state.type === "single_choice" || state.type === "multiple_choice") {
+        return { ...state, randomPosition: action.payload as boolean };
+      }
+      return state;
     default:
       return state;
   }
@@ -105,6 +111,7 @@ const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
         points: 1,
         choices: [{ id: nanoid(), text: "" }],
         answers: [],
+        randomPosition: false,
       };
     case "fill_in_the_blanks":
       return {
@@ -134,6 +141,7 @@ const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
         points: 1,
         choices: [{ id: nanoid(), text: "" }],
         answers: [],
+        randomPosition: false,
       };
   }
 };

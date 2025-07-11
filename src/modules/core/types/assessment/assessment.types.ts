@@ -34,6 +34,7 @@ export type AssessmentQuestion =
       points: number;
       choices: AssessmentQuestionChoice[];
       answers: string[];
+      randomPosition: boolean;
     }
   | {
       type: "fill_in_the_blanks";

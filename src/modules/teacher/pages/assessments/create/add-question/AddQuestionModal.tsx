@@ -53,6 +53,10 @@ export default function AddQuestionModal({
     dispatch({ type: "SET_ANSWERS", payload: answers });
   };
 
+  const handleToggleRandom = (value: boolean) => {
+    dispatch({ type: "SET_RANDOM", payload: value });
+  };
+
   // modal handlers
   const handleClose = () => setIsVisible(false);
 
@@ -260,7 +264,9 @@ export default function AddQuestionModal({
                             choices={question.choices}
                             onAnswersChange={handleAnswersChange}
                             onChoicesChange={handleChoicesChange}
+                            onToggleRandom={handleToggleRandom}
                             answers={question.answers}
+                            isRandom={question.randomPosition}
                           />
                         </motion.div>
                       ) : (
