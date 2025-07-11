@@ -5,6 +5,7 @@ import Underline from "@tiptap/extension-underline";
 import { FaBold } from "react-icons/fa";
 import { FaItalic } from "react-icons/fa";
 import { FaUnderline } from "react-icons/fa";
+import { sanitizeHtml } from "../../../utils/sanitizeHtml";
 
 type RichTextFieldProps = {
   onContentChange?: (content: string) => void;
@@ -19,7 +20,18 @@ export default function RichTextField({
     extensions: extensions ?? [StarterKit, Underline],
     content: "",
     onUpdate: ({ editor }) => {
-      onContentChange?.(editor.getText());
+      onContentChange?.(sanitizeHtml(editor.getHTML()));
+    },
+    editorProps: {
+      handlePaste(view, event) {
+        const text = event.clipboardData?.getData("text/plain") ?? "";
+        const rawText = text.replace(/\n/g, " ");
+        const { tr } = view.state;
+        tr.insertText(rawText);
+        view.dispatch(tr);
+        event.preventDefault();
+        return true;
+      },
     },
   });
 
@@ -63,7 +75,7 @@ export default function RichTextField({
       <div className="h-fit w-full max-h-[300px] overflow-y-auto p-2 max-w-[620px]">
         <EditorContent
           editor={editor}
-          className="h-full w-full"
+          className="h-full w-full max-w-full break-words whitespace-pre-wrap"
           style={{ outline: "none" }}
         />
       </div>

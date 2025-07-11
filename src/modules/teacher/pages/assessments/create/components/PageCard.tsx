@@ -9,11 +9,13 @@ import { AssessmentPage } from "../../../../../core/types/assessment/assessment.
 import PageContent from "./PageContent";
 
 type PageCardProps = {
-  pageData: AssessmentPage;
+  page: AssessmentPage;
+  startingQuestionNumber: number;
   onShowAddQuestion: (show: boolean) => void;
 };
 export default function PageCard({
-  pageData,
+  page,
+  startingQuestionNumber,
   onShowAddQuestion,
 }: PageCardProps): ReactElement {
   return (
@@ -21,9 +23,7 @@ export default function PageCard({
       {/* header */}
       <header className="flex justify-between items-center p-4 rounded-t-xs bg-[var(--tertiary-green)]">
         {/* title */}
-        <p className="text-white font-semibold">
-          {pageData.title ?? "No title"}
-        </p>
+        <p className="text-white font-semibold">{page.title ?? "No title"}</p>
         {/* control buttons */}
         <div className="flex items-center gap-2">
           <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
@@ -39,11 +39,10 @@ export default function PageCard({
       </header>
       <section className="bg-white rounded-b-xs p-4 flex flex-col gap-2">
         {/* content list */}
-        <section className="">
-          {pageData.contents.map((content) => (
-            <PageContent contentData={content} />
-          ))}
-        </section>
+        <PageContent
+          contents={page.contents}
+          questionNumber={startingQuestionNumber}
+        />
 
         {/* add content buttons */}
         <section className="flex justify-center gap-8">

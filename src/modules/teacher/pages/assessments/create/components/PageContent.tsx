@@ -1,16 +1,37 @@
 import { type ReactElement } from "react";
-import {
-  AssessmentContent,
-  AssessmentQuestion,
-} from "../../../../../core/types/assessment/assessment.types";
+import { AssessmentContent } from "../../../../../core/types/assessment/assessment.types";
+import Question from "./page-content/Question";
+import Image from "./page-content/Image";
+import Text from "./page-content/Text";
 
 type PageContentProps = {
-  contentData: AssessmentContent;
+  contents: AssessmentContent[];
+  questionNumber: number;
 };
 
 export default function PageContent({
-  contentData,
+  contents,
+  questionNumber,
 }: PageContentProps): ReactElement {
-  const content = contentData.data as AssessmentQuestion;
-  return <article>{content.question}</article>;
+  return (
+    <section className="flex flex-col gap-4">
+      {contents.map((content) => {
+        if (content.type === "question") {
+          const currentQuestionNumber = questionNumber;
+          questionNumber++;
+
+          return (
+            <Question
+              content={content}
+              questionNumber={currentQuestionNumber}
+            />
+          );
+        } else if (content.type === "image") {
+          return <Image content={content} />;
+        } else if (content.type === "text") {
+          return <Text content={content} />;
+        }
+      })}
+    </section>
+  );
 }

@@ -18,6 +18,8 @@ export default function CreateAssessment(): ReactElement {
     { id: nanoid(), title: "Page 1", contents: [] },
   ]);
 
+  let currentQuestionNumber = 0;
+
   useEffect(() => {
     console.log(pages);
   }, [pages]);
@@ -49,13 +51,25 @@ export default function CreateAssessment(): ReactElement {
           <Stepper currentStep={1} />
         </section>
         <section className="bg-white shadow-sm rounded-sm h-full px-96 py-12 flex flex-col gap-4">
-          {pages.map((page) => (
-            <PageCard
-              key={page.id}
-              pageData={page}
-              onShowAddQuestion={setShowAddQuestion}
-            />
-          ))}
+          {pages.map((page) => {
+            const questionCountInPage = page.contents.filter(
+              (content) => content.type === "question",
+            ).length;
+            const startingNumber = currentQuestionNumber + 1;
+
+            const pageCard = (
+              <PageCard
+                key={page.id}
+                page={page}
+                startingQuestionNumber={startingNumber}
+                onShowAddQuestion={setShowAddQuestion}
+              />
+            );
+
+            currentQuestionNumber += questionCountInPage;
+
+            return pageCard;
+          })}
           <Actions />
         </section>
       </div>
