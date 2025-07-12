@@ -109,19 +109,11 @@ export default function PageContent({
                   if (!activeContent) return null;
 
                   if (activeContent.type === "question") {
-                    const contentIndex = contents.findIndex(
-                      (c) => c.id === activeContent.id,
-                    );
-                    const questionNumberForOverlay =
-                      contents
-                        .slice(0, contentIndex)
-                        .filter((c) => c.type === "question").length + 1;
-
                     return (
                       <div className="rounded scale-105 bg-white p-2 border border-gray-300">
                         <Question
                           content={activeContent}
-                          questionNumber={questionNumberForOverlay}
+                          questionNumber={0}
                           activeId={activeId}
                         />
                       </div>

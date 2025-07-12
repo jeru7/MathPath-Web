@@ -10,40 +10,73 @@ import {
   AssessmentPage,
 } from "../../../../../core/types/assessment/assessment.types";
 import PageContent from "./PageContent";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type PageCardProps = {
   page: AssessmentPage;
+  pageNumber: number;
   startingQuestionNumber: number;
   onShowAddQuestion: (show: boolean) => void;
   onContentsChange: (pageId: string, newContents: AssessmentContent[]) => void;
 };
+
 export default function PageCard({
   page,
+  pageNumber,
   startingQuestionNumber,
   onShowAddQuestion,
   onContentsChange,
 }: PageCardProps): ReactElement {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: page.id });
+
+  const style = {
+    transition,
+    transform: CSS.Translate.toString(transform),
+    border: isDragging ? "2px solid var(--primary-green)" : "",
+    backgroundColor: isDragging ? "var(--secondary-green)" : "",
+  };
+
   return (
-    <article className="flex flex-col rounded-t-sm border border-gray-300 rounded-b-sm">
+    <article
+      className={`flex flex-col rounded-t-sm border border-gray-300 rounded-b-sm ${isDragging ? "opacity-50" : ""}`}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+    >
       {/* header */}
-      <header className="flex justify-between items-center p-4 rounded-t-xs bg-[var(--tertiary-green)]">
+      <header
+        className={`flex justify-between items-center p-4 rounded-t-xs bg-[var(--tertiary-green)] ${isDragging ? "opacity-0" : ""}`}
+      >
         {/* title */}
-        <p className="text-white font-semibold">{page.title ?? "No title"}</p>
+        <p
+          className={`text-white font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"}`}
+        >{`Page: ${pageNumber}`}</p>
         {/* control buttons */}
         <div className="flex items-center gap-2">
           <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
             <TbEdit className="h-6 w-6" />
           </button>
-          <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
+          <div
+            className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
+            {...listeners}
+          >
             <MdDragIndicator className="h-6 w-6" />
-          </button>
+          </div>
           <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
             <IoClose className="h-6 w-6" />
           </button>
         </div>
       </header>
       <section
-        className={`bg-white rounded-b-xs p-4 flex flex-col ${page.contents.length > 0 ? "gap-4" : ""}`}
+        className={`bg-white rounded-b-xs p-4 flex flex-col ${page.contents.length > 0 ? "gap-4" : ""} ${isDragging ? "opacity-0" : ""}`}
       >
         {/* content list */}
         <PageContent
