@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import QuestionTypeSelect from "./components/QuestionTypeSelect";
-import ActionButtons from "./components/ActionButtons";
+import Actions from "./components/Actions";
 import RichTextField from "./editor/RichTextField";
 import Choices from "./choices/Choices";
 import Answers from "./components/Answers";
@@ -18,13 +18,15 @@ import { useQuestionReducer } from "./hooks/useQuestionReducer";
 // types
 type AddQuestionModalProps = {
   setShowAddQuestion: (show: boolean) => void;
-  onAddQuestion: (question: AssessmentQuestion) => void;
+  onAddQuestion: (pageId: string, question: AssessmentQuestion) => void;
+  pageId: string;
 };
 
 // default
 export default function AddQuestionModal({
   setShowAddQuestion,
   onAddQuestion,
+  pageId,
 }: AddQuestionModalProps): ReactElement {
   // states
   const [isVisible, setIsVisible] = useState<boolean>(true);
@@ -143,7 +145,7 @@ export default function AddQuestionModal({
       }
     }
 
-    onAddQuestion(question);
+    onAddQuestion(pageId, question);
     handleClose();
   };
 
@@ -297,7 +299,7 @@ export default function AddQuestionModal({
                         )
                       )}
                       {/* Action Buttons */}
-                      <ActionButtons
+                      <Actions
                         onAddQuestion={handleAddQuestion}
                         onCancelClick={handleClose}
                       />

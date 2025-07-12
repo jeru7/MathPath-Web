@@ -4,7 +4,7 @@ type ActionButtonsProps = {
   onAddQuestion: () => void;
   onCancelClick: () => void;
 };
-export default function ActionButtons({
+export default function Actions({
   onAddQuestion,
   onCancelClick,
 }: ActionButtonsProps): ReactElement {
