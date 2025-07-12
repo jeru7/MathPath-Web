@@ -3,25 +3,72 @@ import {
   AssessmentContent,
   AssessmentQuestion,
 } from "../../../../../../core/types/assessment/assessment.types";
-import { FaRegCircle } from "react-icons/fa";
+import { FaRegCircle, FaRegEdit } from "react-icons/fa";
 import { GrCheckbox } from "react-icons/gr";
 import { sanitizeHtml } from "../../../utils/sanitizeHtml";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { MdDeleteOutline, MdDragIndicator } from "react-icons/md";
+import { UniqueIdentifier } from "@dnd-kit/core";
 
 type QuestionProps = {
   content: AssessmentContent;
   questionNumber: number;
+  activeId: UniqueIdentifier | null;
 };
 
 export default function Question({
   content,
   questionNumber,
 }: QuestionProps): ReactElement {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: content.id });
   const data = content.data as AssessmentQuestion;
+
+  const style = {
+    transition,
+    transform: CSS.Translate.toString(transform),
+    border: isDragging ? "2px solid var(--primary-green)" : "",
+    backgroundColor: isDragging ? "var(--secondary-green)" : "",
+  };
+
   return (
-    <article className="flex gap-2 pb-4 w-full max-w-full">
-      <p className="font-semibold">{questionNumber}.</p>
+    <article
+      className={`flex gap-2 w-full max-w-full bg-white relative group ${isDragging ? "opacity-50" : ""}`}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+    >
+      {/* control buttons */}
+      <div className="absolute flex gap-2 right-0 text-gray-300 opacity-0 group-hover:opacity-100 transition-all duration-200 top-0">
+        <button className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200">
+          <FaRegEdit />
+        </button>
+        <div
+          className="flex itemx-center justify-center hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
+          {...listeners}
+        >
+          <MdDragIndicator />
+        </div>
+        <button className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200">
+          <MdDeleteOutline />
+        </button>
+      </div>
+      {/* number */}
+      <p
+        className={`font-semibold ${questionNumber === 0 || isDragging ? "opacity-0" : ""}`}
+      >
+        {questionNumber}.
+      </p>
+      {/* question */}
       <div
-        className={`flex flex-col w-full max-w-full ${data.type === "fill_in_the_blanks" ? "" : "gap-4"}`}
+        className={`flex flex-col w-full max-w-full ${data.type === "fill_in_the_blanks" ? "" : "gap-4"} ${isDragging ? "opacity-0" : ""}`}
       >
         <div
           className="break-words whitespace-normal w-full max-w-full pr-8"
@@ -32,6 +79,7 @@ export default function Question({
                 : data.question,
           }}
         ></div>
+        {/* choices */}
         <div>
           {data.type === "single_choice" ? (
             <ul className="flex flex-col gap-1 max-w-full w-full">

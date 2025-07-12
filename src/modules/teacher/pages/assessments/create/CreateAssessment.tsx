@@ -6,6 +6,7 @@ import PageCard from "./components/PageCard";
 import Actions from "./components/Actions";
 import AddQuestionModal from "./add-question/AddQuestionModal";
 import {
+  AssessmentContent,
   AssessmentPage,
   AssessmentQuestion,
 } from "../../../../core/types/assessment/assessment.types";
@@ -29,12 +30,24 @@ export default function CreateAssessment(): ReactElement {
     setPages((prev) => {
       const newPages = [...prev];
       newPages[0].contents.push({
+        id: nanoid(),
         type: "question",
         data: question,
       });
 
       return newPages;
     });
+  };
+
+  const handlePageContentChanges = (
+    pageId: string,
+    newContents: AssessmentContent[],
+  ) => {
+    setPages((prevPages) =>
+      prevPages.map((page) =>
+        pageId === page.id ? { ...page, contents: newContents } : page,
+      ),
+    );
   };
 
   return (
@@ -51,6 +64,8 @@ export default function CreateAssessment(): ReactElement {
           <Stepper currentStep={1} />
         </section>
         <section className="bg-white shadow-sm rounded-sm h-full px-96 py-12 flex flex-col gap-4">
+          {/* TODO: make pages draggable */}
+          {/* page list */}
           {pages.map((page) => {
             const questionCountInPage = page.contents.filter(
               (content) => content.type === "question",
@@ -63,6 +78,7 @@ export default function CreateAssessment(): ReactElement {
                 page={page}
                 startingQuestionNumber={startingNumber}
                 onShowAddQuestion={setShowAddQuestion}
+                onContentsChange={handlePageContentChanges}
               />
             );
 
@@ -73,6 +89,7 @@ export default function CreateAssessment(): ReactElement {
           <Actions />
         </section>
       </div>
+      {/* add question modal */}
       {showAddQuestion && (
         <AddQuestionModal
           setShowAddQuestion={setShowAddQuestion}

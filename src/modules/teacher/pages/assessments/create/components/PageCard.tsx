@@ -5,18 +5,23 @@ import { TbEdit } from "react-icons/tb";
 import { BsPatchQuestion } from "react-icons/bs";
 import { CiImageOn } from "react-icons/ci";
 import { MdOutlineTextSnippet } from "react-icons/md";
-import { AssessmentPage } from "../../../../../core/types/assessment/assessment.types";
+import {
+  AssessmentContent,
+  AssessmentPage,
+} from "../../../../../core/types/assessment/assessment.types";
 import PageContent from "./PageContent";
 
 type PageCardProps = {
   page: AssessmentPage;
   startingQuestionNumber: number;
   onShowAddQuestion: (show: boolean) => void;
+  onContentsChange: (pageId: string, newContents: AssessmentContent[]) => void;
 };
 export default function PageCard({
   page,
   startingQuestionNumber,
   onShowAddQuestion,
+  onContentsChange,
 }: PageCardProps): ReactElement {
   return (
     <article className="flex flex-col rounded-t-sm border border-gray-300 rounded-b-sm">
@@ -37,11 +42,15 @@ export default function PageCard({
           </button>
         </div>
       </header>
-      <section className="bg-white rounded-b-xs p-4 flex flex-col gap-2">
+      <section
+        className={`bg-white rounded-b-xs p-4 flex flex-col ${page.contents.length > 0 ? "gap-4" : ""}`}
+      >
         {/* content list */}
         <PageContent
           contents={page.contents}
           questionNumber={startingQuestionNumber}
+          onContentsChange={onContentsChange}
+          pageId={page.id}
         />
 
         {/* add content buttons */}

@@ -2,12 +2,11 @@
 
 @theme {
   /* fonts */
-  --font-primary: "DM Sans", sans-serif;
+  --font-primary: "Open Sans", sans-serif;
   --font-secondary: "IBM Plex Mono", sans-serif;
   --font-baloo: "Baloo 2", sans-serif;
   --font-gummy: "Sour Gummy", sans-serif;
   --font-plexMono: "IBM Plex Mono", sans-serif;
-  --font-openSans: "Open Sans", sans-serif;
   --font-jersey: "Jersey 25", sans-serif;
 
   /* color palette */
@@ -65,11 +64,11 @@
 }
 
 #root {
-  font-family: var(--font-primary);
   max-width: 100%;
 }
 
 body {
+  font-family: var(--font-primary);
   min-height: 100vh;
   width: inherit;
   overscroll-behavior: contain;

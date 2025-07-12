@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { AssessmentQuestionChoice } from "../../../../../../core/types/assessment/assessment.types";
 import { CSS } from "@dnd-kit/utilities";
 
-type ChoiceItemProps = {
+type ChoiceProps = {
   choice: AssessmentQuestionChoice;
   type: "multiple_choice" | "single_choice";
   onTextChange: (id: string, value: string) => void;
@@ -16,7 +16,7 @@ type ChoiceItemProps = {
   isSingle: boolean;
 };
 
-export default function ChoiceItem({
+export default function Choice({
   choice,
   onTextChange,
   onCorrectChange,
@@ -25,7 +25,7 @@ export default function ChoiceItem({
   isChecked,
   onDeleteChoice,
   isSingle,
-}: ChoiceItemProps): ReactElement {
+}: ChoiceProps): ReactElement {
   const {
     attributes,
     listeners,

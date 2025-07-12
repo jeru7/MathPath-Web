@@ -17,7 +17,7 @@ import {
 import { AssessmentQuestionChoice } from "../../../../../../core/types/assessment/assessment.types";
 import { nanoid } from "nanoid";
 import { createPortal } from "react-dom";
-import ChoiceItem from "./ChoiceItem";
+import Choice from "./Choice";
 
 type ChoicesProps = {
   type: "multiple_choice" | "single_choice";
@@ -81,10 +81,6 @@ export default function Choices({
     setActiveId(event.active.id);
   };
 
-  const getTaskPos = (id: number | string) => {
-    return choices.findIndex((choice) => id === choice.id);
-  };
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id === over?.id || !over) return;
@@ -93,6 +89,10 @@ export default function Choices({
     const newPos = getTaskPos(over.id);
 
     onChoicesChange(arrayMove(choices, originalPos, newPos));
+  };
+
+  const getTaskPos = (id: number | string) => {
+    return choices.findIndex((choice) => id === choice.id);
   };
 
   return (
@@ -135,7 +135,7 @@ export default function Choices({
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <ChoiceItem
+                    <Choice
                       choice={choice}
                       onTextChange={handleChoiceTextChange}
                       onCorrectChange={handleCorrectChange}
@@ -158,7 +158,7 @@ export default function Choices({
                       );
                       if (!activeChoice) return null;
                       return (
-                        <ChoiceItem
+                        <Choice
                           choice={activeChoice}
                           onTextChange={handleChoiceTextChange}
                           onCorrectChange={handleCorrectChange}
