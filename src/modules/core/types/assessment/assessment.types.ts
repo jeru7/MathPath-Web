@@ -80,6 +80,7 @@ export type AssessmentContentTypes = "image" | "question" | "text";
 // assessment page
 export type AssessmentPage = {
   id: string;
+  title?: string | null;
   contents: AssessmentContent[];
 };
 

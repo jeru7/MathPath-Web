@@ -68,8 +68,22 @@ export default function CreateAssessment(): ReactElement {
     );
   };
 
+  const handlePageTitleChange = (pageId: string, newTitle: string) => {
+    setPages((prevPages) =>
+      prevPages.map((page) =>
+        pageId === page.id ? { ...page, title: newTitle } : page,
+      ),
+    );
+  };
+
   const handleAddPage = (page: AssessmentPage) => {
     setPages([...pages, page]);
+  };
+
+  const handleDeletePage = (pageId: string) => {
+    if (pages.length === 1) return;
+    const newPages = pages.filter((page) => page.id !== pageId);
+    setPages(newPages);
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -142,6 +156,8 @@ export default function CreateAssessment(): ReactElement {
                       setShowAddQuestion(true);
                     }}
                     onContentsChange={handlePageContentChanges}
+                    onTitleChange={handlePageTitleChange}
+                    onDeletePage={handleDeletePage}
                   />
                 );
 
@@ -174,6 +190,8 @@ export default function CreateAssessment(): ReactElement {
                             setShowAddQuestion(true);
                           }}
                           onContentsChange={handlePageContentChanges}
+                          onTitleChange={handlePageTitleChange}
+                          onDeletePage={handleDeletePage}
                         />
                       );
                     })()

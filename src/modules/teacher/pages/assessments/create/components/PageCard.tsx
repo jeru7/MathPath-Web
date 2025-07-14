@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import { MdDragIndicator } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
@@ -19,6 +19,8 @@ type PageCardProps = {
   startingQuestionNumber: number;
   onShowAddQuestion: (show: boolean) => void;
   onContentsChange: (pageId: string, newContents: AssessmentContent[]) => void;
+  onTitleChange: (pageId: string, newTitle: string) => void;
+  onDeletePage: (pageId: string) => void;
 };
 
 export default function PageCard({
@@ -27,7 +29,10 @@ export default function PageCard({
   startingQuestionNumber,
   onShowAddQuestion,
   onContentsChange,
+  onTitleChange,
+  onDeletePage,
 }: PageCardProps): ReactElement {
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const {
     attributes,
     listeners,
@@ -55,14 +60,38 @@ export default function PageCard({
       <header
         className={`flex justify-between items-center p-4 rounded-t-xs bg-[var(--tertiary-green)] ${isDragging ? "opacity-0" : ""}`}
       >
-        {/* title */}
-        <p
-          className={`text-white font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"}`}
-        >{`Page: ${pageNumber}`}</p>
+        <div>
+          {isEdit ? (
+            // title input
+            <input
+              type="text"
+              name="title"
+              value={
+                page.title || page.title === ""
+                  ? page.title
+                  : `Page ${pageNumber}`
+              }
+              className="bg-[var(--secondary-green)] outline-none text-sm px-2 py-1"
+              onChange={(e) => onTitleChange(page.id, e.target.value)}
+            />
+          ) : (
+            // title
+            <p
+              className={`text-white font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"}`}
+            >
+              {page.title ? page.title : `Page ${pageNumber}`}
+            </p>
+          )}
+        </div>
         {/* control buttons */}
         <div className="flex items-center gap-2">
-          <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
-            <TbEdit className="h-6 w-6" />
+          <button
+            className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
+            onClick={() => setIsEdit(!isEdit)}
+          >
+            <TbEdit
+              className={`h-6 w-6 ${isEdit ? "text-[var(--primary-green)]" : ""}`}
+            />
           </button>
           <div
             className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
@@ -70,7 +99,10 @@ export default function PageCard({
           >
             <MdDragIndicator className="h-6 w-6" />
           </div>
-          <button className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200">
+          <button
+            className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
+            onClick={() => onDeletePage(page.id)}
+          >
             <IoClose className="h-6 w-6" />
           </button>
         </div>
