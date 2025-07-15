@@ -1,17 +1,15 @@
 import { type ReactElement } from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { AssessmentPage } from "../../../../../core/types/assessment/assessment.types";
+import { AssessmentPage } from "../../../../../../core/types/assessment/assessment.types";
 import { nanoid } from "nanoid";
 
 type ActionsProps = {
   onAddPage: (page: AssessmentPage) => void;
-  pageCount: number;
 };
 
 export default function BuilderActions({
   onAddPage,
-  pageCount,
 }: ActionsProps): ReactElement {
   return (
     <section className="flex justify-center relative">
@@ -20,7 +18,7 @@ export default function BuilderActions({
         onClick={() =>
           onAddPage({
             id: nanoid(),
-            title: `Page ${pageCount + 1}`,
+            title: null,
             contents: [],
           })
         }

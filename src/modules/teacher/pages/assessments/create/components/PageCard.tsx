@@ -67,20 +67,23 @@ export default function PageCard({
             <input
               type="text"
               name="title"
-              value={
-                page.title || page.title === ""
-                  ? page.title
-                  : `Page ${pageNumber}`
-              }
+              value={page.title ?? `Page ${pageNumber}`}
               className="bg-[var(--secondary-green)] outline-none text-sm px-2 py-1"
               onChange={(e) => onTitleChange(page.id, e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setIsEdit(false);
+                }
+              }}
             />
           ) : (
             // title
             <p
               className={`text-white font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"}`}
             >
-              {page.title ? page.title : `Page ${pageNumber}`}
+              {page.title && page.title.trim() !== ""
+                ? page.title
+                : `Page ${pageNumber}`}
             </p>
           )}
         </div>

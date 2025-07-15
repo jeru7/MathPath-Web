@@ -33,7 +33,6 @@ export default function CreateAssessment(): ReactElement {
   ]);
   const [selectedPageId, setSelectedPageId] = useState<string>(pages[0].id);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  let pageNumber = 1;
 
   useEffect(() => {
     console.log(pages);
@@ -188,7 +187,7 @@ export default function CreateAssessment(): ReactElement {
           >
             <SortableContext items={pages}>
               {/* page list */}
-              {pages.map((page) => {
+              {pages.map((page, index) => {
                 const startingQuestionNumber = getStartingQuestionNumber(
                   page.id,
                   pages,
@@ -198,7 +197,7 @@ export default function CreateAssessment(): ReactElement {
                   <PageCard
                     key={page.id}
                     page={page}
-                    pageNumber={pageNumber}
+                    pageNumber={index + 1}
                     startingQuestionNumber={startingQuestionNumber}
                     onShowModal={(modalType) => {
                       setSelectedPageId(page.id);
@@ -209,8 +208,6 @@ export default function CreateAssessment(): ReactElement {
                     onDeletePage={handleDeletePage}
                   />
                 );
-
-                pageNumber++;
 
                 return pageCard;
               })}
@@ -248,7 +245,7 @@ export default function CreateAssessment(): ReactElement {
               document.body,
             )}
           </DndContext>
-          <BuilderActions onAddPage={handleAddPage} pageCount={pages.length} />
+          <BuilderActions onAddPage={handleAddPage} />
         </section>
       </div>
 
