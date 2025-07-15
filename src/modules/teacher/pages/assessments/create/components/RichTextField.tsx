@@ -2,7 +2,13 @@ import { type ReactElement } from "react";
 import { useEditor, EditorContent, Extensions } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import { FaBold } from "react-icons/fa";
+import TextAlign from "@tiptap/extension-text-align";
+import {
+  FaAlignCenter,
+  FaAlignLeft,
+  FaAlignRight,
+  FaBold,
+} from "react-icons/fa";
 import { FaItalic } from "react-icons/fa";
 import { FaUnderline } from "react-icons/fa";
 import { sanitizeHtml } from "../../utils/sanitizeHtml";
@@ -17,8 +23,17 @@ export default function RichTextField({
   extensions,
 }: RichTextFieldProps): ReactElement {
   const editor = useEditor({
-    extensions: extensions ?? [StarterKit, Underline],
+    extensions: extensions ?? [
+      StarterKit,
+      Underline,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ],
     content: "",
+    onCreate({ editor }) {
+      editor.chain().focus().setTextAlign("left").run();
+    },
     onUpdate: ({ editor }) => {
       onContentChange?.(sanitizeHtml(editor.getHTML()));
     },
@@ -40,6 +55,46 @@ export default function RichTextField({
   return (
     <section className="h-fit max-h-[150px] w-full border border-gray-300 rounded-sm flex flex-col bg-white">
       <div className="flex gap-2 p-1 justify-end bg-gray-100 rounded-t-xs border-b border-b-gray-300 h-[40px] items-center px-2">
+        {/* left align */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          className="border border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200"
+          style={{
+            backgroundColor: editor.isActive({ textAlign: "left" })
+              ? "#CBD5E1"
+              : "",
+          }}
+        >
+          <FaAlignLeft />
+        </button>
+        {/* center align */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          className="border border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200"
+          style={{
+            backgroundColor: editor.isActive({ textAlign: "center" })
+              ? "#CBD5E1"
+              : "",
+          }}
+        >
+          <FaAlignCenter />
+        </button>
+        {/* right align */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          className="border border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200"
+          style={{
+            backgroundColor: editor.isActive({ textAlign: "right" })
+              ? "#CBD5E1"
+              : "",
+          }}
+        >
+          <FaAlignRight />
+        </button>
+        {/* bold */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -50,6 +105,7 @@ export default function RichTextField({
         >
           <FaBold />
         </button>
+        {/* italize */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -60,6 +116,7 @@ export default function RichTextField({
         >
           <FaItalic />
         </button>
+        {/* underline */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
