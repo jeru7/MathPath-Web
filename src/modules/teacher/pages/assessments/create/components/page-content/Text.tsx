@@ -30,7 +30,7 @@ export default function Text({ content }: TextProps): ReactElement {
 
   return (
     <article
-      className={`flex gap-2 w-full max-w-full bg-white relative group ${isDragging ? "opacity-50" : ""}`}
+      className={`flex gap-2 w-full max-w-full bg-white relative group ${isDragging ? "opacity-50 z-10" : ""}`}
       ref={setNodeRef}
       style={style}
       {...attributes}

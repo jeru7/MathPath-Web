@@ -52,7 +52,7 @@ export default function AddTextModal({
           <IoClose />
         </button>
       </header>
-      <section className="h-full bg-inherit rounded-b-sm p-4">
+      <section className="flex flex-col gap-4 h-full bg-inherit rounded-b-sm p-4">
         <div className="flex gap-4">
           {/* label */}
           <label

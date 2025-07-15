@@ -12,7 +12,6 @@ import {
   DndContext,
   DragEndEvent,
   DragOverlay,
-  DragOverEvent,
   DragStartEvent,
   UniqueIdentifier,
   closestCorners,
@@ -53,24 +52,11 @@ export default function PageContent({
     onContentsChange(pageId, arrayMove(contents, originalPos, newPos));
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = getTaskPos(active.id);
-    const newIndex = getTaskPos(over.id);
-
-    if (oldIndex !== newIndex) {
-      onContentsChange(pageId, arrayMove(contents, oldIndex, newIndex));
-    }
-  };
-
   return (
     <section className="flex flex-col gap-8 overflow-hidden ">
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
         collisionDetection={closestCorners}
       >
         <SortableContext
