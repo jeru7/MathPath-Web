@@ -20,6 +20,7 @@ export default function Modals({
   pageId,
   onAddQuestion,
   onAddText,
+  onAddImage,
 }: ModalsProps): ReactElement {
   const [isVisible, setIsVisible] = useState<boolean>(true);
 
@@ -39,7 +40,11 @@ export default function Modals({
                 pageId={pageId}
               />
             ) : activeModal === "image" ? (
-              <AddImageModal />
+              <AddImageModal
+                onClose={handleClose}
+                onAddImage={onAddImage}
+                pageId={pageId}
+              />
             ) : activeModal === "text" ? (
               <AddTextModal
                 onClose={handleClose}

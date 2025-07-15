@@ -6,5 +6,13 @@ type ImageProps = {
 };
 
 export default function Image({ content }: ImageProps): ReactElement {
-  return <article>{content.type === "question"}</article>;
+  return (
+    <figure className="flex flex-col items-center">
+      <img
+        src={content.data as string}
+        alt="Uploaded content"
+        className="max-w-full max-h-96 object-contain"
+      />
+    </figure>
+  );
 }
