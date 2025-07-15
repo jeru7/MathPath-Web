@@ -9,7 +9,7 @@ type ActionsProps = {
   pageCount: number;
 };
 
-export default function Actions({
+export default function BuilderActions({
   onAddPage,
   pageCount,
 }: ActionsProps): ReactElement {

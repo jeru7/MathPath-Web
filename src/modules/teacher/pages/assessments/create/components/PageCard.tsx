@@ -12,12 +12,13 @@ import {
 import PageContent from "./PageContent";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { ModalType } from "./Modals";
 
 type PageCardProps = {
   page: AssessmentPage;
   pageNumber: number;
   startingQuestionNumber: number;
-  onShowAddQuestion: (show: boolean) => void;
+  onShowModal: (modal: ModalType) => void;
   onContentsChange: (pageId: string, newContents: AssessmentContent[]) => void;
   onTitleChange: (pageId: string, newTitle: string) => void;
   onDeletePage: (pageId: string) => void;
@@ -27,7 +28,7 @@ export default function PageCard({
   page,
   pageNumber,
   startingQuestionNumber,
-  onShowAddQuestion,
+  onShowModal,
   onContentsChange,
   onTitleChange,
   onDeletePage,
@@ -122,16 +123,22 @@ export default function PageCard({
         <section className="flex justify-center gap-8">
           <button
             className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
-            onClick={() => onShowAddQuestion(true)}
+            onClick={() => onShowModal("question")}
           >
             <BsPatchQuestion />
             <p>Add question</p>
           </button>
-          <button className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200">
+          <button
+            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
+            onClick={() => onShowModal("image")}
+          >
             <CiImageOn />
             <p>Add image</p>
           </button>
-          <button className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200">
+          <button
+            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
+            onClick={() => onShowModal("text")}
+          >
             <MdOutlineTextSnippet />
             <p>Add text</p>
           </button>

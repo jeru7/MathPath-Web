@@ -3,8 +3,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./components/Stepper";
 import PageCard from "./components/PageCard";
-import Actions from "./components/Actions";
-import AddQuestionModal from "./add-question/AddQuestionModal";
 import {
   AssessmentContent,
   AssessmentPage,
@@ -23,10 +21,13 @@ import {
 } from "@dnd-kit/core";
 import { createPortal } from "react-dom";
 import { getStartingQuestionNumber } from "../utils/question.util";
+import Modals, { ModalType } from "./components/Modals";
+import BuilderActions from "./components/actions/BuilderActions";
 
 export default function CreateAssessment(): ReactElement {
   // states
-  const [showAddQuestion, setShowAddQuestion] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<ModalType | null>(null);
+
   const [pages, setPages] = useState<AssessmentPage[]>([
     { id: nanoid(), contents: [] },
   ]);
@@ -41,19 +42,67 @@ export default function CreateAssessment(): ReactElement {
   // handlers
   const handleAddQuestion = (pageId: string, question: AssessmentQuestion) => {
     setPages((prevPages) => {
-      const newPages = [...prevPages];
-
-      newPages.map((page) => {
+      return prevPages.map((page) => {
         if (page.id === pageId) {
-          page.contents.push({
-            id: nanoid(),
-            type: "question",
-            data: question,
-          });
+          return {
+            ...page,
+            contents: [
+              ...page.contents,
+              {
+                id: nanoid(),
+                type: "question",
+                data: question,
+              },
+            ],
+          };
+        } else {
+          return page;
         }
       });
+    });
+  };
 
-      return newPages;
+  const handleAddImage = (pageId: string, imageUrl: string) => {
+    setPages((prevPages) => {
+      return prevPages.map((page) => {
+        if (page.id === pageId) {
+          return {
+            ...page,
+            contents: [
+              ...page.contents,
+              {
+                id: nanoid(),
+                type: "image",
+                data: imageUrl,
+              },
+            ],
+          };
+        } else {
+          return page;
+        }
+      });
+    });
+  };
+
+  const handleAddText = (pageId: string, text: string) => {
+    setPages((prevPages) => {
+      return prevPages.map((page) => {
+        if (page.id === pageId) {
+          return {
+            ...page,
+            contents: [
+              ...page.contents,
+              {
+                id: nanoid(),
+                type: "text",
+                data: text,
+              },
+            ],
+          };
+        } else {
+          return page;
+        }
+      });
     });
   };
 
@@ -151,9 +200,9 @@ export default function CreateAssessment(): ReactElement {
                     page={page}
                     pageNumber={pageNumber}
                     startingQuestionNumber={startingQuestionNumber}
-                    onShowAddQuestion={() => {
+                    onShowModal={(modalType) => {
                       setSelectedPageId(page.id);
-                      setShowAddQuestion(true);
+                      setActiveModal(modalType);
                     }}
                     onContentsChange={handlePageContentChanges}
                     onTitleChange={handlePageTitleChange}
@@ -185,9 +234,8 @@ export default function CreateAssessment(): ReactElement {
                           page={activePage}
                           pageNumber={0}
                           startingQuestionNumber={startingQuestionNumber}
-                          onShowAddQuestion={() => {
-                            setSelectedPageId(activePage.id);
-                            setShowAddQuestion(true);
+                          onShowModal={(modalType) => {
+                            setActiveModal(modalType);
                           }}
                           onContentsChange={handlePageContentChanges}
                           onTitleChange={handlePageTitleChange}
@@ -200,16 +248,19 @@ export default function CreateAssessment(): ReactElement {
               document.body,
             )}
           </DndContext>
-          <Actions onAddPage={handleAddPage} pageCount={pages.length} />
+          <BuilderActions onAddPage={handleAddPage} pageCount={pages.length} />
         </section>
       </div>
 
-      {/* add question modal */}
-      {showAddQuestion && (
-        <AddQuestionModal
-          setShowAddQuestion={setShowAddQuestion}
-          onAddQuestion={handleAddQuestion}
+      {/* modals */}
+      {activeModal && (
+        <Modals
+          activeModal={activeModal}
+          onClose={() => setActiveModal(null)}
           pageId={selectedPageId}
+          onAddQuestion={handleAddQuestion}
+          onAddText={handleAddText}
+          onAddImage={handleAddImage}
         />
       )}
     </main>

@@ -1,11 +1,11 @@
 import { type ReactElement } from "react";
 
 type ActionButtonsProps = {
-  onAddQuestion: () => void;
+  onAddContent: () => void;
   onCancelClick: () => void;
 };
-export default function Actions({
-  onAddQuestion,
+export default function ModalActions({
+  onAddContent,
   onCancelClick,
 }: ActionButtonsProps): ReactElement {
   return (
@@ -22,7 +22,7 @@ export default function Actions({
       <button
         className="flex items-center justify-center py-2 px-5 rounded-sm bg-[var(--primary-green)] text-white opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
         type="button"
-        onClick={onAddQuestion}
+        onClick={onAddContent}
       >
         <p>Add</p>
       </button>
