@@ -13,7 +13,7 @@ type ChoiceProps = {
   dragOverlay?: boolean;
   isChecked: boolean;
   onDeleteChoice: (choiceId: string) => void;
-  isSingle: boolean;
+  isLastTwo: boolean;
 };
 
 export default function Choice({
@@ -24,7 +24,7 @@ export default function Choice({
   type,
   isChecked,
   onDeleteChoice,
-  isSingle,
+  isLastTwo,
 }: ChoiceProps): ReactElement {
   const {
     attributes,
@@ -82,7 +82,7 @@ export default function Choice({
         </section>
         {/* delete button */}
         <button
-          className={`text-gray-400 hover:text-black ${isSingle ? "opacity-0" : "hover:cursor-pointer"}`}
+          className={`text-gray-400 hover:text-black ${isLastTwo ? "opacity-0" : "hover:cursor-pointer"}`}
           type="button"
           onClick={() => onDeleteChoice(choice.id)}
         >

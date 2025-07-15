@@ -1,4 +1,3 @@
-import { useReducer } from "react";
 import { nanoid } from "nanoid";
 import {
   AssessmentQuestion,
@@ -19,14 +18,8 @@ type Action =
     }
   | { type: "SET_RANDOM"; payload: boolean };
 
-// use reducer method
-export const useQuestionReducer = (type: QuestionType = "single_choice") => {
-  const [state, dispatch] = useReducer(reducer, getDefaultQuestion(type));
-  return { question: state, dispatch };
-};
-
 // methods
-const reducer = (
+export const addQuestionReducer = (
   state: AssessmentQuestion,
   action: Action,
 ): AssessmentQuestion => {
@@ -101,7 +94,7 @@ const reducer = (
   }
 };
 
-const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
+export const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
   switch (type) {
     case "single_choice":
     case "multiple_choice":
@@ -109,7 +102,10 @@ const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
         type,
         question: "",
         points: 1,
-        choices: [{ id: nanoid(), text: "" }],
+        choices: [
+          { id: nanoid(), text: "" },
+          { id: nanoid(), text: "" },
+        ],
         answers: [],
         randomPosition: false,
       };

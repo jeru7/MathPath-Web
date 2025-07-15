@@ -66,7 +66,7 @@ export default function Choices({
   };
 
   const handleDeleteChoice = (choiceId: string) => {
-    if (choices.length === 1) return;
+    if (choices.length === 2) return;
 
     const newChoices: AssessmentQuestionChoice[] = choices.filter(
       (choice) => choice.id !== choiceId,
@@ -142,7 +142,7 @@ export default function Choices({
                       type={type}
                       isChecked={answers.includes(choice.id)}
                       onDeleteChoice={handleDeleteChoice}
-                      isSingle={choices.length === 1}
+                      isLastTwo={choices.length === 2}
                     />
                   </motion.div>
                 ))}
@@ -166,7 +166,7 @@ export default function Choices({
                           type={type}
                           isChecked={answers.includes(activeChoice.id)}
                           onDeleteChoice={handleDeleteChoice}
-                          isSingle={choices.length === 1}
+                          isLastTwo={choices.length === 2}
                         />
                       );
                     })()

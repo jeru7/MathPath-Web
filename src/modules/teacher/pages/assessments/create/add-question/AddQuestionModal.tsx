@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { useReducer, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import QuestionTypeSelect from "./components/QuestionTypeSelect";
 import RichTextField from "../components/RichTextField";
@@ -12,8 +12,11 @@ import {
 } from "../../../../../core/types/assessment/assessment.types";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { useQuestionReducer } from "./hooks/useQuestionReducer";
 import ModalActions from "../components/actions/ModalActions";
+import {
+  getDefaultQuestion,
+  addQuestionReducer,
+} from "./hooks/addQuestionReducer";
 
 // types
 type AddQuestionModalProps = {
@@ -29,7 +32,10 @@ export default function AddQuestionModal({
   pageId,
 }: AddQuestionModalProps): ReactElement {
   // states
-  const { question, dispatch } = useQuestionReducer();
+  const [question, dispatch] = useReducer(
+    addQuestionReducer,
+    getDefaultQuestion("single_choice"),
+  );
 
   // handlers
   const handleTypeChange = (type: QuestionType) => {
