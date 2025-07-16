@@ -1,8 +1,8 @@
 import { useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import { motion } from "framer-motion";
-import RichTextField from "../components/RichTextField";
-import ModalActions from "../components/actions/ModalActions";
+import RichTextField from "../../RichTextField";
+import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
 
 type AddTextModalProps = {

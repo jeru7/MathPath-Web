@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactElement } from "react";
 import { motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
-import ModalActions from "../components/actions/ModalActions";
+import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
 
 type AddImageModalProps = {

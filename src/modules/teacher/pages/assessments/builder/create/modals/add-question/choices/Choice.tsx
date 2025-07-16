@@ -2,7 +2,7 @@ import { type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import { MdOutlineDragIndicator } from "react-icons/md";
 import { useSortable } from "@dnd-kit/sortable";
-import { AssessmentQuestionChoice } from "../../../../../../core/types/assessment/assessment.types";
+import { AssessmentQuestionChoice } from "../../../../../../../../core/types/assessment/assessment.types";
 import { CSS } from "@dnd-kit/utilities";
 
 type ChoiceProps = {

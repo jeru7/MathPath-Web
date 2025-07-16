@@ -9,10 +9,10 @@ import {
   AssessmentContent,
   AssessmentPage,
 } from "../../../../../core/types/assessment/assessment.types";
-import PageContent from "./PageContent";
+import PageContent from "./page-content/PageContent";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ModalType } from "./Modals";
+import { ModalType } from "./modals/Modals";
 
 type PageCardProps = {
   page: AssessmentPage;

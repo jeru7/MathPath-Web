@@ -1,19 +1,19 @@
 // assessment
 export type Assessment = {
   id: string;
-  title: string;
-  topic: string;
-  description?: string;
+  title: string | null;
+  topic: string | null;
+  description: string | null;
   teacher: string;
-  sections: string[];
-  pages: AssessmentPage[];
-  passingScore: number;
-  attempts: number;
+  sections: string[] | [];
+  pages: AssessmentPage[] | [];
+  passingScore: number | null;
+  attempts: number | null;
   date: {
-    start: string;
-    end: string;
+    start: string | null;
+    end: string | null;
   };
-  duration?: number;
+  duration: number | null;
   createdAt: string;
   updatedAt: string;
 };

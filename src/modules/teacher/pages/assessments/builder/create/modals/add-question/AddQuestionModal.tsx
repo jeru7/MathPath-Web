@@ -1,7 +1,7 @@
 import { useReducer, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import QuestionTypeSelect from "./components/QuestionTypeSelect";
-import RichTextField from "../components/RichTextField";
+import RichTextField from "../../RichTextField";
 import Choices from "./choices/Choices";
 import Answers from "./components/Answers";
 import {
@@ -9,14 +9,11 @@ import {
   AssessmentQuestionChoice,
   FillInTheBlankAnswerType,
   QuestionType,
-} from "../../../../../core/types/assessment/assessment.types";
+} from "../../../../../../../core/types/assessment/assessment.types";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import ModalActions from "../components/actions/ModalActions";
-import {
-  getDefaultQuestion,
-  addQuestionReducer,
-} from "./hooks/addQuestionReducer";
+import ModalActions from "../ModalActions";
+import { getDefaultQuestion, addQuestionReducer } from "./add-question.reducer";
 
 // types
 type AddQuestionModalProps = {
@@ -84,7 +81,7 @@ export default function AddQuestionModal({
 
       let flag: boolean = false;
 
-      question.choices.forEach((choice) => {
+      question.choices.forEach((choice: AssessmentQuestionChoice) => {
         if (choice.text === "") {
           flag = true;
         }
@@ -107,7 +104,7 @@ export default function AddQuestionModal({
 
       let flag: boolean = false;
 
-      question.choices.forEach((choice) => {
+      question.choices.forEach((choice: AssessmentQuestionChoice) => {
         if (choice.text === "") {
           flag = true;
         }
@@ -129,7 +126,7 @@ export default function AddQuestionModal({
 
       let flag: boolean = false;
 
-      question.answers.forEach((answer) => {
+      question.answers.forEach((answer: FillInTheBlankAnswerType) => {
         if (answer.value === "") {
           flag = true;
         }

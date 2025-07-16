@@ -1,9 +1,9 @@
 import { AnimatePresence } from "framer-motion";
 import { useState, type ReactElement } from "react";
-import AddQuestionModal from "../add-question/AddQuestionModal";
-import AddImageModal from "../add-image/AddImageModal";
-import AddTextModal from "../add-text/AddTextModal";
-import { AssessmentQuestion } from "../../../../../core/types/assessment/assessment.types";
+import AddQuestionModal from "./add-question/AddQuestionModal";
+import AddImageModal from "./add-image/AddImageModal";
+import AddTextModal from "./add-text/AddTextModal";
+import { AssessmentQuestion } from "../../../../../../core/types/assessment/assessment.types";
 
 export type ModalType = "question" | "image" | "text";
 type ModalsProps = {

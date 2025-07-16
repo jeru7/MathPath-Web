@@ -6,7 +6,7 @@ import Student from "../pages/students/student/Student";
 import Sections from "../pages/sections/Sections";
 import Assessments from "../pages/assessments/Assessments";
 import Statistics from "../pages/statistics/Statistics";
-import CreateAssessment from "../pages/assessments/create/CreateAssessment";
+import AssessmentBuilder from "../pages/assessments/builder/";
 
 export const teacherRoutes = (
   <Route path="/teacher/:teacherId" element={<Teacher />}>
@@ -20,7 +20,7 @@ export const teacherRoutes = (
     <Route path="sections" element={<Sections />} />
     <Route path="assessments">
       <Route index element={<Assessments />} />
-      <Route path="create" element={<CreateAssessment />} />
+      <Route path="create" element={<AssessmentBuilder />} />
     </Route>
   </Route>
 );

@@ -1,8 +1,8 @@
 import { useState, type ReactElement } from "react";
-import { AssessmentContent } from "../../../../../core/types/assessment/assessment.types";
-import Question from "./page-content/Question";
-import Image from "./page-content/Image";
-import Text from "./page-content/Text";
+import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.types";
+import Question from "./Question";
+import Image from "./Image";
+import Text from "./Text";
 import {
   arrayMove,
   SortableContext,

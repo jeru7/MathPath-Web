@@ -4,7 +4,7 @@ import AnswerField from "./AnswerField";
 import {
   FillInTheBlankAnswerType,
   QuestionType,
-} from "../../../../../../core/types/assessment/assessment.types";
+} from "../../../../../../../../core/types/assessment/assessment.types";
 
 type AnswersProp = {
   onAnswersChange: (

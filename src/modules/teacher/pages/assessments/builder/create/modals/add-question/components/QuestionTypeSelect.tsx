@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from "react";
-import { QuestionType } from "../../../../../../core/types/assessment/assessment.types";
-import { getCustomSelectColor } from "../../../../../../core/styles/selectStyles";
+import { QuestionType } from "../../../../../../../../core/types/assessment/assessment.types";
+import { getCustomSelectColor } from "../../../../../../../../core/styles/selectStyles";
 import Select from "react-select";
 
 type QuestionTypeSelectProps = {
