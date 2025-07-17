@@ -29,6 +29,7 @@ export type QuestionType =
 // assessment question structure based on types
 export type AssessmentQuestion =
   | {
+      id: string;
       type: "single_choice" | "multiple_choice";
       question: string;
       points: number;
@@ -37,18 +38,21 @@ export type AssessmentQuestion =
       randomPosition: boolean;
     }
   | {
+      id: string;
       type: "fill_in_the_blanks";
       question: string;
       points: number;
       answers: FillInTheBlankAnswerType[];
     }
   | {
+      id: string;
       type: "true_or_false";
       question: string;
       points: number;
       answers: boolean;
     }
   | {
+      id: string;
       type: "identification";
       question: string;
       points: number;
