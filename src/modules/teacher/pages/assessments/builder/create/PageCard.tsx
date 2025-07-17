@@ -13,15 +13,14 @@ import PageContent from "./page-content/PageContent";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ModalType } from "./modals/Modals";
+import { useAssessmentBuilder } from "../context/assessment-builder.context";
 
 type PageCardProps = {
   page: AssessmentPage;
   pageNumber: number;
   startingQuestionNumber: number;
   onShowModal: (modal: ModalType) => void;
-  onContentsChange: (pageId: string, newContents: AssessmentContent[]) => void;
-  onTitleChange: (pageId: string, newTitle: string) => void;
-  onDeletePage: (pageId: string) => void;
+  onEditContent?: (content: AssessmentContent, type: ModalType) => void;
 };
 
 export default function PageCard({
@@ -29,11 +28,15 @@ export default function PageCard({
   pageNumber,
   startingQuestionNumber,
   onShowModal,
-  onContentsChange,
-  onTitleChange,
-  onDeletePage,
+  onEditContent,
 }: PageCardProps): ReactElement {
+  // reducer
+  const { dispatch } = useAssessmentBuilder();
+
+  // states
   const [isEdit, setIsEdit] = useState<boolean>(false);
+
+  // dnd methods
   const {
     attributes,
     listeners,
@@ -42,6 +45,21 @@ export default function PageCard({
     transition,
     isDragging,
   } = useSortable({ id: page.id });
+
+  // handlers
+  const handlePageTitleChange = (pageId: string, newTitle: string) => {
+    dispatch({
+      type: "UPDATE_PAGE_TITLE",
+      payload: { pageId, title: newTitle },
+    });
+  };
+
+  const handleDeletePage = (pageId: string) => {
+    dispatch({
+      type: "DELETE_PAGE",
+      payload: pageId,
+    });
+  };
 
   const style = {
     transition,
@@ -69,7 +87,7 @@ export default function PageCard({
               name="title"
               value={page.title ?? `Page ${pageNumber}`}
               className="bg-[var(--secondary-green)] outline-none text-sm px-2 py-1"
-              onChange={(e) => onTitleChange(page.id, e.target.value)}
+              onChange={(e) => handlePageTitleChange(page.id, e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   setIsEdit(false);
@@ -105,7 +123,7 @@ export default function PageCard({
           </div>
           <button
             className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
-            onClick={() => onDeletePage(page.id)}
+            onClick={() => handleDeletePage(page.id)}
           >
             <IoClose className="h-6 w-6" />
           </button>
@@ -118,8 +136,8 @@ export default function PageCard({
         <PageContent
           contents={page.contents}
           questionNumber={startingQuestionNumber}
-          onContentsChange={onContentsChange}
           pageId={page.id}
+          onEditContent={onEditContent}
         />
 
         {/* add content buttons */}

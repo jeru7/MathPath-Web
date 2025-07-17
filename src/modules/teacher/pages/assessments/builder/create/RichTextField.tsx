@@ -14,6 +14,7 @@ import { FaUnderline } from "react-icons/fa";
 import { sanitizeHtml } from "../../utils/sanitizeHtml";
 
 type RichTextFieldProps = {
+  value: string;
   onContentChange?: (content: string) => void;
   extensions?: Extensions;
 };
@@ -21,6 +22,7 @@ type RichTextFieldProps = {
 export default function RichTextField({
   onContentChange,
   extensions,
+  value,
 }: RichTextFieldProps): ReactElement {
   const editor = useEditor({
     extensions: extensions ?? [
@@ -30,14 +32,20 @@ export default function RichTextField({
         types: ["heading", "paragraph"],
       }),
     ],
-    content: "",
+    content: value ?? "",
+    // initial value
     onCreate({ editor }) {
+      console.log("Value: ", value);
+      // set align left on initial load
       editor.chain().focus().setTextAlign("left").run();
     },
     onUpdate: ({ editor }) => {
-      onContentChange?.(sanitizeHtml(editor.getHTML()));
+      const text = editor.state.doc.textContent.trim();
+      const isEmpty = text.length === 0 || text === "";
+      onContentChange?.(isEmpty ? "" : sanitizeHtml(editor.getHTML()));
     },
     editorProps: {
+      // fix paste issue
       handlePaste(view, event) {
         const text = event.clipboardData?.getData("text/plain") ?? "";
         const rawText = text.replace(/\n/g, " ");

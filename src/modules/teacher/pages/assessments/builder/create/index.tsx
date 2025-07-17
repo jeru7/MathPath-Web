@@ -16,71 +16,30 @@ import Modals, { ModalType } from "./modals/Modals";
 import {
   AssessmentContent,
   AssessmentPage,
-  AssessmentQuestion,
 } from "../../../../../core/types/assessment/assessment.types";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import { nanoid } from "nanoid";
 import { FaPlus } from "react-icons/fa";
 
 export default function CreateAssessment(): ReactElement {
+  // reducers
   const { state, dispatch } = useAssessmentBuilder();
 
+  // states
   const [activeModal, setActiveModal] = useState<ModalType | null>(null);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [selectedPageId, setSelectedPageId] = useState<string>(
     state.pages[0].id,
   );
+  const [contentToEdit, setContentToEdit] = useState<AssessmentContent | null>(
+    null,
+  );
 
   // handlers
-  const handleAddQuestion = (pageId: string, question: AssessmentQuestion) => {
-    dispatch({
-      type: "ADD_QUESTION",
-      payload: { pageId, question },
-    });
-  };
-
-  const handleAddImage = (pageId: string, imageUrl: string) => {
-    dispatch({
-      type: "ADD_IMAGE",
-      payload: { pageId, imageUrl },
-    });
-  };
-
-  const handleAddText = (pageId: string, text: string) => {
-    dispatch({
-      type: "ADD_TEXT",
-      payload: { pageId, text },
-    });
-  };
-
-  const handlePageContentChanges = (
-    pageId: string,
-    newContents: AssessmentContent[],
-  ) => {
-    dispatch({
-      type: "UPDATE_PAGE_CONTENT",
-      payload: { pageId, contents: newContents },
-    });
-  };
-
-  const handlePageTitleChange = (pageId: string, newTitle: string) => {
-    dispatch({
-      type: "UPDATE_PAGE_TITLE",
-      payload: { pageId, title: newTitle },
-    });
-  };
-
   const handleAddPage = (page: AssessmentPage) => {
     dispatch({
       type: "ADD_PAGE",
       payload: page,
-    });
-  };
-
-  const handleDeletePage = (pageId: string) => {
-    dispatch({
-      type: "DELETE_PAGE",
-      payload: pageId,
     });
   };
 
@@ -148,9 +107,14 @@ export default function CreateAssessment(): ReactElement {
                     setSelectedPageId(page.id);
                     setActiveModal(modalType);
                   }}
-                  onContentsChange={handlePageContentChanges}
-                  onTitleChange={handlePageTitleChange}
-                  onDeletePage={handleDeletePage}
+                  onEditContent={(
+                    content: AssessmentContent,
+                    type: ModalType,
+                  ) => {
+                    setContentToEdit(content);
+                    setSelectedPageId(page.id);
+                    setActiveModal(type);
+                  }}
                 />
               );
 
@@ -179,9 +143,6 @@ export default function CreateAssessment(): ReactElement {
                         onShowModal={(modalType) => {
                           setActiveModal(modalType);
                         }}
-                        onContentsChange={handlePageContentChanges}
-                        onTitleChange={handlePageTitleChange}
-                        onDeletePage={handleDeletePage}
                       />
                     );
                   })()
@@ -195,11 +156,12 @@ export default function CreateAssessment(): ReactElement {
         {activeModal && (
           <Modals
             activeModal={activeModal}
-            onClose={() => setActiveModal(null)}
+            onClose={() => {
+              setContentToEdit(null);
+              setActiveModal(null);
+            }}
             pageId={selectedPageId}
-            onAddQuestion={handleAddQuestion}
-            onAddText={handleAddText}
-            onAddImage={handleAddImage}
+            contentToEdit={contentToEdit}
           />
         )}
       </section>
