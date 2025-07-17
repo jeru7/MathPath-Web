@@ -64,12 +64,32 @@ export type AssessmentBuilderAction =
       payload: { pageId: string; question: AssessmentQuestion };
     }
   | {
+      type: "UPDATE_QUESTION";
+      payload: {
+        pageId: string;
+        contentId: string;
+        question: AssessmentQuestion;
+      };
+    }
+  | {
       type: "ADD_IMAGE";
       payload: { pageId: string; imageUrl: string };
     }
   | {
+      type: "UPDATE_IMAGE";
+      payload: { pageId: string; contentId: string; imageUrl: string };
+    }
+  | {
       type: "ADD_TEXT";
       payload: { pageId: string; text: string };
+    }
+  | {
+      type: "UPDATE_TEXT";
+      payload: { pageId: string; contentId: string; text: string };
+    }
+  | {
+      type: "DELETE_CONTENT";
+      payload: { pageId: string; content: AssessmentContent };
     };
 
 // methods
@@ -101,7 +121,6 @@ export const assessmentBuilderReducer = (
             contents: action.payload.contents,
           };
         }
-
         return page;
       });
       return {
@@ -117,7 +136,6 @@ export const assessmentBuilderReducer = (
             title: action.payload.title,
           };
         }
-
         return page;
       });
       return {
@@ -140,7 +158,6 @@ export const assessmentBuilderReducer = (
             ],
           };
         }
-
         return page;
       });
       return {
@@ -163,7 +180,30 @@ export const assessmentBuilderReducer = (
             ],
           };
         }
+        return page;
+      });
+      return {
+        ...state,
+        pages: newPages,
+      };
+    }
+    case "UPDATE_IMAGE": {
+      const newPages = state.pages.map((page) => {
+        if (page.id === action.payload.pageId) {
+          return {
+            ...page,
+            contents: page.contents.map((content) => {
+              if (content.id === action.payload.contentId) {
+                return {
+                  ...content,
+                  data: action.payload.imageUrl,
+                };
+              }
 
+              return content;
+            }),
+          };
+        }
         return page;
       });
       return {
@@ -186,7 +226,6 @@ export const assessmentBuilderReducer = (
             ],
           };
         }
-
         return page;
       });
       return {
@@ -194,5 +233,48 @@ export const assessmentBuilderReducer = (
         pages: newPages,
       };
     }
+    case "UPDATE_TEXT": {
+      const newPages = state.pages.map((page) => {
+        if (page.id === action.payload.pageId) {
+          return {
+            ...page,
+            contents: page.contents.map((content) => {
+              if (content.id === action.payload.contentId) {
+                return {
+                  ...content,
+                  data: action.payload.text,
+                };
+              }
+
+              return content;
+            }),
+          };
+        }
+        return page;
+      });
+      return {
+        ...state,
+        pages: newPages,
+      };
+    }
+    case "DELETE_CONTENT": {
+      const newPages = state.pages.map((page) => {
+        if (page.id === action.payload.pageId) {
+          return {
+            ...page,
+            contents: page.contents.filter(
+              (content) => content.id !== action.payload.content.id,
+            ),
+          };
+        }
+        return page;
+      });
+      return {
+        ...state,
+        pages: newPages,
+      };
+    }
+    default:
+      return state;
   }
 };
