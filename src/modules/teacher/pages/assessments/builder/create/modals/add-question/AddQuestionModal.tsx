@@ -155,14 +155,21 @@ export default function AddQuestionModal({
     if (contentToEdit) {
       assessmentDispatch({
         type: "UPDATE_QUESTION",
-        payload: { pageId, contentId: contentToEdit.id, question },
+        payload: {
+          pageId,
+          contentId: contentToEdit.id,
+          question: question,
+        },
       });
+      console.log("UPDATE_QUESTION");
     } else {
       assessmentDispatch({
         type: "ADD_QUESTION",
         payload: { pageId, question },
       });
+      console.log("ADD_QUESTION");
     }
+
     onClose();
   };
 

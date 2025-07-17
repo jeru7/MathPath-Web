@@ -24,6 +24,7 @@ export default function RichTextField({
   extensions,
   value,
 }: RichTextFieldProps): ReactElement {
+  // TODO: fix initial load while on edit
   const editor = useEditor({
     extensions: extensions ?? [
       StarterKit,

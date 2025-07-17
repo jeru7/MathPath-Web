@@ -33,8 +33,7 @@ export const initialAssessment: Assessment = {
 };
 
 // types
-export type AssessmentBuilderAction =
-  // TODO: assessment
+export type AssessmentBuilderAction = // TODO: assessment
   //
   //
   //
@@ -156,6 +155,30 @@ export const assessmentBuilderReducer = (
                 data: action.payload.question,
               },
             ],
+          };
+        }
+        return page;
+      });
+      return {
+        ...state,
+        pages: newPages,
+      };
+    }
+    case "UPDATE_QUESTION": {
+      const newPages = state.pages.map((page) => {
+        if (page.id === action.payload.pageId) {
+          return {
+            ...page,
+            contents: page.contents.map((content) => {
+              if (content.id === action.payload.contentId) {
+                return {
+                  ...content,
+                  data: action.payload.question,
+                };
+              }
+
+              return content;
+            }),
           };
         }
         return page;
