@@ -26,6 +26,7 @@ export default function Choice({
   onDeleteChoice,
   isLastTwo,
 }: ChoiceProps): ReactElement {
+  // dnd methods
   const {
     attributes,
     listeners,

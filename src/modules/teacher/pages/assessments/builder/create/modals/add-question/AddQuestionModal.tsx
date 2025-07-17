@@ -5,6 +5,7 @@ import RichTextField from "../../RichTextField";
 import Choices from "./choices/Choices";
 import Answers from "./components/Answers";
 import {
+  AssessmentContent,
   AssessmentQuestion,
   AssessmentQuestionChoice,
   FillInTheBlankAnswerType,
@@ -14,56 +15,62 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import ModalActions from "../ModalActions";
 import { getDefaultQuestion, addQuestionReducer } from "./add-question.reducer";
+import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
 
 // types
 type AddQuestionModalProps = {
   onClose: () => void;
-  onAddQuestion: (pageId: string, question: AssessmentQuestion) => void;
   pageId: string;
+  contentToEdit: AssessmentContent | null;
 };
 
 // default
 export default function AddQuestionModal({
   onClose,
-  onAddQuestion,
   pageId,
+  contentToEdit,
 }: AddQuestionModalProps): ReactElement {
-  // states
-  const [question, dispatch] = useReducer(
-    addQuestionReducer,
-    getDefaultQuestion("single_choice"),
-  );
+  // initial value
+  const initial: AssessmentQuestion = contentToEdit
+    ? (contentToEdit.data as AssessmentQuestion)
+    : getDefaultQuestion("single_choice");
+
+  // reducers
+  const { dispatch: assessmentDispatch } = useAssessmentBuilder();
+  const [question, questionDispatch] = useReducer(addQuestionReducer, initial);
 
   // handlers
   const handleTypeChange = (type: QuestionType) => {
-    dispatch({ type: "SET_TYPE", payload: type });
+    questionDispatch({ type: "SET_TYPE", payload: type });
   };
 
   const handlePointsChange = (points: number) => {
-    dispatch({ type: "SET_POINTS", payload: points });
+    questionDispatch({ type: "SET_POINTS", payload: points });
   };
 
   const handleQuestionContentChange = (text: string) => {
-    dispatch({ type: "SET_QUESTION", payload: text });
+    questionDispatch({ type: "SET_QUESTION", payload: text });
   };
 
   const handleChoicesChange = (choices: AssessmentQuestionChoice[]) => {
-    dispatch({ type: "SET_CHOICES", payload: choices });
+    questionDispatch({ type: "SET_CHOICES", payload: choices });
   };
 
   const handleAnswersChange = (
     answers: string | string[] | boolean | FillInTheBlankAnswerType[],
   ) => {
-    dispatch({ type: "SET_ANSWERS", payload: answers });
+    questionDispatch({ type: "SET_ANSWERS", payload: answers });
   };
 
   const handleToggleRandom = (value: boolean) => {
-    dispatch({ type: "SET_RANDOM", payload: value });
+    questionDispatch({ type: "SET_RANDOM", payload: value });
   };
 
-  // modal handlers
   const handleAddQuestion = () => {
-    if (question.question === "") {
+    if (
+      question.question.trim() === "" ||
+      question.question.trim().length === 0
+    ) {
       toast.error("Question content cannot be empty.");
       return;
     }
@@ -145,7 +152,17 @@ export default function AddQuestionModal({
       }
     }
 
-    onAddQuestion(pageId, question);
+    if (contentToEdit) {
+      assessmentDispatch({
+        type: "UPDATE_QUESTION",
+        payload: { pageId, contentId: contentToEdit.id, question },
+      });
+    } else {
+      assessmentDispatch({
+        type: "ADD_QUESTION",
+        payload: { pageId, question },
+      });
+    }
     onClose();
   };
 
@@ -193,7 +210,7 @@ export default function AddQuestionModal({
                 id="points"
                 type="number"
                 className="border border-gray-300 text-center rounded-sm px-2 py-1 w-24 focus:outline-none focus:ring-1 focus:ring-green-400"
-                defaultValue={1}
+                defaultValue={question.points}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   handlePointsChange(isNaN(value) ? 1 : value);
@@ -212,7 +229,10 @@ export default function AddQuestionModal({
               Question
             </label>
             <div className="flex flex-col w-full gap-2">
-              <RichTextField onContentChange={handleQuestionContentChange} />
+              <RichTextField
+                value={question.question}
+                onContentChange={handleQuestionContentChange}
+              />
               {/* info for fill in the blanks */}
               {question.type === "fill_in_the_blanks" && (
                 <motion.div

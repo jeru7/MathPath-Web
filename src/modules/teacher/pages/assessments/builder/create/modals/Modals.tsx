@@ -3,29 +3,26 @@ import { useState, type ReactElement } from "react";
 import AddQuestionModal from "./add-question/AddQuestionModal";
 import AddImageModal from "./add-image/AddImageModal";
 import AddTextModal from "./add-text/AddTextModal";
-import { AssessmentQuestion } from "../../../../../../core/types/assessment/assessment.types";
+import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.types";
 
 export type ModalType = "question" | "image" | "text";
 type ModalsProps = {
   activeModal: ModalType | null;
   onClose: () => void;
   pageId: string;
-  onAddQuestion: (pageId: string, newQuestion: AssessmentQuestion) => void;
-  onAddText: (pageId: string, newText: string) => void;
-  onAddImage: (pageId: string, imageUrl: string) => void;
+  contentToEdit: AssessmentContent | null;
 };
 export default function Modals({
   activeModal,
   onClose,
   pageId,
-  onAddQuestion,
-  onAddText,
-  onAddImage,
+  contentToEdit,
 }: ModalsProps): ReactElement {
+  // states
   const [isVisible, setIsVisible] = useState<boolean>(true);
 
+  // handlers
   const handleClose = () => setIsVisible(false);
-
   return (
     <AnimatePresence onExitComplete={onClose}>
       {isVisible && (
@@ -36,20 +33,20 @@ export default function Modals({
             {activeModal === "question" ? (
               <AddQuestionModal
                 onClose={handleClose}
-                onAddQuestion={onAddQuestion}
                 pageId={pageId}
+                contentToEdit={contentToEdit}
               />
             ) : activeModal === "image" ? (
               <AddImageModal
                 onClose={handleClose}
-                onAddImage={onAddImage}
                 pageId={pageId}
+                contentToEdit={contentToEdit}
               />
             ) : activeModal === "text" ? (
               <AddTextModal
                 onClose={handleClose}
-                onAddText={onAddText}
                 pageId={pageId}
+                contentToEdit={contentToEdit}
               />
             ) : null}
           </div>

@@ -4,18 +4,21 @@ import { motion } from "framer-motion";
 import RichTextField from "../../RichTextField";
 import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
+import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
+import { AssessmentContent } from "../../../../../../../core/types/assessment/assessment.types";
 
 type AddTextModalProps = {
   onClose: () => void;
-  onAddText: (pageId: string, text: string) => void;
   pageId: string;
+  contentToEdit: AssessmentContent | null;
 };
 
 export default function AddTextModal({
   onClose,
-  onAddText,
   pageId,
+  contentToEdit,
 }: AddTextModalProps): ReactElement {
+  const { dispatch } = useAssessmentBuilder();
   const [textContent, setTextContent] = useState<string>("");
 
   const handleTextContentChange = (text: string) => {
@@ -23,12 +26,22 @@ export default function AddTextModal({
   };
 
   const handleAddText = () => {
-    if (textContent.length === 0 || textContent === "") {
+    if (textContent.trim().length === 0 || textContent.trim() === "") {
       toast.error("Please provide text content.");
       return;
     }
 
-    onAddText(pageId, textContent);
+    if (contentToEdit) {
+      dispatch({
+        type: "UPDATE_TEXT",
+        payload: { pageId, contentId: contentToEdit.id, text: textContent },
+      });
+    } else {
+      dispatch({
+        type: "ADD_TEXT",
+        payload: { pageId, text: textContent },
+      });
+    }
     onClose();
   };
 
@@ -63,7 +76,12 @@ export default function AddTextModal({
           </label>
           {/* text editor */}
           <div className="flex flex-col w-full gap-2">
-            <RichTextField onContentChange={handleTextContentChange} />
+            <RichTextField
+              value={
+                contentToEdit ? (contentToEdit.data as string) : textContent
+              }
+              onContentChange={handleTextContentChange}
+            />
           </div>
         </div>
         {/* actions */}

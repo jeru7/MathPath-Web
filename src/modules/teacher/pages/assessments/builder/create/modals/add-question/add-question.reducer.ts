@@ -33,7 +33,6 @@ export const addQuestionReducer = (
       if (state.type === "fill_in_the_blanks") {
         const matches = action.payload.match(/\[(\d+)\]/g) || [];
         const uniqueMatches = Array.from(new Set(matches));
-
         const existing = new Map(
           (state.answers as FillInTheBlankAnswerType[]).map((answer) => [
             answer.label,
@@ -99,6 +98,7 @@ export const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
     case "single_choice":
     case "multiple_choice":
       return {
+        id: nanoid(),
         type,
         question: "",
         points: 1,
@@ -111,6 +111,7 @@ export const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
       };
     case "fill_in_the_blanks":
       return {
+        id: nanoid(),
         type,
         question: "",
         points: 1,
@@ -118,6 +119,7 @@ export const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
       };
     case "true_or_false":
       return {
+        id: nanoid(),
         type,
         question: "",
         points: 1,
@@ -125,6 +127,7 @@ export const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
       };
     case "identification":
       return {
+        id: nanoid(),
         type,
         question: "",
         points: 1,
@@ -132,6 +135,7 @@ export const getDefaultQuestion = (type: QuestionType): AssessmentQuestion => {
       };
     default:
       return {
+        id: nanoid(),
         type: "single_choice",
         question: "",
         points: 1,

@@ -17,21 +17,37 @@ import {
   closestCorners,
 } from "@dnd-kit/core";
 import { createPortal } from "react-dom";
+import { useAssessmentBuilder } from "../../context/assessment-builder.context";
+import { ModalType } from "../modals/Modals";
 
 type PageContentProps = {
   contents: AssessmentContent[];
   questionNumber: number;
-  onContentsChange: (pageId: string, newContents: AssessmentContent[]) => void;
   pageId: string;
+  onEditContent?: (content: AssessmentContent, type: ModalType) => void;
 };
 
 export default function PageContent({
   contents,
   questionNumber,
-  onContentsChange,
   pageId,
+  onEditContent,
 }: PageContentProps): ReactElement {
+  // reducer
+  const { dispatch } = useAssessmentBuilder();
+  // states
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+
+  // handlers
+  const handleContentChanges = (
+    pageId: string,
+    newContents: AssessmentContent[],
+  ) => {
+    dispatch({
+      type: "UPDATE_PAGE_CONTENT",
+      payload: { pageId, contents: newContents },
+    });
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
     document.body.getBoundingClientRect();
@@ -49,7 +65,11 @@ export default function PageContent({
     const originalPos = getTaskPos(active.id);
     const newPos = getTaskPos(over.id);
 
-    onContentsChange(pageId, arrayMove(contents, originalPos, newPos));
+    handleContentChanges(pageId, arrayMove(contents, originalPos, newPos));
+  };
+
+  const handleDeleteContent = (content: AssessmentContent) => {
+    dispatch({ type: "DELETE_CONTENT", payload: { pageId, content } });
   };
 
   return (
@@ -74,12 +94,26 @@ export default function PageContent({
                   content={content}
                   questionNumber={currentQuestionNumber}
                   activeId={activeId}
+                  onDeleteContent={handleDeleteContent}
+                  onEdit={() => onEditContent?.(content, content.type)}
                 />
               );
             } else if (content.type === "image") {
-              return <Image content={content} />;
+              return (
+                <Image
+                  content={content}
+                  onDeleteContent={handleDeleteContent}
+                  onEdit={() => onEditContent?.(content, content.type)}
+                />
+              );
             } else if (content.type === "text") {
-              return <Text content={content} />;
+              return (
+                <Text
+                  content={content}
+                  onDeleteContent={handleDeleteContent}
+                  onEdit={() => onEditContent?.(content, content.type)}
+                />
+              );
             }
           })}
         </SortableContext>
@@ -101,19 +135,29 @@ export default function PageContent({
                           content={activeContent}
                           questionNumber={0}
                           activeId={activeId}
+                          onDeleteContent={handleDeleteContent}
+                          onEdit={() => onEditContent}
                         />
                       </div>
                     );
                   } else if (activeContent.type === "image") {
                     return (
                       <div className="rounded scale-105 bg-white p-2 border border-gray-300">
-                        <Image content={activeContent} />
+                        <Image
+                          content={activeContent}
+                          onDeleteContent={handleDeleteContent}
+                          onEdit={() => onEditContent}
+                        />
                       </div>
                     );
                   } else if (activeContent.type === "text") {
                     return (
                       <div className="rounded scale-105 bg-white p-2 border border-gray-300">
-                        <Text content={activeContent} />
+                        <Text
+                          content={activeContent}
+                          onDeleteContent={handleDeleteContent}
+                          onEdit={() => onEditContent}
+                        />
                       </div>
                     );
                   }

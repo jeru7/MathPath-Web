@@ -7,9 +7,16 @@ import { MdDeleteOutline, MdDragIndicator } from "react-icons/md";
 
 type ImageProps = {
   content: AssessmentContent;
+  onDeleteContent: (content: AssessmentContent) => void;
+  onEdit: () => void;
 };
 
-export default function Image({ content }: ImageProps): ReactElement {
+export default function Image({
+  content,
+  onDeleteContent,
+  onEdit,
+}: ImageProps): ReactElement {
+  // dnd methods
   const {
     attributes,
     listeners,
@@ -19,6 +26,7 @@ export default function Image({ content }: ImageProps): ReactElement {
     isDragging,
   } = useSortable({ id: content.id });
 
+  // assert data as string (since this is imageUrl)
   const data = content.data as string;
 
   const style = {
@@ -37,7 +45,11 @@ export default function Image({ content }: ImageProps): ReactElement {
     >
       {/* control buttons */}
       <div className="absolute flex gap-2 right-0 text-gray-300 opacity-0 group-hover:opacity-100 transition-all duration-200 top-0">
-        <button className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200">
+        <button
+          className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
+          type="button"
+          onClick={onEdit}
+        >
           <FaRegEdit />
         </button>
         <div
@@ -46,7 +58,10 @@ export default function Image({ content }: ImageProps): ReactElement {
         >
           <MdDragIndicator />
         </div>
-        <button className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200">
+        <button
+          className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
+          onClick={() => onDeleteContent(content)}
+        >
           <MdDeleteOutline />
         </button>
       </div>

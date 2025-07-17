@@ -3,21 +3,32 @@ import { motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
+import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
+import { AssessmentContent } from "../../../../../../../core/types/assessment/assessment.types";
 
 type AddImageModalProps = {
   onClose: () => void;
-  onAddImage: (pageId: string, imageUrl: string) => void;
   pageId: string;
+  contentToEdit: AssessmentContent | null;
 };
 export default function AddImageModal({
   onClose,
-  onAddImage,
   pageId,
+  contentToEdit,
 }: AddImageModalProps): ReactElement {
+  // reducers
+  const { dispatch } = useAssessmentBuilder();
+
+  // states
+  // TODO: for cloudinary
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    (contentToEdit?.data as string) ?? null,
+  );
+  // ref
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // handlers
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -62,7 +73,22 @@ export default function AddImageModal({
       return;
     }
 
-    onAddImage(pageId, previewUrl);
+    if (contentToEdit) {
+      dispatch({
+        type: "UPDATE_IMAGE",
+        payload: {
+          pageId,
+          contentId: contentToEdit.id,
+          imageUrl: previewUrl,
+        },
+      });
+    } else {
+      dispatch({
+        type: "ADD_IMAGE",
+        payload: { pageId, imageUrl: previewUrl },
+      });
+    }
+
     onClose();
   };
 
