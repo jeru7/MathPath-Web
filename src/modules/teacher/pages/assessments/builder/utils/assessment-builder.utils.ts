@@ -2,7 +2,7 @@ import {
   Assessment,
   AssessmentQuestion,
 } from "../../../../../core/types/assessment/assessment.types";
-import { sanitizeHtml } from "../../utils/sanitizeHtml";
+import { sanitizeHtml } from "./sanitizeHtml";
 
 /**
  * Return the total score of all questions.

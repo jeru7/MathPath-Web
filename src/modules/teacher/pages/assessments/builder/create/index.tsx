@@ -11,7 +11,6 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { useState, type ReactElement } from "react";
 import PageCard from "./PageCard";
 import { createPortal } from "react-dom";
-import { getStartingQuestionNumber } from "../../utils/question.util";
 import Modals, { ModalType } from "./modals/Modals";
 import {
   AssessmentContent,
@@ -20,6 +19,7 @@ import {
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import { nanoid } from "nanoid";
 import { FaPlus } from "react-icons/fa";
+import { getStartingQuestionNumber } from "../utils/question.util";
 
 export default function CreateAssessment(): ReactElement {
   // reducers

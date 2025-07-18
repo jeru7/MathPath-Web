@@ -1,4 +1,4 @@
-import { AssessmentPage } from "../../../../core/types/assessment/assessment.types";
+import { AssessmentPage } from "../../../../../core/types/assessment/assessment.types";
 
 export const getStartingQuestionNumber = (
   targetPageId: string,

@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import { FaItalic } from "react-icons/fa";
 import { FaUnderline } from "react-icons/fa";
-import { sanitizeHtml } from "../../utils/sanitizeHtml";
+import { sanitizeHtml } from "../utils/sanitizeHtml";
 
 type RichTextFieldProps = {
   value: string;
