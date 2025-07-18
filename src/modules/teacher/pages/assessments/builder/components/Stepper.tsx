@@ -12,7 +12,7 @@ export default function Stepper({
     <section className="flex rounded-sm">
       {/* Step 1 */}
       <button
-        className={`flex px-4 py-2 border-t border-l border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex px-4 py-2 border-t border-l border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           opacity: getOpacity(currentStep, 1),
