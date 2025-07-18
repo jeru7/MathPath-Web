@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import { getTotalScore } from "../utils/assessment-builder.utils";
 
@@ -6,7 +6,17 @@ export default function ConfigureAssessment(): ReactElement {
   // reducer
   const { state, dispatch } = useAssessmentBuilder();
 
+  // initials
   const totalScore = getTotalScore(state);
+  const passingScoreMinLimit =
+    totalScore === 0 ? 1 : Math.round(totalScore * 0.5);
+
+  // states
+  const [passingScore, setPassingScore] = useState(
+    state.passingScore ?? passingScoreMinLimit,
+  );
+  const [timeLimit, setTimeLimit] = useState(state.timeLimit ?? 10);
+  const [attemptLimit, setAttemptLimit] = useState(state.attemptLimit ?? 1);
 
   // handlers
   const handleTitleChange = (title: string) => {
@@ -22,25 +32,59 @@ export default function ConfigureAssessment(): ReactElement {
   };
 
   const handlePassingScoreChange = (passingScore: number) => {
-    dispatch({
-      type: "UPDATE_ASSESSMENT_PASSING_SCORE",
-      payload: passingScore,
-    });
+    setPassingScore(passingScore);
   };
 
   const handleTimeLimitChange = (timeLimit: number) => {
-    dispatch({
-      type: "UPDATE_ASSESSMENT_TIME_LIMIT",
-      payload: timeLimit,
-    });
+    setTimeLimit(timeLimit);
   };
 
-  const handleAttemptLimitChange = (attemptLimit: number) => {
-    dispatch({
-      type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT",
-      payload: attemptLimit,
-    });
+  const handleAttemptLimitChange = (_attemptLimit: number) => {
+    setAttemptLimit(_attemptLimit);
   };
+
+  const handlePassingScoreBlur = () => {
+    if (isNaN(passingScore)) return;
+    if (passingScore >= passingScoreMinLimit && passingScore <= totalScore) {
+      dispatch({
+        type: "UPDATE_ASSESSMENT_PASSING_SCORE",
+        payload: passingScoreMinLimit,
+      });
+    } else {
+      setPassingScore(state.passingScore ?? passingScoreMinLimit);
+    }
+  };
+
+  const handleAttemptLimitBlur = () => {
+    if (isNaN(attemptLimit)) return;
+    if (attemptLimit >= 1 && attemptLimit <= 3) {
+      dispatch({
+        type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT",
+        payload: attemptLimit,
+      });
+    } else {
+      setAttemptLimit(state.attemptLimit ?? 1);
+    }
+  };
+
+  const handleTimeLimitBlur = () => {
+    if (isNaN(timeLimit)) return;
+    if (timeLimit >= 10 && timeLimit <= 50) {
+      dispatch({
+        type: "UPDATE_ASSESSMENT_TIME_LIMIT",
+        payload: timeLimit,
+      });
+    } else {
+      setTimeLimit(state.timeLimit ?? 10);
+    }
+  };
+
+  useEffect(() => {
+    dispatch({
+      type: "UPDATE_ASSESSMENT_PASSING_SCORE",
+      payload: passingScoreMinLimit,
+    });
+  }, [dispatch, passingScoreMinLimit]);
 
   return (
     <div className="flex w-full h-full px-96 items-start justify-center">
@@ -95,7 +139,7 @@ export default function ConfigureAssessment(): ReactElement {
           </div>
           <div className="w-full flex justify-between">
             {/* passing score */}
-            <div className="flex items-center gap-2 w-fit">
+            <div className="relative flex items-center gap-2 w-fit">
               <label
                 htmlFor="description"
                 className="min-w-32 w-32 text-right font-semibold"
@@ -105,17 +149,21 @@ export default function ConfigureAssessment(): ReactElement {
               <input
                 type="number"
                 name="passing-score"
-                className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none"
-                min={1}
+                className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                value={passingScore}
+                min={passingScoreMinLimit}
                 max={totalScore === 0 ? 1 : totalScore}
-                defaultValue={
-                  totalScore === 0 ? 1 : Math.round(totalScore * 0.75)
-                }
                 onChange={(e) =>
                   handlePassingScoreChange(Number(e.target.value))
                 }
+                onBlur={handlePassingScoreBlur}
+                disabled={totalScore === 0}
               />
-              <p className="text-sm text-gray-400">{`${totalScore === 0 ? "" : `/ ${totalScore}`}`}</p>
+              {totalScore === 0 ? (
+                <p className="text-sm text-gray-400">Unavailable</p>
+              ) : (
+                <p className="text-sm text-gray-400">/ {totalScore}</p>
+              )}
             </div>
             {/* attempts limit */}
             <div className="flex items-center gap-2 w-fit">
@@ -127,14 +175,16 @@ export default function ConfigureAssessment(): ReactElement {
               </label>
               <input
                 type="number"
-                name="passing-score"
+                name="attempt-limit"
                 className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none"
+                value={attemptLimit}
                 min={1}
-                max={10}
+                max={3}
                 defaultValue={1}
                 onChange={(e) =>
                   handleAttemptLimitChange(Number(e.target.value))
                 }
+                onBlur={handleAttemptLimitBlur}
               />
             </div>
           </div>
@@ -147,12 +197,14 @@ export default function ConfigureAssessment(): ReactElement {
             </label>
             <input
               type="number"
-              name="passing-score"
+              name="time-limit"
               className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none"
+              value={timeLimit}
               min={10}
-              max={180}
+              max={50}
               defaultValue={10}
               onChange={(e) => handleTimeLimitChange(Number(e.target.value))}
+              onBlur={handleTimeLimitBlur}
             />
             <p className="text-sm text-gray-400 italic">minutes</p>
           </div>

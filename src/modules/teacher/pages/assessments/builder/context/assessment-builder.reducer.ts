@@ -27,7 +27,7 @@ export const initialAssessment: Assessment = {
     start: null,
     end: null,
   },
-  timeLimit: null,
+  timeLimit: 10,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

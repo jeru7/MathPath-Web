@@ -5,11 +5,11 @@ import {
 } from "../../../../../../core/types/assessment/assessment.types";
 import { FaRegCircle, FaRegEdit } from "react-icons/fa";
 import { GrCheckbox } from "react-icons/gr";
-import { sanitizeHtml } from "../../../utils/sanitizeHtml";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MdDeleteOutline, MdDragIndicator } from "react-icons/md";
 import { UniqueIdentifier } from "@dnd-kit/core";
+import { renderBlanks } from "../../utils/assessment-builder.utils";
 
 type QuestionProps = {
   content: AssessmentContent;
@@ -135,8 +135,3 @@ export default function Question({
     </article>
   );
 }
-
-const renderBlanks = (text: string) => {
-  const rawText = text.replace(/\[\d+\]/g, "_____________");
-  return sanitizeHtml(rawText);
-};
