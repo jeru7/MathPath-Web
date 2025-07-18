@@ -21,6 +21,8 @@ type PageCardProps = {
   startingQuestionNumber: number;
   onShowModal: (modal: ModalType) => void;
   onEditContent?: (content: AssessmentContent, type: ModalType) => void;
+  onDelete?: (pageId: string) => void;
+  isSingle?: boolean;
 };
 
 export default function PageCard({
@@ -29,6 +31,8 @@ export default function PageCard({
   startingQuestionNumber,
   onShowModal,
   onEditContent,
+  onDelete,
+  isSingle,
 }: PageCardProps): ReactElement {
   // reducer
   const { dispatch } = useAssessmentBuilder();
@@ -51,13 +55,6 @@ export default function PageCard({
     dispatch({
       type: "UPDATE_PAGE_TITLE",
       payload: { pageId, title: newTitle },
-    });
-  };
-
-  const handleDeletePage = (pageId: string) => {
-    dispatch({
-      type: "DELETE_PAGE",
-      payload: pageId,
     });
   };
 
@@ -116,14 +113,14 @@ export default function PageCard({
             />
           </button>
           <div
-            className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
+            className={`text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
             {...listeners}
           >
             <MdDragIndicator className="h-6 w-6" />
           </div>
           <button
-            className="text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
-            onClick={() => handleDeletePage(page.id)}
+            className={`text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
+            onClick={() => onDelete?.(page.id)}
           >
             <IoClose className="h-6 w-6" />
           </button>

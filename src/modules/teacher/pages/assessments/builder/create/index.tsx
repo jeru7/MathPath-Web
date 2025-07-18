@@ -43,6 +43,14 @@ export default function CreateAssessment(): ReactElement {
     });
   };
 
+  const handleDeletePage = (pageId: string) => {
+    if (state.pages.length === 1) return;
+    dispatch({
+      type: "DELETE_PAGE",
+      payload: pageId,
+    });
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     document.body.getBoundingClientRect();
     setActiveId(event.active.id);
@@ -115,6 +123,8 @@ export default function CreateAssessment(): ReactElement {
                     setSelectedPageId(page.id);
                     setActiveModal(type);
                   }}
+                  onDelete={handleDeletePage}
+                  isSingle={state.pages.length === 1}
                 />
               );
 
