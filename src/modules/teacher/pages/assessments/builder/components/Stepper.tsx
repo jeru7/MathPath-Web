@@ -9,14 +9,15 @@ export default function Stepper({
   onChangeStep,
 }: ICreateAssessmentStepperProps): ReactElement {
   return (
-    <section className="flex rounded-sm">
+    <section className="flex rounded-sm items-center">
       {/* Step 1 */}
       <button
         className={`flex px-4 py-2 border-t border-l border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           opacity: getOpacity(currentStep, 1),
-          borderBottom: currentStep === 1 ? "0px" : "1px solid #D1D5DB",
+          borderBottom:
+            currentStep === 1 ? "1px solid #ffffff" : "1px solid #D1D5DB",
         }}
         onClick={() => onChangeStep(1)}
       >
@@ -37,7 +38,8 @@ export default function Stepper({
         className={`flex px-4 py-2 border border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
-          borderBottom: currentStep === 2 ? "0px" : "1px solid #D1D5DB",
+          borderBottom:
+            currentStep === 2 ? "1px solid #ffffff" : "1px solid #D1D5DB",
         }}
         onClick={() => onChangeStep(2)}
       >
@@ -58,7 +60,8 @@ export default function Stepper({
         className={`flex px-4 py-2 rounded-tr-sm border-t border-r border-b border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
-          borderBottom: currentStep === 3 ? "0px" : "1px solid #D1D5DB",
+          borderBottom:
+            currentStep === 3 ? "1px solid #ffffff" : "1px solid #D1D5DB",
         }}
         onClick={() => onChangeStep(3)}
       >

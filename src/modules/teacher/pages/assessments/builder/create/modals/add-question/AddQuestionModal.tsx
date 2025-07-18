@@ -195,7 +195,7 @@ export default function AddQuestionModal({
         </button>
       </header>
       <section className="h-full bg-inherit rounded-b-sm p-4">
-        <form action="" className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             {/* Question type */}
             <div className="flex items-center gap-4">

@@ -21,23 +21,44 @@ export const initialAssessment: Assessment = {
       contents: [],
     },
   ],
-  passingScore: null,
-  attempts: null,
+  passingScore: 1,
+  attemptLimit: 1,
   date: {
     start: null,
     end: null,
   },
-  duration: null,
+  timeLimit: null,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
 
 // types
-export type AssessmentBuilderAction = // TODO: assessment
-  //
-  //
-  //
-
+export type AssessmentBuilderAction =
+  // assessment
+  | {
+      type: "UPDATE_ASSESSMENT_TITLE";
+      payload: string;
+    }
+  | {
+      type: "UPDATE_ASSESSMENT_TOPIC";
+      payload: string;
+    }
+  | {
+      type: "UPDATE_ASSESSMENT_DESCRIPTION";
+      payload: string;
+    }
+  | {
+      type: "UPDATE_ASSESSMENT_PASSING_SCORE";
+      payload: number;
+    }
+  | {
+      type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT";
+      payload: number;
+    }
+  | {
+      type: "UPDATE_ASSESSMENT_TIME_LIMIT";
+      payload: number;
+    }
   // page
   | {
       type: "ADD_PAGE";
@@ -97,6 +118,20 @@ export const assessmentBuilderReducer = (
   action: AssessmentBuilderAction,
 ): Assessment => {
   switch (action.type) {
+    // assessment
+    case "UPDATE_ASSESSMENT_TITLE":
+      return { ...state, title: action.payload };
+    case "UPDATE_ASSESSMENT_TOPIC":
+      return { ...state, topic: action.payload };
+    case "UPDATE_ASSESSMENT_DESCRIPTION":
+      return { ...state, description: action.payload };
+    case "UPDATE_ASSESSMENT_PASSING_SCORE":
+      return { ...state, passingScore: action.payload };
+    case "UPDATE_ASSESSMENT_ATTEMPT_LIMIT":
+      return { ...state, attemptLimit: action.payload };
+    case "UPDATE_ASSESSMENT_TIME_LIMIT":
+      return { ...state, timeLimit: action.payload };
+    // page
     case "ADD_PAGE":
       return {
         ...state,
