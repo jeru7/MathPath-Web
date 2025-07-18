@@ -9,7 +9,7 @@ import { studentRoutes } from "./modules/student/routes/studentRoutes";
 
 function App() {
   return (
-    <div className="flex flex-col font-primary items-center bg-gray-100">
+    <div className="flex flex-col font-primary items-center bg-gray-100 h-fit">
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Landing />} />

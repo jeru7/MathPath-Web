@@ -2,19 +2,23 @@ import { type ReactElement } from "react";
 
 interface ICreateAssessmentStepperProps {
   currentStep: number;
+  onChangeStep: (step: 1 | 2 | 3) => void;
 }
 export default function Stepper({
   currentStep,
+  onChangeStep,
 }: ICreateAssessmentStepperProps): ReactElement {
   return (
     <section className="flex rounded-sm">
       {/* Step 1 */}
-      <article
-        className="border-t border-l border-gray-300 flex px-4 py-2 rounded-tl-sm gap-2 bg-white items-center w-[200px]"
+      <button
+        className={`flex px-4 py-2 border-t border-l border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        type="button"
         style={{
           opacity: getOpacity(currentStep, 1),
           borderBottom: currentStep === 1 ? "0px" : "1px solid #D1D5DB",
         }}
+        onClick={() => onChangeStep(1)}
       >
         <div className="flex">
           <div
@@ -27,14 +31,15 @@ export default function Stepper({
         <div className="flex flex-col font-semibold text-lg">
           <p className="text-base font-semibold">Create</p>
         </div>
-      </article>
+      </button>
       {/* Step 2 */}
-      <article
-        className="border border-gray-300 flex px-4 py-2 bg-white gap-2 items-center w-[200px]"
+      <button
+        className={`flex px-4 py-2 border border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        type="button"
         style={{
-          opacity: getOpacity(currentStep, 2),
           borderBottom: currentStep === 2 ? "0px" : "1px solid #D1D5DB",
         }}
+        onClick={() => onChangeStep(2)}
       >
         <div className="flex">
           <div
@@ -47,14 +52,15 @@ export default function Stepper({
         <div className="flex flex-col text-lg">
           <p className="text-base font-semibold">Configure</p>
         </div>
-      </article>
+      </button>
       {/* Step 3 */}
-      <article
-        className="flex px-4 rounded-tr-sm border-t border-r border-b border-gray-300 gap-2 bg-white items-center w-[200px]"
+      <button
+        className={`flex px-4 py-2 rounded-tr-sm border-t border-r border-b border-gray-300 gap-2 bg-white items-center w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        type="button"
         style={{
-          opacity: getOpacity(currentStep, 3),
           borderBottom: currentStep === 3 ? "0px" : "1px solid #D1D5DB",
         }}
+        onClick={() => onChangeStep(3)}
       >
         <div className="flex">
           <div
@@ -67,7 +73,7 @@ export default function Stepper({
         <div className="flex flex-col font-semibold text-lg">
           <p className="text-base font-semibold">Publish</p>
         </div>
-      </article>
+      </button>
     </section>
   );
 }
@@ -84,8 +90,8 @@ const getCircleColor = (currentStep: number, step: number): string => {
 
 const getOpacity = (currentStep: number, step: number): string => {
   if (currentStep >= step) {
-    return "100%";
+    return "opacity-100";
   } else {
-    return "50%";
+    return "opacity-50";
   }
 };
