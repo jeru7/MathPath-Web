@@ -7,13 +7,13 @@ export type Assessment = {
   teacher: string;
   sections: string[] | [];
   pages: AssessmentPage[] | [];
-  passingScore: number | null;
-  attempts: number | null;
+  passingScore: number;
+  attemptLimit: number;
   date: {
     start: string | null;
     end: string | null;
   };
-  duration: number | null;
+  timeLimit: number | null;
   createdAt: string;
   updatedAt: string;
 };
