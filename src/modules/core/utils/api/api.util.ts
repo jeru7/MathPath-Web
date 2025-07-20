@@ -1,19 +1,43 @@
 import axios from "axios";
 
-export const fetchData = async <T>(
+// helper for react query
+
+// for useQuery
+export const fetchData = async <TResponse>(
   url: string,
   errorMessage: string,
-): Promise<T> => {
+): Promise<TResponse> => {
   try {
-    const res = await axios.get<{ data: T }>(url);
-    console.log(res);
-    if (res.data?.data === undefined) {
-      throw new Error("No data field found in response");
-    }
-
+    const res = await axios.get<{ data: TResponse }>(url);
     return res.data.data;
-  } catch (error) {
-    console.error(error);
+  } catch {
+    throw new Error(errorMessage);
+  }
+};
+
+// for useMutation
+export const postData = async <TResponse, TRequest>(
+  url: string,
+  body: TRequest,
+  errorMessage: string,
+): Promise<TResponse> => {
+  try {
+    const res = await axios.post<{ data: TResponse }>(url, body);
+    return res.data.data;
+  } catch {
+    throw new Error(errorMessage);
+  }
+};
+
+export const patchData = async <TResponse, TRequest>(
+  url: string,
+  body: TRequest,
+  errorMessage: string,
+): Promise<TResponse> => {
+  try {
+    const res = await axios.patch<{ data: TResponse }>(url, body);
+    return res.data.data;
+  } catch {
     throw new Error(errorMessage);
   }
 };
