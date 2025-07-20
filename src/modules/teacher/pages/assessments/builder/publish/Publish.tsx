@@ -13,6 +13,7 @@ import {
 } from "../utils/assessment-builder.utils";
 import DatetimePicker from "./DatetimePicker";
 import { useTeacherSections } from "../../../../services/teacher.service";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Publish(): ReactElement {
   // params
@@ -96,7 +97,7 @@ export default function Publish(): ReactElement {
 
           <div className="flex flex-col gap-4 w-full">
             {/* Scheduled */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 h-18 ">
               <label htmlFor="scheduledAt" className="font-semibold">
                 Scheduled At
               </label>
@@ -119,30 +120,36 @@ export default function Publish(): ReactElement {
 
             {/* Deadline */}
             {scheduledAt ? (
-              <div className="flex flex-col gap-2">
-                <label htmlFor="deadlineAt" className="font-semibold">
-                  Deadline At
-                </label>
-                <DatePicker
-                  id="deadlineAt"
-                  selected={deadlineAt}
-                  onChange={(date) => setDeadlineAt(date)}
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  dateFormat="yyyy-MM-dd HH:mm"
-                  customInput={
-                    <DatetimePicker value={deadlineAt} label="Deadline at" />
-                  }
-                  minDate={scheduledAt}
-                  minTime={getDeadlineMinTime(
-                    scheduledAt,
-                    deadlineAt,
-                    assessment.timeLimit,
-                  )}
-                  maxTime={new Date(0, 0, 0, 23, 45)}
-                />
-              </div>
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 100, y: 0 }}
+                  className="flex flex-col gap-2 h-18"
+                >
+                  <label htmlFor="deadlineAt" className="font-semibold">
+                    Deadline At
+                  </label>
+                  <DatePicker
+                    id="deadlineAt"
+                    selected={deadlineAt}
+                    onChange={(date) => setDeadlineAt(date)}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    customInput={
+                      <DatetimePicker value={deadlineAt} label="Deadline at" />
+                    }
+                    minDate={scheduledAt}
+                    minTime={getDeadlineMinTime(
+                      scheduledAt,
+                      deadlineAt,
+                      assessment.timeLimit,
+                    )}
+                    maxTime={new Date(0, 0, 0, 23, 45)}
+                  />
+                </motion.div>
+              </AnimatePresence>
             ) : null}
           </div>
         </form>
