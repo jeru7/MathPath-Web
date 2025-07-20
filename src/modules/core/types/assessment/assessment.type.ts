@@ -14,8 +14,6 @@ export type Assessment = {
     end: string | null;
   };
   timeLimit: number;
-  createdAt: string;
-  updatedAt: string;
 };
 
 // assessment question types
