@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 
 type SectionItemProps = {
   data: Section;
-  onDelete: (sectionId: string) => void;
+  onDelete: (section: Section) => void;
 };
 export default function SectionItem({
   data,
@@ -27,7 +27,7 @@ export default function SectionItem({
       <button
         className="flex items-center opacity-0 justify-center hover:cursor-pointer group-hover:opacity-100 transition-all duration-200"
         type="button"
-        onClick={() => onDelete(data.id)}
+        onClick={() => onDelete(data)}
       >
         <IoClose />
       </button>

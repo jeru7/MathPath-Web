@@ -34,24 +34,35 @@ export default function Publish(): ReactElement {
   // const getTeacherSection = (sectionId: )
 
   // handlers
-  const handleAddSection = () => {
-    selectedSections.forEach((section) => {
-      dispatch({ type: "ADD_SECTION", payload: section.id });
-    });
+  const handleAddSection = (sections: Section[]) => {
+    setSelectedSections([...sections]);
+
+    const sectionIds = sections.map((section) => section.id);
+    dispatch({ type: "UPDATE_SECTION", payload: sectionIds });
   };
 
-  const handleDeleteSection = (sectionId: string) => {
+  const handleDeleteSection = (selectedSection: Section) => {
     const newSections = selectedSections.filter(
-      (section) => section.id !== sectionId,
+      (section) => section.id !== selectedSection.id,
     );
-
-    dispatch({ type: "DELETE_SECTION", payload: sectionId });
     setSelectedSections(newSections);
+
+    const sectionIds = selectedSections.map((section) => section.id);
+
+    dispatch({ type: "UPDATE_SECTION", payload: sectionIds });
   };
 
-  // TODO: start and end date handlers
-  // const handleStartDateChange = (date: Date) => {};
-  // const handleEndDateChange = (date: Date) => {};
+  const handleStartDateChange = (date: Date | null) => {
+    if (!date) return;
+    setScheduledAt(date);
+    dispatch({ type: "ADD_START_DATE", payload: date });
+  };
+  const handleEndDateChange = (date: Date | null) => {
+    if (!date) return;
+    setDeadlineAt(date);
+    dispatch({ type: "ADD_END_DATE", payload: date });
+    console.log(assessment);
+  };
 
   return (
     <div className="flex flex-col w-fit h-full items-center justify-center gap-4">
@@ -65,9 +76,7 @@ export default function Publish(): ReactElement {
               options={sections ?? []}
               value={selectedSections}
               onChange={(selected) => {
-                const sections = selected ?? [];
-                setSelectedSections([...sections]);
-                handleAddSection();
+                handleAddSection([...(selected ?? [])]);
               }}
               getOptionLabel={(section) => section.name}
               getOptionValue={(section) => section.id}
@@ -104,7 +113,7 @@ export default function Publish(): ReactElement {
               <DatePicker
                 id="scheduledAt"
                 selected={scheduledAt}
-                onChange={(date) => setScheduledAt(date)}
+                onChange={(date) => handleStartDateChange(date)}
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
@@ -132,7 +141,7 @@ export default function Publish(): ReactElement {
                   <DatePicker
                     id="deadlineAt"
                     selected={deadlineAt}
-                    onChange={(date) => setDeadlineAt(date)}
+                    onChange={(date) => handleEndDateChange(date)}
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={15}

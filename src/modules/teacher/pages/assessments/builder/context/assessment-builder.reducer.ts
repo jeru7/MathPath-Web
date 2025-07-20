@@ -1,5 +1,5 @@
+import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.dto";
 import {
-  Assessment,
   AssessmentContent,
   AssessmentPage,
   AssessmentQuestion,
@@ -7,8 +7,7 @@ import {
 import { nanoid } from "nanoid";
 
 // initial state
-export const initialAssessment: Assessment = {
-  id: nanoid(),
+export const initialAssessment: CreateAssessmentDTO = {
   title: null,
   topic: null,
   description: null,
@@ -28,8 +27,6 @@ export const initialAssessment: Assessment = {
     end: null,
   },
   timeLimit: 10,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
 };
 
 // types
@@ -60,12 +57,16 @@ export type AssessmentBuilderAction =
       payload: number;
     }
   | {
-      type: "ADD_SECTION";
-      payload: string;
+      type: "UPDATE_SECTION";
+      payload: string[];
     }
   | {
-      type: "DELETE_SECTION";
-      payload: string;
+      type: "ADD_START_DATE";
+      payload: Date;
+    }
+  | {
+      type: "ADD_END_DATE";
+      payload: Date;
     }
   // page
   | {
@@ -122,9 +123,9 @@ export type AssessmentBuilderAction =
 
 // methods
 export const assessmentBuilderReducer = (
-  state: Assessment,
+  state: CreateAssessmentDTO,
   action: AssessmentBuilderAction,
-): Assessment => {
+): CreateAssessmentDTO => {
   switch (action.type) {
     // assessment
     case "UPDATE_ASSESSMENT_TITLE":
@@ -139,28 +140,16 @@ export const assessmentBuilderReducer = (
       return { ...state, attemptLimit: action.payload };
     case "UPDATE_ASSESSMENT_TIME_LIMIT":
       return { ...state, timeLimit: action.payload };
-    case "ADD_SECTION": {
-      const duplicate = state.sections.some(
-        (section) => section === action.payload,
-      );
-
-      if (duplicate) return state;
-
+    case "UPDATE_SECTION": {
       return {
         ...state,
-        sections: [...state.sections, action.payload],
+        sections: action.payload,
       };
     }
-    case "DELETE_SECTION": {
-      const newSections = state.sections.filter(
-        (section) => section !== action.payload,
-      );
-
-      return {
-        ...state,
-        sections: newSections,
-      };
-    }
+    case "ADD_START_DATE":
+      return { ...state, date: { ...state.date, start: action.payload } };
+    case "ADD_END_DATE":
+      return { ...state, date: { ...state.date, end: action.payload } };
     // page
     case "ADD_PAGE":
       return {

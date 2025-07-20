@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
-import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { AssessmentBuilderAction } from "./assessment-builder.reducer";
+import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.dto";
 
 export const AssessmentBuilderContext = createContext<{
-  state: Assessment;
+  state: CreateAssessmentDTO;
   dispatch: React.Dispatch<AssessmentBuilderAction>;
 } | null>(null);
 
