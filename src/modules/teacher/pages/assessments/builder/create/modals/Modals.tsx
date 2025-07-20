@@ -3,7 +3,7 @@ import { useState, type ReactElement } from "react";
 import AddQuestionModal from "./add-question/AddQuestionModal";
 import AddImageModal from "./add-image/AddImageModal";
 import AddTextModal from "./add-text/AddTextModal";
-import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.types";
+import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.type";
 
 export type ModalType = "question" | "image" | "text";
 type ModalsProps = {

@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.types";
+import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.type";
 import Question from "./Question";
 import Image from "./Image";
 import Text from "./Text";

@@ -4,13 +4,13 @@ import PlayerCard from "./playerCard/PlayerCard.tsx";
 import QuestList from "./quests/QuestList.tsx";
 import BadgeList from "./badges/BadgeList.tsx";
 import ProgressCard from "./progressCards/ProgressCard.tsx";
-import { useStudentContext } from "../../hooks/useStudent.ts";
-import { Section } from "../../../core/types/section/section.types.ts";
-import { capitalizeWord } from "../../../core/utils/string.utils.ts";
+import { Section } from "../../../core/types/section/section.type.ts";
+import { capitalizeWord } from "../../../core/utils/string.util.ts";
 import Todo from "./todo/Todo.tsx";
 import ActivityList from "../../../core/components/activity/ActivityList.tsx";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar.tsx";
 import { getSection } from "../../../core/services/section/section.service.ts";
+import { useStudentContext } from "../../contexts/student.context.tsx";
 
 export default function StudentDashboard(): ReactElement {
   const { student } = useStudentContext();

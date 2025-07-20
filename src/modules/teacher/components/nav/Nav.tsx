@@ -1,10 +1,10 @@
 import { type ReactElement } from "react";
 import { NavLink, useParams } from "react-router-dom";
-import { useAuth } from "../../../auth/hooks/useAuth";
 import { RxDashboard } from "react-icons/rx";
 import { IoIosStats, IoIosDocument } from "react-icons/io";
 import { PiStudent } from "react-icons/pi";
 import { GrGroup } from "react-icons/gr";
+import { useAuth } from "../../../auth/contexts/auth.context";
 
 export default function Nav(): ReactElement {
   const { teacherId } = useParams();

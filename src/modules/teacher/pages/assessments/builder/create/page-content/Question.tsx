@@ -2,7 +2,7 @@ import { type ReactElement } from "react";
 import {
   AssessmentContent,
   AssessmentQuestion,
-} from "../../../../../../core/types/assessment/assessment.types";
+} from "../../../../../../core/types/assessment/assessment.type";
 import { FaRegCircle, FaRegEdit } from "react-icons/fa";
 import { GrCheckbox } from "react-icons/gr";
 import { useSortable } from "@dnd-kit/sortable";

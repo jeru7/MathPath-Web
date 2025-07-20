@@ -3,10 +3,10 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
 import "../../../../core/styles/customTable.css";
-import { Student } from "../../../../core/types/student/student.types";
-import { useTeacherContext } from "../../../hooks/useTeacher";
+import { Student } from "../../../../core/types/student/student.type";
 import { CiFilter, CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
+import { useTeacherContext } from "../../../context/teacher.context";
 
 const dummyStudent: Student = {
   id: "student-001",

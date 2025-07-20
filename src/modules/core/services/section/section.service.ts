@@ -1,6 +1,6 @@
 import axios from "axios";
-import { URL } from "../../utils/mode.utils";
 import { CreateSectionDto } from "../../types/section/section.dto";
+import { URL } from "../../constants/api.constant";
 
 export const getSection = async (sectionId: string) => {
   const res = await axios.get(`${URL}/api/web/sections/${sectionId}`);

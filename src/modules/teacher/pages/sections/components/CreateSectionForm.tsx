@@ -2,11 +2,11 @@ import { useEffect, useState, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import SBanner_1 from "../../../../../assets/images/Banner_1.jpg";
-import SBanner_2 from "../../../../../assets/images/Banner_2.jpg";
-import SBanner_3 from "../../../../../assets/images/Banner_3.jpg";
+import SBanner_1 from "../../../../../assets/images/section-banners/Banner_1.jpg";
+import SBanner_2 from "../../../../../assets/images/section-banners/Banner_2.jpg";
+import SBanner_3 from "../../../../../assets/images/section-banners/Banner_3.jpg";
 
-import * as sectionType from "../../../../core/types/section/section.types";
+import * as sectionType from "../../../../core/types/section/section.type";
 import { CreateSectionDto } from "../../../../core/types/section/section.dto";
 import { createSection } from "../../../../core/services/section/section.service";
 

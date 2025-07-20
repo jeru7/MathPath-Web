@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactElement } from "react";
-import { useTeacherContext } from "../../hooks/useTeacher";
 import CreateSectionForm from "./components/CreateSectionForm";
 import SectionGrid from "./components/section_grid/SectionGrid";
+import { useTeacherContext } from "../../context/teacher.context";
 
 export default function Sections(): ReactElement {
   const { sections } = useTeacherContext();

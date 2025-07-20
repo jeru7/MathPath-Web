@@ -1,21 +1,21 @@
 import { type ReactElement } from "react";
 
-import levelIcon from "../../../../../assets/icons/starIcon.png";
-import hourglassIcon from "../../../../../assets/icons/hourglassIcon.png";
-import skullIcon from "../../../../../assets/icons/skullIcon.png";
-import trophyIcon from "../../../../../assets/icons/trophyIcon.png";
-import loseIcon from "../../../../../assets/icons/loseIcon.png";
-import skillIcon from "../../../../../assets/icons/skillIcon.png";
-import { useStudentContext } from "../../../hooks/useStudent";
-import { useStudentPlayerCard } from "../../../hooks/useStudentStats";
+import levelIcon from "../../../../../assets/icons/star.png";
+import hourglassIcon from "../../../../../assets/icons/hourglass.png";
+import skullIcon from "../../../../../assets/icons/skull.png";
+import trophyIcon from "../../../../../assets/icons/trophy.png";
+import loseIcon from "../../../../../assets/icons/lose.png";
+import skillIcon from "../../../../../assets/icons/skill.png";
+import { useStudentPlayerCard } from "../../../services/student-stats.service";
+import { useStudentContext } from "../../../contexts/student.context";
 
 export default function PlayerInfo({
   studentId,
 }: {
   studentId: string;
 }): ReactElement {
-  const { data: playerCardStats } = useStudentPlayerCard(studentId);
   const { student } = useStudentContext();
+  const { data: playerCardStats } = useStudentPlayerCard(studentId);
   return (
     <article className="flex flex-col items-center justify-center w-90 h-full gap-4 font-jersey z-20">
       <p className="text-5xl text-white font-bold pb-1 border-b-white border-b-2 w-full text-center">

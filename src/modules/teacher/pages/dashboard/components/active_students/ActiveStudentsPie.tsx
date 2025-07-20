@@ -1,7 +1,7 @@
 import { type ReactElement } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
-import { ActiveStudentsSections } from "../../../../types/stats/active_students/active_student.types";
 import { customLabel } from "./CustomLabel";
+import { ActiveStudentsSections } from "../../../../types/active-student.type";
 
 interface IActiveStudentsPieProps {
   classes: string;

@@ -2,8 +2,8 @@ import { type ReactElement } from "react";
 import "../../../../../core/styles/customTable.css";
 import { useParams } from "react-router-dom";
 import AttemptHistoryItem from "./AttemptHistoryItem";
-import { useStudentAttempts } from "../../../../../student/hooks/useStudent";
-import { StageAttempt } from "../../../../../core/types/stage_attempt/stage_attempt.types";
+import { StageAttempt } from "../../../../../core/types/stage-attempt/stage-attempt.type";
+import { useStudentAttempts } from "../../../../../student/services/student.service";
 
 export default function AttemptHistory(): ReactElement {
   const { studentId } = useParams();

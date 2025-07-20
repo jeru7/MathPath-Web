@@ -1,15 +1,15 @@
 import { type ReactElement } from "react";
-import starIcon from "../../../../../assets/icons/starIcon.png";
-import pawIcon from "../../../../../assets/icons/pawIcon.png";
-import bookIcon from "../../../../../assets/icons/bookIcon.png";
-import bagIcon from "../../../../../assets/icons/bagIcon.png";
-import crownIcon from "../../../../../assets/icons/crownIcon.png";
-import trophyIcon from "../../../../../assets/icons/trophyIcon.png";
-import skullIcon from "../../../../../assets/icons/skullIcon.png";
+import starIcon from "../../../../../assets/icons/star.png";
+import pawIcon from "../../../../../assets/icons/paw.png";
+import bookIcon from "../../../../../assets/icons/book.png";
+import bagIcon from "../../../../../assets/icons/bag.png";
+import crownIcon from "../../../../../assets/icons/crown.png";
+import trophyIcon from "../../../../../assets/icons/trophy.png";
+import skullIcon from "../../../../../assets/icons/skull.png";
 import {
   QuestListItem,
   QuestType,
-} from "../../../../core/types/quest/quest.types";
+} from "../../../../core/types/quest/quest.type";
 
 export default function QuestItem({
   quest,

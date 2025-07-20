@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactElement } from "react";
+import ActiveStudentsPie from "./ActiveStudentsPie.js";
 import {
   ActiveStudents,
   ActiveStudentsSections,
-} from "../../../../types/stats/active_students/active_student.types.js";
-import ActiveStudentsPie from "./ActiveStudentsPie.js";
+} from "../../../../types/active-student.type.js";
 
 const COLORS = ["#347928", "#99D58D", "#F09319", "#FFE31A", "#F6FB7A"];
 const OFFLINE_COLOR = "#a9a9a9";

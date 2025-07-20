@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
-import { AssessmentStatus } from "../../../../types/stats/assessment_status/assessment_status.types";
 import AssessmentStatusItem from "./AssessmentStatusItem";
+import { AssessmentStatus } from "../../../../types/assessment-status.type";
 
 export default function AssessmentStatusCard({
   classes,

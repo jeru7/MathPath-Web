@@ -4,11 +4,11 @@ import { formatInTimeZone } from "date-fns-tz";
 import {
   Student,
   StudentStatusType,
-} from "../../../../core/types/student/student.types";
-import { useTeacherContext } from "../../../hooks/useTeacher";
-import { Section } from "../../../../core/types/section/section.types";
+} from "../../../../core/types/student/student.type";
+import { Section } from "../../../../core/types/section/section.type";
 import { formatToPhDate } from "../../../../date/utils/date.util";
 import { HiDotsVertical } from "react-icons/hi";
+import { useTeacherContext } from "../../../context/teacher.context";
 
 interface IStudentTableItemProps {
   student: Student;

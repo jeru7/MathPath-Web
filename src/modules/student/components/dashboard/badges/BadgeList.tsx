@@ -4,7 +4,7 @@ import BadgeItem from "./BadgeItem";
 import {
   FilterOption,
   filterOptions,
-} from "../../../../core/types/select.types";
+} from "../../../../core/types/select.type";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 
 export default function BadgeList(): ReactElement {

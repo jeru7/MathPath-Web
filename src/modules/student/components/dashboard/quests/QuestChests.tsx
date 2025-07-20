@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
-import chestIcon from "../../../../../assets/icons/chestIcon.png";
-import { QuestList } from "../../../../core/types/quest/quest.types";
+import chestIcon from "../../../../../assets/icons/chest.png";
+import { QuestList } from "../../../../core/types/quest/quest.type";
 
 export default function QuestChests({
   quest,

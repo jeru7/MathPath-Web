@@ -1,13 +1,13 @@
 import { type ReactElement } from "react";
-import SBanner_1 from "../../../../../../assets/images/Banner_1.jpg";
-import SBanner_2 from "../../../../../../assets/images/Banner_2.jpg";
-import SBanner_3 from "../../../../../../assets/images/Banner_3.jpg";
+import SBanner_1 from "../../../../../../assets/images/section-banners/Banner_1.jpg";
+import SBanner_2 from "../../../../../../assets/images/section-banners/Banner_2.jpg";
+import SBanner_3 from "../../../../../../assets/images/section-banners/Banner_3.jpg";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
-import { Section } from "../../../../../core/types/section/section.types";
-import { useTeacherContext } from "../../../../hooks/useTeacher";
+import { Section } from "../../../../../core/types/section/section.type";
 import { formatToPhDate } from "../../../../../date/utils/date.util";
 import { FaEllipsisH } from "react-icons/fa";
+import { useTeacherContext } from "../../../../context/teacher.context";
 
 export default function SectionCard({
   section,

@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
 import { Outlet } from "react-router-dom";
 import Nav from "./nav/Nav";
-import { TeacherProvider } from "../providers/TeacherProvider";
-import { useAuth } from "../../auth/hooks/useAuth";
+import { useAuth } from "../../auth/contexts/auth.context";
+import { TeacherProvider } from "../context/TeacherProvider";
 
 export default function Teacher(): ReactElement {
   const { user } = useAuth();

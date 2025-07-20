@@ -8,7 +8,7 @@ import {
   XAxis,
   CartesianGrid,
 } from "recharts";
-import { capitalizeWord } from "../../../../../core/utils/string.utils";
+import { capitalizeWord } from "../../../../../core/utils/string.util";
 
 interface IActivityTrendProps {
   classes: string;

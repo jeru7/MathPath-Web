@@ -1,10 +1,10 @@
 import { type ReactElement } from "react";
 import HalfCircleProgress from "./HalfCircleProgress";
-import { ProgressType } from "../../../../core/types/progress_card.types";
+import { ProgressType } from "../../../../core/types/progress-card.type";
 import {
   useStudentAssessmentTracker,
-  useStudentStagesTracker,
-} from "../../../hooks/useStudentStats";
+  useStudentStageTracker,
+} from "../../../services/student-tracker.service";
 
 export default function ProgressCard({
   title,
@@ -14,7 +14,7 @@ export default function ProgressCard({
   studentId: string;
 }): ReactElement {
   const { data: assessments } = useStudentAssessmentTracker(studentId);
-  const { data: stages } = useStudentStagesTracker(studentId);
+  const { data: stages } = useStudentStageTracker(studentId);
 
   console.log(stages);
 

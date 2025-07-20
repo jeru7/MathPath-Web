@@ -4,7 +4,7 @@ import {
   AssessmentQuestionChoice,
   FillInTheBlankAnswerType,
   QuestionType,
-} from "../../../../../../../core/types/assessment/assessment.types";
+} from "../../../../../../../core/types/assessment/assessment.type";
 
 // types
 type Action =

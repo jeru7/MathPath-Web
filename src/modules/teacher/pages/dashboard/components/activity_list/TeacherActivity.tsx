@@ -1,14 +1,14 @@
 import { type ReactElement } from "react";
-import Boy_1 from "../../../../../../assets/images/profilePictures/BOY_1.png";
-import Boy_2 from "../../../../../../assets/images/profilePictures/BOY_2.png";
-import Boy_3 from "../../../../../../assets/images/profilePictures/BOY_3.png";
-import Boy_4 from "../../../../../../assets/images/profilePictures/BOY_4.png";
-import Girl_1 from "../../../../../../assets/images/profilePictures/GIRL_1.png";
-import Girl_2 from "../../../../../../assets/images/profilePictures/GIRL_2.png";
-import Girl_3 from "../../../../../../assets/images/profilePictures/GIRL_3.png";
-import Girl_4 from "../../../../../../assets/images/profilePictures/GIRL_4.png";
+import Boy_1 from "../../../../../../assets/images/profile-pictures/BOY_1.png";
+import Boy_2 from "../../../../../../assets/images/profile-pictures/BOY_2.png";
+import Boy_3 from "../../../../../../assets/images/profile-pictures/BOY_3.png";
+import Boy_4 from "../../../../../../assets/images/profile-pictures/BOY_4.png";
+import Girl_1 from "../../../../../../assets/images/profile-pictures/GIRL_1.png";
+import Girl_2 from "../../../../../../assets/images/profile-pictures/GIRL_2.png";
+import Girl_3 from "../../../../../../assets/images/profile-pictures/GIRL_3.png";
+import Girl_4 from "../../../../../../assets/images/profile-pictures/GIRL_4.png";
 import { FaCircle } from "react-icons/fa";
-import { StudentProfilePictures } from "../../../../../core/types/student/student.types";
+import { StudentProfilePictures } from "../../../../../core/types/student/student.type";
 
 export default function TeacherActivity(): ReactElement {
   return (

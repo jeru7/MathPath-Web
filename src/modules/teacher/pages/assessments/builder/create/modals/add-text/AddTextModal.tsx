@@ -5,7 +5,7 @@ import RichTextField from "../../RichTextField";
 import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
 import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
-import { AssessmentContent } from "../../../../../../../core/types/assessment/assessment.types";
+import { AssessmentContent } from "../../../../../../../core/types/assessment/assessment.type";
 
 type AddTextModalProps = {
   onClose: () => void;

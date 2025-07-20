@@ -1,5 +1,4 @@
 import { type ReactElement } from "react";
-import { useTeacherContext } from "../../hooks/useTeacher";
 import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
 import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
@@ -7,6 +6,7 @@ import ActivityTrend from "./components/activity_trend/ActivityTrend";
 import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard";
 import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCard";
 import AssessmentStatusCard from "./components/assessment_status/AssessmentStatusCard";
+import { useTeacherContext } from "../../context/teacher.context";
 
 export default function Dashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =

@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useTeacherContext } from "../../hooks/useTeacher";
 import StudentTable from "./components/StudentTable";
 import AddStudent from "./components/AddStudent";
+import { useTeacherContext } from "../../context/teacher.context";
 
 export default function Students(): ReactElement {
   const navigate = useNavigate();

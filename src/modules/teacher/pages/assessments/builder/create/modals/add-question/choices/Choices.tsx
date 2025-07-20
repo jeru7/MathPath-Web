@@ -14,7 +14,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { AssessmentQuestionChoice } from "../../../../../../../../core/types/assessment/assessment.types";
+import { AssessmentQuestionChoice } from "../../../../../../../../core/types/assessment/assessment.type";
 import { nanoid } from "nanoid";
 import { createPortal } from "react-dom";
 import Choice from "./Choice";

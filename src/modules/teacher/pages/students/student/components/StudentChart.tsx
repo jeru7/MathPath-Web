@@ -15,8 +15,8 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import { QuestionStats } from "../../../../../core/types/chart.types";
-import { useStudentQuestionStats } from "../../../../../student/hooks/useStudentStats";
+import { QuestionStats } from "../../../../../core/types/chart.type";
+import { useStudentQuestionStats } from "../../../../../student/services/student-stats.service";
 
 // Normalize question stats para sa pag render sa chart
 const getQuestionStats = (questions: QuestionStats[] = []) => {

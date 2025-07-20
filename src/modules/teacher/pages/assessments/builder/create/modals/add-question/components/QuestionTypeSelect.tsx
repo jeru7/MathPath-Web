@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import { QuestionType } from "../../../../../../../../core/types/assessment/assessment.types";
+import { QuestionType } from "../../../../../../../../core/types/assessment/assessment.type";
 import { getCustomSelectColor } from "../../../../../../../../core/styles/selectStyles";
 import Select from "react-select";
 

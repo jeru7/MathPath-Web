@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
-import { FilterOption, teacherActivityFilter } from "../../types/select.types";
+import { FilterOption, teacherActivityFilter } from "../../types/select.type";
 import { getCustomSelectColor } from "../../styles/selectStyles";
 // import StudentActivity from "./StudentActivity";
 import StudentActivity from "./StudentActivity";

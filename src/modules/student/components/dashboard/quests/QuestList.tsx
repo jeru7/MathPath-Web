@@ -2,18 +2,20 @@ import { useState, type ReactElement } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
 import QuestChests from "./QuestChests";
 import QuestItem from "./QuestItem";
-import { useStudentContext } from "../../../hooks/useStudent";
 import {
   FilterOption,
   filterOptions,
-} from "../../../../core/types/select.types";
-import { QuestListItem } from "../../../../core/types/quest/quest.types";
+} from "../../../../core/types/select.type";
+import { QuestListItem } from "../../../../core/types/quest/quest.type";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { useStudentQuestList } from "../../../hooks/useStudentStats";
+import { useStudentContext } from "../../../contexts/student.context";
+import { useStudentQuestListTracker } from "../../../services/student-tracker.service";
 
 export default function QuestList(): ReactElement {
   const { student } = useStudentContext();
-  const { data: questList } = useStudentQuestList(student ? student?.id : "");
+  const { data: questList } = useStudentQuestListTracker(
+    student ? student?.id : "",
+  );
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const filteredQuestList = questList?.quests.filter((quest: QuestListItem) => {
     if (selectedFilter.value === "all") return true;

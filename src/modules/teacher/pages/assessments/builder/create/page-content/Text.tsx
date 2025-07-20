@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.types";
+import { AssessmentContent } from "../../../../../../core/types/assessment/assessment.type";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaRegEdit } from "react-icons/fa";

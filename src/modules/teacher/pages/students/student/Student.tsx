@@ -7,18 +7,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate, useParams } from "react-router-dom";
-import { DifficultyFrequency } from "../../../../core/types/student/student_stats.types";
-import { useStudentData } from "../../../../student/hooks/useStudent";
-import { useTeacherSections } from "../../../hooks/useTeacher";
-import { StudentStage } from "../../../../core/types/student/student.types";
-import { Section } from "../../../../core/types/section/section.types";
-import {
-  useStudentAttemptStats,
-  useStudentDifficultyFrequency,
-} from "../../../../student/hooks/useStudentStats";
+import { DifficultyFrequency } from "../../../../core/types/student/student-stats.type";
+import { StudentStage } from "../../../../core/types/student/student.type";
+import { Section } from "../../../../core/types/section/section.type";
 import AttemptHistory from "./components/AttemptHistory";
 import StudentHeatmap from "./components/StudentHeatmap";
 import StudentChart from "./components/StudentChart";
+import { useTeacherSections } from "../../../services/teacher.service";
+import { useStudent } from "../../../../student/services/student.service";
+import {
+  useStudentAttemptStats,
+  useStudentDifficultyFrequency,
+} from "../../../../student/services/student-stats.service";
 
 const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
   if (!data) {
@@ -37,7 +37,7 @@ const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
 export default function Student(): ReactElement {
   const navigate = useNavigate();
   const { studentId, teacherId } = useParams();
-  const { data: studentData, isLoading: studentDataLoading } = useStudentData(
+  const { data: studentData, isLoading: studentDataLoading } = useStudent(
     studentId || "",
   );
   const { data: studentAttempt } = useStudentAttemptStats(studentId || "");

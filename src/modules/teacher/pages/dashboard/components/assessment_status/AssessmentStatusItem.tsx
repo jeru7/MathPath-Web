@@ -1,16 +1,16 @@
 import { type ReactElement } from "react";
-import {
-  AssessmentStatus,
-  AssessmentStatusSection,
-} from "../../../../types/stats/assessment_status/assessment_status.types";
 import { FaRegCircle } from "react-icons/fa6";
 import { FaCircle } from "react-icons/fa";
 import { IoCalendarClear } from "react-icons/io5";
 import { format } from "date-fns";
-import Banner1 from "../../../../../../assets/images/Banner_1.jpg";
-import Banner2 from "../../../../../../assets/images/Banner_2.jpg";
-import Banner3 from "../../../../../../assets/images/Banner_3.jpg";
-import { SectionBanner } from "../../../../../core/types/section/section.types";
+import Banner1 from "../../../../../../assets/images/section-banners/Banner_1.jpg";
+import Banner2 from "../../../../../../assets/images/section-banners/Banner_2.jpg";
+import Banner3 from "../../../../../../assets/images/section-banners/Banner_3.jpg";
+import { SectionBanner } from "../../../../../core/types/section/section.type";
+import {
+  AssessmentStatus,
+  AssessmentStatusSection,
+} from "../../../../types/assessment-status.type";
 
 interface IAssessmentStatusItemProps {
   classes: string;

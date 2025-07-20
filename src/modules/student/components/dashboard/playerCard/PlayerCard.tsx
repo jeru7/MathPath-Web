@@ -1,10 +1,10 @@
 import { type ReactElement } from "react";
-import mainBackground from "../../../../../assets/backgroundImage/mainBackground.png";
-import characterMale from "../../../../../assets/gifs/characterBoy.gif";
-import characterFemale from "../../../../../assets/gifs/characterGirl.gif";
-import undefinedCharacter from "../../../../../assets/gifs/characterUndefined.gif";
+import mainBackground from "../../../../../assets/images/background-image/main.png";
+import characterMale from "../../../../../assets/gifs/characters/character-boy.gif";
+import characterFemale from "../../../../../assets/gifs/characters/character-girl.gif";
+import undefinedCharacter from "../../../../../assets/gifs/characters/character-undefined.gif";
 import PlayerInfo from "./PlayerInfo";
-import { useStudentContext } from "../../../hooks/useStudent";
+import { useStudentContext } from "../../../contexts/student.context";
 
 export default function PlayerCard({
   studentId,

@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import samplePic from "../../../assets/images/samplePic.jpg";
+import samplePic from "../../../assets/images/placeholders/sample-pic.jpg";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";

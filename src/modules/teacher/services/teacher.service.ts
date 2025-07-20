@@ -1,72 +1,65 @@
-import axios from "axios";
+import { Assessment } from "../../core/types/assessment/assessment.type";
+import { Section } from "../../core/types/section/section.type";
+import { Teacher } from "../../core/types/teacher/teacher.type";
+import { Student } from "../../core/types/student/student.type";
+import { useQuery } from "@tanstack/react-query";
+import { fetchData } from "../../core/utils/api/api.util";
+import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
 
-import { URL } from "../../core/utils/mode.utils";
-import { Assessment } from "../../core/types/assessment/assessment.types";
-import { Section } from "../../core/types/section/section.types";
-import { Teacher } from "../../core/types/teacher/teacher.types";
-import { Student } from "../../core/types/student/student.types";
-
-export const getTeacherById = async (teacherId: string) => {
-  try {
-    const res = await axios.get<{ data: Teacher | null }>(
-      `${URL}/api/web/teachers/${teacherId}`,
-    );
-
-    return res.data.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch teacher.");
-  }
+// get teacher data - teacher info
+export const useTeacher = (teacherId: string) => {
+  return useQuery<Teacher>({
+    queryKey: ["teacher", teacherId],
+    queryFn: () =>
+      fetchData<Teacher>(
+        `${URL}/api/web/teachers/${teacherId}`,
+        "Failed to fetch teacher.",
+      ),
+    staleTime: DATA_STALE_TIME,
+  });
 };
 
-export const getTeachers = async () => {
-  try {
-    const res = await axios.get<{ data: Teacher[] | null }>(
-      `${URL}/api/web/teachers/`,
-    );
-
-    return res.data.data ?? [];
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch teachers.");
-  }
+// get teacher students
+export const useTeacherStudents = (teacherId: string) => {
+  return useQuery<Student[] | []>({
+    queryKey: ["teacher", teacherId, "students"],
+    queryFn: () => {
+      return fetchData<Student[] | []>(
+        `${URL}/api/web/teachers/${teacherId}/students`,
+        "Failed to fetch student.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
 };
 
-export const getStudentsByTeacherId = async (teacherId: string) => {
-  try {
-    const res = await axios.get<{ data: Student[] | null }>(
-      `${URL}/api/web/teachers/${teacherId}/students`,
-    );
-
-    return res.data.data ?? [];
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch students.");
-  }
+// get teacher sections
+export const useTeacherSections = (teacherId: string) => {
+  return useQuery<Section[] | []>({
+    queryKey: ["teacher", teacherId, "sections"],
+    queryFn: () => {
+      return fetchData<Section[] | []>(
+        `${URL}/api/web/teachers/${teacherId}/sections`,
+        "Failed to fetch sections",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
 };
 
-export const getSectionsByTeacherId = async (teacherId: string) => {
-  try {
-    const res = await axios.get<{ data: Section[] | null }>(
-      `${URL}/api/web/teachers/${teacherId}/sections`,
-    );
-
-    return res.data.data ?? [];
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch sections.");
-  }
-};
-
-export const getAssessmentsByTeacherId = async (teacherId: string) => {
-  try {
-    const res = await axios.get<{ data: Assessment[] | null }>(
-      `${URL}/api/web/teachers/${teacherId}/assessments`,
-    );
-
-    return res.data.data ?? [];
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch assessments.");
-  }
+// get teacher assessments
+export const useTeacherAssessments = (teacherId: string) => {
+  return useQuery<Assessment[] | []>({
+    queryKey: ["teacher", teacherId, "assessments"],
+    queryFn: () => {
+      return fetchData<Assessment[] | []>(
+        `${URL}/api/web/teachers/${teacherId}/assessments`,
+        "Failed to fetch assessments",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
 };

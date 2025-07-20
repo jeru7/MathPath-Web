@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { Assessment } from "../../../../../core/types/assessment/assessment.types";
+import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { AssessmentBuilderAction } from "./assessment-builder.reducer";
 
 export const AssessmentBuilderContext = createContext<{

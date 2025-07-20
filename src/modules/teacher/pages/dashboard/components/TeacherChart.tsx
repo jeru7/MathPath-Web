@@ -18,11 +18,11 @@ import {
 import {
   SectionTopicStats,
   TopicStats,
-} from "../../../../core/types/chart.types";
+} from "../../../../core/types/chart.type";
 import {
   useTeacherOverallTopicStats,
   useTeacherSectionTopicStats,
-} from "../../../hooks/useTeacher";
+} from "../../../services/teacher-stats.service";
 
 function TopicStatsCustomTooltip({
   active,

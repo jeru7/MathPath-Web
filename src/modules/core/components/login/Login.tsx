@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
-import mathPathTitle from "../../../../assets/svgs/mathPathTitle.svg";
-import bgTrees from "../../../../assets/backgroundImage/bgTrees.png";
-import upperTrees from "../../../../assets/svgs/upperTrees.svg";
-import bottomBush from "../../../../assets/svgs/bottomBush.svg";
+import mathPathTitle from "../../../../assets/svgs/mathpath-title.svg";
+import bgTrees from "../../../../assets/images/background-image/trees.png";
+import upperTrees from "../../../../assets/svgs/top-trees.svg";
+import bottomBush from "../../../../assets/svgs/bottom-bush.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";

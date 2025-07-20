@@ -2,9 +2,9 @@ import { useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./components/Stepper";
-import CreateAssessment from "./create";
-import ConfigureAssessment from "./configure";
-import PublishAssessment from "./publish";
+import Create from "./create/Create";
+import Configure from "./configure/Configure";
+import Publish from "./publish/Publish";
 import { FaEye } from "react-icons/fa";
 export default function AssessmentBuilder(): ReactElement {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -31,13 +31,13 @@ export default function AssessmentBuilder(): ReactElement {
             </button>
           </div>
         </header>
-        <section className="bg-white shadow-sm rounded-sm p-4 h-fit min-h-full flex-1">
+        <section className="bg-white shadow-sm rounded-sm p-4 h-fit min-h-full flex-1 flex justify-center">
           {step === 1 ? (
-            <CreateAssessment />
+            <Create />
           ) : step === 2 ? (
-            <ConfigureAssessment />
+            <Configure />
           ) : step === 3 ? (
-            <PublishAssessment />
+            <Publish />
           ) : null}
         </section>
       </div>

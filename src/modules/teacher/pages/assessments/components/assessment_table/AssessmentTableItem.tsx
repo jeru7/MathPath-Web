@@ -1,7 +1,7 @@
 import { type ReactElement } from "react";
-import Banner1 from "../../../../../../assets/images/Banner_1.jpg";
-import Banner2 from "../../../../../../assets/images/Banner_2.jpg";
-import Banner3 from "../../../../../../assets/images/Banner_3.jpg";
+import Banner1 from "../../../../../../assets/images/section-banners/Banner_1.jpg";
+import Banner2 from "../../../../../../assets/images/section-banners/Banner_2.jpg";
+import Banner3 from "../../../../../../assets/images/section-banners/Banner_3.jpg";
 import { FaCircle } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
 

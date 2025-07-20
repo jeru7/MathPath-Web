@@ -8,16 +8,16 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { useTeacherContext } from "../../../hooks/useTeacher";
 import {
   StudentFormData,
   studentFormSchema,
   StudentGender,
-} from "../../../../core/types/student/student.types";
-import { createStudentService } from "../../../../student/services/student.service";
+} from "../../../../core/types/student/student.type";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { Section } from "../../../../core/types/section/section.types";
+import { Section } from "../../../../core/types/section/section.type";
 import FormButtons from "../../../../core/components/buttons/FormButtons";
+import { createStudentService } from "../../../../student/services/student.service";
+import { useTeacherContext } from "../../../context/teacher.context";
 
 interface IManualAddProps {
   handleBack: () => void;

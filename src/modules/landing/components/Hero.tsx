@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import mathPathTitle from "../../../assets/svgs/mathPathTitle.svg";
-import bgTrees from "../../../assets/backgroundImage/bgTrees.png";
-import upperTrees from "../../../assets/svgs/upperTrees.svg";
-import bottomBush from "../../../assets/svgs/bottomBush.svg";
+import mathPathTitle from "../../../assets/svgs/mathpath-title.svg";
+import bgTrees from "../../../assets/images/background-image/trees.png";
+import upperTrees from "../../../assets/svgs/top-trees.svg";
+import bottomBush from "../../../assets/svgs/bottom-bush.svg";
 
 export default function Hero(): ReactElement {
   const { scrollYProgress } = useScroll();
@@ -13,7 +13,10 @@ export default function Hero(): ReactElement {
   const bottomBushY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
 
   return (
-    <main className="relative flex h-screen w-screen justify-center overflow-hidden" id="hero">
+    <main
+      className="relative flex h-screen w-screen justify-center overflow-hidden"
+      id="hero"
+    >
       {/* background trees */}
       <motion.div
         className="absolute inset-0 bg-cover bg-center"

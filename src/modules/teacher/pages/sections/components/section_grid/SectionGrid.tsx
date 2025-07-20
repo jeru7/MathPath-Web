@@ -2,7 +2,7 @@ import { type ReactElement } from "react";
 import { CiFilter, CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import SectionCard from "./SectionCard";
-import { Section } from "../../../../../core/types/section/section.types";
+import { Section } from "../../../../../core/types/section/section.type";
 
 interface ISectionGridProps {
   sections: Section[];

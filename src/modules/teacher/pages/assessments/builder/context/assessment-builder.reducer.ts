@@ -3,7 +3,7 @@ import {
   AssessmentContent,
   AssessmentPage,
   AssessmentQuestion,
-} from "../../../../../core/types/assessment/assessment.types";
+} from "../../../../../core/types/assessment/assessment.type";
 import { nanoid } from "nanoid";
 
 // initial state
@@ -58,6 +58,14 @@ export type AssessmentBuilderAction =
   | {
       type: "UPDATE_ASSESSMENT_TIME_LIMIT";
       payload: number;
+    }
+  | {
+      type: "ADD_SECTION";
+      payload: string;
+    }
+  | {
+      type: "DELETE_SECTION";
+      payload: string;
     }
   // page
   | {
@@ -131,6 +139,28 @@ export const assessmentBuilderReducer = (
       return { ...state, attemptLimit: action.payload };
     case "UPDATE_ASSESSMENT_TIME_LIMIT":
       return { ...state, timeLimit: action.payload };
+    case "ADD_SECTION": {
+      const duplicate = state.sections.some(
+        (section) => section === action.payload,
+      );
+
+      if (duplicate) return state;
+
+      return {
+        ...state,
+        sections: [...state.sections, action.payload],
+      };
+    }
+    case "DELETE_SECTION": {
+      const newSections = state.sections.filter(
+        (section) => section !== action.payload,
+      );
+
+      return {
+        ...state,
+        sections: newSections,
+      };
+    }
     // page
     case "ADD_PAGE":
       return {

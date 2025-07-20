@@ -8,7 +8,7 @@ import { MdOutlineTextSnippet } from "react-icons/md";
 import {
   AssessmentContent,
   AssessmentPage,
-} from "../../../../../core/types/assessment/assessment.types";
+} from "../../../../../core/types/assessment/assessment.type";
 import PageContent from "./page-content/PageContent";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";

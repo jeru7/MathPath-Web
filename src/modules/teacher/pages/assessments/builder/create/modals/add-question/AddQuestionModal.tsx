@@ -10,7 +10,7 @@ import {
   AssessmentQuestionChoice,
   FillInTheBlankAnswerType,
   QuestionType,
-} from "../../../../../../../core/types/assessment/assessment.types";
+} from "../../../../../../../core/types/assessment/assessment.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import ModalActions from "../ModalActions";

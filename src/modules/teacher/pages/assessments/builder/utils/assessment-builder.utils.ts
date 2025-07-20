@@ -1,7 +1,8 @@
+import { isSameDay } from "date-fns";
 import {
   Assessment,
   AssessmentQuestion,
-} from "../../../../../core/types/assessment/assessment.types";
+} from "../../../../../core/types/assessment/assessment.type";
 import { sanitizeHtml } from "./sanitizeHtml";
 
 /**
@@ -28,4 +29,33 @@ export const getTotalScore = (assessment: Assessment): number => {
 export const renderBlanks = (text: string) => {
   const rawText = text.replace(/\[\d+\]/g, "_____________");
   return sanitizeHtml(rawText);
+};
+/**
+ * Get the min time for the scheduled at date picker
+ * @function getScheduleMinTime
+ */
+export const getScheduleMinTime = (scheduledAt: Date | null): Date => {
+  const now = new Date();
+  if (!scheduledAt) {
+    return now;
+  }
+
+  return isSameDay(now, scheduledAt) ? now : new Date(0, 0, 0, 0, 0);
+};
+/**
+ * Get the min time for the deadline at picker
+ * @function getDeadlineMinTime
+ */
+export const getDeadlineMinTime = (
+  scheduledAt: Date | null,
+  deadlineAt: Date | null,
+  timeLimit: number,
+): Date => {
+  if (!scheduledAt) return new Date(0, 0, 0, 0, 0);
+
+  if (!deadlineAt || isSameDay(scheduledAt, deadlineAt)) {
+    return new Date(scheduledAt.getTime() + (timeLimit + 5) * 60 * 1000);
+  }
+
+  return new Date(0, 0, 0, 0, 0);
 };

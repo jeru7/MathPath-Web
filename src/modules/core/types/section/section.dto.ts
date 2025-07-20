@@ -1,4 +1,4 @@
-import { SectionBanner, SectionColor } from "./section.types";
+import { SectionBanner, SectionColor } from "./section.type";
 
 export type CreateSectionDto = {
   name: string;

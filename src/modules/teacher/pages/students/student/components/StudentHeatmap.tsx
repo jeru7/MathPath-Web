@@ -8,8 +8,8 @@ import "react-tooltip/dist/react-tooltip.css";
 import { useParams } from "react-router-dom";
 import "../../../../../../index.css";
 import { format } from "date-fns";
-import { ProgressLog } from "../../../../../core/types/progress_log/progress_log.types";
-import { useStudentProgressLog } from "../../../../../student/hooks/useStudent";
+import { ProgressLog } from "../../../../../core/types/progress-log/progress-log.type";
+import { useStudentProgressLog } from "../../../../../student/services/student.service";
 
 // normalization ng data para madali ma access sa heatmap
 function getQuestionStats(data: ProgressLog[] = []) {

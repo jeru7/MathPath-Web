@@ -1,10 +1,13 @@
 import { type ReactElement } from "react";
-import samplePic from "../../../assets/images/samplePic.jpg";
+import samplePic from "../../../assets/images/placeholders/sample-pic.jpg";
 import { motion } from "framer-motion";
 
 export default function Download(): ReactElement {
   return (
-    <section className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]" id="download">
+    <section
+      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]"
+      id="download"
+    >
       <div className="flex flex-col items-center gap-4">
         {/* mp title */}
         <motion.h3

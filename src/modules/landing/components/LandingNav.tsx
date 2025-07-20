@@ -1,6 +1,6 @@
 import { type ReactElement, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import mathPathLogo from "../../../assets/svgs/mathPathTitle.svg";
+import mathPathLogo from "../../../assets/svgs/mathpath-title.svg";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoIosClose } from "react-icons/io";
 import { useNavigate } from "react-router-dom";

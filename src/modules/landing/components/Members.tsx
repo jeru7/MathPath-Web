@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
-import kathImage from "../../../assets/teamMembers/kath.png";
-import samImage from "../../../assets/teamMembers/sam.png";
-import emmanImage from "../../../assets/teamMembers/emman.png";
-import laImage from "../../../assets/teamMembers/la.png";
+import kathImage from "../../../assets/images/team-members/kath.png";
+import samImage from "../../../assets/images/team-members/sam.png";
+import emmanImage from "../../../assets/images/team-members/emman.png";
+import laImage from "../../../assets/images/team-members/la.png";
 import { motion } from "framer-motion";
 import MemberCard from "./MemberCard";
 
