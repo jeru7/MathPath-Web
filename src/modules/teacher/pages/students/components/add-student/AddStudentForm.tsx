@@ -5,31 +5,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { IoIosClose } from "react-icons/io";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Select from "react-select";
-import { toast } from "react-toastify";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
+import { useTeacherContext } from "../../../../context/teacher.context";
 import {
-  StudentFormData,
-  studentFormSchema,
-  StudentGender,
-} from "../../../../core/types/student/student.type";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { Section } from "../../../../core/types/section/section.type";
-import FormButtons from "../../../../core/components/buttons/FormButtons";
-import { createStudentService } from "../../../../student/services/student.service";
-import { useTeacherContext } from "../../../context/teacher.context";
+  AddStudentDTO,
+  AddStudentSchema,
+} from "../../../../../student/types/student.schema";
+import { useAddStudent } from "../../../../../student/services/student.service";
+import { StudentGender } from "../../../../../student/types/student.type";
+import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
+import { Section } from "../../../../../core/types/section/section.type";
+import FormButtons from "../../../../../core/components/buttons/FormButtons";
 
-interface IManualAddProps {
+type AddStudentFormProps = {
   handleBack: () => void;
-}
+};
 
-export default function ManualAdd({
+export default function AddStudentForm({
   handleBack,
-}: IManualAddProps): ReactElement {
+}: AddStudentFormProps): ReactElement {
   const { teacherId } = useParams();
+  const { mutate: addStudent } = useAddStudent(teacherId ?? "");
   const { sections } = useTeacherContext();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const {
@@ -37,10 +34,18 @@ export default function ManualAdd({
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<StudentFormData>({
-    resolver: zodResolver(studentFormSchema),
+  } = useForm<AddStudentDTO>({
+    resolver: zodResolver(AddStudentSchema),
     defaultValues: {
+      firstName: undefined,
+      lastName: undefined,
       middleName: undefined,
+      gender: undefined,
+      email: undefined,
+      referenceNumber: undefined,
+      username: undefined,
+      password: undefined,
+      sectionId: undefined,
     },
   });
 
@@ -49,29 +54,9 @@ export default function ManualAdd({
     navigate("..");
   };
 
-  const createStudent = useMutation({
-    mutationFn: createStudentService,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["teacher", teacherId, "students"],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["teacher", teacherId, "sections"],
-      });
-      toast.success("New student created successfully");
-      navigate("..");
-    },
-    onError: (error: unknown) => {
-      if (isAxiosError(error)) {
-        const customError: Error = error?.response?.data;
-        toast.error(customError.message || "Failed to create student");
-      }
-    },
-  });
-
-  const onSubmit = async (data: StudentFormData) => {
-    createStudent.mutate(data);
+  const onSubmit = async (data: AddStudentDTO) => {
+    addStudent(data);
+    handleBack();
   };
 
   return (
@@ -98,7 +83,7 @@ export default function ManualAdd({
                 </label>
                 {errors.firstName && (
                   <p className="text-xs text-red-500">
-                    {errors?.lastName?.message}
+                    {errors?.firstName?.message}
                   </p>
                 )}
               </div>

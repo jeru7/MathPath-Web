@@ -3,73 +3,17 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
 import "../../../../core/styles/customTable.css";
-import { Student } from "../../../../core/types/student/student.type";
 import { CiFilter, CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { useTeacherContext } from "../../../context/teacher.context";
+import { Student } from "../../../../student/types/student.type";
 
-const dummyStudent: Student = {
-  id: "student-001",
-  firstName: "Emmanuel",
-  lastName: "Ungab",
-  middleName: "D.",
-  status: "Online",
-  profilePicture: "Boy_1",
-  role: "Student",
-  referenceNumber: "STU-20240705-001",
-  sectionId: "section-abc123",
-  characterName: "Valor Knight",
-  gender: "Male",
-  email: "emmanuel.ungab@example.com",
-  assessments: [
-    {
-      assessmentId: "assess-001",
-      score: 95,
-      timeSpent: 1800, // in seconds (30 minutes)
-      completed: true,
-      dateAttempted: "2025-07-04T10:00:00.000Z",
-      dateCompleted: "2025-07-04T10:30:00.000Z",
-    },
-  ],
-  username: "emmanuelu",
-  character: "Male",
-  level: 5,
-  exp: {
-    currentExp: 1200,
-    nextLevelExp: 2000,
-  },
-  hp: 100,
-  quests: [
-    {
-      questId: "quest-001",
-      questReqCompleted: 3,
-      isClaimed: false,
-    },
-  ],
-  stages: [
-    {
-      stageId: "stage-001",
-      stage: 1,
-      unlocked: true,
-      completed: true,
-      dateCompleted: "2025-07-01T14:00:00.000Z",
-      dateUnlocked: "2025-07-01T09:00:00.000Z",
-    },
-    {
-      stageId: "stage-002",
-      stage: 2,
-      unlocked: true,
-      completed: false,
-      dateUnlocked: "2025-07-02T09:00:00.000Z",
-    },
-  ],
-  lastPlayed: "2025-07-05T14:00:00.000Z",
-  streak: 3,
-  createdAt: "2025-07-01T08:00:00.000Z",
-  updatedAt: "2025-07-05T14:00:00.000Z",
+type StudentTableProps = {
+  onClickAddStudent: () => void;
 };
-
-export default function StudentTable(): ReactElement {
+export default function StudentTable({
+  onClickAddStudent,
+}: StudentTableProps): ReactElement {
   const { students } = useTeacherContext();
   const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState<{
@@ -82,26 +26,25 @@ export default function StudentTable(): ReactElement {
     if (sortConfig.key === column && sortConfig.direction === "ascending") {
       direction = "descending";
     }
-
     setSortConfig({ key: column, direction });
   };
 
-  const sortedStudents = [...students].sort((a, b) => {
-    const column = sortConfig.key;
-    let comparison = 0;
-
-    if (a[column] instanceof Date && b[column] instanceof Date) {
-      const dateA = new Date(a[column]);
-      const dateB = new Date(b[column]);
-      comparison = dateA.getTime() - dateB.getTime();
-    } else if (typeof a[column] === "string" && typeof b[column] === "string") {
-      comparison = a[column].localeCompare(b[column]);
-    } else if (typeof a[column] === "number" && typeof b[column] === "number") {
-      comparison = a[column] - b[column];
-    }
-
-    return sortConfig.direction === "ascending" ? comparison : -comparison;
-  });
+  // const sortedStudents = [...students].sort((a, b) => {
+  //   const column = sortConfig.key;
+  //   let comparison = 0;
+  //
+  //   if (a[column] instanceof Date && b[column] instanceof Date) {
+  //     const dateA = new Date(a[column]);
+  //     const dateB = new Date(b[column]);
+  //     comparison = dateA.getTime() - dateB.getTime();
+  //   } else if (typeof a[column] === "string" && typeof b[column] === "string") {
+  //     comparison = a[column].localeCompare(b[column]);
+  //   } else if (typeof a[column] === "number" && typeof b[column] === "number") {
+  //     comparison = a[column] - b[column];
+  //   }
+  //
+  //   return sortConfig.direction === "ascending" ? comparison : -comparison;
+  // });
 
   const handleItemOnclick = (studentId: string) => {
     navigate(`${studentId}`, { replace: true });
@@ -131,7 +74,7 @@ export default function StudentTable(): ReactElement {
         {/* Create button */}
         <button
           className="flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-          onClick={() => navigate("create")}
+          onClick={onClickAddStudent}
         >
           <GoPlus className="w-4 h-4" />
           <p className="text-sm font-semibold">Add Student</p>
@@ -250,206 +193,13 @@ export default function StudentTable(): ReactElement {
         <div className="h-[750px] overflow-y-auto">
           <table className="font-primary table-auto w-full">
             <tbody>
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
-              <StudentTableItem
-                student={dummyStudent}
-                key={dummyStudent.referenceNumber}
-                onClick={handleItemOnclick}
-              />
+              {students.map((student) => (
+                <StudentTableItem
+                  student={student}
+                  key={student.referenceNumber}
+                  onClick={handleItemOnclick}
+                />
+              ))}
             </tbody>
           </table>
         </div>

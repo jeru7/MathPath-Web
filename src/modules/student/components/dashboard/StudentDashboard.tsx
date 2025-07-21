@@ -1,35 +1,26 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { type ReactElement } from "react";
 
 import PlayerCard from "./playerCard/PlayerCard.tsx";
 import QuestList from "./quests/QuestList.tsx";
 import BadgeList from "./badges/BadgeList.tsx";
 import ProgressCard from "./progressCards/ProgressCard.tsx";
-import { Section } from "../../../core/types/section/section.type.ts";
 import { capitalizeWord } from "../../../core/utils/string.util.ts";
 import Todo from "./todo/Todo.tsx";
 import ActivityList from "../../../core/components/activity/ActivityList.tsx";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar.tsx";
-import { getSection } from "../../../core/services/section/section.service.ts";
 import { useStudentContext } from "../../contexts/student.context.tsx";
+import { useStudentSection } from "../../services/student.service.ts";
 
 export default function StudentDashboard(): ReactElement {
   const { student } = useStudentContext();
-  const [section, setSection] = useState<Section | null>(null);
+  const { data: section } = useStudentSection(
+    student?.id ?? "",
+    student?.sectionId ?? "",
+  );
 
   const currentExp = student?.exp.currentExp ?? 0;
   const nextLevelExp = student?.exp.nextLevelExp ?? 1;
   const expPercentage = Math.round((currentExp / nextLevelExp) * 100);
-
-  useEffect(() => {
-    const fetchSection = async () => {
-      if (student?.sectionId) {
-        const data = await getSection(student.sectionId);
-        setSection(data);
-      }
-    };
-
-    fetchSection();
-  }, [student?.sectionId]);
 
   if (!student?.id) return <div>Loading...</div>;
 

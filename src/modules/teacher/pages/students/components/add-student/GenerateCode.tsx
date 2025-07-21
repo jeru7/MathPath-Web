@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from "react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { IoIosClose } from "react-icons/io";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 // import FormButtons from "../FormButtons";

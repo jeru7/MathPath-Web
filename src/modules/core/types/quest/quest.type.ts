@@ -1,9 +1,3 @@
-export type StudentQuest = {
-  questId: string;
-  questReqCompleted: number;
-  isClaimed: boolean;
-};
-
 export type QuestType =
   | "Level"
   | "Shop"

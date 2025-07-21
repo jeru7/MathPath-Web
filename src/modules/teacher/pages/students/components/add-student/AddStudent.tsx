@@ -1,15 +1,14 @@
 import { useState, type ReactElement } from "react";
-import ManualAdd from "./ManualAdd";
 import GenerateCode from "./GenerateCode";
 import { NavigateFunction } from "react-router-dom";
 import { IoIosClose } from "react-icons/io";
+import AddStudentForm from "./AddStudentForm";
 
 interface IAddStudentProps {
   setShowForm: (show: boolean) => void;
   navigate: NavigateFunction;
   initialMode: "manual" | "generate" | null;
 }
-
 export default function AddStudent({
   setShowForm,
   navigate,
@@ -87,7 +86,7 @@ export default function AddStudent({
       )}
 
       {/* Manual Adding */}
-      {showManualAdd && <ManualAdd handleBack={handleBack} />}
+      {showManualAdd && <AddStudentForm handleBack={handleBack} />}
 
       {/* Generate Code */}
       {showGenerateCode && <GenerateCode handleBack={handleBack} />}

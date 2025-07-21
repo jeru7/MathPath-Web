@@ -1,10 +1,10 @@
 import { Assessment } from "../../core/types/assessment/assessment.type";
 import { Section } from "../../core/types/section/section.type";
 import { Teacher } from "../../core/types/teacher/teacher.type";
-import { Student } from "../../core/types/student/student.type";
 import { useQuery } from "@tanstack/react-query";
 import { fetchData } from "../../core/utils/api/api.util";
 import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
+import { Student } from "../../student/types/student.type";
 
 // get teacher data - teacher info
 export const useTeacher = (teacherId: string) => {

@@ -2,8 +2,8 @@ import { type ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import StudentTable from "./components/StudentTable";
-import AddStudent from "./components/AddStudent";
 import { useTeacherContext } from "../../context/teacher.context";
+import AddStudent from "./components/add-student/AddStudent";
 
 export default function Students(): ReactElement {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ export default function Students(): ReactElement {
 
       {/* Student item/list */}
       <section className="overflow-y-hidden w-full bg-white shadow-sm rounded-sm h-full">
-        <StudentTable />
+        <StudentTable onClickAddStudent={handleAddStudent} />
       </section>
 
       {/* Add student dialog */}

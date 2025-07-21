@@ -7,8 +7,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate, useParams } from "react-router-dom";
-import { DifficultyFrequency } from "../../../../core/types/student/student-stats.type";
-import { StudentStage } from "../../../../core/types/student/student.type";
 import { Section } from "../../../../core/types/section/section.type";
 import AttemptHistory from "./components/AttemptHistory";
 import StudentHeatmap from "./components/StudentHeatmap";
@@ -19,6 +17,8 @@ import {
   useStudentAttemptStats,
   useStudentDifficultyFrequency,
 } from "../../../../student/services/student-stats.service";
+import { DifficultyFrequency } from "../../../../student/types/student-stats.type";
+import { StudentStage } from "../../../../student/types/student.type";
 
 const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
   if (!data) {

@@ -1,18 +1,15 @@
 import axios from "axios";
-import { CreateSectionDto } from "../../types/section/section.dto";
 import { URL } from "../../constants/api.constant";
-
-export const getSection = async (sectionId: string) => {
-  const res = await axios.get(`${URL}/api/web/sections/${sectionId}`);
-  return res.data.data;
-};
+import { CreateSectionDTO } from "../../types/section/section.schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { patchData } from "../../utils/api/api.util";
+import { Section } from "../../types/section/section.type";
 
 export const createSection = async (
   teacherId: string,
-  sectionData: CreateSectionDto,
+  sectionData: CreateSectionDTO,
 ) => {
   try {
-    console.log(sectionData);
     const res = await axios.post(
       `${URL}/api/web/teachers/${teacherId}/create`,
       sectionData,
@@ -23,4 +20,22 @@ export const createSection = async (
     console.error(error);
     throw new Error("Failed in creating section.");
   }
+};
+
+export const useCreateSection = (teacherId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newSection: CreateSectionDTO) => {
+      return patchData<Section, CreateSectionDTO>(
+        `${URL}/api/web/teachers/${teacherId}/create`,
+        newSection,
+        "Failed to create a new section.",
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["teacher", teacherId, "sections"],
+      });
+    },
+  });
 };

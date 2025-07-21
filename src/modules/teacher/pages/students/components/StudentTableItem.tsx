@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState, type ReactElement } from "react";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
-import {
-  Student,
-  StudentStatusType,
-} from "../../../../core/types/student/student.type";
 import { Section } from "../../../../core/types/section/section.type";
 import { formatToPhDate } from "../../../../date/utils/date.util";
 import { HiDotsVertical } from "react-icons/hi";
 import { useTeacherContext } from "../../../context/teacher.context";
+import {
+  Student,
+  StudentStatusType,
+} from "../../../../student/types/student.type";
 
 interface IStudentTableItemProps {
   student: Student;
