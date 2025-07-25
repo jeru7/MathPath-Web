@@ -14,6 +14,8 @@ import {
 import DatetimePicker from "./DatetimePicker";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAddAssessment } from "../../../../../core/services/assessments/assessment.service";
+import { toast } from "react-toastify";
 
 export default function Publish(): ReactElement {
   // params
@@ -24,6 +26,9 @@ export default function Publish(): ReactElement {
 
   // reducer
   const { state: assessment, dispatch } = useAssessmentBuilder();
+
+  // query
+  const { mutate } = useAddAssessment(teacherId ?? "");
 
   // states
   const [selectedSections, setSelectedSections] = useState<Section[]>([]);
@@ -57,17 +62,37 @@ export default function Publish(): ReactElement {
     setScheduledAt(date);
     dispatch({ type: "ADD_START_DATE", payload: date });
   };
+
   const handleEndDateChange = (date: Date | null) => {
     if (!date) return;
     setDeadlineAt(date);
     dispatch({ type: "ADD_END_DATE", payload: date });
-    console.log(assessment);
+  };
+
+  const handleSubmit = () => {
+    if (assessment.topic?.trim().length === 0) {
+      toast.error("Please provide a topic.");
+    }
+
+    if (assessment.title?.trim().length === 0) {
+      toast.error("Please provide a title.");
+    }
+
+    if (assessment.description?.trim().length === 0) {
+      toast.error("Please provide a description.");
+    }
+
+    if (assessment.sections.length === 0) {
+      toast.error("Please select at least 1 section.");
+    }
+
+    mutate(assessment);
   };
 
   return (
     <div className="flex flex-col w-fit h-full items-center justify-center gap-4">
       <section className="border rounded-sm border-gray-300 bg-white h-fit w-96 flex flex-col gap-4 p-4 items-center">
-        <form className="w-full flex flex-col gap-4">
+        <form className="w-full flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-2 w-full">
             {/* section select */}
             <Select<Section, true>
@@ -163,7 +188,10 @@ export default function Publish(): ReactElement {
           </div>
         </form>
       </section>
-      <button className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200">
+      <button
+        className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
+        type="submit"
+      >
         <p className="text-white font-semibold">Create Assessment</p>
       </button>
     </div>

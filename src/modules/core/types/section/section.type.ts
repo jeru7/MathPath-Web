@@ -18,8 +18,8 @@ export type Section = {
   color: SectionColor;
   banner: SectionBanner;
   lastChecked: string;
-  studentIds: string[] | [];
-  assessmentIds: string[] | [];
+  studentIds: string[];
+  assessmentIds: string[];
   createdAt: string;
   updatedAt: string;
 };

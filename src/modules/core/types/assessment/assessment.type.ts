@@ -10,8 +10,8 @@ export type Assessment = {
   passingScore: number;
   attemptLimit: number;
   date: {
-    start: string | null;
-    end: string | null;
+    start: Date | null;
+    end: Date | null;
   };
   timeLimit: number;
 };
@@ -86,14 +86,4 @@ export type AssessmentPage = {
   contents: AssessmentContent[];
 };
 
-// DTO
-// create assessment
-export type CreateAssessment = {
-  name: string;
-  topic: string;
-  description: string;
-  teacher: string;
-  sections: string[];
-  questions: AssessmentQuestion[];
-  deadline: Date;
-};
+export type CreateAssessmentDTO = Omit<Assessment, "id">;

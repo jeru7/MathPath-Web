@@ -7,8 +7,8 @@ import SBanner_2 from "../../../../../assets/images/section-banners/Banner_2.jpg
 import SBanner_3 from "../../../../../assets/images/section-banners/Banner_3.jpg";
 
 import * as sectionType from "../../../../core/types/section/section.type";
-import { CreateSectionDto } from "../../../../core/types/section/section.dto";
 import { createSection } from "../../../../core/services/section/section.service";
+import { CreateSectionDTO } from "../../../../core/types/section/section.schema";
 
 export default function CreateSectionForm({
   setShowForm,
@@ -18,7 +18,7 @@ export default function CreateSectionForm({
   const { teacherId } = useParams();
   const queryClient = useQueryClient();
 
-  const [sectionData, setSectionData] = useState<CreateSectionDto>({
+  const [sectionData, setSectionData] = useState<CreateSectionDTO>({
     name: "",
     teacherId: teacherId as string,
     color: "primary-green",
@@ -30,7 +30,7 @@ export default function CreateSectionForm({
   const [showError, setShowError] = useState(false);
 
   const addSectionMutation = useMutation({
-    mutationFn: (sectionData: CreateSectionDto) =>
+    mutationFn: (sectionData: CreateSectionDTO) =>
       createSection(teacherId as string, sectionData),
     onSuccess: () => {
       queryClient.invalidateQueries({

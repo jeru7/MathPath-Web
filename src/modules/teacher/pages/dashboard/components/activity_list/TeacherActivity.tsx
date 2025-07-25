@@ -8,7 +8,7 @@ import Girl_2 from "../../../../../../assets/images/profile-pictures/GIRL_2.png"
 import Girl_3 from "../../../../../../assets/images/profile-pictures/GIRL_3.png";
 import Girl_4 from "../../../../../../assets/images/profile-pictures/GIRL_4.png";
 import { FaCircle } from "react-icons/fa";
-import { StudentProfilePictures } from "../../../../../core/types/student/student.type";
+import { StudentProfilePictures } from "../../../../../student/types/student.type";
 
 export default function TeacherActivity(): ReactElement {
   return (

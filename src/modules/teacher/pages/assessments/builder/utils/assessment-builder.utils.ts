@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import { AssessmentQuestion } from "../../../../../core/types/assessment/assessment.type";
 import { sanitizeHtml } from "./sanitizeHtml";
-import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.dto";
+import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.schema";
 
 /**
  * Return the total score of all questions.

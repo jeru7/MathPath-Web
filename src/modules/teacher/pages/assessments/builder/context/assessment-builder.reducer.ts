@@ -1,4 +1,4 @@
-import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.dto";
+import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.schema";
 import {
   AssessmentContent,
   AssessmentPage,
