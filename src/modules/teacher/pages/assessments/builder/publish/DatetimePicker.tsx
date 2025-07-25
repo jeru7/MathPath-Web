@@ -19,7 +19,7 @@ const DatetimePicker = forwardRef<HTMLButtonElement, DatetimePickerProps>(
         type="button"
         onClick={onClick}
         ref={ref}
-        className="flex items-center gap-2 border border-gray-300 p-2 rounded-sm w-full justify-between bg-white hover:bg-gray-100 transition text-left"
+        className="flex items-center gap-2 border border-gray-300 p-2 rounded-sm w-full justify-between bg-white hover:bg-gray-100 transition text-left hover:cursor-pointer"
       >
         <span className="text-sm text-gray-700">{formatted}</span>
         <FaCalendar className="text-gray-500" />

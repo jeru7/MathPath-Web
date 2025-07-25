@@ -1,8 +1,9 @@
-import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.schema";
 import {
+  Assessment,
   AssessmentContent,
   AssessmentPage,
   AssessmentQuestion,
+  CreateAssessmentDTO,
 } from "../../../../../core/types/assessment/assessment.type";
 import { nanoid } from "nanoid";
 
@@ -123,9 +124,9 @@ export type AssessmentBuilderAction =
 
 // methods
 export const assessmentBuilderReducer = (
-  state: CreateAssessmentDTO,
+  state: Assessment,
   action: AssessmentBuilderAction,
-): CreateAssessmentDTO => {
+): Assessment => {
   switch (action.type) {
     // assessment
     case "UPDATE_ASSESSMENT_TITLE":
@@ -227,6 +228,7 @@ export const assessmentBuilderReducer = (
               if (content.id === action.payload.contentId) {
                 return {
                   ...content,
+                  type: "question" as const,
                   data: action.payload.question,
                 };
               }
@@ -273,6 +275,7 @@ export const assessmentBuilderReducer = (
               if (content.id === action.payload.contentId) {
                 return {
                   ...content,
+                  type: "image" as const,
                   data: action.payload.imageUrl,
                 };
               }
@@ -316,13 +319,16 @@ export const assessmentBuilderReducer = (
           return {
             ...page,
             contents: page.contents.map((content) => {
-              if (content.id === action.payload.contentId) {
+              if (
+                content.id === action.payload.contentId &&
+                content.type === "text"
+              ) {
                 return {
-                  ...content,
+                  id: content.id,
+                  type: "text" as const,
                   data: action.payload.text,
                 };
               }
-
               return content;
             }),
           };

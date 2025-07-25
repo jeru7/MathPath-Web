@@ -20,8 +20,16 @@ import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import { nanoid } from "nanoid";
 import { FaPlus } from "react-icons/fa";
 import { getStartingQuestionNumber } from "../utils/question.util";
+import { AnimatePresence, motion } from "framer-motion";
 
-export default function Create(): ReactElement {
+type CreateProps = {
+  isValidated: boolean;
+  errors: { [key: string]: string };
+};
+export default function Create({
+  isValidated,
+  errors,
+}: CreateProps): ReactElement {
   // reducers
   const { state, dispatch } = useAssessmentBuilder();
 
@@ -91,6 +99,22 @@ export default function Create(): ReactElement {
   return (
     <div className="flex flex-col w-[800px] h-fit gap-4">
       <section className="flex flex-col gap-4 h-fit min-h-full">
+        <AnimatePresence mode="wait">
+          {isValidated && errors.pages && (
+            <motion.p
+              className="text-sm text-red-500 self-center"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{
+                opacity: 0,
+                y: -5,
+                transition: { duration: 0.1 },
+              }}
+            >
+              {errors.pages}
+            </motion.p>
+          )}
+        </AnimatePresence>
         <DndContext
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}

@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useMemo, useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./components/Stepper";
@@ -6,8 +6,39 @@ import Create from "./create/Create";
 import Configure from "./configure/Configure";
 import Publish from "./publish/Publish";
 import { FaEye } from "react-icons/fa";
+import { useAssessmentBuilder } from "./context/assessment-builder.context";
+import { validateAssessment } from "./utils/assessment-builder.utils";
+
 export default function AssessmentBuilder(): ReactElement {
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const { state: assessment } = useAssessmentBuilder();
+  const [isValidated, setIsValidated] = useState<boolean>(false);
+
+  const createErrors = useMemo(
+    () => validateAssessment(assessment, 1),
+    [assessment],
+  );
+  const configureErrors = useMemo(
+    () => validateAssessment(assessment, 2),
+    [assessment],
+  );
+  const publishErrors = useMemo(
+    () => validateAssessment(assessment, 3),
+    [assessment],
+  );
+
+  const handleCreateAssessment = () => {
+    const hasError =
+      Object.keys(createErrors).length > 0 ||
+      Object.keys(configureErrors).length > 0 ||
+      Object.keys(publishErrors).length > 0;
+
+    setIsValidated(true);
+
+    if (hasError) return;
+
+    console.log("Assessment: ", assessment);
+  };
 
   return (
     <main className="flex min-h-full w-full flex-col gap-2 bg-inherit p-4 h-fit">
@@ -24,6 +55,10 @@ export default function AssessmentBuilder(): ReactElement {
             <Stepper
               currentStep={step}
               onChangeStep={(step: 1 | 2 | 3) => setStep(step)}
+              isValidated={isValidated}
+              createErrors={Object.keys(createErrors).length}
+              configureErrors={Object.keys(configureErrors).length}
+              publishErrors={Object.keys(publishErrors).length}
             />
             <button className="absolute flex gap-2 items-center text-gray-400 px-4 -right-30 top-1/2 -translate-y-1/2 hover:cursor-pointer hover:text-gray-500 transition-all duration-200">
               <FaEye />
@@ -33,11 +68,15 @@ export default function AssessmentBuilder(): ReactElement {
         </header>
         <section className="bg-white shadow-sm rounded-sm p-4 h-fit min-h-full flex-1 flex justify-center">
           {step === 1 ? (
-            <Create />
+            <Create isValidated={isValidated} errors={createErrors} />
           ) : step === 2 ? (
-            <Configure />
+            <Configure isValidated={isValidated} errors={configureErrors} />
           ) : step === 3 ? (
-            <Publish />
+            <Publish
+              isValidated={isValidated}
+              errors={publishErrors}
+              onCreateAssessment={handleCreateAssessment}
+            />
           ) : null}
         </section>
       </div>

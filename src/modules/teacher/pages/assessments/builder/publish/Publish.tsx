@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import Select from "react-select";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { useParams } from "react-router-dom";
@@ -14,10 +14,18 @@ import {
 import DatetimePicker from "./DatetimePicker";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAddAssessment } from "../../../../../core/services/assessments/assessment.service";
-import { toast } from "react-toastify";
 
-export default function Publish(): ReactElement {
+type PublishProps = {
+  isValidated: boolean;
+  errors: { [key: string]: string };
+  onCreateAssessment: () => void;
+};
+
+export default function Publish({
+  isValidated,
+  errors,
+  onCreateAssessment,
+}: PublishProps): ReactElement {
   // params
   const { teacherId } = useParams();
 
@@ -27,13 +35,14 @@ export default function Publish(): ReactElement {
   // reducer
   const { state: assessment, dispatch } = useAssessmentBuilder();
 
-  // query
-  const { mutate } = useAddAssessment(teacherId ?? "");
-
   // states
   const [selectedSections, setSelectedSections] = useState<Section[]>([]);
-  const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
-  const [deadlineAt, setDeadlineAt] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(
+    assessment.date.start ? assessment.date.start : null,
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    assessment.date.end ? assessment.date.end : null,
+  );
 
   // methods
   // const getTeacherSection = (sectionId: )
@@ -52,145 +61,179 @@ export default function Publish(): ReactElement {
     );
     setSelectedSections(newSections);
 
-    const sectionIds = selectedSections.map((section) => section.id);
+    const sectionIds = newSections.map((section) => section.id);
 
     dispatch({ type: "UPDATE_SECTION", payload: sectionIds });
   };
 
   const handleStartDateChange = (date: Date | null) => {
     if (!date) return;
-    setScheduledAt(date);
+    setStartDate(date);
     dispatch({ type: "ADD_START_DATE", payload: date });
+
+    const newMin = getDeadlineMinTime(date, null, assessment.timeLimit);
+    if (!endDate || endDate <= newMin) {
+      setEndDate(newMin);
+      dispatch({ type: "ADD_END_DATE", payload: newMin });
+    }
   };
 
   const handleEndDateChange = (date: Date | null) => {
     if (!date) return;
-    setDeadlineAt(date);
+    setEndDate(date);
     dispatch({ type: "ADD_END_DATE", payload: date });
   };
 
-  const handleSubmit = () => {
-    if (assessment.topic?.trim().length === 0) {
-      toast.error("Please provide a topic.");
-    }
+  useEffect(() => {
+    if (!sections || !assessment.sections?.length) return;
 
-    if (assessment.title?.trim().length === 0) {
-      toast.error("Please provide a title.");
-    }
+    const matched = sections.filter((section: Section) =>
+      (assessment.sections as string[]).includes(section.id),
+    );
 
-    if (assessment.description?.trim().length === 0) {
-      toast.error("Please provide a description.");
-    }
-
-    if (assessment.sections.length === 0) {
-      toast.error("Please select at least 1 section.");
-    }
-
-    mutate(assessment);
-  };
+    setSelectedSections(matched);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col w-fit h-full items-center justify-center gap-4">
-      <section className="border rounded-sm border-gray-300 bg-white h-fit w-96 flex flex-col gap-4 p-4 items-center">
-        <form className="w-full flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-2 w-full">
-            {/* section select */}
-            <Select<Section, true>
-              id="type"
-              isMulti
-              options={sections ?? []}
-              value={selectedSections}
-              onChange={(selected) => {
-                handleAddSection([...(selected ?? [])]);
-              }}
-              getOptionLabel={(section) => section.name}
-              getOptionValue={(section) => section.id}
-              placeholder="Select sections"
-              styles={getCustomSelectColor({
-                borderRadius: "var(--radius-sm)",
-                justifyContent: "flex-start",
-              })}
-              isSearchable={false}
-              className="w-full"
-              controlShouldRenderValue={false}
-              isClearable={false}
-            />
-            {/* section selected list */}
-            <section className="bg-inherit border-gray-300 border rounded-sm w-full">
-              <ul className="w-full gap-2 h-56 flex flex-col p-2 overflow-y-auto">
-                {selectedSections.map((section) => (
-                  <SectionItem
-                    key={section.id}
-                    data={section}
-                    onDelete={handleDeleteSection}
-                  />
-                ))}
-              </ul>
-            </section>
-          </div>
-
-          <div className="flex flex-col gap-4 w-full">
-            {/* Scheduled */}
-            <div className="flex flex-col gap-2 h-18 ">
-              <label htmlFor="scheduledAt" className="font-semibold">
-                Scheduled At
-              </label>
-              <DatePicker
-                id="scheduledAt"
-                selected={scheduledAt}
-                onChange={(date) => handleStartDateChange(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm"
-                customInput={
-                  <DatetimePicker value={scheduledAt} label="Scheduled at" />
-                }
-                minDate={scheduledAt || new Date()}
-                minTime={getScheduleMinTime(scheduledAt)}
-                maxTime={new Date(0, 0, 0, 23, 45)}
+      <AnimatePresence mode="wait">
+        <section className="border rounded-sm border-gray-300 bg-white h-fit w-96 flex flex-col gap-4 p-4 items-center">
+          <form className="w-full flex flex-col gap-4">
+            <div className="flex flex-col gap-2 w-full">
+              {/* section select */}
+              <Select<Section, true>
+                id="type"
+                isMulti
+                options={sections ?? []}
+                value={selectedSections}
+                onChange={(selected) => {
+                  handleAddSection([...(selected ?? [])]);
+                }}
+                getOptionLabel={(section) => section.name}
+                getOptionValue={(section) => section.id}
+                placeholder="Select sections"
+                styles={getCustomSelectColor({
+                  borderRadius: "var(--radius-sm)",
+                  justifyContent: "flex-start",
+                })}
+                isSearchable={false}
+                className="w-full"
+                controlShouldRenderValue={false}
+                isClearable={false}
               />
+              {/* section selected list */}
+              <section className="bg-inherit border-gray-300 border rounded-sm w-full">
+                <ul className="w-full gap-2 h-56 flex flex-col p-2 overflow-y-auto">
+                  {selectedSections.map((section) => (
+                    <SectionItem
+                      key={section.id}
+                      data={section}
+                      onDelete={handleDeleteSection}
+                    />
+                  ))}
+                </ul>
+              </section>
+              <AnimatePresence>
+                {isValidated && errors.sections && (
+                  <motion.p
+                    className="text-sm text-red-500 self-end"
+                    key="section-error"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{
+                      opacity: 0,
+                      y: -5,
+                      transition: { duration: 0.1 },
+                    }}
+                  >
+                    {errors.sections}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Deadline */}
-            {scheduledAt ? (
-              <AnimatePresence>
+            <div className="flex flex-col gap-4 w-full">
+              {/* Scheduled */}
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2 h-18 ">
+                  <label htmlFor="startDate" className="font-semibold">
+                    Scheduled At
+                  </label>
+                  <DatePicker
+                    id="startDate"
+                    selected={startDate}
+                    onChange={(date) => handleStartDateChange(date)}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    customInput={
+                      <DatetimePicker value={startDate} label="Scheduled at" />
+                    }
+                    minDate={new Date()}
+                    minTime={getScheduleMinTime(startDate)}
+                    maxTime={new Date(0, 0, 0, 23, 45)}
+                  />
+                </div>
+                <AnimatePresence mode="wait">
+                  {isValidated && errors.startDate && (
+                    <motion.p
+                      className="text-sm text-red-500 self-end"
+                      key="start-date-error"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{
+                        opacity: 0,
+                        y: -5,
+                        transition: { duration: 0.05 },
+                      }}
+                    >
+                      {errors.startDate}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Deadline */}
+              {startDate ? (
                 <motion.div
+                  key="end-date-picker"
                   initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 100, y: 0 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className="flex flex-col gap-2 h-18"
                 >
-                  <label htmlFor="deadlineAt" className="font-semibold">
+                  <label htmlFor="endDate" className="font-semibold">
                     Deadline At
                   </label>
                   <DatePicker
-                    id="deadlineAt"
-                    selected={deadlineAt}
+                    id="endDate"
+                    selected={endDate}
                     onChange={(date) => handleEndDateChange(date)}
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={15}
                     dateFormat="yyyy-MM-dd HH:mm"
                     customInput={
-                      <DatetimePicker value={deadlineAt} label="Deadline at" />
+                      <DatetimePicker value={endDate} label="Deadline at" />
                     }
-                    minDate={scheduledAt}
+                    minDate={startDate}
                     minTime={getDeadlineMinTime(
-                      scheduledAt,
-                      deadlineAt,
+                      startDate,
+                      endDate,
                       assessment.timeLimit,
                     )}
                     maxTime={new Date(0, 0, 0, 23, 45)}
                   />
                 </motion.div>
-              </AnimatePresence>
-            ) : null}
-          </div>
-        </form>
-      </section>
+              ) : null}
+            </div>
+          </form>
+        </section>
+      </AnimatePresence>
       <button
-        className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
-        type="submit"
+        className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-1 transition-all duration-200"
+        onClick={onCreateAssessment}
       >
         <p className="text-white font-semibold">Create Assessment</p>
       </button>

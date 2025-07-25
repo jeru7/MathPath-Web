@@ -1,8 +1,17 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import { getTotalScore } from "../utils/assessment-builder.utils";
+import { AnimatePresence, motion } from "framer-motion";
 
-export default function Configure(): ReactElement {
+type ConfigureProps = {
+  isValidated: boolean;
+  errors: { [key: string]: string };
+};
+
+export default function Configure({
+  isValidated,
+  errors,
+}: ConfigureProps): ReactElement {
   // reducer
   const { state, dispatch } = useAssessmentBuilder();
 
@@ -103,9 +112,28 @@ export default function Configure(): ReactElement {
               name="title"
               value={state.title ?? ""}
               className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-full"
-              onChange={(e) => handleTitleChange(e.target.value)}
+              onChange={(e) => {
+                handleTitleChange(e.target.value);
+              }}
             />
           </div>
+          <AnimatePresence mode="wait">
+            {isValidated && errors.title && (
+              <motion.p
+                className="text-sm text-red-500 self-end"
+                key="title-error"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  y: -5,
+                  transition: { duration: 0.1 },
+                }}
+              >
+                {errors.title}
+              </motion.p>
+            )}
+          </AnimatePresence>
           {/* assessment topic */}
           <div className="flex items-center gap-2 w-full">
             <label
@@ -119,11 +147,30 @@ export default function Configure(): ReactElement {
               name="topic"
               value={state.topic ?? ""}
               className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-full"
-              onChange={(e) => handleTopicChange(e.target.value)}
+              onChange={(e) => {
+                handleTopicChange(e.target.value);
+              }}
             />
           </div>
+          <AnimatePresence mode="wait">
+            {isValidated && errors.topic && (
+              <motion.p
+                className="text-sm text-red-500 self-end"
+                key="topic-error"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  y: -5,
+                  transition: { duration: 0.1 },
+                }}
+              >
+                {errors.topic}
+              </motion.p>
+            )}
+          </AnimatePresence>
           {/* assessment description */}
-          <div className="flex items-start gap-2 w-full border-b border-gray-300 pb-4">
+          <div className="flex items-start gap-2 w-full">
             <label
               htmlFor="description"
               className="min-w-32 w-32 text-right font-semibold"
@@ -134,9 +181,29 @@ export default function Configure(): ReactElement {
               name="description"
               value={state.description ?? ""}
               className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-full min-h-32 resize-none"
-              onChange={(e) => handleDescriptionChange(e.target.value)}
+              onChange={(e) => {
+                handleDescriptionChange(e.target.value);
+              }}
             />
           </div>
+          <AnimatePresence mode="wait">
+            {isValidated && errors.description && (
+              <motion.p
+                className="text-sm text-red-500 self-end"
+                key="description-error"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  y: -5,
+                  transition: { duration: 0.1 },
+                }}
+              >
+                {errors.description}
+              </motion.p>
+            )}
+          </AnimatePresence>
+          <div className="h-[1px] w-full bg-gray-200"></div>
           <div className="w-full flex justify-between">
             {/* passing score */}
             <div className="relative flex items-center gap-2 w-fit">

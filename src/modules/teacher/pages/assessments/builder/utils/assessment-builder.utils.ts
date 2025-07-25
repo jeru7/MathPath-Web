@@ -1,13 +1,16 @@
 import { isSameDay } from "date-fns";
-import { AssessmentQuestion } from "../../../../../core/types/assessment/assessment.type";
+import {
+  Assessment,
+  AssessmentPage,
+  AssessmentQuestion,
+} from "../../../../../core/types/assessment/assessment.type";
 import { sanitizeHtml } from "./sanitizeHtml";
-import { CreateAssessmentDTO } from "../../../../../core/types/assessment/assessment.schema";
 
 /**
  * Return the total score of all questions.
  * @function getTotalScore
  */
-export const getTotalScore = (assessment: CreateAssessmentDTO): number => {
+export const getTotalScore = (assessment: Assessment): number => {
   let totalScore: number = 0;
   assessment.pages.map((page) => {
     page.contents.map((content) => {
@@ -45,15 +48,57 @@ export const getScheduleMinTime = (scheduledAt: Date | null): Date => {
  * @function getDeadlineMinTime
  */
 export const getDeadlineMinTime = (
-  scheduledAt: Date | null,
-  deadlineAt: Date | null,
+  startDate: Date | null,
+  endDate: Date | null,
   timeLimit: number,
 ): Date => {
-  if (!scheduledAt) return new Date(0, 0, 0, 0, 0);
+  if (!startDate) return new Date(0, 0, 0, 0, 0);
 
-  if (!deadlineAt || isSameDay(scheduledAt, deadlineAt)) {
-    return new Date(scheduledAt.getTime() + (timeLimit + 5) * 60 * 1000);
+  if (!endDate || isSameDay(startDate, endDate)) {
+    const offset = timeLimit + 10;
+    return new Date(startDate.getTime() + offset * 60 * 1000);
   }
 
   return new Date(0, 0, 0, 0, 0);
+};
+
+/**
+ * Validate the top level of the assessment builder.
+ * @function validateAssessment
+ */
+export const validateAssessment = (assessment: Assessment, step: 1 | 2 | 3) => {
+  const errors: Record<string, string> = {};
+
+  if (step === 1) {
+    const emptyPage: boolean = assessment.pages.some(
+      (page: AssessmentPage) => page.contents.length === 0,
+    );
+
+    if (emptyPage) {
+      errors.pages = "Page must include at least 1 content.";
+    }
+  }
+
+  if (step === 2) {
+    if (!assessment.title || assessment.title.trim().length === 0) {
+      errors.title = "Title is required.";
+    }
+    if (!assessment.topic || assessment.topic.trim().length === 0) {
+      errors.topic = "Topic is required.";
+    }
+    if (!assessment.description || assessment.description.trim().length === 0) {
+      errors.description = "Description is required.";
+    }
+  }
+
+  if (step === 3) {
+    if (!assessment.date.start) {
+      errors.startDate = "Scheduled at is required.";
+    }
+    if (assessment.sections.length === 0) {
+      errors.sections = "Section list is empty.";
+    }
+  }
+
+  return errors;
 };
