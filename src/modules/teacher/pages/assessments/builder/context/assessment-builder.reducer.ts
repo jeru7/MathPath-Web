@@ -1,5 +1,4 @@
 import {
-  Assessment,
   AssessmentContent,
   AssessmentPage,
   AssessmentQuestion,
@@ -124,9 +123,9 @@ export type AssessmentBuilderAction =
 
 // methods
 export const assessmentBuilderReducer = (
-  state: Assessment,
+  state: CreateAssessmentDTO,
   action: AssessmentBuilderAction,
-): Assessment => {
+): CreateAssessmentDTO => {
   switch (action.type) {
     // assessment
     case "UPDATE_ASSESSMENT_TITLE":

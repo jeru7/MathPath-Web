@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./components/Stepper";
@@ -7,26 +7,20 @@ import Configure from "./configure/Configure";
 import Publish from "./publish/Publish";
 import { FaEye } from "react-icons/fa";
 import { useAssessmentBuilder } from "./context/assessment-builder.context";
-import { validateAssessment } from "./utils/assessment-builder.utils";
+import { useAssessmentValidation } from "./hooks/useAssessmentValidation";
 
 export default function AssessmentBuilder(): ReactElement {
+  // states
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const { state: assessment } = useAssessmentBuilder();
   const [isValidated, setIsValidated] = useState<boolean>(false);
 
-  const createErrors = useMemo(
-    () => validateAssessment(assessment, 1),
-    [assessment],
-  );
-  const configureErrors = useMemo(
-    () => validateAssessment(assessment, 2),
-    [assessment],
-  );
-  const publishErrors = useMemo(
-    () => validateAssessment(assessment, 3),
-    [assessment],
-  );
+  // error trackers
+  const createErrors = useAssessmentValidation(assessment, 1);
+  const configureErrors = useAssessmentValidation(assessment, 2);
+  const publishErrors = useAssessmentValidation(assessment, 3);
 
+  // handlers
   const handleCreateAssessment = () => {
     const hasError =
       Object.keys(createErrors).length > 0 ||
