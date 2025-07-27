@@ -7,7 +7,7 @@ import { MdDeleteOutline, MdDragIndicator } from "react-icons/md";
 
 type ImageProps = {
   content: AssessmentContent;
-  onDeleteContent: (content: AssessmentContent) => void;
+  onDeleteContent?: (content: AssessmentContent) => void;
   onEdit: () => void;
 };
 
@@ -60,7 +60,7 @@ export default function Image({
         </div>
         <button
           className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
-          onClick={() => onDeleteContent(content)}
+          onClick={() => onDeleteContent?.(content)}
         >
           <MdDeleteOutline />
         </button>

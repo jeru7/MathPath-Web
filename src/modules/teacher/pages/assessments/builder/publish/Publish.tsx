@@ -10,7 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {
   getDeadlineMinTime,
   getScheduleMinTime,
-} from "../utils/assessment-builder.utils";
+} from "../utils/assessment-builder.util";
 import DatetimePicker from "./DatetimePicker";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import { AnimatePresence, motion } from "framer-motion";
@@ -232,7 +232,7 @@ export default function Publish({
         </section>
       </AnimatePresence>
       <button
-        className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-1 transition-all duration-200"
+        className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
         onClick={onCreateAssessment}
       >
         <p className="text-white font-semibold">Create Assessment</p>

@@ -1,4 +1,4 @@
-import { useReducer, type ReactElement } from "react";
+import { useReducer, useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
 import QuestionTypeSelect from "./components/QuestionTypeSelect";
 import RichTextField from "../../RichTextField";
@@ -12,10 +12,10 @@ import {
   QuestionType,
 } from "../../../../../../../core/types/assessment/assessment.type";
 import { AnimatePresence, motion } from "framer-motion";
-import { toast } from "react-toastify";
 import ModalActions from "../ModalActions";
 import { getDefaultQuestion, addQuestionReducer } from "./add-question.reducer";
 import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
+import { useQuestionValidation } from "../../hooks/useQuestionValidation";
 
 // types
 type AddQuestionModalProps = {
@@ -39,9 +39,16 @@ export default function AddQuestionModal({
   const { dispatch: assessmentDispatch } = useAssessmentBuilder();
   const [question, questionDispatch] = useReducer(addQuestionReducer, initial);
 
+  // states
+  const [isValidated, setIsValidated] = useState<boolean>(false);
+
+  // error tracker
+  const errors = useQuestionValidation(question);
+
   // handlers
   const handleTypeChange = (type: QuestionType) => {
     questionDispatch({ type: "SET_TYPE", payload: type });
+    setIsValidated(false);
   };
 
   const handlePointsChange = (points: number) => {
@@ -67,90 +74,8 @@ export default function AddQuestionModal({
   };
 
   const handleAddQuestion = () => {
-    if (
-      question.question.trim() === "" ||
-      question.question.trim().length === 0
-    ) {
-      toast.error("Question content cannot be empty.");
-      return;
-    }
-
-    if (question.type === "single_choice") {
-      if (question.answers.length !== 1) {
-        toast.error("Please select a single correct answer.");
-        return;
-      }
-
-      if (question.choices.length < 2) {
-        toast.error("Please provide at least 2 choices.");
-        return;
-      }
-
-      let flag: boolean = false;
-
-      question.choices.forEach((choice: AssessmentQuestionChoice) => {
-        if (choice.text === "") {
-          flag = true;
-        }
-      });
-
-      if (flag) {
-        toast.error("Please provide answers for all choices.");
-        return;
-      }
-    }
-
-    if (question.type === "multiple_choice") {
-      if (question.answers.length === 0) {
-        toast.error("Please select at least one correct answer.");
-        return;
-      } else if (question.answers.length === question.choices.length) {
-        toast.error("Please leave at least one wrong answer.");
-        return;
-      }
-
-      let flag: boolean = false;
-
-      question.choices.forEach((choice: AssessmentQuestionChoice) => {
-        if (choice.text === "") {
-          flag = true;
-        }
-      });
-
-      if (flag) {
-        toast.error("Please provide answers for all choices.");
-        return;
-      }
-    }
-
-    if (question.type === "fill_in_the_blanks") {
-      if (question.answers.length < 1) {
-        toast.error(
-          "Please add at least one blank in your question using [1], [2], etc.",
-        );
-        return;
-      }
-
-      let flag: boolean = false;
-
-      question.answers.forEach((answer: FillInTheBlankAnswerType) => {
-        if (answer.value === "") {
-          flag = true;
-        }
-      });
-
-      if (flag) {
-        toast.error("Please provide answers for all blanks.");
-        return;
-      }
-    }
-
-    if (question.type === "identification") {
-      if ((question.answers as string) === "") {
-        toast.error("Please provide an answer.");
-        return;
-      }
-    }
+    setIsValidated(true);
+    if (Object.keys(errors).length > 0) return;
 
     if (contentToEdit) {
       assessmentDispatch({
@@ -240,23 +165,55 @@ export default function AddQuestionModal({
                 value={question.question}
                 onContentChange={handleQuestionContentChange}
               />
-              {/* info for fill in the blanks */}
-              {question.type === "fill_in_the_blanks" && (
-                <motion.div
-                  className="p-2 bg-[var(--primary-yellow)]/80"
-                  key="info"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <p className="italic text-right text-xs">
-                    Use brackets to indicate blanks. <br />
-                    Example: The capital of the Philippines is [1] <br />
-                    "The capital of the Philippines is _____"
-                  </p>
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {isValidated &&
+                  errors.question &&
+                  question.type !== "fill_in_the_blanks" && (
+                    <motion.p
+                      className="text-sm text-red-500 self-end"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{
+                        opacity: 0,
+                        y: 0,
+                        transition: { duration: 0.1 },
+                      }}
+                      key="fill-in-the-blank-error"
+                    >
+                      {errors.question}
+                    </motion.p>
+                  )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {isValidated && errors.fillInTheBlankQuestion && (
+                  <motion.p
+                    className="text-sm text-red-500 self-end"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 0, transition: { duration: 0.1 } }}
+                    key="fill-in-the-blank-error"
+                  >
+                    {errors.fillInTheBlankQuestion}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {/* info for fill in the blanks */}
+                {question.type === "fill_in_the_blanks" && (
+                  <motion.div
+                    className="p-2 bg-[var(--primary-yellow)]/80"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key="fill-in-the-blank-info"
+                  >
+                    <p className="italic text-right text-xs">
+                      Use brackets to indicate blanks. <br />
+                      Example: The capital of the Philippines is [1] <br />
+                      "The capital of the Philippines is _____"
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           {/* divider */}
@@ -275,13 +232,12 @@ export default function AddQuestionModal({
                   transition={{ duration: 0.25 }}
                 >
                   <Choices
-                    type={question.type}
-                    choices={question.choices}
+                    isValidated={isValidated}
+                    question={question}
                     onAnswersChange={handleAnswersChange}
                     onChoicesChange={handleChoicesChange}
                     onToggleRandom={handleToggleRandom}
-                    answers={question.answers}
-                    isRandom={question.randomPosition}
+                    errors={errors}
                   />
                 </motion.div>
               ) : (

@@ -91,6 +91,7 @@ export default function PageContent({
 
               return (
                 <Question
+                  key={content.id}
                   content={content}
                   questionNumber={currentQuestionNumber}
                   activeId={activeId}
@@ -101,6 +102,7 @@ export default function PageContent({
             } else if (content.type === "image") {
               return (
                 <Image
+                  key={content.id}
                   content={content}
                   onDeleteContent={handleDeleteContent}
                   onEdit={() => onEditContent?.(content, content.type)}
@@ -109,6 +111,7 @@ export default function PageContent({
             } else if (content.type === "text") {
               return (
                 <Text
+                  key={content.id}
                   content={content}
                   onDeleteContent={handleDeleteContent}
                   onEdit={() => onEditContent?.(content, content.type)}

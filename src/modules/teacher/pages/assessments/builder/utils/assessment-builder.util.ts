@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import {
-  Assessment,
   AssessmentQuestion,
+  CreateAssessmentDTO,
 } from "../../../../../core/types/assessment/assessment.type";
 import { sanitizeHtml } from "./sanitizeHtml";
 
@@ -9,7 +9,7 @@ import { sanitizeHtml } from "./sanitizeHtml";
  * Return the total score of all questions.
  * @function getTotalScore
  */
-export const getTotalScore = (assessment: Assessment): number => {
+export const getTotalScore = (assessment: CreateAssessmentDTO): number => {
   let totalScore: number = 0;
   assessment.pages.map((page) => {
     page.contents.map((content) => {

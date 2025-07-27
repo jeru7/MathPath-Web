@@ -9,7 +9,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MdDeleteOutline, MdDragIndicator } from "react-icons/md";
 import { UniqueIdentifier } from "@dnd-kit/core";
-import { renderBlanks } from "../../utils/assessment-builder.utils";
+import { renderBlanks } from "../../utils/assessment-builder.util";
 
 type QuestionProps = {
   content: AssessmentContent;

@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { useEffect, type ReactElement } from "react";
 import { useEditor, EditorContent, Extensions } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -25,6 +25,7 @@ export default function RichTextField({
   value,
 }: RichTextFieldProps): ReactElement {
   // TODO: fix initial load while on edit
+  // - nag start yung cursor from start instead left
   const editor = useEditor({
     extensions: extensions ?? [
       StarterKit,
@@ -36,7 +37,6 @@ export default function RichTextField({
     content: value ?? "",
     // initial value
     onCreate({ editor }) {
-      console.log("Value: ", value);
       // set align left on initial load
       editor.chain().focus().setTextAlign("left").run();
     },
@@ -58,6 +58,13 @@ export default function RichTextField({
       },
     },
   });
+
+  // resets value/content on changing type
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value || "");
+    }
+  }, [value, editor]);
 
   if (!editor) return <div>Loading...</div>;
 

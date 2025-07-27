@@ -14,6 +14,7 @@ type ChoiceProps = {
   isChecked: boolean;
   onDeleteChoice: (choiceId: string) => void;
   isLastTwo: boolean;
+  isEmpty: boolean;
 };
 
 export default function Choice({
@@ -25,6 +26,7 @@ export default function Choice({
   isChecked,
   onDeleteChoice,
   isLastTwo,
+  isEmpty,
 }: ChoiceProps): ReactElement {
   // dnd methods
   const {
@@ -58,7 +60,9 @@ export default function Choice({
         <MdOutlineDragIndicator />
       </div>
       {/* text input */}
-      <div className="bg-white border rounded-xs border-gray-300 p-2 w-full">
+      <div
+        className={`bg-white border rounded-xs p-2 w-full ${isEmpty ? "border-red-500" : "border-gray-300"}`}
+      >
         <input
           type="text"
           placeholder="Type option here..."

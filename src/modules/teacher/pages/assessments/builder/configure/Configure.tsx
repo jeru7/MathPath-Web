@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
-import { getTotalScore } from "../utils/assessment-builder.utils";
+import { getTotalScore } from "../utils/assessment-builder.util";
 import { AnimatePresence, motion } from "framer-motion";
 
 type ConfigureProps = {

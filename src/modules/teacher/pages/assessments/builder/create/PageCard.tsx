@@ -90,6 +90,7 @@ export default function PageCard({
                   setIsEdit(false);
                 }
               }}
+              onBlur={() => setIsEdit(false)}
             />
           ) : (
             // title
