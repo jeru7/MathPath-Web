@@ -12,11 +12,15 @@ type AnswersProp = {
   ) => void;
   answers?: string[] | FillInTheBlankAnswerType[] | string | boolean;
   type?: QuestionType;
+  isValidated: boolean;
+  errors: { [key: string]: string | number[] };
 };
 export default function Answers({
   onAnswersChange,
   answers,
   type,
+  isValidated,
+  errors,
 }: AnswersProp): ReactElement {
   return (
     <div className="flex items-start gap-4">
@@ -33,7 +37,7 @@ export default function Answers({
           <AnimatePresence>
             {/* Text input for fill in the blanks */}
             {type === "fill_in_the_blanks" &&
-              (answers as FillInTheBlankAnswerType[])?.map((answer) => (
+              (answers as FillInTheBlankAnswerType[])?.map((answer, index) => (
                 <motion.div
                   key={answer.id}
                   layout
@@ -54,6 +58,12 @@ export default function Answers({
                       );
                       onAnswersChange(updatedAnswers);
                     }}
+                    isEmpty={
+                      isValidated &&
+                      type === "fill_in_the_blanks" &&
+                      Array.isArray(errors?.fillInTheBlankAnswers) &&
+                      errors.fillInTheBlankAnswers.includes(index)
+                    }
                   />
                 </motion.div>
               ))}
@@ -71,6 +81,11 @@ export default function Answers({
                   type="text"
                   value={answers as string}
                   onChange={(val) => onAnswersChange(val as string)}
+                  isEmpty={
+                    isValidated &&
+                    type === "identification" &&
+                    errors?.identificationAnswer !== undefined
+                  }
                 />
               </motion.div>
             )}

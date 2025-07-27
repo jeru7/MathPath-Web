@@ -50,7 +50,11 @@ export default function AssessmentBuilder(): ReactElement {
               currentStep={step}
               onChangeStep={(step: 1 | 2 | 3) => setStep(step)}
               isValidated={isValidated}
-              createErrors={Object.keys(createErrors).length}
+              createErrors={
+                Array.isArray(createErrors.emptyPages)
+                  ? createErrors.emptyPages.length
+                  : 0
+              }
               configureErrors={Object.keys(configureErrors).length}
               publishErrors={Object.keys(publishErrors).length}
             />

@@ -12,18 +12,10 @@ export const useQuestionValidation = (question: AssessmentQuestion) => {
       newErrors.question = "Question is required.";
     }
 
-    if (question.type === "fill_in_the_blanks") {
-      if (question.answers.length === 0) {
-        newErrors.fillInTheBlankQuestion =
-          "Please add at least one blank in your question using [1], [2], etc.";
-      }
-    }
-
     if (
       question.type === "single_choice" ||
       question.type === "multiple_choice"
     ) {
-      // stores the choices index that has an empty content
       const emptyChoicesIndeces = question.choices
         .map((choice, index) => (choice.text.trim().length === 0 ? index : -1))
         .filter((index) => index !== -1);
@@ -41,6 +33,34 @@ export const useQuestionValidation = (question: AssessmentQuestion) => {
         question.type === "multiple_choice"
       ) {
         newErrors.multiChoiceAnswer = "Leave at least 1 wrong choice.";
+      }
+
+      const texts = question.choices.map((choice) => choice.text.trim());
+      const hasDuplicate = new Set(texts).size !== texts.length;
+
+      if (hasDuplicate) {
+        newErrors.duplicateChoices = "Duplicate choices are not allowed.";
+      }
+    }
+
+    if (question.type === "fill_in_the_blanks") {
+      if (question.answers.length === 0) {
+        newErrors.fillInTheBlankQuestion =
+          "Add at least one blank in your question using [1], [2], etc.";
+      }
+
+      const emptyAnswersIndeces = question.answers
+        .map((answer, index) => (answer.value.trim().length === 0 ? index : -1))
+        .filter((index) => index !== -1);
+
+      if (emptyAnswersIndeces.length > 0) {
+        newErrors.fillInTheBlankAnswers = emptyAnswersIndeces;
+      }
+    }
+
+    if (question.type === "identification") {
+      if (question.answers.trim().length === 0) {
+        newErrors.identificationAnswer = "Answer is required.";
       }
     }
 

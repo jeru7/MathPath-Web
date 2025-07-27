@@ -8,6 +8,7 @@ type AnswerFieldProps = {
   onChange: (value: string | boolean) => void;
   checked?: boolean;
   radioLabel?: "True" | "False";
+  isEmpty?: boolean;
 };
 export default function AnswerField({
   label,
@@ -17,11 +18,14 @@ export default function AnswerField({
   onChange,
   checked,
   radioLabel,
+  isEmpty,
 }: AnswerFieldProps): ReactElement {
   return (
     <article
       className={`flex items-center gap-2  rounded-sm ${
-        type === "radio" ? "" : "border border-gray-300 p-2 "
+        type === "radio"
+          ? ""
+          : `border p-2 ${isEmpty ? "border-red-500" : "border-gray-300 "}`
       }`}
     >
       {label && (

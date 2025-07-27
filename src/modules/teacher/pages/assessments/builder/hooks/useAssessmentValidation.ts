@@ -13,14 +13,23 @@ export const useAssessmentValidation = (
   step: 1 | 2 | 3,
 ) => {
   return useMemo(() => {
-    const errors: Record<string, string> = {};
+    const errors: Record<string, string | number[]> = {};
     if (step === 1) {
-      const emptyPage: boolean = assessment.pages.some(
-        (page: AssessmentPage) => page.contents.length === 0,
-      );
+      const emptyPages: number[] = [];
 
-      if (emptyPage) {
-        errors.pages = "Page must include at least 1 content.";
+      assessment.pages.forEach((page: AssessmentPage, index: number) => {
+        const questionCount = page.contents.filter(
+          (content) => content.type === "question",
+        ).length;
+
+        if (questionCount < 5) {
+          emptyPages.push(index);
+        }
+      });
+
+      if (emptyPages.length > 0) {
+        errors.emptyPages = emptyPages;
+        errors.pages = "Page must include at least 5 questions.";
       }
     }
 

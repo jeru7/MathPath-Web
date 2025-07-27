@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 type PublishProps = {
   isValidated: boolean;
-  errors: { [key: string]: string };
+  errors: { [key: string]: string | number[] };
   onCreateAssessment: () => void;
 };
 

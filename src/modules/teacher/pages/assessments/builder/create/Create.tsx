@@ -24,7 +24,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 type CreateProps = {
   isValidated: boolean;
-  errors: { [key: string]: string };
+  errors: { [key: string]: string | number[] };
 };
 export default function Create({
   isValidated,
@@ -149,6 +149,11 @@ export default function Create({
                   }}
                   onDelete={handleDeletePage}
                   isSingle={state.pages.length === 1}
+                  hasError={
+                    isValidated &&
+                    Array.isArray(errors.emptyPages) &&
+                    errors.emptyPages.includes(index)
+                  }
                 />
               );
 

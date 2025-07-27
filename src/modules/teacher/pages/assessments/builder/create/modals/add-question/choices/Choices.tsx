@@ -211,14 +211,44 @@ export default function Choices({
             ) : null}
           </motion.section>
         </section>
-        {isValidated && errors.answer && (
-          <p className="text-sm text-red-500 self-end">{errors.answer}</p>
-        )}
-        {isValidated && errors.multiChoiceAnswer && (
-          <p className="text-sm text-red-500 self-end">
-            {errors.multiChoiceAnswer}
-          </p>
-        )}
+        <AnimatePresence mode="wait">
+          {isValidated && errors.answer && (
+            <motion.p
+              key="error-answer"
+              className="text-sm text-red-500 self-end"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+            >
+              {errors.answer}
+            </motion.p>
+          )}
+          {isValidated && errors.multiChoiceAnswer && (
+            <motion.p
+              key="error-multiChoice"
+              className="text-sm text-red-500 self-end"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+            >
+              {errors.multiChoiceAnswer}
+            </motion.p>
+          )}
+          {isValidated &&
+            !errors.answer &&
+            !errors.multiChoiceAnswer &&
+            errors.duplicateChoices && (
+              <motion.p
+                key="error-duplicateChoices"
+                className="text-sm text-red-500 self-end"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+              >
+                {errors.duplicateChoices}
+              </motion.p>
+            )}
+        </AnimatePresence>
       </div>
     </section>
   );

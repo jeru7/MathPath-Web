@@ -75,7 +75,10 @@ export default function AddQuestionModal({
 
   const handleAddQuestion = () => {
     setIsValidated(true);
-    if (Object.keys(errors).length > 0) return;
+    if (Object.keys(errors).length > 0) {
+      console.log(errors);
+      return;
+    }
 
     if (contentToEdit) {
       assessmentDispatch({
@@ -258,6 +261,8 @@ export default function AddQuestionModal({
                       answers={question.answers as FillInTheBlankAnswerType[]}
                       onAnswersChange={handleAnswersChange}
                       type={question.type}
+                      isValidated={isValidated}
+                      errors={errors}
                     />
                   </motion.div>
                 )

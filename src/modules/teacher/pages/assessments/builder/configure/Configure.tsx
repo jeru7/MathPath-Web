@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 type ConfigureProps = {
   isValidated: boolean;
-  errors: { [key: string]: string };
+  errors: { [key: string]: string | number[] };
 };
 
 export default function Configure({

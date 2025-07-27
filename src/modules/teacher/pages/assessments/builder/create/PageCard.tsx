@@ -23,6 +23,7 @@ type PageCardProps = {
   onEditContent?: (content: AssessmentContent, type: ModalType) => void;
   onDelete?: (pageId: string) => void;
   isSingle?: boolean;
+  hasError?: boolean;
 };
 
 export default function PageCard({
@@ -33,6 +34,7 @@ export default function PageCard({
   onEditContent,
   onDelete,
   isSingle,
+  hasError,
 }: PageCardProps): ReactElement {
   // reducer
   const { dispatch } = useAssessmentBuilder();
@@ -67,7 +69,7 @@ export default function PageCard({
 
   return (
     <article
-      className={`flex flex-col rounded-t-sm border border-gray-300 rounded-b-sm ${isDragging ? "opacity-50" : ""}`}
+      className={`flex flex-col rounded-t-sm border rounded-b-sm ${hasError ? "border-red-500" : "border-gray-300"} ${isDragging ? "opacity-50" : ""}`}
       ref={setNodeRef}
       style={style}
       {...attributes}

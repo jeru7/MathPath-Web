@@ -1,9 +1,8 @@
 import { useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import RichTextField from "../../RichTextField";
 import ModalActions from "../ModalActions";
-import { toast } from "react-toastify";
 import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
 import { AssessmentContent } from "../../../../../../../core/types/assessment/assessment.type";
 
@@ -20,14 +19,16 @@ export default function AddTextModal({
 }: AddTextModalProps): ReactElement {
   const { dispatch } = useAssessmentBuilder();
   const [textContent, setTextContent] = useState<string>("");
+  const [isEmpty, setIsEmpty] = useState<boolean>(false);
 
   const handleTextContentChange = (text: string) => {
     setTextContent(text);
+    if (text.trim().length > 0) setIsEmpty(false);
   };
 
   const handleAddText = () => {
-    if (textContent.trim().length === 0 || textContent.trim() === "") {
-      toast.error("Please provide text content.");
+    if (textContent.trim().length === 0) {
+      setIsEmpty(true);
       return;
     }
 
@@ -82,6 +83,19 @@ export default function AddTextModal({
               }
               onContentChange={handleTextContentChange}
             />
+            <AnimatePresence>
+              {isEmpty && (
+                <motion.p
+                  key="error-empty"
+                  className="text-sm text-red-500 self-end"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+                >
+                  Text is required.
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
         </div>
         {/* actions */}
