@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactElement } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
@@ -17,45 +17,44 @@ export default function AddImageModal({
   contentToEdit,
 }: AddImageModalProps): ReactElement {
   // reducers
-  const { dispatch } = useAssessmentBuilder();
+  const { state: assessment, dispatch } = useAssessmentBuilder();
 
-  // states
-  // TODO: for cloudinary
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isValidated, setIsValidated] = useState<boolean>(false);
+  const [isEmpty, setIsEmpty] = useState<boolean>(false);
+
+  const MAX_FILE_SIZE = 200 * 1024; // 200kb
+
+  // ref
+  const fileRef = useRef<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // value watcher
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     (contentToEdit?.data as string) ?? null,
   );
-  // ref
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // handlers
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-
-      if (!file.type.startsWith("image/")) {
-        toast.error("Invalid file type.");
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("Image must be less than 200kb.", {
+          position: "top-center",
+        });
         return;
       }
-
-      setSelectedFile(file);
+      fileRef.current = file;
       setPreviewUrl(URL.createObjectURL(file));
+      setIsEmpty(false);
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-
-      if (!file.type.startsWith("image/")) {
-        toast.error("Invalid file type.");
-        return;
-      }
-
-      setSelectedFile(file);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      fileRef.current = file;
       setPreviewUrl(URL.createObjectURL(file));
-      e.dataTransfer.clearData();
     }
   };
 
@@ -68,8 +67,10 @@ export default function AddImageModal({
   };
 
   const handleAddImage = () => {
+    setIsValidated(true);
+
     if (!previewUrl) {
-      toast.error("There are no image yet.");
+      setIsEmpty(true);
       return;
     }
 
@@ -112,11 +113,11 @@ export default function AddImageModal({
         </button>
       </header>
 
-      <section className="flex flex-col h-full bg-inherit rounded-b-sm p-4 min-h-[400px] gap-4">
+      <section className="flex flex-col h-fit bg-inherit rounded-b-sm p-4 min-h-[400px] gap-4">
         <div className="flex flex-col flex-1 gap-4 h-full">
           {/* drag-drop area */}
           <div
-            className="flex-1 border border-dashed border-gray-400 rounded p-6 flex flex-col items-center justify-center gap-3 text-center text-gray-500 hover:cursor-pointer"
+            className="h-[400px] border border-dashed border-gray-400 rounded p-6 flex flex-col items-center justify-center gap-3 text-center text-gray-500 hover:cursor-pointer"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={handleUploadClick}
@@ -145,7 +146,17 @@ export default function AddImageModal({
             />
           </div>
         </div>
-
+        <AnimatePresence></AnimatePresence>
+        {isValidated && isEmpty && (
+          <motion.p
+            className="text-sm text-red-500 self-center"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+          >
+            Image cannot be empty.
+          </motion.p>
+        )}
         {/* actions */}
         <ModalActions onAddContent={handleAddImage} onCancelClick={onClose} />
       </section>
