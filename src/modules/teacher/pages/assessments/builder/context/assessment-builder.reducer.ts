@@ -1,37 +1,18 @@
 import {
+  Assessment,
   AssessmentContent,
   AssessmentPage,
   AssessmentQuestion,
-  CreateAssessmentDTO,
 } from "../../../../../core/types/assessment/assessment.type";
 import { nanoid } from "nanoid";
-
-// initial state
-export const initialAssessment: CreateAssessmentDTO = {
-  title: null,
-  topic: null,
-  description: null,
-  teacher: "",
-  sections: [],
-  pages: [
-    {
-      id: nanoid(),
-      title: null,
-      contents: [],
-    },
-  ],
-  passingScore: 1,
-  attemptLimit: 1,
-  date: {
-    start: null,
-    end: null,
-  },
-  timeLimit: 10,
-};
 
 // types
 export type AssessmentBuilderAction =
   // assessment
+  | {
+      type: "SET_ASSESSMENT";
+      payload: Assessment;
+    }
   | {
       type: "UPDATE_ASSESSMENT_TITLE";
       payload: string;
@@ -123,9 +104,9 @@ export type AssessmentBuilderAction =
 
 // methods
 export const assessmentBuilderReducer = (
-  state: CreateAssessmentDTO,
+  state: Assessment,
   action: AssessmentBuilderAction,
-): CreateAssessmentDTO => {
+): Assessment => {
   switch (action.type) {
     // assessment
     case "UPDATE_ASSESSMENT_TITLE":
@@ -147,9 +128,15 @@ export const assessmentBuilderReducer = (
       };
     }
     case "ADD_START_DATE":
-      return { ...state, date: { ...state.date, start: action.payload } };
+      return {
+        ...state,
+        date: { ...state.date, start: action.payload.toISOString() },
+      };
     case "ADD_END_DATE":
-      return { ...state, date: { ...state.date, end: action.payload } };
+      return {
+        ...state,
+        date: { ...state.date, end: action.payload.toISOString() },
+      };
     // page
     case "ADD_PAGE":
       return {

@@ -17,7 +17,7 @@ export default function AddImageModal({
   contentToEdit,
 }: AddImageModalProps): ReactElement {
   // reducers
-  const { state: assessment, dispatch } = useAssessmentBuilder();
+  const { dispatch } = useAssessmentBuilder();
 
   const [isValidated, setIsValidated] = useState<boolean>(false);
   const [isEmpty, setIsEmpty] = useState<boolean>(false);

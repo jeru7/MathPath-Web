@@ -5,16 +5,22 @@ export type Assessment = {
   topic: string | null;
   description: string | null;
   teacher: string;
-  sections: string[] | [];
-  pages: AssessmentPage[] | [];
+  sections: string[];
+  pages: AssessmentPage[];
   passingScore: number;
   attemptLimit: number;
   date: {
-    start: Date | null;
-    end: Date | null;
+    start: string | null;
+    end: string | null;
   };
   timeLimit: number;
+  status: AssessmentStatus;
+  createdAt: string;
+  updatedAt: string;
 };
+
+// assessment status
+export type AssessmentStatus = "finished" | "draft" | "in-progress";
 
 // assessment question types
 export type QuestionType =
@@ -85,5 +91,3 @@ export type AssessmentPage = {
   title?: string | null;
   contents: AssessmentContent[];
 };
-
-export type CreateAssessmentDTO = Omit<Assessment, "id">;

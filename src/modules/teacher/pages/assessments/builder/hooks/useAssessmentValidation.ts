@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import {
   AssessmentPage,
-  CreateAssessmentDTO,
+  Assessment,
 } from "../../../../../core/types/assessment/assessment.type";
 
 /**
@@ -9,7 +9,7 @@ import {
  * @function validateAssessment
  */
 export const useAssessmentValidation = (
-  assessment: CreateAssessmentDTO,
+  assessment: Assessment,
   step: 1 | 2 | 3,
 ) => {
   return useMemo(() => {

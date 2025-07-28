@@ -63,3 +63,20 @@ export const useTeacherAssessments = (teacherId: string) => {
     enabled: !!teacherId,
   });
 };
+
+// get single assessment
+export const useTeacherAssessment = (
+  teacherId: string,
+  assessmentId: string,
+) => {
+  return useQuery<Assessment>({
+    queryKey: ["teacher", teacherId, "assessments", assessmentId],
+    queryFn: () =>
+      fetchData<Assessment>(
+        `${URL}/api/web/teachers/${teacherId}/assessments/${assessmentId}`,
+        "Failed to fetch assessment",
+      ),
+    enabled: !!teacherId && !!assessmentId,
+    staleTime: DATA_STALE_TIME,
+  });
+};

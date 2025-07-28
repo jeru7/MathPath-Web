@@ -21,7 +21,7 @@ export default function AssessmentBuilder(): ReactElement {
   const publishErrors = useAssessmentValidation(assessment, 3);
 
   // handlers
-  const handleCreateAssessment = () => {
+  const handlePublishAssessment = () => {
     const hasError =
       Object.keys(createErrors).length > 0 ||
       Object.keys(configureErrors).length > 0 ||
@@ -73,7 +73,7 @@ export default function AssessmentBuilder(): ReactElement {
             <Publish
               isValidated={isValidated}
               errors={publishErrors}
-              onCreateAssessment={handleCreateAssessment}
+              onPublishAssessment={handlePublishAssessment}
             />
           ) : null}
         </section>
