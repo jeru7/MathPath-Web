@@ -18,13 +18,13 @@ import { AnimatePresence, motion } from "framer-motion";
 type PublishProps = {
   isValidated: boolean;
   errors: { [key: string]: string | number[] };
-  onCreateAssessment: () => void;
+  onPublishAssessment: () => void;
 };
 
 export default function Publish({
   isValidated,
   errors,
-  onCreateAssessment,
+  onPublishAssessment,
 }: PublishProps): ReactElement {
   // params
   const { teacherId } = useParams();
@@ -38,10 +38,10 @@ export default function Publish({
   // states
   const [selectedSections, setSelectedSections] = useState<Section[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(
-    assessment.date.start ? assessment.date.start : null,
+    assessment.date.start ? new Date(assessment.date.start) : null,
   );
   const [endDate, setEndDate] = useState<Date | null>(
-    assessment.date.end ? assessment.date.end : null,
+    assessment.date.end ? new Date(assessment.date.end) : null,
   );
 
   // methods
@@ -92,8 +92,7 @@ export default function Publish({
     );
 
     setSelectedSections(matched);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sections, assessment.sections]);
 
   return (
     <div className="flex flex-col w-fit h-full items-center justify-center gap-4">
@@ -233,9 +232,9 @@ export default function Publish({
       </AnimatePresence>
       <button
         className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
-        onClick={onCreateAssessment}
+        onClick={onPublishAssessment}
       >
-        <p className="text-white font-semibold">Create Assessment</p>
+        <p className="text-white font-semibold">Publish Assessment</p>
       </button>
     </div>
   );
