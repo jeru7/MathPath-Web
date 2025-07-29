@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./components/Stepper";
@@ -8,12 +8,28 @@ import Publish from "./publish/Publish";
 import { FaEye } from "react-icons/fa";
 import { useAssessmentBuilder } from "./context/assessment-builder.context";
 import { useAssessmentValidation } from "./hooks/useAssessmentValidation";
+import { useUpdateAssessmentDraft } from "../../../../core/services/assessments/assessment.service";
+import { Assessment } from "../../../../core/types/assessment/assessment.type";
+import debounce from "lodash.debounce";
 
 export default function AssessmentBuilder(): ReactElement {
   // states
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const { state: assessment } = useAssessmentBuilder();
   const [isValidated, setIsValidated] = useState<boolean>(false);
+
+  const { mutate: updateDraft } = useUpdateAssessmentDraft(
+    assessment.teacher ?? "",
+  );
+  const hasMounted = useRef(false);
+  const prevAssessmentRef = useRef<string>();
+
+  const debouncedUpdate = useRef(
+    debounce((updatedAssessent: Assessment) => {
+      console.log("Hi");
+      updateDraft(updatedAssessent);
+    }, 10000),
+  );
 
   // error trackers
   const createErrors = useAssessmentValidation(assessment, 1);
@@ -33,6 +49,22 @@ export default function AssessmentBuilder(): ReactElement {
 
     console.log("Assessment: ", assessment);
   };
+
+  useEffect(() => {
+    if (!assessment.id) return;
+
+    const serialized = JSON.stringify(assessment);
+
+    if (hasMounted.current) {
+      if (prevAssessmentRef.current !== serialized) {
+        prevAssessmentRef.current = serialized;
+        debouncedUpdate.current(assessment);
+      }
+    } else {
+      prevAssessmentRef.current = serialized;
+      hasMounted.current = true;
+    }
+  }, [assessment]);
 
   return (
     <main className="flex min-h-full w-full flex-col gap-2 bg-inherit p-4 h-fit">

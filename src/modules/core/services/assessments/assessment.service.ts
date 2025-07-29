@@ -39,6 +39,18 @@ export const usePublishAssessment = (teacherId: string) => {
   });
 };
 
+export const useUpdateAssessmentDraft = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (updatedAssessment: Assessment) => {
+      return patchData<Assessment, Assessment>(
+        `${URL}/api/web/teachers/${teacherId}/assessments/${updatedAssessment.id}`,
+        updatedAssessment,
+        "Failed to update assessment draft",
+      );
+    },
+  });
+};
+
 export const useUploadAssessmentImage = (teacherId: string) => {
   return useMutation({
     mutationFn: async (imageFile: File): Promise<string> => {
