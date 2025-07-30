@@ -1,67 +1,69 @@
 import { type ReactElement } from "react";
-import Banner1 from "../../../../../../assets/images/section-banners/Banner_1.jpg";
-import Banner2 from "../../../../../../assets/images/section-banners/Banner_2.jpg";
-import Banner3 from "../../../../../../assets/images/section-banners/Banner_3.jpg";
-import { FaCircle } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
+import { Assessment } from "../../../../../core/types/assessment/assessment.type";
+import { getSectionBanner } from "../../../../../core/utils/section/section.util";
+import { useParams } from "react-router-dom";
+import { useTeacherSections } from "../../../../services/teacher.service";
+import AssessmentStatus from "./AssessmentStatus";
+import { format } from "date-fns-tz";
 
-export default function AssessmentTableItem(): ReactElement {
+type AssessmentTableItemProps = {
+  assessment: Assessment;
+};
+
+export default function AssessmentTableItem({
+  assessment,
+}: AssessmentTableItemProps): ReactElement {
+  const { teacherId } = useParams();
+  const { data: sections } = useTeacherSections(teacherId ?? "");
+
+  const sectionBanners = sections
+    ?.filter((section) => assessment.sections.includes(section.id))
+    .map((section) => section.banner);
+
   return (
     <tr className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer">
       {/* Title */}
       <td className="w-[30%]">
         <div className="truncate whitespace-nowrap overflow-hidden max-w-[400px]">
-          Quiz 1:
-          fhkasjdfhkshdafjghjkdsafkhasdkjfhkjsdahfhasdkfhkashdfkhkasjddhfkjsa
+          {assessment.title}
         </div>{" "}
       </td>
       {/* Topic */}
       <td className="w-[30%]">
         <div className="truncate whitespace-nowrap overflow-hidden max-w-[400px]">
-          Addition
-          fhkajdsgkfljhasdlkjfgjkadshfjkahsdfjkhasdkfjjksdhfkkasjdhfasdjkfhd
+          {assessment.topic}
         </div>
       </td>
       {/* Section */}
       <td className="w-[15%]">
         <div className="flex gap-2">
-          <img
-            src={Banner1}
-            alt="Section banner."
-            className="rounded-sm w-8 h-5"
-          />
-          <img
-            src={Banner2}
-            alt="Section banner."
-            className="rounded-sm  w-8 h-5"
-          />
-          <img
-            src={Banner3}
-            alt="Section banner."
-            className="rounded-sm w-8 h-5"
-          />
-          <img
-            src={Banner3}
-            alt="Section banner."
-            className="rounded-sm w-8 h-5"
-          />
-          <img
-            src={Banner3}
-            alt="Section banner."
-            className="rounded-sm w-8 h-5"
-          />
+          {sectionBanners
+            ? sectionBanners?.map((banner) => (
+                <img
+                  src={getSectionBanner(banner)}
+                  alt="Section banner."
+                  className="rounded-sm w-8 h-5"
+                />
+              ))
+            : "N/A"}
         </div>
       </td>
       {/* Status */}
       <td className="w-[10%]">
-        <div className="py-1 px-4 flex items-center justify-center border border-[var(--primary-yellow)] h-fit w-fit rounded-full gap-2">
-          <FaCircle className="text-[var(--primary-yellow)]" />
-          <p className="text-sm text-[var(--primary-yellow)]">In Progress</p>
+        <div className="w-full flex items-center justify-center">
+          <AssessmentStatus status={assessment.status} />
         </div>
       </td>
       {/* Deadline */}
-      <td className="w-[10%]">May 13, 2025</td>
-      <td className="w-[5%]">
+      <td className="w-[10%] text-center">
+        {assessment.date.end
+          ? format(new Date(assessment.date.end), "MMM d 'at' h:mm a", {
+              timeZone: "Asia/Manila",
+            })
+          : "N/A"}
+      </td>
+      <td className="w-[5%] text-center">
         <button className="hover:scale-110 hover:cursor-pointer">
           <HiDotsVertical />
         </button>

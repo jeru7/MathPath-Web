@@ -16,6 +16,7 @@ export const useTeacher = (teacherId: string) => {
         "Failed to fetch teacher.",
       ),
     staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
   });
 };
 

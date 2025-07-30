@@ -5,16 +5,21 @@ import { CiFilter } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { NavigateFunction } from "react-router-dom";
 import AssessmentTableItem from "./AssessmentTableItem";
+import { Assessment } from "../../../../../core/types/assessment/assessment.type";
+
+type AssessmentTableProps = {
+  navigate: NavigateFunction;
+  assessments: Assessment[] | [];
+};
 
 export default function AssessmentTable({
   navigate,
-}: {
-  navigate: NavigateFunction;
-}): ReactElement {
+  assessments,
+}: AssessmentTableProps): ReactElement {
   return (
-    <section>
+    <section className="h-full">
       <section className="w-full border-b-gray-200 p-4 border-b flex justify-between">
-        {/* Search */}
+        {/* Search */}{" "}
         <section className="flex gap-2 items-center">
           <div className="flex rounded-sm border-gray-200 border h-fit items-center pr-2">
             <div className="p-2">
@@ -43,41 +48,41 @@ export default function AssessmentTable({
       </section>
       {/* table */}
       <div className="h-full">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto min-h-full flex flex-col">
           {/* headers */}
           <table className="font-primary table-auto w-full">
             <thead className="text-gray-400">
               <tr className="text-left">
                 <th className="bg-white sticky top-0 z-20 w-[30%]">Title</th>
                 <th className="bg-white sticky top-0 z-20 w-[30%]">Topic</th>
-                <th className="bg-white sticky top-0 z-20 w-[15%]">Sections</th>
-                <th className="bg-white sticky top-0 z-20 w-[10%]">Status</th>
-                <th className="bg-white sticky top-0 z-20 w-[10%]">Deadline</th>
+                <th className="bg-white sticky top-0 z-20 w-[15%] text-center">
+                  Sections
+                </th>
+                <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                  Status
+                </th>
+                <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                  Deadline
+                </th>
                 <th className="bg-white sticky top-0 z-20 w-[5%]"></th>
               </tr>
             </thead>
           </table>
           {/* assessment items/list */}
-          <div className="h-[750px] overflow-y-auto">
-            <table className="font-primary table-auto w-full">
-              <tbody>
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-                <AssessmentTableItem />
-              </tbody>
-            </table>
+          <div className="h-full min-h-full max-h-[800px] overflow-y-auto pb-4 flex-1 flex">
+            {assessments.length === 0 ? (
+              <div className="flex-1 min-h-full items-center justify-center flex">
+                <p className="text-gray-300">No data available</p>
+              </div>
+            ) : (
+              <table className="font-primary table-auto w-full">
+                <tbody>
+                  {assessments.map((assessment) => (
+                    <AssessmentTableItem assessment={assessment} />
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>
