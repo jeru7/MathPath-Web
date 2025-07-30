@@ -1,5 +1,4 @@
-// TODO: display login panel if not logged in
-import { useState, type ReactElement } from "react"
+import { useState, type ReactElement } from "react";
 
 export default function AdminLogin(): ReactElement {
   const [email, setEmail] = useState("");

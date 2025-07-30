@@ -24,8 +24,6 @@ export default function RichTextField({
   extensions,
   value,
 }: RichTextFieldProps): ReactElement {
-  // TODO: fix initial load while on edit
-  // - nag start yung cursor from start instead left
   const editor = useEditor({
     extensions: extensions ?? [
       StarterKit,
@@ -37,8 +35,8 @@ export default function RichTextField({
     content: value ?? "",
     // initial value
     onCreate({ editor }) {
-      // set align left on initial load
-      editor.chain().focus().setTextAlign("left").run();
+      editor.commands.setTextAlign("left");
+      editor.commands.focus("end");
     },
     onUpdate: ({ editor }) => {
       const text = editor.state.doc.textContent.trim();

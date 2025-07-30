@@ -10,7 +10,6 @@ export type Teacher = {
 };
 
 export type TeacherActivity = {
-  // TODO: another set of profile pic for teachers???
   profilePicture: StudentProfilePictures;
   title: string;
   date: string;
