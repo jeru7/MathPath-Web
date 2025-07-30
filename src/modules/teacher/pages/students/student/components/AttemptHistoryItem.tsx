@@ -1,9 +1,7 @@
 import { type ReactElement } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns-tz";
 import { StageAttempt } from "../../../../../core/types/stage-attempt/stage-attempt.type";
-import { Stage } from "../../../../../core/types/stage/stage.type";
-import { getStages } from "../../../../../core/services/stage/stage.service";
+import { useStages } from "../../../../../core/services/stage/stage.service";
 
 interface IAttemptHistoryItemProps {
   attempt: StageAttempt;
@@ -39,11 +37,7 @@ const getResult = (attempt: StageAttempt) => {
 export default function AttemptHistoryItem({
   attempt,
 }: IAttemptHistoryItemProps): ReactElement {
-  // TODO: create a separate stages.service
-  const { data: stages } = useQuery<Stage[]>({
-    queryKey: ["stages"],
-    queryFn: () => getStages(),
-  });
+  const { data: stages } = useStages();
 
   const stage = stages?.find((stage) => stage.id === attempt.stageId);
 

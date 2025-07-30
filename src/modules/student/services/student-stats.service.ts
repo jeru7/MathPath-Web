@@ -1,12 +1,12 @@
-import {
-  DifficultyFrequency,
-  PlayerCard,
-  StudentAttemptStats,
-} from "../../core/types/student/student-stats.type";
 import { URL } from "../../core/constants/api.constant";
 import { useQuery } from "@tanstack/react-query";
 import { fetchData } from "../../core/utils/api/api.util";
 import { QuestionStats, TopicStats } from "../../core/types/chart.type";
+import {
+  DifficultyFrequency,
+  PlayerCard,
+  StudentAttemptStats,
+} from "../types/student-stats.type";
 
 // get student stats on attempt
 export const useStudentAttemptStats = (studentId: string) => {

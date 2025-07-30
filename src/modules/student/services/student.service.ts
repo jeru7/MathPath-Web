@@ -32,6 +32,7 @@ export const useAddStudent = (teacherId: string) => {
     },
   });
 };
+
 export const useStudent = (studentId: string) => {
   return useQuery<Student>({
     queryKey: ["student", studentId, "student-data"],

@@ -1,7 +1,16 @@
-import axios from "axios";
 import { URL } from "../../constants/api.constant";
+import { useQuery } from "@tanstack/react-query";
+import { Stage } from "../../types/stage/stage.type";
+import { fetchData } from "../../utils/api/api.util";
 
-export const getStages = async () => {
-  const res = await axios.get(`${URL}/api/shared/stages`);
-  return res.data.data;
+export const useStages = () => {
+  return useQuery<Stage[]>({
+    queryKey: ["stages"],
+    queryFn: () => {
+      return fetchData<Stage[]>(
+        `${URL}/api/shared/stages`,
+        "Failed to fetch stages data.",
+      );
+    },
+  });
 };
