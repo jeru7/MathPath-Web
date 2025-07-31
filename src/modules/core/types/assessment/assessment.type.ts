@@ -20,7 +20,11 @@ export type Assessment = {
 };
 
 // assessment status
-export type AssessmentStatus = "finished" | "draft" | "in-progress";
+export type AssessmentStatus =
+  | "finished"
+  | "draft"
+  | "in-progress"
+  | "published";
 
 // assessment question types
 export type QuestionType =

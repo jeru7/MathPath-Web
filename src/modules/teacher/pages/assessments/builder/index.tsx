@@ -35,6 +35,19 @@ export default function AssessmentBuilderWrapper(): ReactElement {
       });
   }, [teacherId, mutateAsync, draftId]);
 
+  useEffect(() => {
+    const handleUnload = () => {
+      localStorage.removeItem("currentAssessmentDraftId");
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+
+    return () => {
+      handleUnload();
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, []);
+
   if (isFetching || !assessmentDraft) {
     return <p>Loading assessment draft...</p>;
   }

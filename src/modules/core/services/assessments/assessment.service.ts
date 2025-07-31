@@ -35,6 +35,8 @@ export const usePublishAssessment = (teacherId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["teacher", teacherId, "assessments"],
       });
+
+      localStorage.removeItem("currentAssessmentDraftId");
     },
   });
 };

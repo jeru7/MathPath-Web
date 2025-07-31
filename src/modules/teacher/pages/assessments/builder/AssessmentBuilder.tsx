@@ -8,16 +8,25 @@ import Publish from "./publish/Publish";
 import { FaEye } from "react-icons/fa";
 import { useAssessmentBuilder } from "./context/assessment-builder.context";
 import { useAssessmentValidation } from "./hooks/useAssessmentValidation";
-import { useUpdateAssessmentDraft } from "../../../../core/services/assessments/assessment.service";
+import {
+  usePublishAssessment,
+  useUpdateAssessmentDraft,
+} from "../../../../core/services/assessments/assessment.service";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import debounce from "lodash.debounce";
+import { useNavigate } from "react-router-dom";
 
 export default function AssessmentBuilder(): ReactElement {
+  const navigate = useNavigate();
+
   // states
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const { state: assessment } = useAssessmentBuilder();
   const [isValidated, setIsValidated] = useState<boolean>(false);
 
+  const { mutate: publishAssessment } = usePublishAssessment(
+    assessment.teacher,
+  );
   const { mutate: updateDraft } = useUpdateAssessmentDraft(
     assessment.teacher ?? "",
   );
@@ -26,7 +35,6 @@ export default function AssessmentBuilder(): ReactElement {
 
   const debouncedUpdate = useRef(
     debounce((updatedAssessent: Assessment) => {
-      console.log("Hi");
       updateDraft(updatedAssessent);
     }, 10000),
   );
@@ -46,8 +54,11 @@ export default function AssessmentBuilder(): ReactElement {
     setIsValidated(true);
 
     if (hasError) return;
-
-    console.log("Assessment: ", assessment);
+    publishAssessment(assessment, {
+      onSuccess: () => {
+        navigate("..");
+      },
+    });
   };
 
   useEffect(() => {

@@ -69,7 +69,9 @@ export default function AssessmentTable({
             </thead>
           </table>
           {/* assessment items/list */}
-          <div className="h-full min-h-full max-h-[800px] overflow-y-auto pb-4 flex-1 flex">
+          <div
+            className={`max-h-[800px] overflow-y-auto pb-4 ${assessments.length === 0 ? "flex-1 flex" : ""}`}
+          >
             {assessments.length === 0 ? (
               <div className="flex-1 min-h-full items-center justify-center flex">
                 <p className="text-gray-300">No data available</p>
