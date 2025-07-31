@@ -22,7 +22,9 @@ export default function AssessmentStatus({
           ? "Finished"
           : status === "in-progress"
             ? "In-Progress"
-            : "Draft"}
+            : status === "published"
+              ? "Published"
+              : "Draft"}
       </p>
     </div>
   );

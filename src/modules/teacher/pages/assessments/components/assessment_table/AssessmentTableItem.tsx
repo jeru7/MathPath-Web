@@ -25,28 +25,36 @@ export default function AssessmentTableItem({
     <tr className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer">
       {/* Title */}
       <td className="w-[30%]">
-        <div className="truncate whitespace-nowrap overflow-hidden max-w-[400px]">
-          {assessment.title}
-        </div>{" "}
+        <div
+          className={`truncate whitespace-nowrap overflow-hidden max-w-[500px] ${assessment.title ? "" : "text-gray-400"}`}
+        >
+          {assessment.title ? assessment.title : "(No title)"}
+        </div>
       </td>
       {/* Topic */}
       <td className="w-[30%]">
-        <div className="truncate whitespace-nowrap overflow-hidden max-w-[400px]">
-          {assessment.topic}
+        <div
+          className={`truncate whitespace-nowrap overflow-hidden max-w-[400px] ${assessment.topic ? "" : "text-gray-400"}`}
+        >
+          {assessment.topic ? assessment.topic : "(No topic)"}
         </div>
       </td>
       {/* Section */}
       <td className="w-[15%]">
-        <div className="flex gap-2">
-          {sectionBanners
-            ? sectionBanners?.map((banner) => (
-                <img
-                  src={getSectionBanner(banner)}
-                  alt="Section banner."
-                  className="rounded-sm w-8 h-5"
-                />
-              ))
-            : "N/A"}
+        <div
+          className={`flex gap-2 ${assessment.sections.length === 0 ? "text-gray-400 justify-center" : ""}`}
+        >
+          {assessment.sections.length === 0
+            ? "(No sections)"
+            : sectionBanners
+              ? sectionBanners?.map((banner) => (
+                  <img
+                    src={getSectionBanner(banner)}
+                    alt="Section banner."
+                    className="rounded-sm w-8 h-5"
+                  />
+                ))
+              : "N/A"}
         </div>
       </td>
       {/* Status */}
@@ -56,7 +64,9 @@ export default function AssessmentTableItem({
         </div>
       </td>
       {/* Deadline */}
-      <td className="w-[10%] text-center">
+      <td
+        className={`w-[10%] text-center ${assessment.date.end ? "" : "text-gray-400"}`}
+      >
         {assessment.date.end
           ? format(new Date(assessment.date.end), "MMM d 'at' h:mm a", {
               timeZone: "Asia/Manila",
