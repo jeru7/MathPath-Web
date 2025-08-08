@@ -70,7 +70,7 @@ export default function AssessmentTable({
           </table>
           {/* assessment items/list */}
           <div
-            className={`max-h-[800px] overflow-y-auto pb-4 ${assessments.length === 0 ? "flex-1 flex" : ""}`}
+            className={`max-h-[800px] overflow-y-auto pb-4 flex-1  ${assessments.length === 0 ? "flex" : ""}`}
           >
             {assessments.length === 0 ? (
               <div className="flex-1 min-h-full items-center justify-center flex">

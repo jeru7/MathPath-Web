@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
@@ -18,13 +18,26 @@ export default function AssessmentTableItem({
   const { teacherId } = useParams();
   const { data: sections } = useTeacherSections(teacherId ?? "");
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
   const sectionBanners = sections
     ?.filter((section) => assessment.sections.includes(section.id))
     .map((section) => section.banner);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <tr
-      className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer"
+      className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer overflow-visible"
       onClick={() => navigate(`${assessment.id}`)}
     >
       {/* Title */}
@@ -46,7 +59,7 @@ export default function AssessmentTableItem({
       {/* Section */}
       <td className="w-[15%]">
         <div
-          className={`flex gap-2 ${assessment.sections.length === 0 ? "text-gray-400 justify-center" : ""}`}
+          className={`flex gap-2 justify-center ${assessment.sections.length === 0 ? "text-gray-400" : ""}`}
         >
           {assessment.sections.length === 0
             ? "(No sections)"
@@ -77,10 +90,37 @@ export default function AssessmentTableItem({
             })
           : "N/A"}
       </td>
-      <td className="w-[5%] text-center">
-        <button className="hover:scale-110 hover:cursor-pointer">
+      <td className="w-[5%] text-center relative">
+        <button
+          className="hover:scale-110 hover:cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((prev) => !prev);
+          }}
+        >
           <HiDotsVertical />
         </button>
+
+        {menuOpen && (
+          <div
+            ref={menuRef}
+            className="absolute right-20 w-28 top-0 bg-white border border-gray-200 rounded shadow-md z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="block w-full text-left px-3 py-2 hover:bg-gray-100"
+              onClick={() => console.log("Edit", assessment.id)}
+            >
+              Edit
+            </button>
+            <button
+              className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-red-500"
+              onClick={() => console.log("Delete", assessment.id)}
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </td>
     </tr>
   );
