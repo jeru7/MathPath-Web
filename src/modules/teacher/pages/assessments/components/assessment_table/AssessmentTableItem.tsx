@@ -2,7 +2,7 @@ import { type ReactElement } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import AssessmentStatus from "./AssessmentStatus";
 import { format } from "date-fns-tz";
@@ -14,6 +14,7 @@ type AssessmentTableItemProps = {
 export default function AssessmentTableItem({
   assessment,
 }: AssessmentTableItemProps): ReactElement {
+  const navigate = useNavigate();
   const { teacherId } = useParams();
   const { data: sections } = useTeacherSections(teacherId ?? "");
 
@@ -22,7 +23,10 @@ export default function AssessmentTableItem({
     .map((section) => section.banner);
 
   return (
-    <tr className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer">
+    <tr
+      className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer"
+      onClick={() => navigate(`${assessment.id}`)}
+    >
       {/* Title */}
       <td className="w-[30%]">
         <div

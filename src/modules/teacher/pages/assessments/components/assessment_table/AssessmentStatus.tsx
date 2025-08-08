@@ -2,7 +2,7 @@ import { type ReactElement } from "react";
 import { AssessmentStatus as Status } from "../../../../../core/types/assessment/assessment.type";
 
 type AssessmentStatusProps = {
-  status: Status;
+  status: Status | undefined;
 };
 export default function AssessmentStatus({
   status,
