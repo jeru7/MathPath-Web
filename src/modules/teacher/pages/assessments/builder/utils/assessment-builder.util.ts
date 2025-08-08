@@ -4,6 +4,7 @@ import {
   Assessment,
 } from "../../../../../core/types/assessment/assessment.type";
 import { sanitizeHtml } from "./sanitizeHtml";
+import { BuilderMode } from "../AssessmentBuilder";
 
 /**
  * Return the total score of all questions.
@@ -59,4 +60,21 @@ export const getDeadlineMinTime = (
   }
 
   return new Date(0, 0, 0, 0, 0);
+};
+
+/**
+ * Get the initial step based on the mode in the url
+ * @function getInitialStep
+ */
+export const getInitialStep = (mode: BuilderMode): 1 | 2 | 3 => {
+  switch (mode) {
+    case "create":
+      return 1;
+    case "configure":
+      return 2;
+    case "publish":
+      return 3;
+    default:
+      return 1;
+  }
 };

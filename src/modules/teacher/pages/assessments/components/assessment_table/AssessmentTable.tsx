@@ -40,7 +40,7 @@ export default function AssessmentTable({
         {/* Create button */}
         <button
           className="flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-          onClick={() => navigate("create")}
+          onClick={() => navigate("new")}
         >
           <GoPlus className="w-4 h-4" />
           <p className="text-sm font-semibold">Create assessment</p>

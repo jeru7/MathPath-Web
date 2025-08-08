@@ -14,30 +14,72 @@ import {
 } from "../../../../core/services/assessments/assessment.service";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import debounce from "lodash.debounce";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getInitialStep } from "./utils/assessment-builder.util";
+
+export type BuilderMode = "create" | "configure" | "publish";
+export type BuilderStep = 1 | 2 | 3;
 
 export default function AssessmentBuilder(): ReactElement {
+  const { teacherId, assessmentId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const lastSegment = location.pathname.split("/").pop() ?? "create";
 
   // states
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<BuilderStep>(
+    // initialize step based on the url
+    ["create", "configure", "publish"].includes(lastSegment)
+      ? getInitialStep(lastSegment as BuilderMode)
+      : 1,
+  );
   const { state: assessment } = useAssessmentBuilder();
   const [isValidated, setIsValidated] = useState<boolean>(false);
 
+  // queries
   const { mutate: publishAssessment } = usePublishAssessment(
     assessment.teacher,
   );
   const { mutate: updateDraft } = useUpdateAssessmentDraft(
     assessment.teacher ?? "",
   );
+
+  // refs
   const hasMounted = useRef(false);
   const prevAssessmentRef = useRef<string>();
 
+  // debounce
   const debouncedUpdate = useRef(
     debounce((updatedAssessent: Assessment) => {
       updateDraft(updatedAssessent);
-    }, 10000),
+      console.log("debounced");
+    }, 2000), // 2 seconds
   );
+
+  // side effects
+  useEffect(() => {
+    const modeMap: Record<BuilderStep, BuilderMode> = {
+      1: "create",
+      2: "configure",
+      3: "publish",
+    };
+
+    const currentMode = modeMap[step];
+    if (teacherId) {
+      navigate(
+        `/teacher/${teacherId}/assessments/${assessmentId}/${currentMode}`,
+        {
+          replace: true,
+        },
+      );
+    }
+  }, [step, navigate, teacherId, assessmentId]);
+
+  useEffect(() => {
+    if (["create", "configure", "publish"].includes(lastSegment)) {
+      setStep(getInitialStep(lastSegment as BuilderMode));
+    }
+  }, [lastSegment]);
 
   // error trackers
   const createErrors = useAssessmentValidation(assessment, 1);
@@ -91,7 +133,7 @@ export default function AssessmentBuilder(): ReactElement {
           <div className="relative">
             <Stepper
               currentStep={step}
-              onChangeStep={(step: 1 | 2 | 3) => setStep(step)}
+              onChangeStep={(step: BuilderStep) => setStep(step)}
               isValidated={isValidated}
               createErrors={
                 Array.isArray(createErrors.emptyPages)

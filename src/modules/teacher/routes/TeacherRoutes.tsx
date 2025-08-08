@@ -6,7 +6,7 @@ import Student from "../pages/students/student/Student";
 import Sections from "../pages/sections/Sections";
 import Assessments from "../pages/assessments/Assessments";
 import Statistics from "../pages/statistics/Statistics";
-import AssessmentBuilder from "../pages/assessments/builder/";
+import AssessmentBuilderWrapper from "../pages/assessments/builder/AssessmentBuilderWrapper";
 
 export const TeacherRoutes = (
   <Route path="/teacher/:teacherId" element={<Teacher />}>
@@ -20,7 +20,19 @@ export const TeacherRoutes = (
     <Route path="sections" element={<Sections />} />
     <Route path="assessments">
       <Route index element={<Assessments />} />
-      <Route path="create" element={<AssessmentBuilder />} />
+      <Route path="new" element={<AssessmentBuilderWrapper />} />
+      <Route
+        path=":assessmentId/create"
+        element={<AssessmentBuilderWrapper />}
+      />
+      <Route
+        path=":assessmentId/configure"
+        element={<AssessmentBuilderWrapper />}
+      />
+      <Route
+        path=":assessmentId/publish"
+        element={<AssessmentBuilderWrapper />}
+      />
     </Route>
   </Route>
 );
