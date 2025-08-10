@@ -6,6 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import AssessmentStatus from "./AssessmentStatus";
 import { format } from "date-fns-tz";
+import { useDeleteAssessment } from "../../../../../core/services/assessments/assessment.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
@@ -17,6 +19,8 @@ export default function AssessmentTableItem({
   const navigate = useNavigate();
   const { teacherId } = useParams();
   const { data: sections } = useTeacherSections(teacherId ?? "");
+  const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
+  const queryClient = useQueryClient();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -24,6 +28,17 @@ export default function AssessmentTableItem({
   const sectionBanners = sections
     ?.filter((section) => assessment.sections.includes(section.id))
     .map((section) => section.banner);
+
+  const handleDeleteAssessment = () => {
+    deleteAssessment(assessment.id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "assessments"],
+        });
+      },
+    });
+    setMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -108,14 +123,15 @@ export default function AssessmentTableItem({
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="block w-full text-left px-3 py-2 hover:bg-gray-100"
-              onClick={() => console.log("Edit", assessment.id)}
+              className="block w-full text-left px-3 py-2 hover:bg-gray-100 hover:cursor-pointer"
+              onClick={() => navigate(`${assessment.id}/create`)}
             >
               Edit
             </button>
             <button
-              className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-red-500"
-              onClick={() => console.log("Delete", assessment.id)}
+              className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-red-500 hover:cursor-pointer"
+              type="button"
+              onClick={handleDeleteAssessment}
             >
               Delete
             </button>

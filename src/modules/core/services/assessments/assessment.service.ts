@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Assessment } from "../../types/assessment/assessment.type";
-import { patchData, postData } from "../../utils/api/api.util";
+import { deleteData, patchData, postData } from "../../utils/api/api.util";
 import { URL } from "../../constants/api.constant";
 
 export const useCreateAssessmentDraft = (teacherId: string) => {
@@ -48,6 +48,17 @@ export const useUpdateAssessmentDraft = (teacherId: string) => {
         `${URL}/api/web/teachers/${teacherId}/assessments/${updatedAssessment.id}`,
         updatedAssessment,
         "Failed to update assessment draft",
+      );
+    },
+  });
+};
+
+export const useDeleteAssessment = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (assessmentId: string) => {
+      return deleteData<null>(
+        `${URL}/api/web/teachers/${teacherId}/assessments/${assessmentId}`,
+        "Failed to delete assessment.",
       );
     },
   });

@@ -41,3 +41,15 @@ export const patchData = async <TResponse, TRequest>(
     throw new Error(errorMessage);
   }
 };
+
+export const deleteData = async <TResponse>(
+  url: string,
+  errorMessage: string,
+): Promise<TResponse | null> => {
+  try {
+    const res = await axios.delete<{ data: TResponse }>(url);
+    return res.data.data ?? null;
+  } catch {
+    throw new Error(errorMessage);
+  }
+};
