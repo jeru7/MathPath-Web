@@ -9,15 +9,15 @@ export default function AssessmentStatus({
 }: AssessmentStatusProps): ReactElement {
   return (
     <div
-      className={`flex gap-1 items-center w-fit border rounded-full py-1 px-3 ${
+      className={`flex gap-1 items-center w-fit rounded-full py-1 px-3 ${
         status === "finished"
-          ? "text-[var(--primary-green)]"
-          : status === "in-progress"
-            ? "text-[var(--secondary-green)]"
-            : "text-[var(--primary-yellow)]"
+          ? "bg-[var(--primary-green)]"
+          : status === "in-progress" || status === "published"
+            ? "bg-[var(--secondary-green)]"
+            : "bg-[var(--primary-yellow)]"
       }`}
     >
-      <p>
+      <p className="text-white font-semibold">
         {status === "finished"
           ? "Finished"
           : status === "in-progress"
