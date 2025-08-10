@@ -19,12 +19,18 @@ type PublishProps = {
   isValidated: boolean;
   errors: { [key: string]: string | number[] };
   onPublishAssessment: () => void;
+  onSaveAssessment: () => void;
+  isPublishPending: boolean;
+  isSavePending: boolean;
 };
 
 export default function Publish({
   isValidated,
   errors,
   onPublishAssessment,
+  onSaveAssessment,
+  isPublishPending,
+  isSavePending,
 }: PublishProps): ReactElement {
   // params
   const { teacherId } = useParams();
@@ -43,9 +49,6 @@ export default function Publish({
   const [endDate, setEndDate] = useState<Date | null>(
     assessment.date.end ? new Date(assessment.date.end) : null,
   );
-
-  // methods
-  // const getTeacherSection = (sectionId: )
 
   // handlers
   const handleAddSection = (sections: Section[]) => {
@@ -230,11 +233,26 @@ export default function Publish({
           </form>
         </section>
       </AnimatePresence>
+      {/* publish assessment */}
       <button
         className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
         onClick={onPublishAssessment}
+        type="button"
       >
-        <p className="text-white font-semibold">Publish Assessment</p>
+        <p className="text-white font-semibold">
+          {isPublishPending ? "Publishing..." : "Publish Assessment"}
+        </p>
+      </button>
+
+      {/* save as draft */}
+      <button
+        className={`border px-4 py-3 rounded-sm w-full opacity-60 ${isSavePending ? "opacity-100" : "hover:cursor-pointer hover:opacity-100 transition-all duration-200"}`}
+        onClick={onSaveAssessment}
+        type="button"
+      >
+        <p className="text-black font-semibold">
+          {isSavePending ? "Saving..." : "Save as Draft"}
+        </p>
       </button>
     </div>
   );

@@ -7,6 +7,7 @@ import Sections from "../pages/sections/Sections";
 import Assessments from "../pages/assessments/Assessments";
 import Statistics from "../pages/statistics/Statistics";
 import AssessmentBuilderWrapper from "../pages/assessments/builder/AssessmentBuilderWrapper";
+import AssessmentInfo from "../pages/assessments/info/AssessmentInfo";
 
 export const TeacherRoutes = (
   <Route path="/teacher/:teacherId" element={<Teacher />}>
@@ -20,6 +21,7 @@ export const TeacherRoutes = (
     <Route path="sections" element={<Sections />} />
     <Route path="assessments">
       <Route index element={<Assessments />} />
+      <Route path=":assessmentId" element={<AssessmentInfo />} />
       <Route path="new" element={<AssessmentBuilderWrapper />} />
       <Route
         path=":assessmentId/create"

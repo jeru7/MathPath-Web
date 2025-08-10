@@ -45,63 +45,68 @@ export default function AssessmentInfo(): ReactElement {
           {/* main info */}
           <article className="flex flex-col text-lg gap-2">
             {/* title */}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <span className="font-semibold">Title:</span>{" "}
               <p
-                className={`${assessment?.title ? "" : "text-gray-400 italic"}`}
+                className={`text-base ${assessment?.title ? "" : "text-gray-400 italic"}`}
               >
                 {assessment?.title ?? "(No title)"}
               </p>
             </div>
 
             {/* topic */}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <span className="font-semibold">Topic:</span>{" "}
               <p
-                className={`${assessment?.topic ? "" : "text-gray-400 italic"}`}
+                className={`text-base ${assessment?.topic ? "" : "text-gray-400 italic"}`}
               >
                 {assessment?.topic ?? "(No topic)"}
               </p>
             </div>
 
             {/* description */}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <span className="font-semibold">Description:</span>{" "}
               <p
-                className={`${assessment?.description ? "" : "text-gray-400 italic"}`}
+                className={`text-base ${assessment?.description ? "" : "text-gray-400 italic"}`}
               >
                 {assessment?.description ?? "(No Description)"}
               </p>
             </div>
 
             {/* status */}
-            <div className="flex gap-2 text-sm">
+            <div className="flex items-center gap-2 text-sm">
               <p className="text-lg font-semibold">Status:</p>
               <AssessmentStatus status={assessment?.status} />
             </div>
 
             {/* start date */}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <span className="font-semibold">Start date:</span>{" "}
               <p
-                className={`${assessment?.date.start ? "" : "text-gray-400 italic"}`}
+                className={`text-base ${assessment?.date.start ? "" : "text-gray-400 italic"}`}
               >
                 {assessment?.date.start
                   ? format(
                       formatToPhDate(assessment.date.start.toString()),
-                      "MMMM d, yyyy",
+                      "MMMM d, yyyy 'at' h:mm a",
                     )
                   : "No data available"}
               </p>
             </div>
 
-            {/* description */}
-            <div className="flex gap-2">
+            {/* deadline */}
+            <div className="flex items-center gap-2">
               <span className="font-semibold">Deadline:</span>{" "}
               <p
-                className={`${assessment?.description ? "" : "text-gray-400 italic"}`}
+                className={`text-base ${assessment?.date.end ? "" : "text-gray-400 italic"}`}
               >
-                {assessment?.date.end ?? "No data available"}
+                {assessment?.date.end
+                  ? format(
+                      formatToPhDate(assessment.date.end.toString()),
+                      "MMMM d, yyyy 'at' h:mm a",
+                    )
+                  : "No data available"}
               </p>
             </div>
           </article>

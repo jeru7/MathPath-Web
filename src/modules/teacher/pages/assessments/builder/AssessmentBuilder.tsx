@@ -16,12 +16,14 @@ import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import debounce from "lodash.debounce";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getInitialStep } from "./utils/assessment-builder.util";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type BuilderMode = "create" | "configure" | "publish";
 export type BuilderStep = 1 | 2 | 3;
 
 export default function AssessmentBuilder(): ReactElement {
   const { teacherId, assessmentId } = useParams();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
   const lastSegment = location.pathname.split("/").pop() ?? "create";
@@ -43,6 +45,8 @@ export default function AssessmentBuilder(): ReactElement {
   const { mutate: updateDraft } = useUpdateAssessmentDraft(
     assessment.teacher ?? "",
   );
+  const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   // refs
   const hasMounted = useRef(false);
@@ -96,9 +100,27 @@ export default function AssessmentBuilder(): ReactElement {
     setIsValidated(true);
 
     if (hasError) return;
+
+    setPublishing(true);
     publishAssessment(assessment, {
       onSuccess: () => {
-        navigate("..");
+        setTimeout(() => {
+          navigate("..");
+        }, 3000);
+      },
+    });
+  };
+
+  const handleSaveAssessment = () => {
+    setSaving(true);
+    updateDraft(assessment, {
+      onSuccess: () => {
+        setTimeout(() => {
+          navigate("..");
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "assessments"],
+          });
+        }, 3000);
       },
     });
   };
@@ -127,7 +149,10 @@ export default function AssessmentBuilder(): ReactElement {
 
       <div className="flex min-h-full h-fit flex-col flex-1">
         <header className="flex justify-center relative">
-          <button className="absolute py-1 px-4 border rounded-sm left-0 top-1/2 -translate-y-1/2">
+          <button
+            className="absolute py-1 px-4 border rounded-sm left-0 top-1/2 -translate-y-1/2 opacity-80 hover:cursor-pointer hover:opacity-100 transition-colors duration-200"
+            onClick={() => navigate("..")}
+          >
             <p>Back</p>
           </button>
           <div className="relative">
@@ -159,6 +184,9 @@ export default function AssessmentBuilder(): ReactElement {
               isValidated={isValidated}
               errors={publishErrors}
               onPublishAssessment={handlePublishAssessment}
+              onSaveAssessment={handleSaveAssessment}
+              isPublishPending={publishing}
+              isSavePending={saving}
             />
           ) : null}
         </section>
