@@ -80,7 +80,10 @@ export default function AssessmentTable({
               <table className="font-primary table-auto w-full">
                 <tbody>
                   {assessments.map((assessment) => (
-                    <AssessmentTableItem assessment={assessment} />
+                    <AssessmentTableItem
+                      key={assessment.id}
+                      assessment={assessment}
+                    />
                   ))}
                 </tbody>
               </table>

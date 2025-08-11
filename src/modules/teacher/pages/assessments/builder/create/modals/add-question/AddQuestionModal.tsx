@@ -95,7 +95,6 @@ export default function AddQuestionModal({
         type: "ADD_QUESTION",
         payload: { pageId, question },
       });
-      console.log("ADD_QUESTION");
     }
 
     onClose();

@@ -54,10 +54,9 @@ export default function AssessmentBuilder(): ReactElement {
 
   // debounce
   const debouncedUpdate = useRef(
-    debounce((updatedAssessent: Assessment) => {
-      updateDraft(updatedAssessent);
-      console.log("debounced");
-    }, 2000), // 2 seconds
+    debounce((updatedAssessment: Assessment) => {
+      updateDraft(updatedAssessment);
+    }, 2000), // 2 secs
   );
 
   // side effects
@@ -151,7 +150,9 @@ export default function AssessmentBuilder(): ReactElement {
         <header className="flex justify-center relative">
           <button
             className="absolute py-1 px-4 border rounded-sm left-0 top-1/2 -translate-y-1/2 opacity-80 hover:cursor-pointer hover:opacity-100 transition-colors duration-200"
-            onClick={() => navigate("..")}
+            onClick={() => {
+              navigate("..");
+            }}
           >
             <p>Back</p>
           </button>

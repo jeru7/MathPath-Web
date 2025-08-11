@@ -79,8 +79,9 @@ export default function AssessmentTableItem({
           {assessment.sections.length === 0
             ? "(No sections)"
             : sectionBanners
-              ? sectionBanners?.map((banner) => (
+              ? sectionBanners?.map((banner, index) => (
                   <img
+                    key={index}
                     src={getSectionBanner(banner)}
                     alt="Section banner."
                     className="rounded-sm w-8 h-5"

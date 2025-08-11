@@ -53,7 +53,7 @@ export default function AssessmentBuilderWrapper(): ReactElement {
     };
   }, []);
 
-  if (isFetching || !assessmentDraft) {
+  if (isFetching || !assessmentDraft || !hasInitialized) {
     return <p>Loading assessment draft...</p>;
   }
 

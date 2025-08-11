@@ -1,14 +1,22 @@
-import { type ReactElement } from "react";
+import { useEffect, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AssessmentTable from "./components/assessment_table/AssessmentTable";
 import { useTeacherAssessments } from "../../services/teacher.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { teacherId } = useParams();
   const { data: assessments = [], isLoading } = useTeacherAssessments(
     teacherId ?? "",
   );
+
+  useEffect(() => {
+    queryClient.refetchQueries({
+      queryKey: ["teacher", teacherId, "assessments"],
+    });
+  }, [queryClient, teacherId]);
 
   if (isLoading || !teacherId) return <p>Loading</p>;
 
