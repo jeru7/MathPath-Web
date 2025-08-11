@@ -47,18 +47,11 @@ export default function AssessmentBuilderWrapper(): ReactElement {
     }
   }, [teacherId, mutateAsync, draftId, navigate]);
 
-  // useEffect(() => {
-  //   const handleUnload = () => {
-  //     localStorage.removeItem("currentAssessmentDraftId");
-  //   };
-  //
-  //   window.addEventListener("beforeunload", handleUnload);
-  //
-  //   return () => {
-  //     handleUnload();
-  //     window.removeEventListener("beforeunload", handleUnload);
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("currentAssessmentDraftId");
+    };
+  }, []);
 
   if (isFetching || !assessmentDraft) {
     return <p>Loading assessment draft...</p>;
