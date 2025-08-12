@@ -80,12 +80,28 @@ export type FillInTheBlankAnswerType = {
   value: string;
 };
 
-// assessment page content
-export type AssessmentContent = {
-  id: string;
-  type: AssessmentContentTypes;
-  data: string | AssessmentQuestion;
+export type AssessmentImage = {
+  secureUrl: string;
+  publicId: string;
 };
+
+// assessment page content
+export type AssessmentContent =
+  | {
+      id: string;
+      type: "image";
+      data: AssessmentImage;
+    }
+  | {
+      id: string;
+      type: "question";
+      data: AssessmentQuestion;
+    }
+  | {
+      id: string;
+      type: "text";
+      data: string;
+    };
 
 export type AssessmentContentTypes = "image" | "question" | "text";
 

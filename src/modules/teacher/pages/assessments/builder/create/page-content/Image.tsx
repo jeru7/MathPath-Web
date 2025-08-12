@@ -26,8 +26,10 @@ export default function Image({
     isDragging,
   } = useSortable({ id: content.id });
 
-  // assert data as string (since this is imageUrl)
-  const data = content.data as string;
+  const { secureUrl } =
+    content.type === "image"
+      ? (content.data as { secureUrl: string; publicId: string })
+      : { secureUrl: "" };
 
   const style = {
     transition,
@@ -70,7 +72,7 @@ export default function Image({
         className={`flex flex-col items-center ${isDragging ? "opacity-0" : ""}`}
       >
         <img
-          src={data}
+          src={secureUrl}
           alt="Uploaded content"
           className="max-w-full max-h-96 object-contain"
         />

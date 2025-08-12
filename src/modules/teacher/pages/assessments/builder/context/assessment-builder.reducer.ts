@@ -83,11 +83,16 @@ export type AssessmentBuilderAction =
     }
   | {
       type: "ADD_IMAGE";
-      payload: { pageId: string; imageUrl: string };
+      payload: { pageId: string; imageUrl: string; publicId: string };
     }
   | {
       type: "UPDATE_IMAGE";
-      payload: { pageId: string; contentId: string; imageUrl: string };
+      payload: {
+        pageId: string;
+        contentId: string;
+        imageUrl: string;
+        publicId: string;
+      };
     }
   | {
       type: "ADD_TEXT";
@@ -240,7 +245,10 @@ export const assessmentBuilderReducer = (
               {
                 id: nanoid(),
                 type: "image" as const,
-                data: action.payload.imageUrl,
+                data: {
+                  secureUrl: action.payload.imageUrl,
+                  publicId: action.payload.publicId,
+                },
               },
             ],
           };
@@ -262,7 +270,10 @@ export const assessmentBuilderReducer = (
                 return {
                   ...content,
                   type: "image" as const,
-                  data: action.payload.imageUrl,
+                  data: {
+                    secureUrl: action.payload.imageUrl,
+                    publicId: action.payload.publicId,
+                  },
                 };
               }
 

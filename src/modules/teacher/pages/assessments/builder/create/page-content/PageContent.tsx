@@ -19,6 +19,8 @@ import {
 import { createPortal } from "react-dom";
 import { useAssessmentBuilder } from "../../context/assessment-builder.context";
 import { ModalType } from "../modals/Modals";
+import { deleteImage } from "../../../../../../core/utils/cloudinary/cloudinary.util";
+import { toast } from "react-toastify";
 
 type PageContentProps = {
   contents: AssessmentContent[];
@@ -68,7 +70,15 @@ export default function PageContent({
     handleContentChanges(pageId, arrayMove(contents, originalPos, newPos));
   };
 
-  const handleDeleteContent = (content: AssessmentContent) => {
+  const handleDeleteContent = async (content: AssessmentContent) => {
+    if (content.type === "image") {
+      try {
+        await deleteImage(content.data.publicId);
+      } catch {
+        toast.error("Failed to delete image.");
+        return; // stop if API failed
+      }
+    }
     dispatch({ type: "DELETE_CONTENT", payload: { pageId, content } });
   };
 

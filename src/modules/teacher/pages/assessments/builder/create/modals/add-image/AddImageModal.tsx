@@ -5,6 +5,8 @@ import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
 import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
 import { AssessmentContent } from "../../../../../../../core/types/assessment/assessment.type";
+import { createPortal } from "react-dom";
+import { uploadImage } from "../../../../../../../core/utils/cloudinary/cloudinary.util";
 
 type AddImageModalProps = {
   onClose: () => void;
@@ -21,6 +23,7 @@ export default function AddImageModal({
 
   const [isValidated, setIsValidated] = useState<boolean>(false);
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const MAX_FILE_SIZE = 200 * 1024; // 200kb
 
@@ -66,7 +69,7 @@ export default function AddImageModal({
     fileInputRef.current?.click();
   };
 
-  const handleAddImage = () => {
+  const handleAddImage = async () => {
     setIsValidated(true);
 
     if (!previewUrl) {
@@ -74,23 +77,46 @@ export default function AddImageModal({
       return;
     }
 
-    if (contentToEdit) {
-      dispatch({
-        type: "UPDATE_IMAGE",
-        payload: {
-          pageId,
-          contentId: contentToEdit.id,
-          imageUrl: previewUrl,
-        },
-      });
-    } else {
-      dispatch({
-        type: "ADD_IMAGE",
-        payload: { pageId, imageUrl: previewUrl },
-      });
-    }
+    try {
+      setIsUploading(true);
 
-    onClose();
+      let imageUrl = previewUrl;
+      let publicId = null;
+
+      if (fileRef.current) {
+        const { secureUrl, publicId: pid } = await uploadImage(fileRef.current);
+        imageUrl = secureUrl;
+        publicId = pid;
+      }
+
+      if (contentToEdit) {
+        dispatch({
+          type: "UPDATE_IMAGE",
+          payload: {
+            pageId,
+            contentId: contentToEdit.id,
+            imageUrl,
+            publicId,
+          },
+        });
+      } else {
+        dispatch({
+          type: "ADD_IMAGE",
+          payload: {
+            pageId,
+            imageUrl,
+            publicId,
+          },
+        });
+      }
+
+      onClose();
+    } catch (error) {
+      toast.error("Failed to upload image.");
+      console.log(error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -160,6 +186,12 @@ export default function AddImageModal({
         {/* actions */}
         <ModalActions onAddContent={handleAddImage} onCancelClick={onClose} />
       </section>
+
+      {isUploading &&
+        createPortal(
+          <div className="fixed h-screen w-screen bg-black/20 z-50 top-0 left-0"></div>,
+          document.body,
+        )}
     </motion.article>
   );
 }
