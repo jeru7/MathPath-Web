@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import { FaCircle, FaMedal } from "react-icons/fa";
+import { FaMedal } from "react-icons/fa";
 import { IoWarning } from "react-icons/io5";
 import CircularProgress from "../../../../../core/components/charts/CircularProgress";
 
@@ -10,11 +10,12 @@ export default function TopicHighlightsCard({
 }): ReactElement {
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col gap-3`}
+      className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col gap-3 pb-5`}
     >
       <header>
-        <p className="font-semibold text-lg">Topic Highlights</p>
+        <p className="font-semibold text-md md:text-lg">Topic Highlights</p>
       </header>
+
       <section className="flex gap-2 h-full">
         {/* Highest */}
         <article className="h-full w-full flex flex-col gap-2 items-center">
@@ -22,7 +23,9 @@ export default function TopicHighlightsCard({
             <div className="flex items-center justify-center bg-[var(--primary-green)] rounded-full p-2">
               <FaMedal className="w-4 h-4 text-white" />
             </div>
-            <h6 className="text-md font-semibold">Lowest: Permutation</h6>
+            <h6 className="text-sm md:text-md font-semibold">
+              Lowest: Permutation
+            </h6>
           </header>
           <section className="flex h-full">
             <section className="w-full h-full flex items-center justify-center flex-col">
@@ -39,10 +42,6 @@ export default function TopicHighlightsCard({
               </article>
             </section>
           </section>
-          <div className="flex gap-1 items-center">
-            <FaCircle className="text-[var(--primary-green)] w-3 h-3" />
-            <p className="text-xs">Correctness</p>
-          </div>
         </article>
 
         <div className="w-[2px] bg-gray-200"></div>
@@ -53,7 +52,9 @@ export default function TopicHighlightsCard({
             <div className="flex items-center justify-center bg-[var(--primary-yellow)] rounded-full p-2">
               <IoWarning className="w-4 h-4 text-white" />
             </div>
-            <h6 className="text-md font-semibold">Lowest: Permutation</h6>
+            <h6 className="text-sm md:text-md font-semibold">
+              Lowest: Permutation
+            </h6>
           </header>
           <section className="flex h-full">
             <section className="w-full h-full flex items-center justify-center flex-col">
@@ -70,10 +71,6 @@ export default function TopicHighlightsCard({
               </article>
             </section>
           </section>
-          <div className="flex gap-1 items-center">
-            <FaCircle className="text-[var(--primary-yellow)] w-3 h-3" />
-            <p className="text-xs">Correctness</p>
-          </div>
         </article>
       </section>
     </article>

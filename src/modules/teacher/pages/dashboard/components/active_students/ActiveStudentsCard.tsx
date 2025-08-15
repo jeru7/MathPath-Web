@@ -43,7 +43,7 @@ export default function ActiveStudentsCard({
       className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col`}
     >
       <header>
-        <p className="font-semibold text-lg">Active Students</p>
+        <p className="font-semibold text-md md:text-lg">Active Students</p>
       </header>
 
       <div className="flex gap-2 h-full">

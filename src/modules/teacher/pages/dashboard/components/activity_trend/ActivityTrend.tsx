@@ -122,10 +122,12 @@ export default function ActivityTrend({
 
   return (
     <article
-      className={`${classes} rounded-md shadow-sm bg-white flex flex-col py-2 px-3 gap-2 justify-between`}
+      className={`${classes} rounded-md shadow-sm bg-white flex flex-col py-2 px-3 gap-2 justify-between min-h-[400px]`}
     >
       <header className="flex justify-between w-full items-center">
-        <p className="text-lg font-semibold">Student Activity Trend</p>
+        <p className="text-sm sm:text-base md:text-lg font-semibold">
+          Student Activity Trend
+        </p>
 
         <div className="flex gap-2">
           <section className="flex"></section>
@@ -134,7 +136,7 @@ export default function ActivityTrend({
               <button
                 key={item}
                 onClick={() => setRange(item as Range)}
-                className={`px-3 py-1 rounded-md text-sm hover:cursor-pointer ${range === item ? "bg-[var(--secondary-green)]/80 text-black hover:bg-[var(--secondary-green)]" : "bg-gray-100 hover:bg-gray-200"}`}
+                className={`px-3 py-1 rounded-md text-xs md:text-sm hover:cursor-pointer ${range === item ? "bg-[var(--secondary-green)]/80 text-black hover:bg-[var(--secondary-green)]" : "bg-gray-100 hover:bg-gray-200"}`}
               >
                 {capitalizeWord(item)}
               </button>
@@ -143,39 +145,41 @@ export default function ActivityTrend({
         </div>
       </header>
 
-      <section className="max-h-[350px] w-full h-full">
-        <ResponsiveContainer>
-          <AreaChart
-            data={chartData}
-            margin={{ top: 10, right: 20, left: 0, bottom: 30 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis
-              dataKey="label"
-              tick={{ fontSize: 12, fontWeight: 600, dy: 10 }}
-            />
-            <YAxis
-              allowDecimals={false}
-              tick={{ fontSize: 12, fontWeight: 600, dx: -10 }}
-            />
-            <Tooltip
-              content={({ active, payload, label }) =>
-                active && payload && payload.length ? (
-                  <div className="bg-white p-2 rounded shadow text-sm">
-                    <p className="font-semibold">{label}</p>
-                    <p>Online: {payload[0].value}</p>
-                  </div>
-                ) : null
-              }
-            />
-            <Area
-              type="monotone"
-              dataKey="onlineCount"
-              stroke="#22c55e"
-              fill="#bbf7d0"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+      <section className="max-h-[350px] min-h-[300px] w-full h-full overflow-x-auto">
+        <div className="min-w-[1000px] h-full">
+          <ResponsiveContainer className={"min-h-[300px]"}>
+            <AreaChart
+              data={chartData}
+              margin={{ top: 10, right: 10, left: -30, bottom: 10 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis
+                dataKey="label"
+                tick={{ fontSize: 12, fontWeight: 600, dy: 10 }}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fontSize: 12, fontWeight: 600, dx: -10 }}
+              />
+              <Tooltip
+                content={({ active, payload, label }) =>
+                  active && payload && payload.length ? (
+                    <div className="bg-white p-2 rounded shadow text-sm">
+                      <p className="font-semibold">{label}</p>
+                      <p>Online: {payload[0].value}</p>
+                    </div>
+                  ) : null
+                }
+              />
+              <Area
+                type="monotone"
+                dataKey="onlineCount"
+                stroke="#22c55e"
+                fill="#bbf7d0"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </section>
     </article>
   );

@@ -26,7 +26,7 @@ export default function ActivityList({
 
   return (
     <article
-      className={`${classes} w-[20%] py-2 px-3 flex flex-col h-full bg-white rounded-md gap-2 shadow-xs`}
+      className={`${classes} py-2 px-3 flex flex-col h-full bg-white rounded-md gap-2 shadow-xs`}
     >
       <header className="w-full flex items-center justify-between border-b-gray-300 border-b-1 pb-1">
         <p className="font-semibold">Recent Activity</p>
@@ -45,9 +45,9 @@ export default function ActivityList({
       </header>
 
       <div
-        className="h-full overflow-scroll pr-4"
+        className="h-full overflow-scroll pr-4 min-h-[400px]"
         style={{
-          maxHeight: `${type === "Teacher" ? "430px" : "350px"}`,
+          maxHeight: `${type === "Teacher" ? "475px" : "350px"}`,
         }}
       >
         <div className="relative flex flex-col w-full h-fit">
@@ -64,6 +64,7 @@ export default function ActivityList({
           </section>
         </div>
       </div>
+      {/* TODO: view all placing - initial sizing of the container above */}
       <p className="ml-auto text-sm underline text-gray-400 hover:cursor-pointer hover:text-gray-500 transition-colors duration-200">
         View all
       </p>

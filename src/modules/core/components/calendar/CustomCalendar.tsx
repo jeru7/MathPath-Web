@@ -3,10 +3,20 @@ import "react-calendar/dist/Calendar.css";
 import "../../styles/customCalendar.css";
 import { Calendar } from "react-calendar";
 
-export default function CustomCalendar(): ReactElement {
+type CustomCalendarProps = {
+  classes?: string;
+};
+
+export default function CustomCalendar({
+  classes,
+}: CustomCalendarProps): ReactElement {
   return (
-    <article className="w-full h-fit rounded-sm bg-white shadow-sm p-4 flex flex-col gap-8">
-      <Calendar showFixedNumberOfWeeks={true} />
+    <article
+      className={`${classes} w-full rounded-sm bg-white shadow-sm p-4 flex flex-col gap-8 items-center`}
+    >
+      <div className="h-full">
+        <Calendar showFixedNumberOfWeeks={true} />
+      </div>
     </article>
   );
 }

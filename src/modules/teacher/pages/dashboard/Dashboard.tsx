@@ -32,16 +32,17 @@ export default function Dashboard(): ReactElement {
   ];
 
   return (
-    <main className="flex h-screen w-full max-w-[2200px] flex-col gap-2 bg-inherit p-4">
-      {/* Header */}
+    <main className="flex flex-col min-h-screen w-full max-w-[2200px] gap-2 bg-inherit p-4">
+      {/* header */}
       <header className="flex items-center justify-between py-1">
-        <h3 className="text-2xl font-bold">Dashboard</h3>
+        <h3 className="text-xl sm:text-2xl font-bold">Dashboard</h3>
       </header>
 
-      <div className="h-full flex gap-2">
-        <div className="w-[80%] h-full flex flex-col gap-2">
-          {/* Stats */}
-          <section className="flex h-[20%] gap-2">
+      <div className="flex-1 flex flex-col xl:flex-row gap-2 xl:min-h-[calc(100vh-4rem)]">
+        {/* left column */}
+        <div className="xl:w-[75%] flex-1 flex flex-col gap-2">
+          {/* stats */}
+          <section className="flex min-h-[120px] xl:h-[200px] xl:min-h-[200px] w-full xl:w-full gap-2 overflow-x-auto overflow-y-hidden xl:overflow-x-hidden no-scrollbar">
             {primaryStats.map((stat, index) => (
               <PrimaryStat
                 key={index}
@@ -55,27 +56,30 @@ export default function Dashboard(): ReactElement {
             ))}
           </section>
 
-          {/* Stage progression */}
-          <div className="w-full h-[50%]">
-            <ActivityTrend classes="w-full h-full max-h-[500px]" />
+          {/* stage progression */}
+          <div className="w-full h-fit">
+            <ActivityTrend classes="w-full h-full min-h-[300px] max-h-[500px]" />
           </div>
 
-          {/* Active students, Correct Percentage, Assessment Status */}
-          <div className="w-full flex flex-col gap-2 h-[30%]">
-            <section className="h-full w-full flex gap-2">
-              <ActiveStudentsCard classes="h-full w-full" />
-              <TopicHighlightsCard classes=" h-full w-full" />
-              <AssessmentStatusCard classes=" h-full w-full" />
+          {/* active students, correct percentage, assessment status */}
+          <div className="w-full h-full flex flex-col gap-2">
+            <section className="h-full w-full flex flex-col lg:flex-row gap-2">
+              <ActiveStudentsCard classes="flex-1" />
+              <TopicHighlightsCard classes="flex-1" />
+              <AssessmentStatusCard classes=" flex-1" />
             </section>
           </div>
         </div>
 
-        {/* Calendar and Activity list */}
-        <div className="w-[20%] h-full flex flex-col gap-2">
-          {/* Calendar */}
-          <CustomCalendar />
-          {/* Student activity */}
-          <ActivityList classes="rounded-md bg-white w-full" type="Teacher" />
+        {/* right column */}
+        <div className="w-full xl:w-[25%] flex flex-col md:flex-row xl:flex-col gap-2">
+          {/* calendar */}
+          <CustomCalendar classes="" />
+          {/* student activity */}
+          <ActivityList
+            classes="min-h-[400px] rounded-md bg-white w-full"
+            type="Teacher"
+          />
         </div>
       </div>
     </main>
