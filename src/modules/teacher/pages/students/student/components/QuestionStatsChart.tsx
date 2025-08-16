@@ -71,7 +71,8 @@ const QuestionCustomTooltip = ({
   return null;
 };
 
-export default function StudentChart({
+// TODO: responsive layout with data
+export default function QuestionStatsChart({
   classNames,
 }: {
   classNames: string;
@@ -103,21 +104,26 @@ export default function StudentChart({
   }
 
   return (
-    <div className={`${classNames} p-8 gap-4 flex flex-col`}>
-      <header className="flex justify-between">
-        <h3 className="font-bold text-2xl">Question stats</h3>
-        <select
-          id="level-select"
-          value={selectedStage}
-          onChange={(e) => setSelectedStage(Number(e.target.value))}
-          className="border rounded p-2"
-        >
-          {availableStage.map((stage) => (
-            <option key={stage} value={stage}>
-              Stage {stage}
-            </option>
-          ))}
-        </select>
+    <div className={`${classNames} p-4 gap-4 flex flex-col`}>
+      <header className="flex justify-between items-center">
+        <h3 className="font-bold text-xl xl:text-2xl">Question stats</h3>
+        {chartData.length > 0 ||
+          (chartData.every(
+            (item) => item.correctCount === 0 && item.wrongCount === 0,
+          ) && (
+            <select
+              id="level-select"
+              value={selectedStage}
+              onChange={(e) => setSelectedStage(Number(e.target.value))}
+              className="border rounded p-2"
+            >
+              {availableStage.map((stage) => (
+                <option key={stage} value={stage}>
+                  Stage {stage}
+                </option>
+              ))}
+            </select>
+          ))}{" "}
       </header>
       {/* Question Chart */}
       {chartData.length === 0 ||

@@ -35,6 +35,7 @@ CalendarHeatmap.prototype.getHeight = function () {
   );
 };
 
+// TODO: responsive layout with data
 export default function StudentHeatmap(): ReactElement {
   const { studentId } = useParams();
   const { data: studentProgressLog } = useStudentProgressLog(studentId || "");
@@ -74,25 +75,29 @@ export default function StudentHeatmap(): ReactElement {
   };
 
   return (
-    <div className="w-full h-full flex-col gap-8 flex justify-center py-8 pr-8">
-      <header className="pl-8">
-        <h3 className="text-2xl font-bold">Activity Map</h3>
+    <div className="w-full h-full flex-col gap-8 flex justify-center py-4 pr-4">
+      <header className="pl-4">
+        <h3 className="text-xl xl:text-2xl font-bold">Activity Map</h3>
       </header>
-      <CalendarHeatmap
-        startDate={startDate}
-        endDate={endDate}
-        values={chartData}
-        showWeekdayLabels={true}
-        weekdayLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
-        classForValue={(value) => {
-          if (!value || value.count === 0) return "color-empty";
-          if (value.count > 15) return "color-high";
-          if (value.count > 7) return "color-medium";
-          return "color-low";
-        }}
-        tooltipDataAttrs={tooltipDataAttrs}
-      />
-      <Tooltip id="heatmap-tooltip" />
+      <div className="overflow-x-auto xl:overflow-hidden xl:flex justify-center items-center">
+        <div className="min-h-[200px] min-w-[1200px] xl:max-h-[400px] xl:max-w-[1500px] xl:flex-1">
+          <CalendarHeatmap
+            startDate={startDate}
+            endDate={endDate}
+            values={chartData}
+            showWeekdayLabels={true}
+            weekdayLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
+            classForValue={(value) => {
+              if (!value || value.count === 0) return "color-empty";
+              if (value.count > 15) return "color-high";
+              if (value.count > 7) return "color-medium";
+              return "color-low";
+            }}
+            tooltipDataAttrs={tooltipDataAttrs}
+          />
+          <Tooltip id="heatmap-tooltip" />
+        </div>
+      </div>
     </div>
   );
 }
