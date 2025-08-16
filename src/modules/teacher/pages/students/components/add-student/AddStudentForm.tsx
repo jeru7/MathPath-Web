@@ -2,7 +2,6 @@ import { useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IoIosClose } from "react-icons/io";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import Select from "react-select";
 import { useTeacherContext } from "../../../../context/teacher.context";
@@ -15,6 +14,7 @@ import { StudentGender } from "../../../../../student/types/student.type";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
+import { IoClose } from "react-icons/io5";
 
 type AddStudentFormProps = {
   handleBack: () => void;
@@ -60,18 +60,16 @@ export default function AddStudentForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="relative flex h-[100vh] w-[100vw] max-w-[1000px] flex-col gap-4 overflow-y-auto rounded-lg bg-[var(--primary-white)] p-8 shadow-sm md:h-fit md:w-[80vw] md:overflow-x-hidden lg:w-[60vw]">
-        <button
-          className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
-          onClick={handleClose}
-        >
-          <IoIosClose className="h-4 w-4" />
-        </button>
-        <header>
-          <h3 className="border-b border-b-[var(--primary-gray)] pb-2 text-2xl font-bold">
-            Add Student - Manual
-          </h3>
+    <article className="relative h-[100vh] w-[100vw] max-w-[1000px] p-4 shadow-sm md:h-fit md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] overflow-y-auto rounded-lg bg-[var(--primary-white)]">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <header className="flex items-center justify-between border-b border-b-[var(--primary-gray)] pb-4">
+          <h3 className="">Add Student - Manual</h3>
+          <button
+            className="hover:scale-105 hover:cursor-pointer"
+            onClick={handleClose}
+          >
+            <IoClose />
+          </button>
         </header>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2 md:flex-row">
@@ -318,7 +316,7 @@ export default function AddStudentForm({
           text={isSubmitting ? "Creating..." : "Complete"}
           disabled={isSubmitting}
         />
-      </div>
-    </form>
+      </form>
+    </article>
   );
 }

@@ -1,10 +1,8 @@
 import { useState, type ReactElement } from "react";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
-import { IoIosClose } from "react-icons/io";
 import { FaPlus, FaMinus } from "react-icons/fa6";
-// import FormButtons from "../FormButtons";
+import { IoClose } from "react-icons/io5";
 
 interface IGenerateCodeProps {
   handleBack: () => void;
@@ -13,7 +11,6 @@ interface IGenerateCodeProps {
 export default function GenerateCode({
   handleBack,
 }: IGenerateCodeProps): ReactElement {
-  const navigate = useNavigate();
   const [numberOfStudents, setNumberOfStudents] = useState<number>(10);
 
   const handleNumberOfStudentsInputChange = (
@@ -63,27 +60,19 @@ export default function GenerateCode({
       return prev - 1;
     });
   };
-
-  const handleClose = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate("..");
-  };
   return (
-    <form>
-      <div className="relative flex flex-col gap-2 rounded-md bg-[var(--primary-white)] p-8">
+    <article className="relative flex flex-col gap-2 rounded-md bg-[var(--primary-white)] p-4">
+      <header className="border-b border-b-[var(--primary-gray)] pb-2">
+        <h3 className="">Add Student</h3>
+      </header>
+      <button
+        className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
+        onClick={handleBack}
+      >
+        <IoClose />
+      </button>
+      <form className="">
         {/* Exit/Close button */}
-        <button
-          className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
-          onClick={handleClose}
-        >
-          <IoIosClose className="h-4 w-4" />
-        </button>
-        {/* Header */}
-        <header>
-          <h3 className="border-b border-b-[var(--primary-gray)] pb-2 text-2xl font-bold">
-            Add Student - Generate Code
-          </h3>
-        </header>
         <div className="flex flex-col gap-4">
           {/* Section selection */}
           <div className="flex flex-col gap-1">
@@ -139,7 +128,7 @@ export default function GenerateCode({
           {/* Buttons */}
           {/* <FormButtons handleBack={handleBack} text={"Generate"} /> */}
         </div>
-      </div>
-    </form>
+      </form>
+    </article>
   );
 }
