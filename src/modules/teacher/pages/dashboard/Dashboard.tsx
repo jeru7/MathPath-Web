@@ -32,13 +32,13 @@ export default function Dashboard(): ReactElement {
   ];
 
   return (
-    <main className="flex flex-col min-h-screen w-full max-w-[2200px] gap-2 bg-inherit p-4">
+    <main className="flex flex-col h-full w-full max-w-[2200px] gap-2 bg-inherit p-4">
       {/* header */}
       <header className="flex items-center justify-between py-1">
         <h3 className="text-xl sm:text-2xl font-bold">Dashboard</h3>
       </header>
 
-      <div className="flex-1 flex flex-col xl:flex-row gap-2 xl:min-h-[calc(100vh-4rem)]">
+      <div className="flex-1 flex flex-col xl:flex-row gap-2 xl:min-h-[calc(100vh-5rem)]">
         {/* left column */}
         <div className="xl:w-[75%] flex-1 flex flex-col gap-2">
           {/* stats */}
@@ -58,7 +58,7 @@ export default function Dashboard(): ReactElement {
 
           {/* stage progression */}
           <div className="w-full h-fit">
-            <ActivityTrend classes="w-full h-full min-h-[300px] max-h-[500px]" />
+            <ActivityTrend classes="" />
           </div>
 
           {/* active students, correct percentage, assessment status */}

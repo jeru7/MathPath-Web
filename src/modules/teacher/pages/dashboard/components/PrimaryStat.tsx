@@ -72,7 +72,7 @@ export default function PrimaryStat({
           {title === "Students"
             ? `${onlineStudents ?? 0} online`
             : title === "Assessments"
-              ? `${assessments ?? 0} Active`
+              ? `${assessments ?? 0} in progress`
               : ""}
         </p>
         {/* Quick nav button */}

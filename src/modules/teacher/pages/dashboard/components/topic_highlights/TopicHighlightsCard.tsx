@@ -23,20 +23,23 @@ export default function TopicHighlightsCard({
             <div className="flex items-center justify-center bg-[var(--primary-green)] rounded-full p-2">
               <FaMedal className="w-4 h-4 text-white" />
             </div>
-            <h6 className="text-sm md:text-md font-semibold">
+            <h6 className="text-sm md:text-base font-semibold">
               Lowest: Permutation
             </h6>
           </header>
-          <section className="flex h-full">
-            <section className="w-full h-full flex items-center justify-center flex-col">
+
+          {/* pie */}
+          <section className="flex flex-col h-full">
+            <section className="w-[120px] h-full flex items-center justify-center flex-col">
               <CircularProgress progress={74} color="var(--primary-green)" />
             </section>
-            <section className="flex w-full flex-col text-sm  items-center justify-center">
-              <article className="flex flex-col text-center w-full">
+            {/* stats */}
+            <section className="flex w-full text-sm items-center justify-center gap-4">
+              <article className="flex flex-col text-center">
                 <p>Stage</p>
                 <p className="text-lg font-bold">4</p>
               </article>
-              <article className="flex flex-col text-center w-full">
+              <article className="flex flex-col text-center">
                 <p>Attempts</p>
                 <p className="text-lg font-bold">80</p>
               </article>
@@ -52,20 +55,23 @@ export default function TopicHighlightsCard({
             <div className="flex items-center justify-center bg-[var(--primary-yellow)] rounded-full p-2">
               <IoWarning className="w-4 h-4 text-white" />
             </div>
-            <h6 className="text-sm md:text-md font-semibold">
+            <h6 className="text-sm md:text-base font-semibold">
               Lowest: Permutation
             </h6>
           </header>
-          <section className="flex h-full">
-            <section className="w-full h-full flex items-center justify-center flex-col">
+
+          {/* pie */}
+          <section className="flex h-full flex-col">
+            <section className="w-[120px] h-full flex items-center justify-center flex-col">
               <CircularProgress progress={20} color="var(--primary-yellow)" />
             </section>
-            <section className="flex w-full flex-col text-sm  items-center justify-center">
-              <article className="flex flex-col text-center w-full">
+            {/* stats */}
+            <section className="flex w-full text-sm items-center justify-center gap-4">
+              <article className="flex flex-col text-center">
                 <p>Stage</p>
                 <p className="text-lg font-bold">17</p>
               </article>
-              <article className="flex flex-col text-center w-full">
+              <article className="flex flex-col text-center">
                 <p>Attempts</p>
                 <p className="text-lg font-bold">24</p>
               </article>

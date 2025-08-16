@@ -26,11 +26,11 @@ export default function ActiveStudentsPie({
             nameKey="name"
             cx="50%"
             cy="50%"
-            outerRadius={80}
-            innerRadius={50}
+            outerRadius={70}
+            innerRadius={40}
             startAngle={90}
             endAngle={-270}
-            paddingAngle={2}
+            paddingAngle={1}
             label={customLabel}
             labelLine={false}
           >

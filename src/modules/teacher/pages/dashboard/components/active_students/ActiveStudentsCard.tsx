@@ -46,17 +46,17 @@ export default function ActiveStudentsCard({
         <p className="font-semibold text-md md:text-lg">Active Students</p>
       </header>
 
-      <div className="flex gap-2 h-full">
+      <div className="flex gap-1 xl:gap-3 h-full items-center justify-center">
         {/* Pie */}
         <ActiveStudentsPie
-          classes="w-[60%] relative"
+          classes="relative min-w-[150px]"
           chartData={chartData}
           sectionColors={sectionColors}
           totalPercentage={data.totalPercentage}
         />
 
         {/* Section label with colors */}
-        <section className="w-[40%] flex flex-col justify-center p-2 text-sm">
+        <section className="flex flex-col justify-center p-2 text-sm">
           {data.sections.map((section, index) => (
             <div key={index} className="flex items-center gap-2 mb-1">
               <div
