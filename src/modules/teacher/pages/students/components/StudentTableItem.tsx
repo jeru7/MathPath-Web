@@ -49,15 +49,14 @@ export default function StudentTableItem({
 
   return (
     <>
-      {console.log(student)}
       <tr
         className="hover:bg-gray-100 cursor-pointer text-left font-medium"
         onClick={() => onClick(student.id)}
       >
         <td className="text-left w-[15%]">{student.referenceNumber}</td>
         <td className="w-[20%] text-left">
-          <div className="flex items-center gap-2">
-            <p>{`${student.lastName}, ${formatFirstName(student)}`}</p>
+          <div className="flex items-center gap-2 max-w-[180px] xl:max-w-none">
+            <p className="whitespace-nowrap overflow-hidden text-ellipsis">{`${student.lastName}, ${formatFirstName(student)}`}</p>
           </div>
         </td>
         <td className="w-[15%]">{getSectionName(student.sectionId)}</td>
@@ -70,13 +69,15 @@ export default function StudentTableItem({
           {format(formatToPhDate(student.createdAt.toString()), "MMMM d, yyyy")}
         </td>
         <td className="w-[15%]">
-          {student.lastPlayed
-            ? formatInTimeZone(
-                student.lastPlayed?.toString(),
-                "UTC",
-                "MMMM d, yyyy",
-              )
-            : "N/A"}
+          {student.lastPlayed ? (
+            formatInTimeZone(
+              student.lastPlayed?.toString(),
+              "UTC",
+              "MMMM d, yyyy",
+            )
+          ) : (
+            <p className="text-gray-300">N/A</p>
+          )}
         </td>
         <td className="w-[5%]">
           <button className="hover:scale-110 hover:cursor-pointer">

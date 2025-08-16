@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import StudentTable from "./components/StudentTable";
@@ -12,7 +12,10 @@ export default function Students(): ReactElement {
   const { sections } = useTeacherContext();
 
   const showForm = location.pathname.endsWith("/add-students");
+
   const mode: string | null = searchParams.get("mode");
+
+  const [showAddButton, setShowAddButton] = useState<boolean>(false);
 
   const handleAddStudent = () => {
     if (sections.length === 0) {
@@ -22,26 +25,39 @@ export default function Students(): ReactElement {
     navigate("add-students");
   };
 
-  const handleCloseForm = () => {
-    navigate("students");
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+      const atBottom = scrollPosition >= pageHeight - 10;
+
+      setShowAddButton(!atBottom);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <main className="flex w-full flex-col gap-2 bg-inherit p-4 h-full">
+    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-4">
       {/* Header */}
-      <header className="flex w-full py-1 items-center justify-between">
-        <h3 className="text-2xl font-bold">Students</h3>
+      <header className="flex items-center justify-between py-1">
+        <h3 className="text-xl sm:text-2xl font-bold">Students</h3>
       </header>
 
       {/* Student item/list */}
-      <section className="overflow-y-hidden w-full bg-white shadow-sm rounded-sm h-full">
-        <StudentTable onClickAddStudent={handleAddStudent} />
+      <section className="overflow-y-hidden w-full bg-white shadow-md rounded-sm flex-1 flex flex-col">
+        <StudentTable
+          onClickAddStudent={handleAddStudent}
+          showAddButton={showAddButton}
+        />
       </section>
 
       {/* Add student dialog */}
       {showForm && (
         <AddStudent
-          setShowForm={handleCloseForm}
           navigate={navigate}
           initialMode={mode as "manual" | "generate" | null}
         />

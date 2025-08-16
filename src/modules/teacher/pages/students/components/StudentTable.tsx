@@ -55,9 +55,8 @@ export default function StudentTable({
   };
 
   return (
-    <section className="h-full">
+    <section className="flex flex-col flex-1 overflow-x-hidden">
       <AnimatePresence>
-        {" "}
         {showAddButton && (
           <motion.button
             initial={{ opacity: 0, y: 10 }}
@@ -73,7 +72,7 @@ export default function StudentTable({
       </AnimatePresence>
 
       <section className="w-full border-b-gray-200 p-4 border-b flex gap-2 justify-center md:items-center md:justify-between">
-        {/* Search */}
+        {/* search */}
         <section className="flex gap-2 items-center w-full md:w-fit">
           <div className="flex rounded-sm border-gray-200 border h-fit items-center pr-2 w-full">
             <div className="p-2">
@@ -84,7 +83,8 @@ export default function StudentTable({
               className="text-xs focus:outline-none"
             />
           </div>
-          {/* Filter */}
+
+          {/* filter */}
           <button className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200">
             <CiFilter className="w-4 h-4" />
           </button>
@@ -92,7 +92,7 @@ export default function StudentTable({
           <section className="flex"></section>
         </section>
 
-        {/* Create button */}
+        {/* create button */}
         <button
           className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
           onClick={onClickAddStudent}
@@ -102,12 +102,12 @@ export default function StudentTable({
         </button>
       </section>
 
-      {/* Table */}
-      <div className="h-full">
-        <div className="overflow-x-auto">
-          {/* Headers */}
+      {/* table */}
+      <div className="flex flex-col flex-1 overflow-x-auto">
+        <div className="w-full min-w-[1000px] flex-1">
+          {/* headers */}
           <table className="font-primary table-auto w-full">
-            <thead className="text-gray-400">
+            <thead className="text-gray-400 text-sm xl:text-base">
               <tr className="text-left">
                 <th className="w-[15%]">LRN</th>
                 <th
@@ -174,7 +174,7 @@ export default function StudentTable({
                   <div
                     className={`flex items-center gap-2 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)]" : ""}`}
                   >
-                    Date Created
+                    <p className="text-nowrap">Date Created</p>
                     {sortConfig.key === "createdAt" ? (
                       sortConfig.direction === "ascending" ? (
                         <FaChevronUp />
@@ -193,7 +193,7 @@ export default function StudentTable({
                   <div
                     className={`flex items-center gap-2 ${sortConfig.key === "lastPlayed" ? "text-[var(--primary-black)]" : ""}`}
                   >
-                    Last Played
+                    <p className="text-nowrap">Last Played</p>
                     {sortConfig.key === "lastPlayed" ? (
                       sortConfig.direction === "ascending" ? (
                         <FaChevronUp />
@@ -209,20 +209,21 @@ export default function StudentTable({
               </tr>
             </thead>
           </table>
-        </div>
-        {/* student items/list */}
-        <div className="h-[750px] overflow-y-auto">
-          <table className="font-primary table-auto w-full">
-            <tbody>
-              {students.map((student) => (
-                <StudentTableItem
-                  student={student}
-                  key={student.referenceNumber}
-                  onClick={handleItemOnclick}
-                />
-              ))}
-            </tbody>
-          </table>
+
+          {/* student items/list */}
+          <div className="flex-1 overflow-y-auto">
+            <table className="font-primary table-auto w-full text-sm">
+              <tbody>
+                {students.map((student) => (
+                  <StudentTableItem
+                    student={student}
+                    key={student.referenceNumber}
+                    onClick={handleItemOnclick}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
