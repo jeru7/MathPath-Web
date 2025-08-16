@@ -36,12 +36,12 @@ export default function SectionCard({
   }
   return (
     <section
-      className={`flex flex-col rounded-sm bg-white opacity-90 border-gray-300 border hover:cursor-pointer hover:opacity-100 h-full`}
+      className={`flex flex-col rounded-sm bg-white opacity-90 border-gray-300 border hover:cursor-pointer hover:opacity-100 h-full xl:max-w-[350px]`}
     >
       <div className={`bg-[var(--${section.color})] h-1 w-full `}></div>
-      <div className="flex flex-col gap-1 p-2">
+      <div className="flex flex-col justify-between p-2 flex-1">
         {/* Banner */}
-        <div className="rounded-sm">
+        <div className="rounded-sm flex items-center justify-center">
           <img
             src={
               section.banner === "SBanner_1"
@@ -51,7 +51,7 @@ export default function SectionCard({
                   : SBanner_3
             }
             alt="section banner"
-            className="object-contain"
+            className="object-contain w-full max-w-[320px]"
           />
         </div>
         {/* Header */}

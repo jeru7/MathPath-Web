@@ -32,7 +32,7 @@ export default function Dashboard(): ReactElement {
   ];
 
   return (
-    <main className="flex flex-col h-full w-full max-w-[2200px] gap-2 bg-inherit p-4">
+    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-4">
       {/* header */}
       <header className="flex items-center justify-between py-1">
         <h3 className="text-xl sm:text-2xl font-bold">Dashboard</h3>
