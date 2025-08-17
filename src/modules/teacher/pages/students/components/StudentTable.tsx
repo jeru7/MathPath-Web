@@ -7,15 +7,12 @@ import { CiFilter, CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { useTeacherContext } from "../../../context/teacher.context";
 import { Student } from "../../../../student/types/student.type";
-import { AnimatePresence, motion } from "framer-motion";
 
 type StudentTableProps = {
   onClickAddStudent: () => void;
-  showAddButton: boolean;
 };
 export default function StudentTable({
   onClickAddStudent,
-  showAddButton,
 }: StudentTableProps): ReactElement {
   const { students } = useTeacherContext();
   const navigate = useNavigate();
@@ -56,21 +53,6 @@ export default function StudentTable({
 
   return (
     <section className="flex flex-col flex-1 overflow-x-hidden">
-      <AnimatePresence>
-        {showAddButton && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 100, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="rounded-full h-16 w-16 bg-[var(--primary-green)]/90 fixed z-5 right-5 bottom-5 flex items-center justify-center md:hidden"
-            type="button"
-            onClick={onClickAddStudent}
-          >
-            <GoPlus className="w-5 h-5 text-white" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
       <section className="w-full border-b-gray-200 p-4 border-b flex gap-2 justify-center md:items-center md:justify-between">
         {/* search */}
         <section className="flex gap-2 items-center w-full md:w-fit">
@@ -88,8 +70,6 @@ export default function StudentTable({
           <button className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200">
             <CiFilter className="w-4 h-4" />
           </button>
-
-          <section className="flex"></section>
         </section>
 
         {/* create button */}
