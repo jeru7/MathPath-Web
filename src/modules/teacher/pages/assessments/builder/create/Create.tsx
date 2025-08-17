@@ -97,8 +97,8 @@ export default function Create({
   };
 
   return (
-    <div className="flex flex-col w-[800px] h-fit gap-4">
-      <section className="flex flex-col gap-4 h-fit min-h-full">
+    <div className="flex flex-col w-[800px] min-w-[300px] h-fit gap-4">
+      <section className="flex flex-col gap-4 h-fit min-h-full items-center">
         <AnimatePresence mode="wait">
           {isValidated && errors.pages && (
             <motion.p
@@ -207,7 +207,7 @@ export default function Create({
       {/* add page button */}
       <div className="flex justify-center">
         <button
-          className="flex gap-1 items-center justify-center text-gray-300 border-gray-300 border rounded-full w-10 h-10 hover:cursor-pointer hover:text-gray-500 hover:border-gray-500 transition-all duration-200"
+          className="flex gap-1 items-center justify-center text-gray-300 border-gray-300 border rounded-full w-8 h-8 sm:w-10 sm:h-10 hover:cursor-pointer hover:text-gray-500 hover:border-gray-500 transition-all duration-200"
           onClick={() =>
             handleAddPage({
               id: nanoid(),
@@ -216,7 +216,7 @@ export default function Create({
             })
           }
         >
-          <FaPlus className="w-3 h-3" />
+          <FaPlus className="w-2 h-2 sm:w-3 sm:h-3" />
         </button>
       </div>
     </div>

@@ -17,12 +17,14 @@ type RichTextFieldProps = {
   value: string;
   onContentChange?: (content: string) => void;
   extensions?: Extensions;
+  classes: string;
 };
 
 export default function RichTextField({
   onContentChange,
   extensions,
   value,
+  classes = "h-fit max-h-[150px]",
 }: RichTextFieldProps): ReactElement {
   const editor = useEditor({
     extensions: extensions ?? [
@@ -67,7 +69,9 @@ export default function RichTextField({
   if (!editor) return <div>Loading...</div>;
 
   return (
-    <section className="h-fit max-h-[150px] w-full border border-gray-300 rounded-sm flex flex-col bg-white">
+    <section
+      className={`${classes} w-full border border-gray-300 rounded-sm flex flex-col bg-white`}
+    >
       <div className="flex gap-2 p-1 justify-end bg-gray-100 rounded-t-xs border-b border-b-gray-300 h-[40px] items-center px-2">
         {/* left align */}
         <button
@@ -143,7 +147,7 @@ export default function RichTextField({
         </button>
       </div>
 
-      <div className="h-fit w-full max-h-[300px] overflow-y-auto p-2 max-w-[620px]">
+      <div className="h-fit w-full max-h-[400px] overflow-y-auto p-2 max-w-[620px]">
         <EditorContent
           editor={editor}
           className="h-full w-full max-w-full break-words whitespace-pre-wrap"

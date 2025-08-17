@@ -18,10 +18,10 @@ export default function Stepper({
   publishErrors,
 }: ICreateAssessmentStepperProps): ReactElement {
   return (
-    <section className="flex rounded-sm items-center">
+    <section className="flex rounded-sm items-center w-full">
       {/* step 1 - create */}
       <button
-        className={`flex px-4 py-2 border-t border-l border-gray-300 gap-2 bg-white items-center justify-between w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex justify-center px-4 py-2 rounded-tl-sm border-t sm:border-l shadow-[-1px_0_2px_0_rgba(0,0,0,0.05)] border-gray-300 gap-2 bg-white items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           opacity: getOpacity(currentStep, 1),
@@ -31,17 +31,17 @@ export default function Stepper({
         onClick={() => onChangeStep(1)}
         key="create"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <div className="flex">
             <div
-              className="flex items-center justify-center w-10 h-10 rounded-full"
+              className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
               style={{ backgroundColor: getCircleColor(currentStep, 1) }}
             >
-              <p className="text-white text-xl font-bold">1</p>
+              <p className="text-white text-xs xl:text-xl font-bold">1</p>
             </div>
           </div>
-          <div className="flex flex-col font-semibold text-lg">
-            <p className="text-base font-semibold">Create</p>
+          <div className="hidden sm:flex flex-col font-semibold text-lg">
+            <p className="text-xs xl:text-base font-semibold">Create</p>
           </div>
         </div>
 
@@ -64,7 +64,7 @@ export default function Stepper({
       </button>
       {/* step 2 - configure */}
       <button
-        className={`flex px-4 py-2 border border-gray-300 gap-2 bg-white items-center justify-between w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex justify-center px-4 py-2 border border-gray-300 gap-2 bg-white items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           borderBottom:
@@ -73,17 +73,17 @@ export default function Stepper({
         onClick={() => onChangeStep(2)}
         key="configure"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <div className="flex">
             <div
-              className="flex items-center justify-center w-10 h-10 rounded-full"
+              className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
               style={{ backgroundColor: getCircleColor(currentStep, 2) }}
             >
-              <p className="text-white text-xl font-bold">2</p>
+              <p className="text-white text-xs xl:text-xl font-bold">2</p>
             </div>
           </div>
-          <div className="flex flex-col text-lg">
-            <p className="text-base font-semibold">Configure</p>
+          <div className="hidden sm:flex flex-col text-lg">
+            <p className="text-xs xl:text-base font-semibold">Configure</p>
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export default function Stepper({
       </button>
       {/* step 3 - publish */}
       <button
-        className={`flex px-4 py-2 rounded-tr-sm border-t border-r border-b border-gray-300 gap-2 bg-white items-center justify-between w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex justify-center px-4 py-2 rounded-tr-sm border-t sm:border-r border-b border-gray-300 shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] gap-2 bg-white items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           borderBottom:
@@ -117,17 +117,17 @@ export default function Stepper({
         onClick={() => onChangeStep(3)}
         key="publish"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <div className="flex">
             <div
-              className="flex items-center justify-center w-10 h-10 rounded-full"
+              className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
               style={{ backgroundColor: getCircleColor(currentStep, 3) }}
             >
-              <p className="text-white text-xl font-bold">3</p>
+              <p className="text-white text-xs font-bold">3</p>
             </div>
           </div>
-          <div className="flex flex-col font-semibold text-lg">
-            <p className="text-base font-semibold">Publish</p>
+          <div className="hidden sm:flex flex-col font-semibold text-lg">
+            <p className="text-xs xl:text-base font-semibold">Publish</p>
           </div>
 
           <AnimatePresence>

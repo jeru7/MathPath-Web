@@ -69,14 +69,14 @@ export default function PageCard({
 
   return (
     <article
-      className={`flex flex-col rounded-t-sm border rounded-b-sm ${hasError ? "border-red-500" : "border-gray-300"} ${isDragging ? "opacity-50" : ""}`}
+      className={`flex flex-col w-full rounded-t-sm border rounded-b-sm ${hasError ? "border-red-500" : "border-gray-300"} ${isDragging ? "opacity-50" : ""}`}
       ref={setNodeRef}
       style={style}
       {...attributes}
     >
       {/* header */}
       <header
-        className={`flex justify-between items-center p-4 rounded-t-xs bg-[var(--tertiary-green)] ${isDragging ? "opacity-0" : ""}`}
+        className={`flex justify-between items-center p-2 sm:p-4 rounded-t-xs bg-[var(--tertiary-green)] ${isDragging ? "opacity-0" : ""}`}
       >
         <div>
           {isEdit ? (
@@ -85,7 +85,7 @@ export default function PageCard({
               type="text"
               name="title"
               value={page.title ?? `Page ${pageNumber}`}
-              className="bg-[var(--secondary-green)] outline-none text-sm px-2 py-1"
+              className="bg-[var(--secondary-green)] outline-none text-xs sm:text-sm px-2 py-1"
               onChange={(e) => handlePageTitleChange(page.id, e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -97,7 +97,7 @@ export default function PageCard({
           ) : (
             // title
             <p
-              className={`text-white font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"}`}
+              className={`text-white text-xs sm:text-sm font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"}`}
             >
               {page.title && page.title.trim() !== ""
                 ? page.title
@@ -105,6 +105,7 @@ export default function PageCard({
             </p>
           )}
         </div>
+
         {/* control buttons */}
         <div className="flex items-center gap-2">
           <button
@@ -112,20 +113,20 @@ export default function PageCard({
             onClick={() => setIsEdit(!isEdit)}
           >
             <TbEdit
-              className={`h-6 w-6 ${isEdit ? "text-[var(--primary-green)]" : ""}`}
+              className={`h-4 w-4 sm:h-6 sm:w-6 ${isEdit ? "text-[var(--primary-green)]" : ""}`}
             />
           </button>
           <div
             className={`text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
             {...listeners}
           >
-            <MdDragIndicator className="h-6 w-6" />
+            <MdDragIndicator className="h-4 w-4 sm:h-6 sm:w-6" />
           </div>
           <button
             className={`text-gray-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
             onClick={() => onDelete?.(page.id)}
           >
-            <IoClose className="h-6 w-6" />
+            <IoClose className="h-4 w-4 sm:h-6 sm:w-6" />
           </button>
         </div>
       </header>
@@ -141,27 +142,27 @@ export default function PageCard({
         />
 
         {/* add content buttons */}
-        <section className="flex justify-center gap-8">
+        <section className="flex justify-center gap-2 sm:gap-8">
           <button
-            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
+            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
             onClick={() => onShowModal("question")}
           >
-            <BsPatchQuestion />
-            <p>Add question</p>
+            <BsPatchQuestion className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
+            <p className="text-nowrap text-xs sm:text-base">Add question</p>
           </button>
           <button
-            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
+            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
             onClick={() => onShowModal("image")}
           >
-            <CiImageOn />
-            <p>Add image</p>
+            <CiImageOn className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
+            <p className="text-nowrap text-xs sm:text-base">Add image</p>
           </button>
           <button
-            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-2 px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
+            className="text-gray-400 border border-gray-400 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 transition-colors duration-200"
             onClick={() => onShowModal("text")}
           >
-            <MdOutlineTextSnippet />
-            <p>Add text</p>
+            <MdOutlineTextSnippet className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
+            <p className="text-nowrap text-xs sm:text-base">Add text</p>
           </button>
         </section>
       </section>

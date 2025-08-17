@@ -141,22 +141,26 @@ export default function AssessmentBuilder(): ReactElement {
   }, [assessment]);
 
   return (
-    <main className="flex min-h-full w-full flex-col gap-2 bg-inherit p-4 h-fit">
-      <header className="flex w-full items-center justify-between py-1">
-        <h3 className="text-2xl font-bold">Create Assessment</h3>
+    <main className="flex min-h-screen w-full flex-col gap-2 bg-inherit p-2 xl:p-4 h-fit">
+      {/* header */}
+      <header className="flex items-center justify-between py-1">
+        <h3 className="text-xl sm:text-2xl font-bold">Create Assessment</h3>
       </header>
 
       <div className="flex min-h-full h-fit flex-col flex-1">
-        <header className="flex justify-center relative">
+        <header className="flex flex-col sm:flex-row gap-2 items-center justify-center relative">
+          {/* back button */}
           <button
-            className="absolute py-1 px-4 border rounded-sm left-0 top-1/2 -translate-y-1/2 opacity-80 hover:cursor-pointer hover:opacity-100 transition-colors duration-200"
+            className="w-fit self-start sm:absolute py-1 px-4 border rounded-sm sm:left-0 top-1/2 sm:-translate-y-1/2 opacity-80 hover:cursor-pointer hover:opacity-100 transition-colors duration-200"
             onClick={() => {
               navigate("..");
             }}
           >
             <p>Back</p>
           </button>
-          <div className="relative">
+
+          {/* steppers */}
+          <div className="relative w-full sm:w-fit flex justify-center">
             <Stepper
               currentStep={step}
               onChangeStep={(step: BuilderStep) => setStep(step)}
@@ -169,13 +173,13 @@ export default function AssessmentBuilder(): ReactElement {
               configureErrors={Object.keys(configureErrors).length}
               publishErrors={Object.keys(publishErrors).length}
             />
-            <button className="absolute flex gap-2 items-center text-gray-400 px-4 -right-30 top-1/2 -translate-y-1/2 hover:cursor-pointer hover:text-gray-500 transition-all duration-200">
+            <button className="absolute flex gap-2 items-center text-gray-400 px-4 right-0 -top-8 sm:-right-30 sm:top-1/2 sm:-translate-y-1/2 hover:cursor-pointer hover:text-gray-500 transition-all duration-200">
               <FaEye />
-              <p className="text-sm">Preview</p>
+              <p className="text-xs sm:text-sm">Preview</p>
             </button>
           </div>
         </header>
-        <section className="bg-white shadow-sm rounded-sm p-4 h-fit min-h-full flex-1 flex justify-center">
+        <section className="bg-white shadow-sm rounded-b-sm sm:rounded-sm p-4 h-fit min-h-full flex-1 flex justify-center">
           {step === 1 ? (
             <Create isValidated={isValidated} errors={createErrors} />
           ) : step === 2 ? (

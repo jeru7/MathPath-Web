@@ -102,7 +102,7 @@ export default function AddQuestionModal({
 
   return (
     <motion.article
-      className="w-[800px] h-fit rounded-sm drop-shadow-sm top-1/2 -translate-y-[60%] left-1/2 right-1/2 -translate-x-1/2 absolute bg-white"
+      className="flex flex-col w-[100vw] h-full min-h-[100vh] overflow-y-auto fixed md:h-fit md:min-h-0 md:w-[800px] md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white"
       key="add-question-modal"
       initial={{ opacity: 0, scale: 1, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -114,165 +114,176 @@ export default function AddQuestionModal({
         <h3>New Question</h3>
         {/* close button */}
         <button
-          className="opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
+          className="opacity-80 hidden md:block hover:opacity-100 hover:cursor-pointer transition-all duration-200"
           type="button"
           onClick={onClose}
         >
           <IoClose />
         </button>
       </header>
-      <section className="h-full bg-inherit rounded-b-sm p-4">
-        <form className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            {/* Question type */}
-            <div className="flex items-center gap-4">
-              <label
-                htmlFor="type"
-                className="font-semibold w-32 min-w-32 text-right"
-              >
-                Question Type
-              </label>
-              <QuestionTypeSelect onTypeChange={handleTypeChange} />
-            </div>
 
-            {/* Points */}
-            <div className="flex gap-4 items-center">
-              <label htmlFor="points" className="font-semibold">
-                Points
-              </label>
-              <input
-                id="points"
-                type="number"
-                className="border border-gray-300 text-center rounded-sm px-2 py-1 w-24 focus:outline-none focus:ring-1 focus:ring-green-400"
-                defaultValue={question.points}
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  handlePointsChange(isNaN(value) ? 1 : value);
-                }}
-                min={1}
-                max={100}
-              />
+      {/* form */}
+      <section className="flex-1 flex flex-col bg-inherit rounded-b-sm p-4">
+        <form className="flex flex-col gap-4 flex-1 justify-between">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+              {/* question type */}
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                <label
+                  htmlFor="type"
+                  className="font-semibold w-32 min-w-32 md:text-right text-sm md:text-base"
+                >
+                  Question Type
+                </label>
+                <QuestionTypeSelect
+                  onTypeChange={handleTypeChange}
+                  classes={"w-full text-sm md:text-base md:w-48"}
+                />
+              </div>
+
+              {/* points */}
+              <div className="flex flex-col md:flex-row gap-2 md:gap-4 md:items-center">
+                <label
+                  htmlFor="points"
+                  className="font-semibold text-sm md:text-base"
+                >
+                  Points
+                </label>
+                <input
+                  id="points"
+                  type="number"
+                  className="border border-gray-300 text-center text-sm md:text-base rounded-sm px-2 py-1 w-24 focus:outline-none focus:ring-1 focus:ring-green-400"
+                  defaultValue={question.points}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    handlePointsChange(isNaN(value) ? 1 : value);
+                  }}
+                  min={1}
+                  max={100}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex gap-4">
-            {/* Question Field */}
-            <label
-              htmlFor="question"
-              className="font-semibold w-32 min-w-32 text-right"
-            >
-              Question
-            </label>
-            <div className="flex flex-col w-full gap-2">
-              <RichTextField
-                value={question.question}
-                onContentChange={handleQuestionContentChange}
-              />
-              <AnimatePresence>
-                {isValidated &&
-                  errors.question &&
-                  question.type !== "fill_in_the_blanks" && (
+            <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+              {/* Question Field */}
+              <label
+                htmlFor="question"
+                className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right"
+              >
+                Question
+              </label>
+              <div className="flex flex-col w-full gap-2">
+                <RichTextField
+                  value={question.question}
+                  onContentChange={handleQuestionContentChange}
+                  classes="h-fit max-h-[200px] md:max-h-[150px]"
+                />
+                <AnimatePresence>
+                  {isValidated &&
+                    errors.question &&
+                    question.type !== "fill_in_the_blanks" && (
+                      <motion.p
+                        className="text-xs md:text-sm text-red-500 self-end"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{
+                          opacity: 0,
+                          y: 0,
+                          transition: { duration: 0.1 },
+                        }}
+                        key="fill-in-the-blank-error"
+                      >
+                        {errors.question}
+                      </motion.p>
+                    )}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {isValidated && errors.fillInTheBlankQuestion && (
                     <motion.p
-                      className="text-sm text-red-500 self-end"
+                      className="text-xs md:text-sm text-red-500 self-end"
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{
-                        opacity: 0,
-                        y: 0,
-                        transition: { duration: 0.1 },
-                      }}
+                      exit={{ opacity: 0, y: 0, transition: { duration: 0.1 } }}
                       key="fill-in-the-blank-error"
                     >
-                      {errors.question}
+                      {errors.fillInTheBlankQuestion}
                     </motion.p>
                   )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {isValidated && errors.fillInTheBlankQuestion && (
-                  <motion.p
-                    className="text-sm text-red-500 self-end"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 0, transition: { duration: 0.1 } }}
-                    key="fill-in-the-blank-error"
-                  >
-                    {errors.fillInTheBlankQuestion}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {/* info for fill in the blanks */}
-                {question.type === "fill_in_the_blanks" && (
-                  <motion.div
-                    className="p-2 bg-[var(--primary-yellow)]/80"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    key="fill-in-the-blank-info"
-                  >
-                    <p className="italic text-right text-xs">
-                      Use brackets to indicate blanks. <br />
-                      Example: The capital of the Philippines is [1] <br />
-                      "The capital of the Philippines is _____"
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                </AnimatePresence>
+                <AnimatePresence>
+                  {/* info for fill in the blanks */}
+                  {question.type === "fill_in_the_blanks" && (
+                    <motion.div
+                      className="p-2 bg-[var(--primary-yellow)]/80"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      key="fill-in-the-blank-info"
+                    >
+                      <p className="italic text-right text-xs">
+                        Use brackets to indicate blanks. <br />
+                        Example: The capital of the Philippines is [1] <br />
+                        "The capital of the Philippines is _____"
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-          {/* divider */}
-          <div className="border-b border-b-gray-300 "></div>
-          {/* bottom section */}
-          <AnimatePresence mode="wait">
-            <div className="gap-4 flex flex-col">
-              {/* choices for single or multiple choice */}
-              {question.type === "single_choice" ||
-              question.type === "multiple_choice" ? (
-                <motion.div
-                  key="choices"
-                  initial={{ opacity: 0, scale: 1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <Choices
-                    isValidated={isValidated}
-                    question={question}
-                    onAnswersChange={handleAnswersChange}
-                    onChoicesChange={handleChoicesChange}
-                    onToggleRandom={handleToggleRandom}
-                    errors={errors}
-                  />
-                </motion.div>
-              ) : (
-                // answer fields for the rest of types
-                (((question.answers as string[] | FillInTheBlankAnswerType[])
-                  .length > 0 &&
-                  question.type === "fill_in_the_blanks") ||
-                  question.type === "identification" ||
-                  question.type === "true_or_false") && (
+            {/* divider */}
+            <div className="border-b border-b-gray-300 "></div>
+            {/* bottom section */}
+            <AnimatePresence mode="wait">
+              <div className="gap-4 flex flex-col">
+                {/* choices for single or multiple choice */}
+                {question.type === "single_choice" ||
+                question.type === "multiple_choice" ? (
                   <motion.div
-                    key="answers"
+                    key="choices"
                     initial={{ opacity: 0, scale: 1 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <Answers
-                      answers={question.answers as FillInTheBlankAnswerType[]}
-                      onAnswersChange={handleAnswersChange}
-                      type={question.type}
+                    <Choices
                       isValidated={isValidated}
+                      question={question}
+                      onAnswersChange={handleAnswersChange}
+                      onChoicesChange={handleChoicesChange}
+                      onToggleRandom={handleToggleRandom}
                       errors={errors}
                     />
                   </motion.div>
-                )
-              )}
-              {/* actions */}
-              <ModalActions
-                onAddContent={handleAddQuestion}
-                onCancelClick={onClose}
-              />
-            </div>
-          </AnimatePresence>
+                ) : (
+                  // answer fields for the rest of types
+                  (((question.answers as string[] | FillInTheBlankAnswerType[])
+                    .length > 0 &&
+                    question.type === "fill_in_the_blanks") ||
+                    question.type === "identification" ||
+                    question.type === "true_or_false") && (
+                    <motion.div
+                      key="answers"
+                      initial={{ opacity: 0, scale: 1 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <Answers
+                        answers={question.answers as FillInTheBlankAnswerType[]}
+                        onAnswersChange={handleAnswersChange}
+                        type={question.type}
+                        isValidated={isValidated}
+                        errors={errors}
+                      />
+                    </motion.div>
+                  )
+                )}
+              </div>
+            </AnimatePresence>
+          </div>
+          {/* actions */}
+          <ModalActions
+            onAddContent={handleAddQuestion}
+            onCancelClick={onClose}
+          />
         </form>
       </section>
     </motion.article>

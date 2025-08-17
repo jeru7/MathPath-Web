@@ -23,8 +23,8 @@ export default function Answers({
   errors,
 }: AnswersProp): ReactElement {
   return (
-    <div className="flex items-start gap-4">
-      <label className="font-semibold w-32 min-w-32 text-right">
+    <div className="flex flex-col md:flex-row items-start gap-2 md:gap-4">
+      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right">
         {type === "fill_in_the_blanks" ? "Answers" : "Answer"}
       </label>
       <section className="border border-gray-300 rounded-sm bg-white w-full h-fit flex flex-col">

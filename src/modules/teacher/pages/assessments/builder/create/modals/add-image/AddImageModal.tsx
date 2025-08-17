@@ -121,7 +121,7 @@ export default function AddImageModal({
 
   return (
     <motion.article
-      className="w-[800px] h-fit rounded-sm drop-shadow-sm top-1/2 -translate-y-[60%] left-1/2 right-1/2 -translate-x-1/2 absolute bg-white"
+      className="h-full min-h-[100vh] w-full flex flex-col fixed md:w-[800px] md:h-fit md:min-h-0 md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white"
       key="add-image-modal"
       initial={{ opacity: 0, scale: 1, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -131,7 +131,7 @@ export default function AddImageModal({
       <header className="p-4 bg-white rounded-t-sm flex items-center justify-between border-b border-b-gray-300">
         <h3>New Image</h3>
         <button
-          className="opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
+          className="hidden md:block opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
           type="button"
           onClick={onClose}
         >
@@ -139,7 +139,7 @@ export default function AddImageModal({
         </button>
       </header>
 
-      <section className="flex flex-col h-fit bg-inherit rounded-b-sm p-4 min-h-[400px] gap-4">
+      <section className="flex flex-col flex-1 bg-inherit rounded-b-sm p-4 min-h-[400px] gap-4">
         <div className="flex flex-col flex-1 gap-4 h-full">
           {/* drag-drop area */}
           <div
@@ -159,8 +159,13 @@ export default function AddImageModal({
               </article>
             ) : (
               <article>
-                <p className="font-medium">Drop an image here</p>
-                <p className="text-sm text-gray-400">or click to upload</p>
+                <p className="hidden md:block font-medium">
+                  Drop an image here
+                </p>
+                <p className="hidden md:block text-sm text-gray-400">
+                  or click to upload
+                </p>
+                <p className="md:hidden font-medium">Click to upload</p>
               </article>
             )}
             <input

@@ -98,9 +98,9 @@ export default function Publish({
   }, [sections, assessment.sections]);
 
   return (
-    <div className="flex flex-col w-fit h-full items-center justify-center gap-4">
+    <div className="flex flex-col w-full sm:w-fit h-full items-center justify-center gap-2 md:gap-4">
       <AnimatePresence mode="wait">
-        <section className="border rounded-sm border-gray-300 bg-white h-fit w-96 flex flex-col gap-4 p-4 items-center">
+        <section className="border rounded-sm border-gray-300 bg-white h-fit w-full sm:w-96 flex flex-col gap-4 p-4 items-center">
           <form className="w-full flex flex-col gap-4">
             <div className="flex flex-col gap-2 w-full">
               {/* section select */}
@@ -120,7 +120,7 @@ export default function Publish({
                   justifyContent: "flex-start",
                 })}
                 isSearchable={false}
-                className="w-full"
+                className="w-full text-sm sm:text-base"
                 controlShouldRenderValue={false}
                 isClearable={false}
               />
@@ -159,7 +159,10 @@ export default function Publish({
               {/* Scheduled */}
               <div className="flex flex-col gap-1">
                 <div className="flex flex-col gap-2 h-18 ">
-                  <label htmlFor="startDate" className="font-semibold">
+                  <label
+                    htmlFor="startDate"
+                    className="text-sm sm:text-base font-semibold"
+                  >
                     Scheduled At
                   </label>
                   <DatePicker
@@ -205,7 +208,10 @@ export default function Publish({
                   animate={{ opacity: 1, y: 0 }}
                   className="flex flex-col gap-2 h-18"
                 >
-                  <label htmlFor="endDate" className="font-semibold">
+                  <label
+                    htmlFor="endDate"
+                    className="text-sm sm:text-base font-semibold"
+                  >
                     Deadline At
                   </label>
                   <DatePicker
@@ -239,7 +245,7 @@ export default function Publish({
         onClick={onPublishAssessment}
         type="button"
       >
-        <p className="text-white font-semibold">
+        <p className="text-sm md:text-base text-white font-semibold">
           {isPublishPending ? "Publishing..." : "Publish Assessment"}
         </p>
       </button>
@@ -250,7 +256,7 @@ export default function Publish({
         onClick={onSaveAssessment}
         type="button"
       >
-        <p className="text-black font-semibold">
+        <p className="text-sm md:text-base text-black font-semibold">
           {isSavePending ? "Saving..." : "Save as Draft"}
         </p>
       </button>

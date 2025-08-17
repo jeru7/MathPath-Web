@@ -5,10 +5,12 @@ import Select from "react-select";
 
 type QuestionTypeSelectProps = {
   onTypeChange: (newType: QuestionType) => void;
+  classes: string;
 };
 
 export default function QuestionTypeSelect({
   onTypeChange,
+  classes,
 }: QuestionTypeSelectProps): ReactElement {
   const [selectedType, setSelectedType] = useState<QuestionTypeOption | null>({
     value: "single_choice",
@@ -32,7 +34,7 @@ export default function QuestionTypeSelect({
         justifyContent: "flex-start",
       })}
       isSearchable={false}
-      className="w-48"
+      className={classes}
     />
   );
 }

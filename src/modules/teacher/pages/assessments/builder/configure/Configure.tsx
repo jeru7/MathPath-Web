@@ -96,14 +96,14 @@ export default function Configure({
   }, [dispatch, passingScoreMinLimit]);
 
   return (
-    <div className="flex h-full w-[800px] items-start justify-center">
+    <div className="flex h-full w-full md:w-[800px] items-start justify-center">
       <section className="border rounded-sm border-gray-300 bg-white h-fit w-full flex flex-col gap-4 p-4 items-center">
         <form className="w-full flex flex-col gap-4">
           {/* assessment title */}
-          <div className="flex items-center gap-2 w-full">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 w-full">
             <label
               htmlFor="title"
-              className="min-w-32 w-32 text-right font-semibold"
+              className="text-sm md:text-base min-w-32 w-32 md:text-right font-semibold"
             >
               Title
             </label>
@@ -111,7 +111,7 @@ export default function Configure({
               type="text"
               name="title"
               value={state.title ?? ""}
-              className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-full"
+              className="text-sm md:text-base border-gray-300 border rounded-sm outline-none px-2 py-1 w-full"
               onChange={(e) => {
                 handleTitleChange(e.target.value);
               }}
@@ -135,10 +135,10 @@ export default function Configure({
             )}
           </AnimatePresence>
           {/* assessment topic */}
-          <div className="flex items-center gap-2 w-full">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 w-full">
             <label
               htmlFor="topic"
-              className="min-w-32 w-32 text-right font-semibold"
+              className="text-sm md:text-base min-w-32 w-32 md:text-right font-semibold"
             >
               Topic
             </label>
@@ -146,7 +146,7 @@ export default function Configure({
               type="text"
               name="topic"
               value={state.topic ?? ""}
-              className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-full"
+              className="text-sm md:text-base border-gray-300 border rounded-sm outline-none px-2 py-1 w-full"
               onChange={(e) => {
                 handleTopicChange(e.target.value);
               }}
@@ -170,17 +170,17 @@ export default function Configure({
             )}
           </AnimatePresence>
           {/* assessment description */}
-          <div className="flex items-start gap-2 w-full">
+          <div className="flex flex-col md:flex-row md:items-start gap-2 w-full">
             <label
               htmlFor="description"
-              className="min-w-32 w-32 text-right font-semibold"
+              className="text-sm md:text-base min-w-32 w-32 md:text-right font-semibold"
             >
               Description
             </label>
             <textarea
               name="description"
               value={state.description ?? ""}
-              className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-full min-h-32 resize-none"
+              className="text-sm md:text-base border-gray-300 border rounded-sm outline-none px-2 py-1 w-full min-h-32 resize-none"
               onChange={(e) => {
                 handleDescriptionChange(e.target.value);
               }}
@@ -204,39 +204,41 @@ export default function Configure({
             )}
           </AnimatePresence>
           <div className="h-[1px] w-full bg-gray-200"></div>
-          <div className="w-full flex justify-between">
+          <div className="w-full flex flex-col sm:flex-row gap-4 md:gap-2 sm:justify-between">
             {/* passing score */}
-            <div className="relative flex items-center gap-2 w-fit">
+            <div className="relative flex flex-col md:flex-row md:items-center gap-2 w-fit">
               <label
                 htmlFor="description"
-                className="min-w-32 w-32 text-right font-semibold"
+                className="text-sm md:text-base min-w-32 w-32 md:text-right font-semibold"
               >
                 Passing Score
               </label>
-              <input
-                type="number"
-                name="passing-score"
-                className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-                value={passingScore}
-                min={passingScoreMinLimit}
-                max={totalScore === 0 ? 1 : totalScore}
-                onChange={(e) =>
-                  handlePassingScoreChange(Number(e.target.value))
-                }
-                onBlur={handlePassingScoreBlur}
-                disabled={totalScore === 0}
-              />
-              {totalScore === 0 ? (
-                <p className="text-sm text-gray-400 italic">Unavailable</p>
-              ) : (
-                <p className="text-sm text-gray-400">/ {totalScore}</p>
-              )}
+              <div className="flex gap-2 items-center">
+                <input
+                  type="number"
+                  name="passing-score"
+                  className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  value={passingScore}
+                  min={passingScoreMinLimit}
+                  max={totalScore === 0 ? 1 : totalScore}
+                  onChange={(e) =>
+                    handlePassingScoreChange(Number(e.target.value))
+                  }
+                  onBlur={handlePassingScoreBlur}
+                  disabled={totalScore === 0}
+                />
+                {totalScore === 0 ? (
+                  <p className="text-sm text-gray-400 italic">Unavailable</p>
+                ) : (
+                  <p className="text-sm text-gray-400">/ {totalScore}</p>
+                )}
+              </div>
             </div>
             {/* attempts limit */}
-            <div className="flex items-center gap-2 w-fit">
+            <div className="flex flex-col md:flex-row items-center gap-2 w-fit">
               <label
                 htmlFor="description"
-                className="min-w-32 w-32 text-right font-semibold"
+                className="text-sm md:text-base min-w-32 w-32 md:text-right font-semibold"
               >
                 Attempt Limit
               </label>
@@ -254,24 +256,27 @@ export default function Configure({
               />
             </div>
           </div>
-          <div className="flex items-baseline gap-2 w-fit">
+
+          <div className="flex flex-col md:flex-row items-baseline gap-2 w-fit">
             <label
               htmlFor="description"
-              className="min-w-32 w-32 text-right font-semibold"
+              className="text-sm md:text-base min-w-32 w-32 md:text-right font-semibold"
             >
               Time Limit
             </label>
-            <input
-              type="number"
-              name="time-limit"
-              className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none"
-              value={timeLimit}
-              min={10}
-              max={50}
-              onChange={(e) => handleTimeLimitChange(Number(e.target.value))}
-              onBlur={handleTimeLimitBlur}
-            />
-            <p className="text-sm text-gray-400 italic">minutes</p>
+            <div className="flex gap-2 items-center">
+              <input
+                type="number"
+                name="time-limit"
+                className="border-gray-300 border rounded-sm outline-none px-2 py-1 w-32 resize-none"
+                value={timeLimit}
+                min={10}
+                max={50}
+                onChange={(e) => handleTimeLimitChange(Number(e.target.value))}
+                onBlur={handleTimeLimitBlur}
+              />
+              <p className="text-sm text-gray-400 italic">minutes</p>
+            </div>
           </div>
         </form>
       </section>

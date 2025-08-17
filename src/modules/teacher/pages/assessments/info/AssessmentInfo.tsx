@@ -111,9 +111,10 @@ export default function AssessmentInfo(): ReactElement {
             </div>
           </article>
         </section>
-        <div className="flex w-full gap-2">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2">
           {/* section lists */}
-          <section className="flex flex-col w-full gap-2 bg-white rounded-sm shadow-sm min-w-[400px]">
+          <section className="flex flex-col gap-2 bg-white rounded-sm shadow-sm">
             <header className="border-b border-b-gray-300 p-2">
               <p className="font-semibold text-lg">Sections</p>
             </header>
@@ -127,7 +128,7 @@ export default function AssessmentInfo(): ReactElement {
           </section>
 
           {/* configuration */}
-          <section className="flex flex-col w-full gap-2 bg-white rounded-sm shadow-sm min-w-[400px]">
+          <section className="flex flex-col gap-2 bg-white rounded-sm shadow-sm">
             <header className="border-b border-b-gray-300 p-2">
               <p className="font-semibold text-lg">Configuration</p>
             </header>
@@ -135,7 +136,7 @@ export default function AssessmentInfo(): ReactElement {
           </section>
 
           {/* progress */}
-          <section className="flex flex-col w-full gap-2 bg-white rounded-sm shadow-sm min-w-[400px]">
+          <section className="flex flex-col gap-2 bg-white rounded-sm shadow-sm">
             <header className="border-b border-b-gray-300 p-2">
               <p className="font-semibold text-lg">Progress</p>
             </header>
@@ -143,13 +144,14 @@ export default function AssessmentInfo(): ReactElement {
           </section>
 
           {/* latest */}
-          <section className="flex flex-col w-full gap-2 bg-white rounded-sm shadow-sm min-w-[400px]">
+          <section className="flex flex-col gap-2 bg-white rounded-sm shadow-sm">
             <header className="border-b border-b-gray-300 p-2">
               <p className="font-semibold text-lg">Latest</p>
             </header>
             <section className="flex items-center justify-center p-4 min-h-[400px]"></section>
           </section>
         </div>
+
         <section className="flex flex-col w-full gap-2 bg-white rounded-sm shadow-sm min-h-[400px]">
           <header className="border-b border-b-gray-300 p-2">
             <p className="font-semibold text-lg">Assessment Trend</p>

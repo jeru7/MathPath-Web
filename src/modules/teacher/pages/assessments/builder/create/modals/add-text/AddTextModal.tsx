@@ -48,7 +48,7 @@ export default function AddTextModal({
 
   return (
     <motion.article
-      className="w-[800px] h-fit rounded-sm drop-shadow-sm top-1/2 -translate-y-[60%] left-1/2 right-1/2 -translate-x-1/2 absolute bg-white"
+      className="flex flex-col fixed w-full h-full min-h-[100vh] md:min-h-0 md:w-[800px] md:h-fit md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white"
       key="add-text-modal"
       initial={{ opacity: 0, scale: 1, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -59,19 +59,19 @@ export default function AddTextModal({
         <h3>New Text</h3>
         {/* close button */}
         <button
-          className="opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
+          className="hidden md:block opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
           type="button"
           onClick={onClose}
         >
           <IoClose />
         </button>
       </header>
-      <section className="flex flex-col gap-4 h-full bg-inherit rounded-b-sm p-4">
-        <div className="flex gap-4">
+      <section className="flex flex-col gap-4 bg-inherit rounded-b-sm p-4 justify-between h-full">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4">
           {/* label */}
           <label
             htmlFor="question"
-            className="font-semibold w-32 min-w-32 text-right"
+            className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right"
           >
             Text
           </label>
@@ -82,6 +82,7 @@ export default function AddTextModal({
                 contentToEdit ? (contentToEdit.data as string) : textContent
               }
               onContentChange={handleTextContentChange}
+              classes="h-fit"
             />
             <AnimatePresence>
               {isEmpty && (

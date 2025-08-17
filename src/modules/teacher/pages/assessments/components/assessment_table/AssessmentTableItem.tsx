@@ -52,11 +52,11 @@ export default function AssessmentTableItem({
 
   return (
     <tr
-      className="w-full font-medium hover:bg-gray-100 hover:cursor-pointer overflow-visible"
+      className="w-full font-medium text-sm xl:text-base hover:bg-gray-100 hover:cursor-pointer overflow-visible"
       onClick={() => navigate(`${assessment.id}`)}
     >
       {/* Title */}
-      <td className="w-[30%]">
+      <td className="w-[15%] xl:w-[20%]">
         <div
           className={`truncate whitespace-nowrap overflow-hidden max-w-[500px] ${assessment.title ? "" : "text-gray-400"}`}
         >
@@ -64,7 +64,7 @@ export default function AssessmentTableItem({
         </div>
       </td>
       {/* Topic */}
-      <td className="w-[30%]">
+      <td className="w-[15%] xl:w-[20%]">
         <div
           className={`truncate whitespace-nowrap overflow-hidden max-w-[400px] ${assessment.topic ? "" : "text-gray-400"}`}
         >

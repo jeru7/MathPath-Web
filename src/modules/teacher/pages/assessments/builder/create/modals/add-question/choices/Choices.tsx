@@ -107,8 +107,10 @@ export default function Choices({
   };
 
   return (
-    <section className="flex items-start gap-4">
-      <label className="font-semibold w-32 min-w-32 text-right">Options</label>
+    <section className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
+      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right">
+        Options
+      </label>
       <div className="flex flex-col gap-1 w-full">
         <section className="border border-gray-300 rounded-sm bg-white w-full h-fit flex flex-col">
           <div className="w-full flex justify-end items-center p-1 bg-gray-100 border-b border-b-gray-300 h-[40px] px-2">
@@ -215,7 +217,7 @@ export default function Choices({
           {isValidated && errors.answer && (
             <motion.p
               key="error-answer"
-              className="text-sm text-red-500 self-end"
+              className="text-xs md:text-sm text-red-500 self-end"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
@@ -226,7 +228,7 @@ export default function Choices({
           {isValidated && errors.multiChoiceAnswer && (
             <motion.p
               key="error-multiChoice"
-              className="text-sm text-red-500 self-end"
+              className="text-xs md:text-sm text-red-500 self-end"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
