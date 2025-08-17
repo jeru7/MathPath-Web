@@ -1,16 +1,10 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-// TODO: use util for banner
-import SBanner_1 from "../../../../../assets/images/section-banners/Banner_1.jpg";
-import SBanner_2 from "../../../../../assets/images/section-banners/Banner_2.jpg";
-import SBanner_3 from "../../../../../assets/images/section-banners/Banner_3.jpg";
-
 import * as sectionType from "../../../../core/types/section/section.type";
-import { createSection } from "../../../../core/services/section/section.service";
 import { CreateSectionDTO } from "../../../../core/types/section/section.schema";
 import { IoClose } from "react-icons/io5";
+import { getSectionBanner } from "../../../../core/utils/section/section.util";
+import { useCreateSection } from "../../../../core/services/section/section.service";
 
 export default function CreateSectionForm({
   setShowForm,
@@ -18,8 +12,6 @@ export default function CreateSectionForm({
   setShowForm: (show: boolean) => void;
 }): ReactElement {
   const { teacherId } = useParams();
-  const queryClient = useQueryClient();
-
   const [sectionData, setSectionData] = useState<CreateSectionDTO>({
     name: "",
     teacherId: teacherId as string,
@@ -30,21 +22,7 @@ export default function CreateSectionForm({
     assessmentIds: [] as string[],
   });
   const [showError, setShowError] = useState(false);
-
-  // TODO: move to section.service
-  const addSectionMutation = useMutation({
-    mutationFn: (sectionData: CreateSectionDTO) =>
-      createSection(teacherId as string, sectionData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["teacher", teacherId, "sections"],
-      });
-      handleClose();
-    },
-    onError: (error) => {
-      console.error("Error in adding section.", error);
-    },
-  });
+  const { mutate: createSection } = useCreateSection(teacherId ?? "");
 
   useEffect(() => {
     if (teacherId) {
@@ -78,7 +56,7 @@ export default function CreateSectionForm({
       return;
     }
 
-    addSectionMutation.mutate(sectionData);
+    createSection(sectionData);
   };
 
   const handleClose = () => {
@@ -152,13 +130,7 @@ export default function CreateSectionForm({
                           className={`border-1 h-20 w-32 rounded-lg hover:scale-105 ${sectionData.banner === banner ? "border-4 border-[var(--primary-green)]" : ""}`}
                         >
                           <img
-                            src={
-                              banner === "SBanner_1"
-                                ? SBanner_1
-                                : banner === "SBanner_2"
-                                  ? SBanner_2
-                                  : SBanner_3
-                            }
+                            src={getSectionBanner(sectionData.banner)}
                             alt="section banner"
                             className="h-full w-full rounded-sm object-cover"
                           />

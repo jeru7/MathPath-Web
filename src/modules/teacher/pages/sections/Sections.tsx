@@ -42,12 +42,12 @@ export default function Sections(): ReactElement {
         )}
       </AnimatePresence>
 
-      {/* Header */}
+      {/* header */}
       <header className="flex items-center justify-between py-1">
         <h3 className="text-xl sm:text-2xl font-bold">Sections</h3>
       </header>
 
-      {/* Section grid list */}
+      {/* section grid list */}
       <section className="bg-white flex-1 rounded-sm shadow-sm">
         <SectionGrid sections={sections} setShowForm={setShowForm} />
       </section>
