@@ -1,8 +1,8 @@
 import { Assessment } from "../../core/types/assessment/assessment.type";
 import { Section } from "../../core/types/section/section.type";
 import { Teacher } from "../../core/types/teacher/teacher.type";
-import { useQuery } from "@tanstack/react-query";
-import { fetchData } from "../../core/utils/api/api.util";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { deleteData, fetchData } from "../../core/utils/api/api.util";
 import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
 import { Student } from "../../student/types/student.type";
 
@@ -79,5 +79,16 @@ export const useTeacherAssessment = (
       ),
     enabled: !!teacherId && !!assessmentId,
     staleTime: DATA_STALE_TIME,
+  });
+};
+
+export const useTeacherDeleteStudent = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (studentId: string) => {
+      return deleteData<null>(
+        `${URL}/api/web/teachers/${teacherId}/students/${studentId}`,
+        "Failed to delete student.",
+      );
+    },
   });
 };

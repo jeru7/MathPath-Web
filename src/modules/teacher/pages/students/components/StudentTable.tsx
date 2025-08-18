@@ -84,7 +84,7 @@ export default function StudentTable({
 
       {/* table */}
       <div className="flex flex-col flex-1 overflow-x-auto">
-        <div className="w-full min-w-[1000px] flex-1">
+        <div className="flex flex-col w-full min-w-[1000px] flex-1">
           {/* headers */}
           <table className="font-primary table-auto w-full">
             <thead className="text-gray-400 text-sm xl:text-base">
