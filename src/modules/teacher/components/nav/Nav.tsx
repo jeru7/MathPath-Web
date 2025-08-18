@@ -73,7 +73,7 @@ export default function Nav(): ReactElement {
                   end={index === 0}
                 >
                   {icon}
-                  <div className="absolute opacity-0 group-hover:opacity-100 bg-[var(--primary-green)] px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 whitespace-nowrap transition-opacity duration-200">
+                  <div className="pointer-events-none absolute opacity-0 group-hover:opacity-100 bg-[var(--primary-green)] px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 whitespace-nowrap transition-opacity duration-200">
                     <p className="font-bold">{title}</p>
                   </div>
                 </NavLink>
@@ -85,7 +85,7 @@ export default function Nav(): ReactElement {
           <div className="flex flex-col gap-4">
             <div className="relative group p-2 rounded-full flex items-center justify-center hover:cursor-pointer">
               <IoMdSettings className="w-6 h-6" />
-              <div className="absolute opacity-0 group-hover:opacity-200 bg-[var(--primary-green)] px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 transition-opacity duration-200">
+              <div className="pointer-events-none absolute opacity-0 group-hover:opacity-200 bg-[var(--primary-green)] px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 transition-opacity duration-200">
                 <p className="font-bold">Settings</p>
               </div>
             </div>
@@ -96,14 +96,14 @@ export default function Nav(): ReactElement {
               onClick={handleLogout}
             >
               <IoLogOut className="w-6 h-6" />
-              <div className="absolute opacity-0 group-hover:opacity-200 bg-[var(--primary-green)] px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 transition-opacity duration-200">
+              <div className="pointer-events-none absolute opacity-0 group-hover:opacity-200 bg-[var(--primary-green)] px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 transition-opacity duration-200">
                 <p className="font-bold">Logout</p>
               </div>
             </button>
             <div className="h-12 w-12 rounded-full hover:cursor-pointer relative group">
               {/* TODO: profile picture */}
               <div className="border-1 w-full h-full rounded-full"></div>
-              <div className="absolute opacity-0 group-hover:opacity-200 bg-[var(--primary-green)] text-nowrap px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 transition-opacity duration-200">
+              <div className="pointer-events-none absolute opacity-0 group-hover:opacity-200 bg-[var(--primary-green)] text-nowrap px-2 py-1 rounded-sm top-1/2 -translate-y-1/2 left-full ml-4 transition-opacity duration-200">
                 <p className="font-bold">
                   {teacher?.lastName}, {capitalizeWord(teacher?.firstName)}
                 </p>
