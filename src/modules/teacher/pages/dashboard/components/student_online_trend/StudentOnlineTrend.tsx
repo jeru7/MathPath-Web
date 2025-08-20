@@ -9,13 +9,14 @@ import {
   CartesianGrid,
 } from "recharts";
 import { capitalizeWord } from "../../../../../core/utils/string.util";
-import {
-  ActivityRange,
-  ActivityResultDay,
-  ActivityResultToday,
-} from "../../../../../core/types/stats/activity-trend.type";
 import { useParams } from "react-router-dom";
-import { useTeacherActivityTrend } from "../../../../services/teacher-stats.service";
+import { useTeacherOnlineTrend } from "../../../../services/teacher-stats.service";
+import { formatHour, getMonthName } from "../../../../../core/utils/date.util";
+import {
+  OnlineTrendRange,
+  OnlineTrendResultDay,
+  OnlineTrendResultToday,
+} from "../../../../types/student-online-trend.type";
 
 type ActivityTrendProps = {
   classes: string;
@@ -38,52 +39,24 @@ type ActivityTrendProps = {
 //   return null;
 // };
 //
-const formatHour = (hour: number) => {
-  const period = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  return `${displayHour} ${period}`;
-};
 
-const getMonthName = (monthNumber: number) => {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return months[monthNumber - 1];
-};
-
-export default function ActivityTrend({
+export default function StudentOnlineTrend({
   classes,
 }: ActivityTrendProps): ReactElement {
-  const [range, setRange] = useState<ActivityRange>("today");
+  const [range, setRange] = useState<OnlineTrendRange>("today");
   const { teacherId } = useParams();
-  const { data: activityTrend } = useTeacherActivityTrend(
-    teacherId ?? "",
-    range,
-  );
-
-  console.log(activityTrend);
+  const { data: activityTrend } = useTeacherOnlineTrend(teacherId ?? "", range);
 
   const chartData = activityTrend?.map((d) => {
     if (range === "today") {
-      return { ...d, label: formatHour((d as ActivityResultToday).hour) };
+      return { ...d, label: formatHour((d as OnlineTrendResultToday).hour) };
     }
 
-    if ((d as ActivityResultDay).date) {
-      const monthName = getMonthName((d as ActivityResultDay).date.month);
+    if ((d as OnlineTrendResultDay).date) {
+      const monthName = getMonthName((d as OnlineTrendResultDay).date.month);
       return {
         ...d,
-        label: `${monthName} ${(d as ActivityResultDay).date.day}`,
+        label: `${monthName} ${(d as OnlineTrendResultDay).date.day}`,
       };
     }
     return { ...d, label: "N/A" };
@@ -95,7 +68,7 @@ export default function ActivityTrend({
     >
       <header className="flex justify-between w-full items-center">
         <p className="text-sm sm:text-base md:text-lg font-semibold">
-          Student Activity Trend
+          Student Online Trend
         </p>
 
         {activityTrend && activityTrend?.length > 0 && (
@@ -105,7 +78,7 @@ export default function ActivityTrend({
               {["today", "7d", "2w"].map((item) => (
                 <button
                   key={item}
-                  onClick={() => setRange(item as ActivityRange)}
+                  onClick={() => setRange(item as OnlineTrendRange)}
                   className={`px-3 py-1 rounded-md text-xs md:text-sm hover:cursor-pointer ${range === item ? "bg-[var(--secondary-green)]/80 text-black hover:bg-[var(--secondary-green)]" : "bg-gray-100 hover:bg-gray-200"}`}
                 >
                   {capitalizeWord(item)}
@@ -118,10 +91,10 @@ export default function ActivityTrend({
 
       <section className="flex flex-col flex-1 overflow-x-auto">
         <div
-          className={`flex min-h-[300px] flex-1 ${activityTrend && activityTrend?.length > 0 ? "min-w-[1000px] " : "w-full"}`}
+          className={`flex flex-col min-h-[300px] flex-1 ${activityTrend && activityTrend?.length > 0 ? "min-w-[1000px] " : "w-full"}`}
         >
           {activityTrend && activityTrend?.length > 0 ? (
-            <ResponsiveContainer className={""}>
+            <ResponsiveContainer className={"w-full flex-1"}>
               <AreaChart
                 data={chartData}
                 margin={{ top: 10, right: 10, left: -30, bottom: 10 }}

@@ -7,6 +7,7 @@ import {
 } from "../services/teacher.service";
 import { WSS } from "../../core/constants/api.constant";
 import { TeacherContext } from "./teacher.context";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function TeacherProvider({
   teacherId,
@@ -20,6 +21,8 @@ export function TeacherProvider({
   const maxReconnectAttempts = 5;
   const reconnectInterval = 3000;
   const isMounted = useRef(true);
+
+  const queryClient = useQueryClient();
 
   // react query
   const { data: teacher } = useTeacher(teacherId);
@@ -77,12 +80,30 @@ export function TeacherProvider({
         setOnlineStudentIds((prev) =>
           prev.includes(data.studentId) ? prev : [...prev, data.studentId],
         );
+        queryClient.refetchQueries({
+          queryKey: ["teacher", teacherId, "active-students"],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["teacher", teacherId, "online-trend"],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["teacher", teacherId, "students"],
+        });
       }
 
       if (type === "STUDENT_OFFLINE") {
         setOnlineStudentIds((prev) =>
           prev.filter((id) => id !== data.studentId),
         );
+        queryClient.refetchQueries({
+          queryKey: ["teacher", teacherId, "active-students"],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["teacher", teacherId, "online-trend"],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["teacher", teacherId, "students"],
+        });
       }
     };
 
@@ -105,7 +126,7 @@ export function TeacherProvider({
 
       console.error("WebSocket error:", error);
     };
-  }, [teacherId]);
+  }, [teacherId, queryClient]);
 
   useEffect(() => {
     isMounted.current = true;
