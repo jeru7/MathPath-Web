@@ -127,10 +127,8 @@ export default function StudentOnlineTrend({
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-gray-300 italic text-sm md:text-base">
-                No data available
-              </p>
+            <div className="flex flex-1 items-center justify-center">
+              <p className="text-gray-300 italic">No data available.</p>
             </div>
           )}
         </div>
