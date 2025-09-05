@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { CiFilter, CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { useTeacherContext } from "../../../context/teacher.context";
 import { Student } from "../../../../student/types/student.type";
+import { getSectionName } from "../utils/student-table.util";
 
 type StudentTableProps = {
   onClickAddStudent: () => void;
@@ -14,8 +15,16 @@ type StudentTableProps = {
 export default function StudentTable({
   onClickAddStudent,
 }: StudentTableProps): ReactElement {
-  const { students } = useTeacherContext();
+  const { students, sections, onlineStudents } = useTeacherContext();
   const navigate = useNavigate();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSections, setSelectedSections] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<
+    "online" | "offline" | null
+  >(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const filterDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Student;
@@ -46,10 +55,74 @@ export default function StudentTable({
   //
   //   return sortConfig.direction === "ascending" ? comparison : -comparison;
   // });
+  //
+
+  const onlineStudentIds = useMemo(
+    () => new Set(onlineStudents.map((s) => s.id)),
+    [onlineStudents],
+  );
+
+  const filteredStudents = students
+    .filter((student) => {
+      const {
+        firstName,
+        lastName,
+        middleName = "",
+        referenceNumber,
+        sectionId,
+      } = student;
+
+      const sectionName = getSectionName(sectionId, sections).toLowerCase();
+      const query = searchQuery.toLowerCase();
+      const fullName1 = `${lastName} ${firstName} ${middleName}`.toLowerCase();
+      const fullName2 = `${firstName} ${lastName}`.toLowerCase();
+
+      // Search filter
+      return (
+        referenceNumber.toLowerCase().includes(query) ||
+        sectionName.includes(query) ||
+        fullName1.includes(query) ||
+        fullName2.includes(query) ||
+        firstName.toLowerCase().includes(query) ||
+        lastName.toLowerCase().includes(query) ||
+        middleName.toLowerCase().includes(query)
+      );
+    })
+    .filter((student) => {
+      // Section filter
+      if (selectedSections.length === 0) return true;
+      return selectedSections.includes(student.sectionId);
+    })
+    .filter((student) => {
+      // Status filter: compute from onlineStudentIds
+      if (!selectedStatus) return true; // "All" selected
+      const status = onlineStudentIds.has(student.id) ? "online" : "offline";
+      return status === selectedStatus;
+    });
+
+  const handleSearchStudent = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   const handleItemOnclick = (studentId: string) => {
     navigate(`${studentId}`, { replace: true });
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowFilterDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <section className="flex flex-col flex-1 overflow-x-hidden">
@@ -63,13 +136,100 @@ export default function StudentTable({
             <input
               placeholder="Search student"
               className="text-xs focus:outline-none"
+              value={searchQuery}
+              onChange={handleSearchStudent}
             />
           </div>
 
           {/* filter */}
-          <button className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200">
-            <CiFilter className="w-4 h-4" />
-          </button>
+          <div className="relative">
+            <button
+              className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200"
+              onClick={() => setShowFilterDropdown((prev) => !prev)}
+            >
+              <CiFilter className="w-4 h-4" />
+            </button>
+
+            {showFilterDropdown && (
+              <div
+                className="absolute top-full left-0 bg-white border border-gray-300 rounded-sm p-4 shadow-lg z-10 w-64 mt-1 flex flex-col gap-4"
+                ref={filterDropdownRef}
+              >
+                {/* Sections - multi-select checkboxes */}
+                <div className="">
+                  <p className="font-semibold mb-1">Sections</p>
+                  <div className="flex flex-col max-h-32 overflow-y-auto gap-1">
+                    {sections.map((section) => {
+                      const isSelected = selectedSections.includes(section.id);
+
+                      return (
+                        <div
+                          key={section.id}
+                          className={`cursor-pointer px-2 py-1 rounded text-sm border w-fit ${
+                            isSelected
+                              ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                          }`}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedSections((prev) =>
+                                prev.filter((id) => id !== section.id),
+                              );
+                            } else {
+                              setSelectedSections((prev) => [
+                                ...prev,
+                                section.id,
+                              ]);
+                            }
+                          }}
+                        >
+                          {section.name}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Status - radio buttons */}
+                <div className="">
+                  <p className="font-semibold mb-1">Status</p>
+                  <div className="flex gap-1 text-sm">
+                    {["all", "online", "offline"].map((status) => {
+                      const isSelected =
+                        (status === "all" && selectedStatus === null) ||
+                        (status === "online" && selectedStatus === "online") ||
+                        (status === "offline" && selectedStatus === "offline");
+
+                      const displayText =
+                        status === "all"
+                          ? "All"
+                          : status.charAt(0).toUpperCase() + status.slice(1);
+
+                      return (
+                        <div
+                          key={status}
+                          className={`cursor-pointer px-2 py-1 rounded border text-sm text-center ${
+                            isSelected
+                              ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                          }`}
+                          onClick={() => {
+                            if (status === "all") {
+                              setSelectedStatus(null);
+                            } else {
+                              setSelectedStatus(status as "online" | "offline");
+                            }
+                          }}
+                        >
+                          {displayText}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* create button */}
@@ -168,13 +328,13 @@ export default function StudentTable({
                 </th>
                 <th
                   className="cursor-pointer w-[15%]"
-                  onClick={() => handleSort("lastPlayed")}
+                  onClick={() => handleSort("lastOnline")}
                 >
                   <div
-                    className={`flex items-center gap-2 ${sortConfig.key === "lastPlayed" ? "text-[var(--primary-black)]" : ""}`}
+                    className={`flex items-center gap-2 justify-center ${sortConfig.key === "lastOnline" ? "text-[var(--primary-black)]" : ""}`}
                   >
                     <p className="text-nowrap">Last Played</p>
-                    {sortConfig.key === "lastPlayed" ? (
+                    {sortConfig.key === "lastOnline" ? (
                       sortConfig.direction === "ascending" ? (
                         <FaChevronUp />
                       ) : (
@@ -194,7 +354,7 @@ export default function StudentTable({
           <div className="flex-1 overflow-y-auto">
             <table className="font-primary table-auto w-full text-sm xl:text-base">
               <tbody>
-                {students.map((student) => (
+                {filteredStudents.map((student) => (
                   <StudentTableItem
                     student={student}
                     key={student.referenceNumber}

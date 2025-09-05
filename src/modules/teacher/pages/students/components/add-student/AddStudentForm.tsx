@@ -43,7 +43,6 @@ export default function AddStudentForm({
       gender: undefined,
       email: undefined,
       referenceNumber: undefined,
-      username: undefined,
       password: undefined,
       sectionId: undefined,
     },
@@ -221,26 +220,6 @@ export default function AddStudentForm({
               name="referenceNumber"
               placeholder="Enter reference number"
               className="border-1 rounded-lg p-2 [appearance:textfield] focus:border-[var(--tertiary-green)] focus:outline-none focus:ring-1 focus:ring-[var(--tertiary-green)]"
-            />
-          </div>
-          {/* Username */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <label htmlFor="username" className="font-bold">
-                Username
-              </label>
-              {errors.username && (
-                <p className="text-xs text-red-500">
-                  {errors?.username?.message}
-                </p>
-              )}
-            </div>
-            <input
-              type="text"
-              {...register("username")}
-              name="username"
-              placeholder="Enter username"
-              className="border-1 rounded-lg p-2 focus:border-[var(--tertiary-green)] focus:outline-none focus:ring-1 focus:ring-[var(--tertiary-green)]"
             />
           </div>
           {/* Password */}

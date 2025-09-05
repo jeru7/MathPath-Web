@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { format } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
-import { Section } from "../../../../core/types/section/section.type";
 import { formatToPhDate } from "../../../../date/utils/date.util";
 import { HiDotsVertical } from "react-icons/hi";
 import { useTeacherContext } from "../../../context/teacher.context";
@@ -13,6 +11,7 @@ import { capitalizeWord } from "../../../../core/utils/string.util";
 import { useTeacherDeleteStudent } from "../../../services/teacher.service";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { getSectionName } from "../utils/student-table.util";
 
 interface IStudentTableItemProps {
   student: Student;
@@ -34,14 +33,6 @@ export default function StudentTableItem({
   const [status, setStatus] = useState<StudentStatusType>("Offline");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-
-  // get the section name using the section id on the student
-  const getSectionName = (sectionId: string) => {
-    const studentSection: Section | undefined = sections.find(
-      (section) => section.id === sectionId,
-    );
-    return studentSection ? studentSection.name : "Unknown section";
-  };
 
   const handleDeleteStudent = () => {
     deleteStudent(student.id, {
@@ -78,7 +69,7 @@ export default function StudentTableItem({
           <p className="whitespace-nowrap overflow-hidden text-ellipsis">{`${student.lastName}, ${capitalizeWord(`${student.firstName}`)}`}</p>
         </div>
       </td>
-      <td className="w-[15%]">{getSectionName(student.sectionId)}</td>
+      <td className="w-[15%]">{getSectionName(student.sectionId, sections)}</td>
       <td
         className={`w-[15%] ${status === "Online" ? "text-[var(--tertiary-green)]" : "text-[var(--primary-red)]"}`}
       >
@@ -87,12 +78,11 @@ export default function StudentTableItem({
       <td className="w-[15%]">
         {format(formatToPhDate(student.createdAt.toString()), "MMMM d, yyyy")}
       </td>
-      <td className="w-[15%]">
-        {student.lastPlayed ? (
-          formatInTimeZone(
-            student.lastPlayed?.toString(),
-            "UTC",
-            "MMMM d, yyyy",
+      <td className="w-[15%] text-center">
+        {student.lastOnline ? (
+          format(
+            formatToPhDate(student.lastOnline.toString()),
+            "MMMM d, yyyy 'at' hh:mm a",
           )
         ) : (
           <p className="text-gray-300">N/A</p>

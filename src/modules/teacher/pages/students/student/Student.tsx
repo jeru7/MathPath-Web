@@ -50,6 +50,10 @@ export default function Student(): ReactElement {
     undefined,
   );
 
+  const assessmentTakenCount = studentData?.assessments.filter((assessment) =>
+    assessment.attempts.some((attempt) => attempt.status === "completed"),
+  ).length;
+
   const difficultyFrequencyData = getDifficultyFrequency(difficultyFrequency);
 
   useEffect(() => {
@@ -205,7 +209,7 @@ export default function Student(): ReactElement {
               Assessments Taken<span className="md:hidden">:</span>
             </p>
             <p className="text-xl xl:text-2xl font-bold">
-              {studentData?.assessments.length ?? 0}
+              {assessmentTakenCount}
             </p>
           </div>
           {/* Streak */}
