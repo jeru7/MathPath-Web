@@ -2,11 +2,11 @@ import { type ReactElement } from "react";
 import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
 import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
-import ActivityTrend from "./components/activity_trend/ActivityTrend";
 import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard";
 import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCard";
 import AssessmentStatusCard from "./components/assessment_status/AssessmentStatusCard";
 import { useTeacherContext } from "../../context/teacher.context";
+import StudentOnlineTrend from "./components/student_online_trend/StudentOnlineTrend";
 
 export default function Dashboard(): ReactElement {
   const { students, sections, assessments, onlineStudents } =
@@ -38,7 +38,7 @@ export default function Dashboard(): ReactElement {
         <h3 className="text-xl sm:text-2xl font-bold">Dashboard</h3>
       </header>
 
-      <div className="flex-1 flex flex-col xl:flex-row gap-2 xl:min-h-[calc(100vh-5rem)]">
+      <div className="flex-1 flex flex-col xl:flex-row gap-2">
         {/* left column */}
         <div className="xl:w-[75%] flex-1 flex flex-col gap-2">
           {/* stats */}
@@ -58,7 +58,7 @@ export default function Dashboard(): ReactElement {
 
           {/* stage progression */}
           <div className="w-full h-fit">
-            <ActivityTrend classes="" />
+            <StudentOnlineTrend classes="" />
           </div>
 
           {/* active students, correct percentage, assessment status */}

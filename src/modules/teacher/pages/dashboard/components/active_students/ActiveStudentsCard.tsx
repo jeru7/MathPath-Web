@@ -1,9 +1,7 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { type ReactElement } from "react";
 import ActiveStudentsPie from "./ActiveStudentsPie.js";
-import {
-  ActiveStudents,
-  ActiveStudentsSections,
-} from "../../../../types/active-student.type.js";
+import { useTeacherActiveStudent } from "../../../../services/teacher-stats.service.js";
+import { useParams } from "react-router-dom";
 
 const COLORS = ["#347928", "#99D58D", "#F09319", "#FFE31A", "#F6FB7A"];
 const OFFLINE_COLOR = "#a9a9a9";
@@ -13,30 +11,18 @@ export default function ActiveStudentsCard({
 }: {
   classes: string;
 }): ReactElement {
-  const [data, setData] = useState<ActiveStudents | null>(null);
+  const { teacherId } = useParams();
+  const { data: activeStudents } = useTeacherActiveStudent(teacherId ?? "");
 
-  useEffect(() => {
-    setData({
-      totalPercentage: 50,
-      sections: [
-        { name: "Section 1", percentage: 20 },
-        { name: "Section 2", percentage: 20 },
-        { name: "Section 3", percentage: 10 },
-      ],
-    });
-  }, []);
+  const chartData =
+    activeStudents?.totalPercentage === 0
+      ? [{ name: "Offline", percentage: 100 }]
+      : (activeStudents?.sections ?? []);
 
-  if (!data) return <div>no data</div>;
-
-  const chartData: ActiveStudentsSections[] = [
-    ...data.sections,
-    { name: "Offline", percentage: 100 - data.totalPercentage },
-  ];
-
-  const sectionColors = [
-    ...COLORS.slice(0, data.sections.length),
-    OFFLINE_COLOR,
-  ];
+  const sectionColors =
+    activeStudents?.totalPercentage === 0
+      ? [OFFLINE_COLOR]
+      : [...COLORS.slice(0, chartData.length), OFFLINE_COLOR];
 
   return (
     <article
@@ -52,12 +38,12 @@ export default function ActiveStudentsCard({
           classes="relative min-w-[150px]"
           chartData={chartData}
           sectionColors={sectionColors}
-          totalPercentage={data.totalPercentage}
+          totalPercentage={activeStudents?.totalPercentage ?? 0}
         />
 
         {/* Section label with colors */}
         <section className="flex flex-col justify-center p-2 text-sm">
-          {data.sections.map((section, index) => (
+          {activeStudents?.sections.map((section, index) => (
             <div key={index} className="flex items-center gap-2 mb-1">
               <div
                 className="w-3 h-3 rounded-full"

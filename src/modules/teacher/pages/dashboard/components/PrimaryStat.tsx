@@ -69,11 +69,7 @@ export default function PrimaryStat({
       {/* Specific stat/detail */}
       <div className="flex h-fit items-end justify-between">
         <p className="text-[var(--primary-white)]/80 text-xs ">
-          {title === "Students"
-            ? `${onlineStudents ?? 0} online`
-            : title === "Assessments"
-              ? `${assessments ?? 0} in progress`
-              : ""}
+          {title === "Students" ? `${onlineStudents ?? 0} online` : ""}
         </p>
         {/* Quick nav button */}
         <button
