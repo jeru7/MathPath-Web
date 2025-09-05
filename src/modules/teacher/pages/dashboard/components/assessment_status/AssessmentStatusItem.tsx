@@ -3,14 +3,12 @@ import { FaRegCircle } from "react-icons/fa6";
 import { FaCircle } from "react-icons/fa";
 import { IoCalendarClear } from "react-icons/io5";
 import { format } from "date-fns";
-import Banner1 from "../../../../../../assets/images/section-banners/Banner_1.jpg";
-import Banner2 from "../../../../../../assets/images/section-banners/Banner_2.jpg";
-import Banner3 from "../../../../../../assets/images/section-banners/Banner_3.jpg";
-import { SectionBanner } from "../../../../../core/types/section/section.type";
 import {
   AssessmentStatus,
   AssessmentStatusSection,
 } from "../../../../types/assessment-status.type";
+import { getSectionBanner } from "../../../../../core/utils/section/section.util";
+import { AssessmentStatus as Status } from "../../../../../core/types/assessment/assessment.type";
 
 interface IAssessmentStatusItemProps {
   classes: string;
@@ -21,7 +19,9 @@ export default function AssessmentStatusItem({
   classes,
   assessmentData,
 }: IAssessmentStatusItemProps): ReactElement {
-  const completed = assessmentData?.status === "Completed";
+  const completed =
+    assessmentData?.status === "finished" ||
+    assessmentData?.status === "published";
 
   const formatDateRange = (date: { start: string; end: string }): string => {
     const startFormatted = format(new Date(date.start), "dd MMM").toUpperCase();
@@ -30,16 +30,37 @@ export default function AssessmentStatusItem({
     return `${startFormatted} - ${endFormatted}`;
   };
 
-  const getSectionBanner = (banner: SectionBanner): string => {
-    if (banner === "SBanner_1") {
-      return Banner1;
-    } else if (banner === "SBanner_2") {
-      return Banner2;
-    } else if (banner === "SBanner_3") {
-      return Banner3;
+  const getStatus = (status: Status) => {
+    switch (status) {
+      case "finished":
+        return (
+          <div className="flex items-center gap-1">
+            <FaCircle className="text-[var(--primary-green)]" />
+            <p className="text-xs text-[var(--primary-green)]">
+              {assessmentData?.status}
+            </p>
+          </div>
+        );
+      case "in-progress":
+      case "published":
+        return (
+          <div className="flex items-center gap-1">
+            <FaRegCircle className="text-[var(--secondary-green)]" />
+            <p className="text-xs text-[var(--secondary-green)]">
+              {assessmentData?.status}
+            </p>
+          </div>
+        );
+      case "draft":
+        return (
+          <div className="flex items-center gap-1">
+            <FaRegCircle className="text-[var(--primary-yellow)]" />
+            <p className="text-xs text-[var(--primary-yellow)]">
+              {assessmentData?.status}
+            </p>
+          </div>
+        );
     }
-
-    return Banner1;
   };
 
   return (
@@ -51,22 +72,10 @@ export default function AssessmentStatusItem({
     >
       {/* Title and Status */}
       <div className="flex flex-col gap-1">
-        <p className="text-md font-semibold">{assessmentData?.name}</p>
-        <div className="flex items-center gap-1">
-          {completed ? (
-            <FaCircle className="text-[var(--primary-green)]" />
-          ) : (
-            <FaRegCircle className="text-[var(--primary-yellow)]" />
-          )}
-          <p
-            className="text-xs"
-            style={{
-              color: `${completed ? "var(--primary-green)" : "var(--primary-yellow)"}`,
-            }}
-          >
-            {assessmentData?.status}
-          </p>
-        </div>
+        <p className="text-md font-semibold">
+          {assessmentData.name ? assessmentData.name : "N/A"}
+        </p>
+        {getStatus(assessmentData.status)}
       </div>
       {/* Date and Sections */}
       <div className="flex flex-col justify-between items-end">

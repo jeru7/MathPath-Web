@@ -42,6 +42,7 @@ export const usePublishAssessment = (teacherId: string) => {
 };
 
 export const useUpdateAssessmentDraft = (teacherId: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (updatedAssessment: Assessment) => {
       return patchData<Assessment, Assessment>(
@@ -50,16 +51,27 @@ export const useUpdateAssessmentDraft = (teacherId: string) => {
         "Failed to update assessment draft",
       );
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["teacher", teacherId, "assessment-status"],
+      });
+    },
   });
 };
 
 export const useDeleteAssessment = (teacherId: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (assessmentId: string) => {
       return deleteData<null>(
         `${URL}/api/web/teachers/${teacherId}/assessments/${assessmentId}`,
         "Failed to delete assessment.",
       );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["teacher", teacherId, "assessment-status"],
+      });
     },
   });
 };

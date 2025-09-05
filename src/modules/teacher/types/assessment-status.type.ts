@@ -1,6 +1,5 @@
 import { SectionBanner } from "../../core/types/section/section.type";
-
-export type AssessmentStatusType = "Completed" | "In Progress";
+import { AssessmentStatus as Status } from "../../core/types/assessment/assessment.type";
 
 export type AssessmentStatusSection = {
   name: string;
@@ -9,7 +8,7 @@ export type AssessmentStatusSection = {
 
 export type AssessmentStatus = {
   name: string;
-  status: AssessmentStatusType;
+  status: Status;
   sections: AssessmentStatusSection[];
   date: {
     start: string;
