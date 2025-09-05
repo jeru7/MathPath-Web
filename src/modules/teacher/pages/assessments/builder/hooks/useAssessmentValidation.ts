@@ -55,6 +55,9 @@ export const useAssessmentValidation = (
       if (assessment.sections.length === 0) {
         errors.sections = "Section list is empty.";
       }
+      if (!assessment.date.end) {
+        errors.endDate = "Deadline is required.";
+      }
     }
 
     return errors;

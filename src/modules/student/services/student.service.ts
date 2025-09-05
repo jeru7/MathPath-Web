@@ -64,7 +64,7 @@ export const useStudentAttempts = (studentId: string) => {
     queryKey: ["student", studentId, "attempts"],
     queryFn: () => {
       return fetchData<StageAttempt[] | []>(
-        `${URL}/api/web/students/${studentId}/attempts`,
+        `${URL}/api/web/students/${studentId}/stage-attempts`,
         "Failed to fetch student attempts.",
       );
     },

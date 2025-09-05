@@ -47,7 +47,7 @@ export function TeacherProvider({
     }
 
     wsRef.current = new WebSocket(WSS);
-    console.log(WSS);
+    // console.log(WSS);
     const ws = wsRef.current;
 
     ws.onopen = () => {
@@ -56,7 +56,7 @@ export function TeacherProvider({
         return;
       }
 
-      console.log("WebSocket connected");
+      // console.log("WebSocket connected");
 
       reconnectAttempts.current = 0;
       wsRef.current?.send(
@@ -70,7 +70,7 @@ export function TeacherProvider({
     ws.onmessage = (e) => {
       if (!isMounted.current) return;
       const { type, data } = JSON.parse(e.data);
-      console.log("Received message: ", type, data);
+      // console.log("Received message: ", type, data);
 
       if (type === "TEACHER_INITIAL_DATA") {
         setOnlineStudentIds(data.onlineStudents);
@@ -110,21 +110,21 @@ export function TeacherProvider({
     ws.onclose = () => {
       if (!isMounted.current) return;
 
-      console.log("WebSocket closed");
+      // console.log("WebSocket closed");
 
       if (reconnectAttempts.current < maxReconnectAttempts) {
         reconnectAttempts.current += 1;
-        console.log(
-          `Attempting to reconnect (${reconnectAttempts.current}/${maxReconnectAttempts})...`,
-        );
+        // console.log(
+        //   `Attempting to reconnect (${reconnectAttempts.current}/${maxReconnectAttempts})...`,
+        // );
         setTimeout(connectWebSocket, reconnectInterval);
       }
     };
 
-    wsRef.current.onerror = (error) => {
+    wsRef.current.onerror = () => {
       if (!isMounted.current) return;
 
-      console.error("WebSocket error:", error);
+      // console.error("WebSocket error:", error);
     };
   }, [teacherId, queryClient]);
 

@@ -40,11 +40,6 @@ export const AddStudentSchema = z.object({
     .trim()
     .min(1, "Student reference number is required")
     .min(6, "Student reference number must have at least 6 characters."),
-  username: z
-    .string()
-    .trim()
-    .min(1, "Username is required")
-    .min(4, "Username must have at least 4 characters"),
   password: z
     .string()
     .min(1, "Password is required")

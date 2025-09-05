@@ -124,7 +124,7 @@ export default function AssessmentTableItem({
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="block w-full text-left px-3 py-2 hover:bg-gray-100 hover:cursor-pointer"
+              className={`w-full text-left px-3 py-2 hover:bg-gray-100 hover:cursor-pointer ${assessment.status !== "draft" ? "hidden" : "block"}`}
               onClick={() => navigate(`${assessment.id}/create`)}
             >
               Edit

@@ -19,6 +19,7 @@ export const teacherRoutesConfig = [
         children: [
           { index: true, element: <Students /> },
           { path: "add-students", element: <Students /> },
+          { path: "edit-students", element: <Students /> },
           { path: ":studentId", element: <Student /> },
         ],
       },

@@ -1,10 +1,10 @@
 import { type ReactElement } from "react";
 import HalfCircleProgress from "./HalfCircleProgress";
-import { ProgressType } from "../../../../core/types/progress-card.type";
 import {
   useStudentAssessmentTracker,
   useStudentStageTracker,
 } from "../../../services/student-tracker.service";
+import { ProgressType } from "../../../../core/types/stats/trackers.type";
 
 export default function ProgressCard({
   title,

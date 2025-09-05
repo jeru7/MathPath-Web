@@ -1,3 +1,5 @@
+import { ProfilePicture } from "../../core/types/user.type";
+
 export type StudentGender = "Male" | "Female";
 export type StudentCharacter = StudentGender;
 export type StudentStatusType = "Online" | "Offline";
@@ -8,7 +10,7 @@ export type Student = {
   lastName: string;
   middleName?: string;
   status?: "Online" | "Offline";
-  profilePicture: StudentProfilePictures;
+  profilePicture: ProfilePicture;
   role: "Student";
   referenceNumber: string;
   sectionId: string;
@@ -16,41 +18,34 @@ export type Student = {
   gender: StudentGender;
   email: string;
   assessments: StudentAssessment[];
-  username: string;
   character: StudentCharacter;
   level: number;
   exp: StudentExp;
   hp: number;
   quests: StudentQuest[];
   stages: StudentStage[];
-  lastPlayed: string;
+  lastOnline: string;
   streak: number;
   createdAt: string;
   updatedAt: string;
 };
-
-export type StudentProfilePictures =
-  | "Boy_1"
-  | "Boy_2"
-  | "Boy_3"
-  | "Boy_4"
-  | "Girl_1"
-  | "Girl_2"
-  | "Girl_3"
-  | "Girl_4";
 
 export type StudentExp = {
   currentExp: number;
   nextLevelExp: number;
 };
 
-export type StudentAssessment = {
-  assessmentId: string;
+export type StudentAssessmentAttempt = {
   score: number;
   timeSpent: number;
-  completed: boolean;
+  status: "completed" | "paused";
   dateAttempted: string;
   dateCompleted: string;
+};
+
+export type StudentAssessment = {
+  assessmentId: string;
+  attempts: StudentAssessmentAttempt[];
 };
 
 export type StudentStage = {

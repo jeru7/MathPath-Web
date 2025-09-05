@@ -5,7 +5,7 @@ import { URL } from "../../core/constants/api.constant";
 import {
   AssessmentTracker,
   StageTracker,
-} from "../../core/types/progress-card.type";
+} from "../../core/types/stats/trackers.type";
 
 export const useStudentQuestListTracker = (studentId: string) => {
   return useQuery<QuestList>({

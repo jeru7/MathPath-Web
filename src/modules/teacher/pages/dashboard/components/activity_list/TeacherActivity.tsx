@@ -1,14 +1,6 @@
 import { type ReactElement } from "react";
-import Boy_1 from "../../../../../../assets/images/profile-pictures/BOY_1.png";
-import Boy_2 from "../../../../../../assets/images/profile-pictures/BOY_2.png";
-import Boy_3 from "../../../../../../assets/images/profile-pictures/BOY_3.png";
-import Boy_4 from "../../../../../../assets/images/profile-pictures/BOY_4.png";
-import Girl_1 from "../../../../../../assets/images/profile-pictures/GIRL_1.png";
-import Girl_2 from "../../../../../../assets/images/profile-pictures/GIRL_2.png";
-import Girl_3 from "../../../../../../assets/images/profile-pictures/GIRL_3.png";
-import Girl_4 from "../../../../../../assets/images/profile-pictures/GIRL_4.png";
 import { FaCircle } from "react-icons/fa";
-import { StudentProfilePictures } from "../../../../../student/types/student.type";
+import { getProfilePictures } from "../../../../../core/utils/profile-picture.util";
 
 export default function TeacherActivity(): ReactElement {
   return (
@@ -17,7 +9,7 @@ export default function TeacherActivity(): ReactElement {
       <div className="flex gap-2 items-center">
         <div className="w-8 h-8 rounded-full">
           <img
-            src={displayProfile("Boy_1")}
+            src={getProfilePictures("Boy_1")}
             alt="Student profile picture."
             className="w-full h-full rounded-full object-cover"
           />
@@ -37,26 +29,3 @@ export default function TeacherActivity(): ReactElement {
     </article>
   );
 }
-
-const displayProfile = (profile: StudentProfilePictures): string => {
-  switch (profile) {
-    case "Boy_1":
-      return Boy_1;
-    case "Boy_2":
-      return Boy_2;
-    case "Boy_3":
-      return Boy_3;
-    case "Boy_4":
-      return Boy_4;
-    case "Girl_1":
-      return Girl_1;
-    case "Girl_2":
-      return Girl_2;
-    case "Girl_3":
-      return Girl_3;
-    case "Girl_4":
-      return Girl_4;
-    default:
-      return Boy_1;
-  }
-};

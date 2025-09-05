@@ -235,6 +235,23 @@ export default function Publish({
                   />
                 </motion.div>
               ) : null}
+              <AnimatePresence mode="wait">
+                {isValidated && errors.endDate && (
+                  <motion.p
+                    className="text-sm text-red-500 self-end"
+                    key="start-date-error"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{
+                      opacity: 0,
+                      y: -5,
+                      transition: { duration: 0.05 },
+                    }}
+                  >
+                    {errors.endDate}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </form>
         </section>
