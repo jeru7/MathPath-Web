@@ -7,6 +7,7 @@ export type AssessmentStatusSection = {
 };
 
 export type AssessmentStatus = {
+  id: string;
   name: string;
   status: Status;
   sections: AssessmentStatusSection[];

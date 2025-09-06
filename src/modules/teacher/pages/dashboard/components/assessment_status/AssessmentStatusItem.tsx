@@ -9,6 +9,7 @@ import {
 } from "../../../../types/assessment-status.type";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
 import { AssessmentStatus as Status } from "../../../../../core/types/assessment/assessment.type";
+import { useNavigate } from "react-router-dom";
 
 interface IAssessmentStatusItemProps {
   classes: string;
@@ -19,6 +20,8 @@ export default function AssessmentStatusItem({
   classes,
   assessmentData,
 }: IAssessmentStatusItemProps): ReactElement {
+  const navigate = useNavigate();
+
   const completed =
     assessmentData?.status === "finished" ||
     assessmentData?.status === "published";
@@ -63,12 +66,17 @@ export default function AssessmentStatusItem({
     }
   };
 
+  const handleItemClick = () => {
+    navigate(`assessments/${assessmentData.id}`);
+  };
+
   return (
     <article
-      className={`${classes} flex justify-between border-l-4 pl-2 rounded-md border-1 border-gray-200 p-2`}
+      className={`${classes} flex justify-between border-l-4 pl-2 rounded-md border-1 border-gray-200 p-2 hover:bg-gray-100 hover:cursor-pointer`}
       style={{
         borderLeftColor: `${completed ? "var(--primary-green)" : "var(--primary-yellow)"}`,
       }}
+      onClick={handleItemClick}
     >
       {/* Title and Status */}
       <div className="flex flex-col gap-1">
