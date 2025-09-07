@@ -40,7 +40,7 @@ export default function Dashboard(): ReactElement {
 
       <div className="flex-1 flex flex-col xl:flex-row gap-2">
         {/* left column */}
-        <div className="xl:w-[75%] flex-1 flex flex-col gap-2">
+        <div className="xl:w-[80%] flex-1 flex flex-col gap-2">
           {/* stats */}
           <section className="flex min-h-[120px] xl:h-[200px] xl:min-h-[200px] w-full xl:w-full gap-2 overflow-x-auto overflow-y-hidden xl:overflow-x-hidden no-scrollbar">
             {primaryStats.map((stat, index) => (
@@ -72,7 +72,7 @@ export default function Dashboard(): ReactElement {
         </div>
 
         {/* right column */}
-        <div className="w-full xl:w-[25%] flex flex-col md:flex-row xl:flex-col gap-2">
+        <div className="w-full xl:w-[20%] flex flex-col md:flex-row xl:flex-col gap-2">
           {/* calendar */}
           <CustomCalendar classes="" />
           {/* student activity */}

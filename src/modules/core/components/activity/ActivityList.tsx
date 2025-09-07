@@ -3,8 +3,9 @@ import Select, { SingleValue, StylesConfig } from "react-select";
 import { FilterOption, teacherActivityFilter } from "../../types/select.type";
 import { getCustomSelectColor } from "../../styles/selectStyles";
 // import StudentActivity from "./StudentActivity";
-import StudentActivity from "./StudentActivity";
 import TeacherActivity from "../../../teacher/pages/dashboard/components/activity_list/TeacherActivity";
+import { useTeacherStudentActivities } from "../../../teacher/services/teacher.service";
+import { useParams } from "react-router-dom";
 
 interface IActivityListProps {
   classes?: string;
@@ -15,6 +16,11 @@ export default function ActivityList({
   classes,
   type,
 }: IActivityListProps): ReactElement {
+  const { teacherId } = useParams();
+
+  const { data: studentActivities } = useTeacherStudentActivities(
+    teacherId ?? "",
+  );
   const [selectedFilter, setSelectedFilter] = useState(
     teacherActivityFilter[0],
   );
@@ -58,9 +64,15 @@ export default function ActivityList({
           ></div>
 
           {/* Activity List */}
-          <section className="flex-col flex pl-8 h-fit">
-            <TeacherActivity />
-            <StudentActivity />
+          <section className="flex-col flex pl-8 h-fit gap-2">
+            {studentActivities &&
+              studentActivities.length > 0 &&
+              studentActivities?.map((activity) => (
+                <TeacherActivity
+                  key={activity.activityId}
+                  activity={activity}
+                />
+              ))}
           </section>
         </div>
       </div>

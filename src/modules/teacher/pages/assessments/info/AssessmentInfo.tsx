@@ -2,9 +2,9 @@ import { type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTeacherAssessment } from "../../../services/teacher.service";
 import AssessmentStatus from "../components/assessment_table/AssessmentStatus";
-import { formatToPhDate } from "../../../../date/utils/date.util";
 import { format } from "date-fns";
 import { HiOutlineDotsVertical } from "react-icons/hi";
+import { formatToPhDate } from "../../../../core/utils/date.util";
 
 export default function AssessmentInfo(): ReactElement {
   // TODO: display specific assessment details

@@ -8,9 +8,3 @@ export type Teacher = {
   middleName: string | null;
   profilePicture: ProfilePicture | null;
 };
-
-export type TeacherActivity = {
-  profilePicture: ProfilePicture;
-  title: string;
-  date: string;
-};

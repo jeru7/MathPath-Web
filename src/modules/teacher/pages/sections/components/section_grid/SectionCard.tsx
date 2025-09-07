@@ -5,9 +5,9 @@ import SBanner_3 from "../../../../../../assets/images/section-banners/Banner_3.
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 import { Section } from "../../../../../core/types/section/section.type";
-import { formatToPhDate } from "../../../../../date/utils/date.util";
 import { FaEllipsisH } from "react-icons/fa";
 import { useTeacherContext } from "../../../../context/teacher.context";
+import { formatToPhDate } from "../../../../../core/utils/date.util";
 
 export default function SectionCard({
   section,

@@ -5,6 +5,7 @@ import { deleteData, fetchData } from "../../core/utils/api/api.util";
 import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
 import { Student } from "../../student/types/student.type";
 import { Teacher } from "../types/teacher.type";
+import { TeacherStudentActivity } from "../../core/types/activity/activity.type";
 
 // get teacher data - teacher info
 export const useTeacher = (teacherId: string) => {
@@ -90,5 +91,18 @@ export const useTeacherDeleteStudent = (teacherId: string) => {
         "Failed to delete student.",
       );
     },
+  });
+};
+
+export const useTeacherStudentActivities = (teacherId: string) => {
+  return useQuery<TeacherStudentActivity[]>({
+    queryKey: ["teacher", teacherId, "student-activities"],
+    queryFn: () =>
+      fetchData<TeacherStudentActivity[]>(
+        `${URL}/api/web/teachers/${teacherId}/student-activities`,
+        "Failed to fetch student activities.",
+      ),
+    enabled: !!teacherId,
+    staleTime: DATA_STALE_TIME,
   });
 };

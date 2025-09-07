@@ -1,3 +1,5 @@
+import { ProfilePicture } from "../user.type";
+
 export type Activity = {
   id: string;
   type: ActivityTypes;
@@ -7,10 +9,21 @@ export type Activity = {
   level?: number;
 };
 
-export type ActivityTypes = "Assessment" | "Stage" | "Badge" | "Level";
+export type ActivityTypes = "assessment" | "stage" | "badge" | "level";
 
 export type StudentActivity = {
   activityId: string;
-  unlocked: boolean;
-  dateUnlocked?: string;
+  type: ActivityTypes;
+  highlight: string | number;
+  date: string;
+};
+
+export type TeacherStudentActivity = {
+  activityId: string;
+  profilePicture: ProfilePicture;
+  firstName: string;
+  lastName: string;
+  type: ActivityTypes;
+  highlight: string | number;
+  date: string;
 };

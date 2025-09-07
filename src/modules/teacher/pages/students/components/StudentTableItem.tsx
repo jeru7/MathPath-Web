@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { format } from "date-fns";
-import { formatToPhDate } from "../../../../date/utils/date.util";
 import { HiDotsVertical } from "react-icons/hi";
 import { useTeacherContext } from "../../../context/teacher.context";
 import {
@@ -12,6 +11,7 @@ import { useTeacherDeleteStudent } from "../../../services/teacher.service";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getSectionName } from "../utils/student-table.util";
+import { formatToPhDate } from "../../../../core/utils/date.util";
 
 interface IStudentTableItemProps {
   student: Student;
