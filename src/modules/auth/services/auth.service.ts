@@ -46,3 +46,18 @@ export const logoutService = async (userId: string) => {
     throw new Error("Logout failed.");
   }
 };
+
+export const requestPasswordResetCodeService = async (email: string) => {
+  try {
+    await axios.post(
+      `${URL}/api/web/auth/forgot-password/request`,
+      { email },
+      { withCredentials: true },
+    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error || "UNKNOWN_ERROR");
+    }
+    throw new Error("Request for reset password failed.");
+  }
+};

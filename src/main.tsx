@@ -6,11 +6,15 @@ import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./modules/auth/contexts/AuthProvider";
 import PrivateRoute from "./modules/core/routes/PrivateRoutes";
 import Landing from "./modules/landing/components/Landing";
-import Login from "./modules/core/components/login/Login";
 import "./index.css";
 import { teacherRoutesConfig } from "./modules/teacher/routes/teacherRoutesConfig";
 import { studentRoutesConfig } from "./modules/student/routes/studentRoutesConfig";
 import App from "./App";
+import Auth from "./modules/core/components/auth/Auth";
+import LoginForm from "./modules/core/components/auth/login/LoginForm";
+import RequestCode from "./modules/core/components/auth/forgot-password/RequestCode";
+import VerifyCode from "./modules/core/components/auth/forgot-password/VerifyCode";
+import SetNewPassword from "./modules/core/components/auth/forgot-password/SetNewPassword";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +29,43 @@ const router = createBrowserRouter([
     children: [
       // public routes
       { path: "/", element: <Landing /> },
-      { path: "/login", element: <Login /> },
+
+      // auth routes
+      // login
+      {
+        path: "/auth/login",
+        element: (
+          <Auth>
+            <LoginForm />
+          </Auth>
+        ),
+      },
+      // forgot password
+      {
+        path: "/auth/forgot-password",
+        element: (
+          <Auth>
+            <RequestCode />
+          </Auth>
+        ),
+      },
+      {
+        path: "/auth/forgot-password/verifyCode",
+        element: (
+          <Auth>
+            <VerifyCode />
+          </Auth>
+        ),
+      },
+      {
+        path: "/auth/forgot-password/change-password",
+        element: (
+          <Auth>
+            <SetNewPassword />
+          </Auth>
+        ),
+      },
+      // register
 
       // private routes
       {
@@ -44,6 +84,5 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
-  </StrictMode>
+  </StrictMode>,
 );
-

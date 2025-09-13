@@ -2,8 +2,8 @@ import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoShieldX } from "react-icons/go";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAuth } from "../../../auth/contexts/auth.context";
-import { AccountType } from "../../../auth/types/auth.type";
+import { useAuth } from "../../../../auth/contexts/auth.context";
+import { AccountType } from "../../../../auth/types/auth.type";
 
 export default function LoginForm(): ReactElement {
   const navigate = useNavigate();
@@ -183,14 +183,17 @@ export default function LoginForm(): ReactElement {
         </div>
 
         {/* Forgot Password */}
-        <button className="text-left text-sm text-gray-100 opacity-50 transition-opacity duration-200 hover:cursor-pointer w-fit hover:underline hover:opacity-100">
+        <button
+          className="text-left text-sm text-gray-100 opacity-50 transition-opacity duration-200 hover:cursor-pointer w-fit hover:underline hover:opacity-100"
+          onClick={() => navigate("/auth/forgot-password")}
+        >
           Forgot Password?
         </button>
 
         {/* Login Button */}
         <button
           type="submit"
-          className="hover:bg-[var(--primary-yellow)]/100 transition-color duration-200 rounded-lg bg-[var(--primary-yellow)]/80 py-2 hover:cursor-pointer"
+          className="text-base text-white font-bold hover:bg-[var(--primary-yellow)]/100 transition-color duration-200 rounded-lg bg-[var(--primary-yellow)]/80 p-3 hover:cursor-pointer"
         >
           Login
         </button>

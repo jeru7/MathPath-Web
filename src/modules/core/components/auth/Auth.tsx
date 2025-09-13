@@ -1,13 +1,15 @@
-import { type ReactElement } from "react";
+import { ReactNode, type ReactElement } from "react";
 import mathPathTitle from "../../../../assets/svgs/mathpath-title.svg";
 import bgTrees from "../../../../assets/images/background-image/trees.png";
 import upperTrees from "../../../../assets/svgs/top-trees.svg";
 import bottomBush from "../../../../assets/svgs/bottom-bush.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import LoginForm from "./LoginForm";
 
-export default function Login(): ReactElement {
+type AuthProps = {
+  children: ReactNode;
+};
+export default function Auth({ children }: AuthProps): ReactElement {
   const navigate = useNavigate();
 
   return (
@@ -56,7 +58,7 @@ export default function Login(): ReactElement {
       </div>
 
       <div className="w-full h-full border-2 flex items-start justify-center md:pt-8">
-        <LoginForm />
+        {children}
       </div>
     </div>
   );

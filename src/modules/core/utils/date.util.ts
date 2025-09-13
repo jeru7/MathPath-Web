@@ -1,3 +1,5 @@
+import { toZonedTime } from "date-fns-tz";
+
 export const formatHour = (hour: number) => {
   const period = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
@@ -20,4 +22,10 @@ export const getMonthName = (monthNumber: number) => {
     "Dec",
   ];
   return months[monthNumber - 1];
+};
+
+export const formatToPhDate = (dateString: string): Date => {
+  const date = new Date(dateString);
+
+  return toZonedTime(date, "Asia/Manila");
 };
