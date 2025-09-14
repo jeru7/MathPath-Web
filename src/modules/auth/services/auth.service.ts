@@ -61,3 +61,39 @@ export const requestPasswordResetCodeService = async (email: string) => {
     throw new Error("Request for reset password failed.");
   }
 };
+
+export const verifyPasswordResetCodeService = async (
+  email: string,
+  code: string,
+) => {
+  try {
+    await axios.post(
+      `${URL}/api/web/auth/forgot-password/verify`,
+      { email, code },
+      { withCredentials: true },
+    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error || "UNKNOWN_ERROR");
+    }
+    throw new Error("Reset password verification failed.");
+  }
+};
+
+export const setNewPasswordService = async (
+  email: string,
+  newPassword: string,
+) => {
+  try {
+    await axios.post(
+      `${URL}/api/web/auth/forgot-password/change-password`,
+      { email, newPassword },
+      { withCredentials: true },
+    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error || "UNKNOWN_ERROR");
+    }
+    throw new Error("Reset password failed.");
+  }
+};

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function RequestCode(): ReactElement {
   const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string | boolean | null>(null);
   const { requestPasswordResetCode, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -17,14 +17,15 @@ export default function RequestCode(): ReactElement {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email) {
-      setErrors("Email is required.");
+
+    if (email === "") {
+      setErrors(true);
       return;
     }
 
     try {
       await requestPasswordResetCode(email);
-      navigate("/auth/forgot-password/verifyCode", { state: { email } });
+      navigate("/auth/forgot-password/verify-code", { state: { email } });
     } catch (err: unknown) {
       if (err instanceof Error) {
         if (err.message === "EMAIL_NOT_FOUND") {
@@ -73,7 +74,7 @@ export default function RequestCode(): ReactElement {
           </div>
         </div>
 
-        {errors ? (
+        {errors && typeof errors === "string" ? (
           <p className="text-red-500 font-semibold text-sm">{errors}</p>
         ) : null}
 

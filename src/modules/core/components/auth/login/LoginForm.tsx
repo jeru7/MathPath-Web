@@ -4,6 +4,7 @@ import { GoShieldX } from "react-icons/go";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "../../../../auth/contexts/auth.context";
 import { AccountType } from "../../../../auth/types/auth.type";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LoginForm(): ReactElement {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function LoginForm(): ReactElement {
   const [errors, setErrors] = useState({ identifier: false, password: false });
   const [loginError, setLoginError] = useState<string | null>(null);
   const [accountType, setAccountType] = useState<AccountType>("Student");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -25,6 +27,9 @@ export default function LoginForm(): ReactElement {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    setErrors({ identifier: false, password: false });
+    setLoginError(null);
 
     let newValue = value;
     if (name === "identifier" && accountType === "Student") {
@@ -126,6 +131,7 @@ export default function LoginForm(): ReactElement {
         {/* Horizontal Line */}
         <div className="w-full h-[1px] bg-gray-200/50"></div>
       </div>
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-xl">
         {/* Login Error */}
         <AnimatePresence>
@@ -166,7 +172,7 @@ export default function LoginForm(): ReactElement {
         {/* Password */}
         <div className="relative">
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             value={formData.password}
             onChange={handleChange}
@@ -180,11 +186,24 @@ export default function LoginForm(): ReactElement {
           >
             Password
           </label>
+          {/* show toggler */}
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-black hover:cursor-pointer"
+          >
+            {showPassword ? (
+              <FaEye className="w-5 h-5" />
+            ) : (
+              <FaEyeSlash className="w-5 h-5" />
+            )}
+          </button>
         </div>
 
         {/* Forgot Password */}
         <button
           className="text-left text-sm text-gray-100 opacity-50 transition-opacity duration-200 hover:cursor-pointer w-fit hover:underline hover:opacity-100"
+          type="button"
           onClick={() => navigate("/auth/forgot-password")}
         >
           Forgot Password?

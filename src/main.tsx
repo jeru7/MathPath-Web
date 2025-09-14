@@ -50,7 +50,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/auth/forgot-password/verifyCode",
+        path: "/auth/forgot-password/verify-code",
         element: (
           <Auth>
             <VerifyCode />

@@ -43,7 +43,11 @@ export const AddStudentSchema = z.object({
   password: z
     .string()
     .min(1, "Password is required")
-    .min(8, "Password must have at least 8 characters"),
+    .min(8, "Password must have at least 8 characters")
+    .regex(
+      /[^A-Za-z0-9]/,
+      "Password must contain at least one special character",
+    ),
   sectionId: z
     .string({
       required_error: "Section is required",

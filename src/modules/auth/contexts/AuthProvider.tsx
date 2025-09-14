@@ -4,6 +4,8 @@ import {
   loginService,
   logoutService,
   requestPasswordResetCodeService,
+  setNewPasswordService,
+  verifyPasswordResetCodeService,
 } from "../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../core/types/user.type";
@@ -45,6 +47,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const logout = async (userId: string) => {
+    await logoutService(userId);
+    setUser(null);
+    navigate("/login");
+  };
+
   const requestPasswordResetCode = async (email: string) => {
     setIsLoading(true);
     try {
@@ -57,15 +65,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = async (userId: string) => {
-    await logoutService(userId);
-    setUser(null);
-    navigate("/login");
+  const verifyPasswordResetCode = async (email: string, code: string) => {
+    setIsLoading(true);
+    try {
+      await verifyPasswordResetCodeService(email, code);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const changePassword = async (email: string, newPassword: string) => {
+    setIsLoading(true);
+    try {
+      await setNewPasswordService(email, newPassword);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, logout, requestPasswordResetCode }}
+      value={{
+        user,
+        isLoading,
+        login,
+        logout,
+        requestPasswordResetCode,
+        verifyPasswordResetCode,
+        changePassword,
+      }}
     >
       {children}
     </AuthContext.Provider>
