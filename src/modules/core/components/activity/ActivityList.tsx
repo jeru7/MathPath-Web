@@ -47,7 +47,7 @@ export default function ActivityList({
           className="text-xs w-28"
           isSearchable={false}
           menuPlacement="auto"
-        />{" "}
+        />
       </header>
 
       <div

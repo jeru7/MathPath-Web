@@ -4,7 +4,6 @@ import { fetchData, postData } from "../../core/utils/api/api.util";
 import { StageAttempt } from "../../core/types/stage-attempt/stage-attempt.type";
 import { ProgressLog } from "../../core/types/progress-log/progress-log.type";
 import { Section } from "../../core/types/section/section.type";
-import { toast } from "react-toastify";
 import { AddStudentDTO } from "../types/student.schema";
 import { Student } from "../types/student.type";
 
@@ -19,16 +18,12 @@ export const useAddStudent = (teacherId: string) => {
       );
     },
     onSuccess: () => {
-      toast.success("Student added successfully.");
       queryClient.invalidateQueries({
         queryKey: ["teacher", teacherId, "students"],
       });
       queryClient.invalidateQueries({
         queryKey: ["teacher", teacherId, "sections"],
       });
-    },
-    onError: () => {
-      toast.error("Failed to add student.");
     },
   });
 };

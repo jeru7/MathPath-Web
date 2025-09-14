@@ -1,11 +1,12 @@
 import { StylesConfig } from "react-select";
 
-export interface SelectStyleOptions {
+export type SelectStyleOptions = {
   borderRadius?: string;
   minHeight?: string;
   border?: boolean;
   justifyContent?: "flex-start" | "flex-end" | "center";
-}
+  padding?: string;
+};
 
 export const getCustomSelectColor = <T>(
   options?: SelectStyleOptions,
@@ -31,11 +32,8 @@ export const getCustomSelectColor = <T>(
   }),
   valueContainer: (base) => ({
     ...base,
-    padding: "0 4px",
+    padding: options?.padding || "0 4px",
     gap: "2px",
-    display: "flex",
-    justifyContent: options?.justifyContent || "flex-end",
-    flex: 1,
   }),
   dropdownIndicator: (base) => ({
     ...base,

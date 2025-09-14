@@ -58,6 +58,7 @@ export default function AssessmentTableItem({
       {/* Title */}
       <td className="w-[15%] xl:w-[20%]">
         <div
+          title={assessment.title ? assessment.title : "(No title)"}
           className={`truncate whitespace-nowrap overflow-hidden max-w-[500px] ${assessment.title ? "" : "text-gray-400"}`}
         >
           {assessment.title ? assessment.title : "(No title)"}
@@ -66,6 +67,7 @@ export default function AssessmentTableItem({
       {/* Topic */}
       <td className="w-[15%] xl:w-[20%]">
         <div
+          title={assessment.topic ? assessment.topic : "(No title)"}
           className={`truncate whitespace-nowrap overflow-hidden max-w-[400px] ${assessment.topic ? "" : "text-gray-400"}`}
         >
           {assessment.topic ? assessment.topic : "(No topic)"}

@@ -1,7 +1,5 @@
 import axios from "axios";
 
-// helper for react query
-
 // for useQuery
 export const fetchData = async <TResponse>(
   url: string,
@@ -10,7 +8,8 @@ export const fetchData = async <TResponse>(
   try {
     const res = await axios.get<{ data: TResponse }>(url);
     return res.data.data;
-  } catch {
+  } catch (err) {
+    if (axios.isAxiosError(err)) throw err; // preserve original error
     throw new Error(errorMessage);
   }
 };
@@ -24,11 +23,13 @@ export const postData = async <TResponse, TRequest>(
   try {
     const res = await axios.post<{ data: TResponse }>(url, body);
     return res.data.data;
-  } catch {
+  } catch (err) {
+    if (axios.isAxiosError(err)) throw err;
     throw new Error(errorMessage);
   }
 };
 
+// for PATCH
 export const patchData = async <TResponse, TRequest>(
   url: string,
   body: TRequest,
@@ -37,11 +38,13 @@ export const patchData = async <TResponse, TRequest>(
   try {
     const res = await axios.patch<{ data: TResponse }>(url, body);
     return res.data.data;
-  } catch {
+  } catch (err) {
+    if (axios.isAxiosError(err)) throw err;
     throw new Error(errorMessage);
   }
 };
 
+// for DELETE
 export const deleteData = async <TResponse>(
   url: string,
   errorMessage: string,
@@ -49,7 +52,8 @@ export const deleteData = async <TResponse>(
   try {
     const res = await axios.delete<{ data: TResponse }>(url);
     return res.data.data ?? null;
-  } catch {
+  } catch (err) {
+    if (axios.isAxiosError(err)) throw err;
     throw new Error(errorMessage);
   }
 };

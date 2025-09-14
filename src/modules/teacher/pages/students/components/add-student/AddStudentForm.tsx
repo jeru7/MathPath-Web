@@ -15,6 +15,9 @@ import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
 import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
+import { ErrorResponse } from "../../../../../core/types/api/api.type";
+import { isAxiosError } from "axios";
 
 type AddStudentFormProps = {
   handleBack: () => void;
@@ -33,6 +36,7 @@ export default function AddStudentForm({
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<AddStudentDTO>({
     resolver: zodResolver(AddStudentSchema),
@@ -54,8 +58,42 @@ export default function AddStudentForm({
   };
 
   const onSubmit = async (data: AddStudentDTO) => {
-    addStudent(data);
-    handleBack();
+    addStudent(data, {
+      onSuccess: () => {
+        navigate("..");
+        toast.success("Student added successfully");
+      },
+      onError: (err: unknown) => {
+        if (isAxiosError(err)) {
+          const errorData = err.response?.data as ErrorResponse | undefined;
+
+          if (errorData?.error === "EMAIL_AND_LRN_ALREADY_EXISTS") {
+            setError("email", {
+              type: "manual",
+              message: "Email already exists",
+            });
+            setError("referenceNumber", {
+              type: "manual",
+              message: "Reference number already exists",
+            });
+          } else if (errorData?.error === "EMAIL_ALREADY_EXISTS") {
+            setError("email", {
+              type: "manual",
+              message: errorData.message || "Email already exists",
+            });
+          } else if (errorData?.error === "REFERENCE_NUMBER_ALREADY_EXISTS") {
+            setError("referenceNumber", {
+              type: "manual",
+              message: errorData.message || "Reference number already exists",
+            });
+          } else {
+            toast.error(errorData?.message || "Failed to add student");
+          }
+        } else {
+          toast.error("Failed to add student");
+        }
+      },
+    });
   };
 
   return (
@@ -65,6 +103,7 @@ export default function AddStudentForm({
           <h3 className="">Add Student - Manual</h3>
           <button
             className="hover:scale-105 hover:cursor-pointer"
+            type="button"
             onClick={handleClose}
           >
             <IoClose />
@@ -229,7 +268,9 @@ export default function AddStudentForm({
                 Password
               </label>
               {errors.password && (
-                <p className="text-xs text-red-500">{errors?.email?.message}</p>
+                <p className="text-xs text-red-500">
+                  {errors?.password?.message}
+                </p>
               )}
             </div>
             <div className="relative">

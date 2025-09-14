@@ -51,6 +51,7 @@ export default function AddStudent({
         <article className="relative flex flex-col gap-4 rounded-md bg-[var(--primary-white)] p-4 w-[80%] md:w-96">
           <button
             className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
+            type="button"
             onClick={handleClose}
           >
             <IoClose />

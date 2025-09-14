@@ -1,8 +1,12 @@
 import { useState, type ReactElement } from "react";
-import Select from "react-select";
+import Select, { GroupBase, StylesConfig } from "react-select";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
+import { useTeacherContext } from "../../../../context/teacher.context";
+import { Section } from "../../../../../core/types/section/section.type";
+import FormButtons from "../../../../../core/components/buttons/FormButtons";
+import GeneratedCode from "./GeneratedCode";
 
 interface IGenerateCodeProps {
   handleBack: () => void;
@@ -11,7 +15,10 @@ interface IGenerateCodeProps {
 export default function GenerateCode({
   handleBack,
 }: IGenerateCodeProps): ReactElement {
+  const { sections } = useTeacherContext();
+  const [selectedSection, setSelectedSection] = useState<string | null>();
   const [numberOfStudents, setNumberOfStudents] = useState<number>(10);
+  const [generatedCode, setGeneratedCode] = useState<string | null>("1234");
 
   const handleNumberOfStudentsInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -51,6 +58,17 @@ export default function GenerateCode({
     });
   };
 
+  const customStyles: StylesConfig<
+    Section,
+    false,
+    GroupBase<Section>
+  > = getCustomSelectColor({
+    minHeight: "24px",
+    border: true,
+    borderRadius: ".25rem",
+    padding: ".25rem .5rem",
+  });
+
   const handleDecrementStudents = () => {
     setNumberOfStudents((prev) => {
       if (prev <= 10) {
@@ -60,6 +78,11 @@ export default function GenerateCode({
       return prev - 1;
     });
   };
+
+  if (generatedCode) {
+    return <GeneratedCode code={generatedCode} handleBack={handleBack} />;
+  }
+
   return (
     <article className="relative flex flex-col gap-2 rounded-md bg-[var(--primary-white)] p-4">
       <header className="border-b border-b-[var(--primary-gray)] pb-2">
@@ -72,9 +95,9 @@ export default function GenerateCode({
         <IoClose />
       </button>
       <form className="">
-        {/* Exit/Close button */}
+        {/* exit/close button */}
         <div className="flex flex-col gap-4">
-          {/* Section selection */}
+          {/* section selection */}
           <div className="flex flex-col gap-1">
             <label htmlFor="section" className="font-medium">
               Section
@@ -82,14 +105,22 @@ export default function GenerateCode({
             <Select
               id="section"
               name="section"
-              // options={sectionOptions}
-              styles={getCustomSelectColor({ borderRadius: "0" })}
+              options={sections}
+              getOptionLabel={(option: Section) => option.name}
+              getOptionValue={(option: Section) => option.id}
+              styles={customStyles}
               className="basic-select"
               classNamePrefix="select"
               placeholder="Select a section..."
+              onChange={(selected) => setSelectedSection(selected?.id)}
+              value={
+                sections.find((section) => section.id === selectedSection) ||
+                null
+              }
             />
           </div>
-          {/* Number of uses/students */}
+
+          {/* number of uses/students */}
           <div className="flex flex-col gap-1">
             <label htmlFor="studentNumber" className="font-medium">
               Number of Students
@@ -126,7 +157,11 @@ export default function GenerateCode({
             </div>
           </div>
           {/* Buttons */}
-          {/* <FormButtons handleBack={handleBack} text={"Generate"} /> */}
+          <FormButtons
+            handleBack={handleBack}
+            text={"Generate"}
+            disabled={false}
+          />
         </div>
       </form>
     </article>
