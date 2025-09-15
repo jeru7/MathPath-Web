@@ -15,6 +15,7 @@ import LoginForm from "./modules/core/components/auth/login/LoginForm";
 import RequestCode from "./modules/core/components/auth/forgot-password/RequestCode";
 import VerifyCode from "./modules/core/components/auth/forgot-password/VerifyCode";
 import SetNewPassword from "./modules/core/components/auth/forgot-password/SetNewPassword";
+import RegisterForm from "./modules/core/components/auth/register/RegisterForm";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,15 @@ const router = createBrowserRouter([
         element: (
           <Auth>
             <LoginForm />
+          </Auth>
+        ),
+      },
+      // register
+      {
+        path: "/auth/register",
+        element: (
+          <Auth>
+            <RegisterForm />
           </Auth>
         ),
       },

@@ -95,87 +95,87 @@ export default function SetNewPassword(): ReactElement {
         <h3 className="text-white font-bold text-xl text-center mb-4">
           Change Password
         </h3>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* new password */}
-          <div className="relative">
-            <input
-              type={showNewPassword ? "text" : "password"}
-              name="newPassword"
-              value={newPassword}
-              onChange={(e) => handlePasswordChange(e)}
-              className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pr-12 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:outline-none focus:ring-0 
-                ${errors ? "" : "border-transparent bg-gray-100/30 focus:border-black"}`}
-              placeholder=" "
-            />
-            <label
-              className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 
-                ${errors ? "font-bold text-red-500" : "text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]"}`}
-            >
-              New Password
-            </label>
-
-            {/* show toggler */}
-            <button
-              type="button"
-              onClick={() => setShowNewPassword((prev) => !prev)}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-black hover:cursor-pointer"
-            >
-              {showNewPassword ? (
-                <FaEye className="w-5 h-5" />
-              ) : (
-                <FaEyeSlash className="w-5 h-5" />
-              )}
-            </button>
-          </div>
-
-          {/* confirmation password */}
-          <div className="relative">
-            <input
-              type={showConfirmationPassword ? "text" : "password"}
-              name="confirmNewPassword"
-              value={confirmNewPassword}
-              onChange={(e) => handlePasswordChange(e)}
-              className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pr-12 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:outline-none focus:ring-0 
-                ${errors ? "" : "border-transparent bg-gray-100/30 focus:border-black"}`}
-              placeholder=" "
-            />
-            <label
-              className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 
-                ${errors ? "font-bold text-red-500" : "text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]"}`}
-            >
-              Confirm New Password
-            </label>
-
-            {/* show toggler */}
-            <button
-              type="button"
-              onClick={() => setShowConfirmationPassword((prev) => !prev)}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-black hover:cursor-pointer"
-            >
-              {showConfirmationPassword ? (
-                <FaEye className="w-5 h-5" />
-              ) : (
-                <FaEyeSlash className="w-5 h-5" />
-              )}
-            </button>
-          </div>
-
-          {errors && (
-            <div className="p-3 bg-red-500 rounded-sm">
-              <p className="text-white">{errors}</p>
-            </div>
-          )}
-
-          {/* confirmation button */}
-          <button
-            type="submit"
-            className="text-base text-white font-bold transition-color duration-200 rounded-lg bg-[var(--primary-yellow)]/80 p-3 enabled:hover:bg-[var(--primary-yellow)]/100 enabled:hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={disableConfirmPassword}
-          >
-            Change Password
-          </button>
-        </form>
       </header>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* new password */}
+        <div className="relative">
+          <input
+            type={showNewPassword ? "text" : "password"}
+            name="newPassword"
+            value={newPassword}
+            onChange={(e) => handlePasswordChange(e)}
+            className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pr-12 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:outline-none focus:ring-0 
+                ${errors ? "" : "border-transparent bg-gray-100/30 focus:border-black"}`}
+            placeholder=" "
+          />
+          <label
+            className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 
+                ${errors ? "font-bold text-red-500" : "text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]"}`}
+          >
+            New Password
+          </label>
+
+          {/* show toggler */}
+          <button
+            type="button"
+            onClick={() => setShowNewPassword((prev) => !prev)}
+            className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-black hover:cursor-pointer"
+          >
+            {showNewPassword ? (
+              <FaEye className="w-5 h-5" />
+            ) : (
+              <FaEyeSlash className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {/* confirmation password */}
+        <div className="relative">
+          <input
+            type={showConfirmationPassword ? "text" : "password"}
+            name="confirmNewPassword"
+            value={confirmNewPassword}
+            onChange={(e) => handlePasswordChange(e)}
+            className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pr-12 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:outline-none focus:ring-0 
+                ${errors ? "" : "border-transparent bg-gray-100/30 focus:border-black"}`}
+            placeholder=" "
+          />
+          <label
+            className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 
+                ${errors ? "font-bold text-red-500" : "text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]"}`}
+          >
+            Confirm New Password
+          </label>
+
+          {/* show toggler */}
+          <button
+            type="button"
+            onClick={() => setShowConfirmationPassword((prev) => !prev)}
+            className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-black hover:cursor-pointer"
+          >
+            {showConfirmationPassword ? (
+              <FaEye className="w-5 h-5" />
+            ) : (
+              <FaEyeSlash className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {errors && (
+          <div className="p-3 bg-red-500 rounded-sm">
+            <p className="text-white">{errors}</p>
+          </div>
+        )}
+
+        {/* confirmation button */}
+        <button
+          type="submit"
+          className="text-base text-white font-bold transition-color duration-200 rounded-lg bg-[var(--primary-yellow)]/80 p-3 enabled:hover:bg-[var(--primary-yellow)]/100 enabled:hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={disableConfirmPassword}
+        >
+          Change Password
+        </button>
+      </form>
     </main>
   );
 }

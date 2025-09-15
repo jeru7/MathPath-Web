@@ -57,7 +57,7 @@ export default function Auth({ children }: AuthProps): ReactElement {
         </motion.div>
       </div>
 
-      <div className="w-full h-full border-2 flex items-start justify-center md:pt-8">
+      <div className="w-full h-full flex items-start justify-center md:pt-8">
         {children}
       </div>
     </div>

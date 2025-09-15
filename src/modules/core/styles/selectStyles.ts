@@ -3,9 +3,11 @@ import { StylesConfig } from "react-select";
 export type SelectStyleOptions = {
   borderRadius?: string;
   minHeight?: string;
+  height?: string;
   border?: boolean;
   justifyContent?: "flex-start" | "flex-end" | "center";
   padding?: string;
+  fontSize?: string;
 };
 
 export const getCustomSelectColor = <T>(
@@ -18,7 +20,10 @@ export const getCustomSelectColor = <T>(
       options?.border === false ? "none" : `1px solid var(--primary-gray)`,
     boxShadow: "none",
     borderRadius: options?.borderRadius || "0.500rem",
-    minHeight: options?.minHeight || "42px",
+    minHeight: options?.minHeight || options?.height || "fit-content",
+    height: options?.height || "fit-content",
+    padding: options?.padding || "0px 4px",
+    fontSize: options?.fontSize || "0.875rem",
     "&:hover": {
       border:
         options?.border === false ? "none" : `1px solid var(--primary-gray)`,

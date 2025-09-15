@@ -68,7 +68,7 @@ export default function LoginForm(): ReactElement {
   };
 
   return (
-    <main className="transition-all duration-200 z-30 flex h-fit w-[90%] min-w-[300px] max-w-sm flex-col gap-4 rounded-xl border-2 border-white/20 bg-white/10 py-4 px-8 shadow-lg backdrop-blur-lg sm:max-w-md md:max-w-lg">
+    <main className="relative flex h-fit w-[90%] min-w-[300px] max-w-sm flex-col gap-4 rounded-xl border-2 border-white/20 bg-white/10 py-4 px-8 shadow-lg backdrop-blur-lg transition-all duration-200 z-30 sm:max-w-md md:max-w-lg">
       <div className="flex flex-col gap-4">
         <h3 className="text-center text-xl font-bold text-white md:text-2xl">
           Choose Account Type
@@ -217,6 +217,17 @@ export default function LoginForm(): ReactElement {
           Login
         </button>
       </form>
+
+      <div className="flex gap-2 absolute -bottom-10 left-1/2 -translate-x-1/2">
+        <p className="text-white">Don't have an account?</p>
+        <button
+          type="button"
+          className="text-[var(--primary-yellow)] hover:cursor-pointer hover:underline"
+          onClick={() => navigate("/auth/register")}
+        >
+          Register
+        </button>
+      </div>
     </main>
   );
 }
