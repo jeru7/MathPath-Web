@@ -1,11 +1,12 @@
 import { Assessment } from "../../core/types/assessment/assessment.type";
 import { Section } from "../../core/types/section/section.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteData, fetchData } from "../../core/utils/api/api.util";
+import { deleteData, fetchData, postData } from "../../core/utils/api/api.util";
 import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
 import { Student } from "../../student/types/student.type";
 import { Teacher } from "../types/teacher.type";
 import { TeacherStudentActivity } from "../../core/types/activity/activity.type";
+import { RegistrationCode } from "../../core/types/registration-code/registration-code.type";
 
 // get teacher data - teacher info
 export const useTeacher = (teacherId: string) => {
@@ -104,5 +105,17 @@ export const useTeacherStudentActivities = (teacherId: string) => {
       ),
     enabled: !!teacherId,
     staleTime: DATA_STALE_TIME,
+  });
+};
+
+export const useTeacherGenerateCode = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (variables: { sectionId: string | null; maxUses: number }) => {
+      return postData<RegistrationCode, typeof variables>(
+        `${URL}/api/web/teachers/${teacherId}/registration-code`,
+        variables,
+        "Failed to generate registration code.",
+      );
+    },
   });
 };

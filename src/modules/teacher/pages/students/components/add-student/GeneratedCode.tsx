@@ -1,9 +1,13 @@
 import { type ReactElement } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { IoClose } from "react-icons/io5";
+import { RegistrationCode } from "../../../../../core/types/registration-code/registration-code.type";
+import { format } from "date-fns";
+import { formatToPhDate } from "../../../../../core/utils/date.util";
+import { toast } from "react-toastify";
 
 type GeneratedCodeProps = {
-  code: string;
+  code: RegistrationCode;
   handleBack: () => void;
 };
 
@@ -23,11 +27,17 @@ export default function GeneratedCode({
       <h3 className="text-lg font-semibold">Registration Code</h3>
 
       {/* qr */}
-      <QRCodeCanvas value={code} size={200} />
+      <QRCodeCanvas value={code.code} size={200} />
 
       {/* code */}
-      <div className="flex items-center justify-center gap-2 w-full">
-        {code.split("").map((num) => (
+      <div
+        className="flex items-center justify-center gap-2 w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-opacity duration-200"
+        onClick={() => {
+          navigator.clipboard.writeText(code.code);
+          toast.success("Copied to clipboard");
+        }}
+      >
+        {code.code.split("").map((num) => (
           <p className="bg-gray-200/30 font-bold text-xl p-2 flex flex-1 items-center justify-center rounded-sm border-2 border-gray-400/50">
             {num}
           </p>
@@ -35,7 +45,11 @@ export default function GeneratedCode({
       </div>
 
       <p className="text-xs text-gray-300 font-bold">
-        Expires on Sep. 27, 2025 at 12:07am.
+        Expires on{" "}
+        {format(
+          formatToPhDate(code.expiresAt.toString()),
+          "MMMM d, yyyy 'at' hh:mm a",
+        )}
       </p>
     </main>
   );

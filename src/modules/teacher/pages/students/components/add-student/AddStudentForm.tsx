@@ -204,7 +204,13 @@ export default function AddStudentForm({
                     ]}
                     getOptionLabel={(option) => option.label}
                     getOptionValue={(option) => option.value}
-                    styles={getCustomSelectColor()}
+                    styles={getCustomSelectColor<{
+                      value: StudentGender;
+                      label: string;
+                    }>({
+                      minHeight: "42px",
+                      padding: "0px 4px",
+                    })}
                     className="basic-select"
                     classNamePrefix="select"
                     placeholder="Select gender..."
@@ -317,7 +323,10 @@ export default function AddStudentForm({
                   options={sections}
                   getOptionLabel={(option: Section) => option.name}
                   getOptionValue={(option: Section) => option.id}
-                  styles={getCustomSelectColor()}
+                  styles={getCustomSelectColor<Section>({
+                    minHeight: "42px",
+                    padding: "0px 4px",
+                  })}
                   className="basic-select"
                   classNamePrefix="select"
                   placeholder="Select a section..."

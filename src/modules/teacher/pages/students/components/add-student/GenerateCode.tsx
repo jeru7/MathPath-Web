@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { FormEvent, useState, type ReactElement } from "react";
 import Select, { GroupBase, StylesConfig } from "react-select";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { FaPlus, FaMinus } from "react-icons/fa6";
@@ -7,6 +7,9 @@ import { useTeacherContext } from "../../../../context/teacher.context";
 import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
 import GeneratedCode from "./GeneratedCode";
+import { useTeacherGenerateCode } from "../../../../services/teacher.service";
+import { useParams } from "react-router-dom";
+import { RegistrationCode } from "../../../../../core/types/registration-code/registration-code.type";
 
 interface IGenerateCodeProps {
   handleBack: () => void;
@@ -16,9 +19,13 @@ export default function GenerateCode({
   handleBack,
 }: IGenerateCodeProps): ReactElement {
   const { sections } = useTeacherContext();
+  const { teacherId } = useParams();
+  const { mutate: generateCode } = useTeacherGenerateCode(teacherId ?? "");
   const [selectedSection, setSelectedSection] = useState<string | null>();
   const [numberOfStudents, setNumberOfStudents] = useState<number>(10);
-  const [generatedCode, setGeneratedCode] = useState<string | null>("1234");
+  const [generatedCode, setGeneratedCode] = useState<RegistrationCode | null>(
+    null,
+  );
 
   const handleNumberOfStudentsInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -66,7 +73,7 @@ export default function GenerateCode({
     minHeight: "24px",
     border: true,
     borderRadius: ".25rem",
-    padding: ".25rem .5rem",
+    padding: "4px 2px",
   });
 
   const handleDecrementStudents = () => {
@@ -77,6 +84,27 @@ export default function GenerateCode({
 
       return prev - 1;
     });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedSection) return;
+
+    generateCode(
+      {
+        sectionId: selectedSection,
+        maxUses: numberOfStudents,
+      },
+      {
+        onSuccess: (code) => {
+          setGeneratedCode(code);
+        },
+        onError: (err) => {
+          console.error("Failed to generate code", err);
+        },
+      },
+    );
   };
 
   if (generatedCode) {
@@ -94,7 +122,7 @@ export default function GenerateCode({
       >
         <IoClose />
       </button>
-      <form className="">
+      <form onSubmit={handleSubmit}>
         {/* exit/close button */}
         <div className="flex flex-col gap-4">
           {/* section selection */}
