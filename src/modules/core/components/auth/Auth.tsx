@@ -13,8 +13,8 @@ export default function Auth({ children }: AuthProps): ReactElement {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-screen flex flex-col relative">
-      <header className="z-20 flex w-full items-center justify-center p-4 md:justify-start md:p-8">
+    <div className="min-h-screen w-screen flex flex-col relative">
+      <header className="hidden z-20 md:flex w-full items-center justify-center p-4 md:justify-center lg:justify-start">
         <img
           src={mathPathTitle}
           alt="MathPath Icon/Logo"
