@@ -9,14 +9,17 @@ import { toast } from "react-toastify";
 type GeneratedCodeProps = {
   code: RegistrationCode;
   handleBack: () => void;
+  handleDelete: (code: string) => void;
 };
 
 export default function GeneratedCode({
   code,
   handleBack,
+  handleDelete,
 }: GeneratedCodeProps): ReactElement {
+  console.log("CODE: ", code);
   return (
-    <main className="relative flex flex-col items-center gap-8 rounded-md bg-white p-6 px-12 shadow-md">
+    <main className="relative flex flex-col items-center gap-4 rounded-md bg-white p-6 px-12 shadow-md">
       <button
         className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
         onClick={handleBack}
@@ -28,6 +31,10 @@ export default function GeneratedCode({
 
       {/* qr */}
       <QRCodeCanvas value={code.code} size={200} />
+
+      <p className="text-xs text-gray-300 font-bold">
+        Max Uses: {code.maxUses}
+      </p>
 
       {/* code */}
       <div
@@ -51,6 +58,14 @@ export default function GeneratedCode({
           "MMMM d, yyyy 'at' hh:mm a",
         )}
       </p>
+
+      <button
+        type="button"
+        onClick={() => handleDelete(code.id)}
+        className={`group p-2 rounded-full border border-red-400 w-full bg-white hover:bg-red-400 hover:border-white hover:cursor-pointer transition-colors duration-200`}
+      >
+        <p className="text-red-400 group-hover:text-white">Delete</p>
+      </button>
     </main>
   );
 }

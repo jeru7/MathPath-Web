@@ -8,10 +8,12 @@ import { GoPlus } from "react-icons/go";
 import { useTeacherContext } from "../../../context/teacher.context";
 import { Student } from "../../../../student/types/student.type";
 import { getSectionName } from "../utils/student-table.util";
+import { IoQrCodeOutline } from "react-icons/io5";
 
 type StudentTableProps = {
   onClickAddStudent: () => void;
 };
+
 export default function StudentTable({
   onClickAddStudent,
 }: StudentTableProps): ReactElement {
@@ -232,140 +234,155 @@ export default function StudentTable({
           </div>
         </section>
 
-        {/* create button */}
-        <button
-          className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-          onClick={onClickAddStudent}
-        >
-          <GoPlus className="w-4 h-4" />
-          <p className="text-sm font-semibold">Add Student</p>
-        </button>
+        {/* registration codes button */}
+        <div className="hidden md:flex gap-2 items-center">
+          <button
+            className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200"
+            type="button"
+            onClick={() => navigate("registration-codes")}
+          >
+            <IoQrCodeOutline />
+          </button>
+          {/* create button */}
+          <button
+            className="flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
+            onClick={onClickAddStudent}
+          >
+            <GoPlus className="w-4 h-4" />
+            <p className="text-sm font-semibold">Add Student</p>
+          </button>
+        </div>
       </section>
 
-      {/* table */}
-      <div className="flex flex-col flex-1 overflow-x-auto">
-        <div className="flex flex-col w-full min-w-[1000px] flex-1">
-          {/* headers */}
-          <table className="font-primary table-auto w-full">
-            <thead className="text-gray-400 text-sm xl:text-base">
-              <tr className="text-left">
-                <th className="w-[15%]">LRN</th>
-                <th
-                  className="cursor-pointer w-[20%]"
-                  onClick={() => handleSort("lastName")}
-                >
-                  <div
-                    className={`flex items-center justify-start gap-2 ${sortConfig.key === "lastName" ? "text-[var(--primary-black)]" : ""}`}
+      {students.length > 0 ? (
+        <div className="flex flex-col flex-1 overflow-x-auto">
+          <div className="flex flex-col w-full min-w-[1000px] flex-1">
+            {/* headers */}
+            <table className="font-primary table-auto w-full">
+              <thead className="text-gray-400 text-sm xl:text-base">
+                <tr className="text-left">
+                  <th className="w-[15%]">LRN</th>
+                  <th
+                    className="cursor-pointer w-[20%]"
+                    onClick={() => handleSort("lastName")}
                   >
-                    Name
-                    {sortConfig.key === "lastName" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <FaChevronUp />
+                    <div
+                      className={`flex items-center justify-start gap-2 ${sortConfig.key === "lastName" ? "text-[var(--primary-black)]" : ""}`}
+                    >
+                      Name
+                      {sortConfig.key === "lastName" ? (
+                        sortConfig.direction === "ascending" ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )
                       ) : (
                         <FaChevronDown />
-                      )
-                    ) : (
-                      <FaChevronDown />
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="cursor-pointer w-[15%]"
-                  onClick={() => handleSort("sectionId")}
-                >
-                  <div
-                    className={`flex items-center gap-2 ${sortConfig.key === "sectionId" ? "text-[var(--primary-black)]" : ""}`}
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="cursor-pointer w-[15%]"
+                    onClick={() => handleSort("sectionId")}
                   >
-                    Section
-                    {sortConfig.key === "sectionId" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <FaChevronUp />
+                    <div
+                      className={`flex items-center gap-2 ${sortConfig.key === "sectionId" ? "text-[var(--primary-black)]" : ""}`}
+                    >
+                      Section
+                      {sortConfig.key === "sectionId" ? (
+                        sortConfig.direction === "ascending" ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )
                       ) : (
                         <FaChevronDown />
-                      )
-                    ) : (
-                      <FaChevronDown />
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="cursor-pointer w-[15%]"
-                  onClick={() => handleSort("status")}
-                >
-                  <div
-                    className={`flex items-center gap-2 ${sortConfig.key === "status" ? "text-[var(--primary-black)]" : ""}`}
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="cursor-pointer w-[15%]"
+                    onClick={() => handleSort("status")}
                   >
-                    Status
-                    {sortConfig.key === "status" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <FaChevronUp />
+                    <div
+                      className={`flex items-center gap-2 ${sortConfig.key === "status" ? "text-[var(--primary-black)]" : ""}`}
+                    >
+                      Status
+                      {sortConfig.key === "status" ? (
+                        sortConfig.direction === "ascending" ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )
                       ) : (
                         <FaChevronDown />
-                      )
-                    ) : (
-                      <FaChevronDown />
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="cursor-pointer w-[15%]"
-                  onClick={() => handleSort("createdAt")}
-                >
-                  <div
-                    className={`flex items-center gap-2 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)]" : ""}`}
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="cursor-pointer w-[15%]"
+                    onClick={() => handleSort("createdAt")}
                   >
-                    <p className="text-nowrap">Date Created</p>
-                    {sortConfig.key === "createdAt" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <FaChevronUp />
+                    <div
+                      className={`flex items-center gap-2 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)]" : ""}`}
+                    >
+                      <p className="text-nowrap">Date Created</p>
+                      {sortConfig.key === "createdAt" ? (
+                        sortConfig.direction === "ascending" ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )
                       ) : (
                         <FaChevronDown />
-                      )
-                    ) : (
-                      <FaChevronDown />
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="cursor-pointer w-[15%]"
-                  onClick={() => handleSort("lastOnline")}
-                >
-                  <div
-                    className={`flex items-center gap-2 justify-center ${sortConfig.key === "lastOnline" ? "text-[var(--primary-black)]" : ""}`}
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="cursor-pointer w-[15%]"
+                    onClick={() => handleSort("lastOnline")}
                   >
-                    <p className="text-nowrap">Last Played</p>
-                    {sortConfig.key === "lastOnline" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <FaChevronUp />
+                    <div
+                      className={`flex items-center gap-2 justify-center ${sortConfig.key === "lastOnline" ? "text-[var(--primary-black)]" : ""}`}
+                    >
+                      <p className="text-nowrap">Last Played</p>
+                      {sortConfig.key === "lastOnline" ? (
+                        sortConfig.direction === "ascending" ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )
                       ) : (
                         <FaChevronDown />
-                      )
-                    ) : (
-                      <FaChevronDown />
-                    )}
-                  </div>
-                </th>
-                <th className="w-[5%]"></th>
-              </tr>
-            </thead>
-          </table>
-
-          {/* student items/list */}
-          <div className="flex-1 overflow-y-auto">
-            <table className="font-primary table-auto w-full text-sm xl:text-base">
-              <tbody>
-                {filteredStudents.map((student) => (
-                  <StudentTableItem
-                    student={student}
-                    key={student.referenceNumber}
-                    onClick={handleItemOnclick}
-                  />
-                ))}
-              </tbody>
+                      )}
+                    </div>
+                  </th>
+                  <th className="w-[5%]"></th>
+                </tr>
+              </thead>
             </table>
+
+            {/* student items/list */}
+            <div className="flex-1 overflow-y-auto">
+              <table className="font-primary table-auto w-full text-sm xl:text-base">
+                <tbody>
+                  {filteredStudents.map((student) => (
+                    <StudentTableItem
+                      student={student}
+                      key={student.referenceNumber}
+                      onClick={handleItemOnclick}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-1 w-full items-center justify-center">
+          <p className="text-gray-300 italic">No data available</p>
+        </div>
+      )}
     </section>
   );
 }

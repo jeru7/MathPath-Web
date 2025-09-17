@@ -16,8 +16,9 @@ import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
-import { ErrorResponse } from "../../../../../core/types/api/api.type";
 import { isAxiosError } from "axios";
+import { APIErrorResponse } from "../../../../../core/types/api/api.type";
+import { handleApiError } from "../../../../../core/utils/api/error.util";
 
 type AddStudentFormProps = {
   handleBack: () => void;
@@ -31,6 +32,7 @@ export default function AddStudentForm({
   const { sections } = useTeacherContext();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [referenceNumber, setReferenceNumber] = useState("");
 
   const {
     register,
@@ -65,32 +67,37 @@ export default function AddStudentForm({
       },
       onError: (err: unknown) => {
         if (isAxiosError(err)) {
-          const errorData = err.response?.data as ErrorResponse | undefined;
+          const errorData: APIErrorResponse = handleApiError(err);
 
-          if (errorData?.error === "EMAIL_AND_LRN_ALREADY_EXISTS") {
-            setError("email", {
-              type: "manual",
-              message: "Email already exists",
-            });
-            setError("referenceNumber", {
-              type: "manual",
-              message: "Reference number already exists",
-            });
-          } else if (errorData?.error === "EMAIL_ALREADY_EXISTS") {
-            setError("email", {
-              type: "manual",
-              message: errorData.message || "Email already exists",
-            });
-          } else if (errorData?.error === "REFERENCE_NUMBER_ALREADY_EXISTS") {
-            setError("referenceNumber", {
-              type: "manual",
-              message: errorData.message || "Reference number already exists",
-            });
-          } else {
-            toast.error(errorData?.message || "Failed to add student");
+          switch (errorData.error) {
+            case "EMAIL_AND_LRN_ALREADY_EXISTS":
+              setError("email", {
+                type: "manual",
+                message: "Email already exists",
+              });
+              setError("referenceNumber", {
+                type: "manual",
+                message: "Reference number already exists",
+              });
+              break;
+
+            case "EMAIL_ALREADY_EXISTS":
+              setError("email", {
+                type: "manual",
+                message: errorData.message || "Email already exists",
+              });
+              break;
+
+            case "REFERENCE_NUMBER_ALREADY_EXISTS":
+              setError("referenceNumber", {
+                type: "manual",
+                message: errorData.message || "Reference number already exists",
+              });
+              break;
+
+            default:
+              toast.error("Failed to add student");
           }
-        } else {
-          toast.error("Failed to add student");
         }
       },
     });
@@ -264,6 +271,14 @@ export default function AddStudentForm({
               {...register("referenceNumber")}
               name="referenceNumber"
               placeholder="Enter reference number"
+              value={referenceNumber}
+              onChange={(e) => {
+                // Remove non-numeric characters
+                let val = e.target.value.replace(/\D/g, "");
+                // Limit to 12 digits
+                if (val.length > 12) val = val.slice(0, 12);
+                setReferenceNumber(val);
+              }}
               className="border-1 rounded-lg p-2 [appearance:textfield] focus:border-[var(--tertiary-green)] focus:outline-none focus:ring-1 focus:ring-[var(--tertiary-green)]"
             />
           </div>

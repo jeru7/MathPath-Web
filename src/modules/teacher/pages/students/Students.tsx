@@ -6,6 +6,7 @@ import { useTeacherContext } from "../../context/teacher.context";
 import { AnimatePresence, motion } from "framer-motion";
 import AddStudent from "./components/add-student/AddStudent";
 import { GoPlus } from "react-icons/go";
+import RegistrationCode from "./registration-codes/RegistrationCode";
 
 export default function Students(): ReactElement {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function Students(): ReactElement {
   const { sections } = useTeacherContext();
 
   const showForm = location.pathname.endsWith("/add-students");
+  const showCodes = location.pathname.endsWith("/registration-codes");
 
   const mode: string | null = searchParams.get("mode");
 
@@ -69,13 +71,15 @@ export default function Students(): ReactElement {
         <StudentTable onClickAddStudent={handleAddStudent} />
       </section>
 
-      {/* Add student dialog */}
+      {/* add student dialog */}
       {showForm && (
         <AddStudent
           navigate={navigate}
           initialMode={mode as "manual" | "generate" | null}
         />
       )}
+
+      {showCodes && <RegistrationCode navigate={navigate} />}
     </main>
   );
 }

@@ -7,9 +7,14 @@ import { useTeacherContext } from "../../../../context/teacher.context";
 import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
 import GeneratedCode from "./GeneratedCode";
-import { useTeacherGenerateCode } from "../../../../services/teacher.service";
-import { useParams } from "react-router-dom";
+import {
+  useTeacherDeleteRegistrationCode,
+  useTeacherGenerateCode,
+} from "../../../../services/teacher.service";
 import { RegistrationCode } from "../../../../../core/types/registration-code/registration-code.type";
+import { useQueryClient } from "@tanstack/react-query";
+import { handleApiError } from "../../../../../core/utils/api/error.util";
+import { toast } from "react-toastify";
 
 interface IGenerateCodeProps {
   handleBack: () => void;
@@ -19,12 +24,16 @@ export default function GenerateCode({
   handleBack,
 }: IGenerateCodeProps): ReactElement {
   const { sections } = useTeacherContext();
-  const { teacherId } = useParams();
-  const { mutate: generateCode } = useTeacherGenerateCode(teacherId ?? "");
+  const { teacher } = useTeacherContext();
+  const { mutate: generateCode } = useTeacherGenerateCode(teacher?.id ?? "");
+  const queryClient = useQueryClient();
   const [selectedSection, setSelectedSection] = useState<string | null>();
   const [numberOfStudents, setNumberOfStudents] = useState<number>(10);
   const [generatedCode, setGeneratedCode] = useState<RegistrationCode | null>(
     null,
+  );
+  const { mutate: deleteCode } = useTeacherDeleteRegistrationCode(
+    teacher?.id ?? "",
   );
 
   const handleNumberOfStudentsInputChange = (
@@ -91,24 +100,71 @@ export default function GenerateCode({
 
     if (!selectedSection) return;
 
+    handleGenerate(selectedSection, numberOfStudents, false);
+  };
+
+  const handleGenerate = (
+    sectionId: string,
+    maxUses: number,
+    forceReplace: boolean,
+  ) => {
     generateCode(
+      { sectionId, maxUses, forceReplace },
       {
-        sectionId: selectedSection,
-        maxUses: numberOfStudents,
-      },
-      {
-        onSuccess: (code) => {
+        onSuccess: async (code) => {
+          await queryClient.invalidateQueries({
+            queryKey: ["teacher", teacher?.id, "registration-codes"],
+          });
+
           setGeneratedCode(code);
         },
-        onError: (err) => {
-          console.error("Failed to generate code", err);
+        onError: (err: unknown) => {
+          if (err instanceof Error) {
+            const errorData = handleApiError(err);
+            console.log("Error data: " + errorData.error);
+            if (errorData.error === "ACTIVE_CODE_EXISTS") {
+              const shouldReplace = window.confirm(
+                "There’s already an active code for this section. Replace it?",
+              );
+
+              if (shouldReplace) {
+                handleGenerate(sectionId, maxUses, true);
+              }
+            } else {
+              console.error("Failed to generate code", err);
+            }
+          }
         },
       },
     );
   };
 
+  const handleDelete = (codeId: string) => {
+    console.log("ID TO DELETE: ", codeId);
+    deleteCode(codeId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacher?.id, "registration-codes"],
+        });
+
+        toast.success("Code deleted successfully.");
+        setGeneratedCode(null);
+      },
+      onError: () => {
+        toast.error("Failed to delete code.");
+        setGeneratedCode(null);
+      },
+    });
+  };
+
   if (generatedCode) {
-    return <GeneratedCode code={generatedCode} handleBack={handleBack} />;
+    return (
+      <GeneratedCode
+        code={generatedCode}
+        handleBack={handleBack}
+        handleDelete={handleDelete}
+      />
+    );
   }
 
   return (
@@ -184,7 +240,8 @@ export default function GenerateCode({
               </div>
             </div>
           </div>
-          {/* Buttons */}
+
+          {/* buttons */}
           <FormButtons
             handleBack={handleBack}
             text={"Generate"}
