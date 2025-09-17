@@ -21,6 +21,7 @@ export const teacherRoutesConfig = [
           { path: "add-students", element: <Students /> },
           { path: "edit-students", element: <Students /> },
           { path: ":studentId", element: <Student /> },
+          { path: "registration-codes", element: <Students /> },
         ],
       },
       { path: "statistics", element: <Statistics /> },

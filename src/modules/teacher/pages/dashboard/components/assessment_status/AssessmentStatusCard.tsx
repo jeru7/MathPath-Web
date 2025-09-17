@@ -13,8 +13,6 @@ export default function AssessmentStatusCard({
     teacherId ?? "",
   );
 
-  console.log("STATUS", assessmentStatus);
-
   return (
     <article
       className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col gap-1`}
