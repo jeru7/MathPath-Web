@@ -2,12 +2,18 @@ import { StylesConfig } from "react-select";
 
 export type SelectStyleOptions = {
   borderRadius?: string;
+  border?: boolean;
+  borderColor?: string;
+  borderFocusColor?: string;
+  borderWidth?: string;
   minHeight?: string;
   height?: string;
-  border?: boolean;
-  justifyContent?: "flex-start" | "flex-end" | "center";
   padding?: string;
   fontSize?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  optionHoverColor?: string;
+  optionSelectedColor?: string;
 };
 
 export const getCustomSelectColor = <T>(
@@ -15,25 +21,62 @@ export const getCustomSelectColor = <T>(
 ): StylesConfig<T> => ({
   control: (base) => ({
     ...base,
-    backgroundColor: "inherit",
+    backgroundColor: options?.backgroundColor || "inherit",
     border:
-      options?.border === false ? "none" : `1px solid var(--primary-gray)`,
+      options?.border === false
+        ? "none"
+        : `${options?.borderWidth || "1px"} solid ${options?.borderColor || "var(--primary-gray)"}`,
     boxShadow: "none",
     borderRadius: options?.borderRadius || "0.500rem",
-    minHeight: options?.minHeight || options?.height || "fit-content",
-    height: options?.height || "fit-content",
+    height: options?.height || "40px",
+    minHeight: options?.minHeight || options?.height || "40px",
     padding: options?.padding || "0px 4px",
     fontSize: options?.fontSize || "0.875rem",
+    color: options?.textColor || "inherit",
     "&:hover": {
       border:
-        options?.border === false ? "none" : `1px solid var(--primary-gray)`,
+        options?.border === false
+          ? "none"
+          : `${options?.borderWidth || "1px"} solid ${options?.borderColor || "var(--primary-gray)"}`,
     },
     "&:focus-within": {
       border:
-        options?.border === false ? "none" : `1px solid var(--tertiary-green)`,
+        options?.border === false
+          ? "none"
+          : `${options?.borderWidth || "1px"} solid ${options?.borderFocusColor || "var(--tertiary-green)"}`,
       boxShadow:
-        options?.border === false ? "none" : `0 0 0 1px var(--tertiary-green)`,
+        options?.border === false
+          ? "none"
+          : `0 0 0 1px ${options?.borderFocusColor || "var(--tertiary-green)"}`,
     },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: options?.textColor || "inherit",
+  }),
+  input: (base) => ({
+    ...base,
+    color: options?.textColor || "inherit",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: options?.textColor ? `${options.textColor}88` : "#9CA3AF", // slightly transparent
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? options?.optionSelectedColor || "var(--tertiary-green)"
+      : state.isFocused
+        ? options?.optionHoverColor || "#ceffc7"
+        : options?.backgroundColor || "inherit",
+    color: state.isSelected ? "white" : options?.textColor || "inherit",
+    fontSize: options?.fontSize || "0.875rem",
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: options?.backgroundColor || "var(--primary-white)",
+    borderRadius: "0.125rem",
+    zIndex: 9999,
   }),
   valueContainer: (base) => ({
     ...base,
@@ -47,33 +90,5 @@ export const getCustomSelectColor = <T>(
   }),
   indicatorSeparator: () => ({
     display: "none",
-  }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? "var(--tertiary-green)"
-      : state.isFocused
-        ? "#ceffc7"
-        : "inherit",
-    color: state.isSelected ? "white" : "inherit",
-    fontSize: "0.875rem",
-  }),
-  menu: (base) => ({
-    ...base,
-    backgroundColor: "var(--primary-white)",
-    borderRadius: "0.125rem",
-    zIndex: 9999,
-  }),
-  singleValue: (base) => ({
-    ...base,
-    color: "inherit",
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: "#9CA3AF",
-  }),
-  input: (base) => ({
-    ...base,
-    color: "inherit",
   }),
 });

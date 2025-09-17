@@ -89,7 +89,7 @@ export default function LandingNav(): ReactElement {
           </button>
         </div>
         <button
-          className="rounded-full md:border-2 md:border-[var(--primary-white)] md:px-5 md:py-1 md:hover:scale-105 md:hover:cursor-pointer lg:ml-12"
+          className="flex items-center justify-between rounded-full md:border-2 md:border-[var(--primary-white)] md:px-5 md:py-1 md:hover:scale-103 md:hover:cursor-pointer lg:ml-12 transition-all duration-200"
           onClick={() => navigate("/auth/login")}
         >
           <p className="text-2xl font-bold md:text-3xl">Login</p>
