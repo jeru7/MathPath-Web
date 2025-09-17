@@ -1,4 +1,4 @@
-export type SuccessReponse = {
+export type APISuccessReponse = {
   success: boolean;
   data: unknown | null;
   message: string;
@@ -9,7 +9,7 @@ export type SuccessReponse = {
   };
 };
 
-export type ErrorResponse = {
+export type APIErrorResponse = {
   success: boolean;
   error: string;
   message: string;
