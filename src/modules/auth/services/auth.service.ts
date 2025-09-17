@@ -1,22 +1,19 @@
 import axios from "axios";
 import { User } from "../../core/types/user.type";
 import { URL } from "../../core/constants/api.constant";
+import { RegisterStudentDTO } from "../../student/types/student.schema";
 
 export const loginService = async (identifier: string, password: string) => {
-  try {
-    const res = await axios.post<{ data: User }>(
-      `${URL}/api/web/auth/login`,
-      {
-        identifier,
-        password,
-      },
-      { withCredentials: true },
-    );
+  const res = await axios.post<{ data: User }>(
+    `${URL}/api/web/auth/login`,
+    {
+      identifier,
+      password,
+    },
+    { withCredentials: true },
+  );
 
-    return res.data.data;
-  } catch {
-    throw new Error("Failed to log in.");
-  }
+  return res.data.data;
 };
 
 export const checkAuthService = async () => {
@@ -31,69 +28,54 @@ export const checkAuthService = async () => {
 };
 
 export const logoutService = async (userId: string) => {
-  try {
-    const res = await axios.post(
-      `${URL}/api/web/auth/logout`,
-      { userId },
-      {
-        withCredentials: true,
-      },
-    );
+  const res = await axios.post(
+    `${URL}/api/web/auth/logout`,
+    { userId },
+    {
+      withCredentials: true,
+    },
+  );
 
-    console.log(res.data.message);
-  } catch (error) {
-    console.error(error);
-    throw new Error("Logout failed.");
-  }
+  console.log(res.data.message);
 };
 
 export const requestPasswordResetCodeService = async (email: string) => {
-  try {
-    await axios.post(
-      `${URL}/api/web/auth/forgot-password/request`,
-      { email },
-      { withCredentials: true },
-    );
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error || "UNKNOWN_ERROR");
-    }
-    throw new Error("Request for reset password failed.");
-  }
+  await axios.post(
+    `${URL}/api/web/auth/forgot-password/request`,
+    { email },
+    { withCredentials: true },
+  );
 };
 
 export const verifyPasswordResetCodeService = async (
   email: string,
   code: string,
 ) => {
-  try {
-    await axios.post(
-      `${URL}/api/web/auth/forgot-password/verify`,
-      { email, code },
-      { withCredentials: true },
-    );
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error || "UNKNOWN_ERROR");
-    }
-    throw new Error("Reset password verification failed.");
-  }
+  await axios.post(
+    `${URL}/api/web/auth/forgot-password/verify`,
+    { email, code },
+    { withCredentials: true },
+  );
 };
 
-export const setNewPasswordService = async (
+export const changePasswordService = async (
   email: string,
   newPassword: string,
 ) => {
-  try {
-    await axios.post(
-      `${URL}/api/web/auth/forgot-password/change-password`,
-      { email, newPassword },
-      { withCredentials: true },
-    );
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error || "UNKNOWN_ERROR");
-    }
-    throw new Error("Reset password failed.");
-  }
+  await axios.post(
+    `${URL}/api/web/auth/forgot-password/change-password`,
+    { email, newPassword },
+    { withCredentials: true },
+  );
+};
+
+export const registerStudentService = async (
+  studentData: RegisterStudentDTO,
+  code: string,
+) => {
+  await axios.post(
+    `${URL}/api/web/auth/register`,
+    { studentData, code },
+    { withCredentials: true },
+  );
 };

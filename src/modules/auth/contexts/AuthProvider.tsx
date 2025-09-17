@@ -3,9 +3,6 @@ import {
   checkAuthService,
   loginService,
   logoutService,
-  requestPasswordResetCodeService,
-  setNewPasswordService,
-  verifyPasswordResetCodeService,
 } from "../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../core/types/user.type";
@@ -53,42 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     navigate("/login");
   };
 
-  const requestPasswordResetCode = async (email: string) => {
-    setIsLoading(true);
-    try {
-      await requestPasswordResetCodeService(email);
-    } catch (error) {
-      console.error(error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const verifyPasswordResetCode = async (email: string, code: string) => {
-    setIsLoading(true);
-    try {
-      await verifyPasswordResetCodeService(email, code);
-    } catch (error) {
-      console.error(error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const changePassword = async (email: string, newPassword: string) => {
-    setIsLoading(true);
-    try {
-      await setNewPasswordService(email, newPassword);
-    } catch (error) {
-      console.error(error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -96,9 +57,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isLoading,
         login,
         logout,
-        requestPasswordResetCode,
-        verifyPasswordResetCode,
-        changePassword,
       }}
     >
       {children}
