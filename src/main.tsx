@@ -16,6 +16,8 @@ import RequestCode from "./modules/core/components/auth/forgot-password/RequestC
 import VerifyCode from "./modules/core/components/auth/forgot-password/VerifyCode";
 import SetNewPassword from "./modules/core/components/auth/forgot-password/SetNewPassword";
 import RegisterForm from "./modules/core/components/auth/register/RegisterForm";
+import { adminRoutesConfig } from "./modules/admin/routes/adminRoutesConfig";
+import AdminLoginForm from "./modules/core/components/auth/admin/AdminLoginForm";
 
 const queryClient = new QueryClient();
 
@@ -32,12 +34,21 @@ const router = createBrowserRouter([
       { path: "/", element: <Landing /> },
 
       // auth routes
-      // login
+      // login - teacher/student
       {
         path: "/auth/login",
         element: (
           <Auth>
             <LoginForm />
+          </Auth>
+        ),
+      },
+      // login - admin
+      {
+        path: "/auth/admin/login",
+        element: (
+          <Auth>
+            <AdminLoginForm />
           </Auth>
         ),
       },
@@ -80,7 +91,11 @@ const router = createBrowserRouter([
       // private routes
       {
         element: <PrivateRoute />,
-        children: [...teacherRoutesConfig, ...studentRoutesConfig],
+        children: [
+          ...teacherRoutesConfig,
+          ...studentRoutesConfig,
+          ...adminRoutesConfig,
+        ],
       },
 
       // Catch-all

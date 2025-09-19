@@ -24,6 +24,9 @@ export default function PrivateRoute() {
   ) {
     return <Navigate to={`/student/${user.id}`} replace />;
   }
+  if (user.role === "Admin" && !window.location.pathname.includes("/admin/")) {
+    return <Navigate to={`/admin/${user.id}`} replace />;
+  }
 
   return <Outlet />;
 }

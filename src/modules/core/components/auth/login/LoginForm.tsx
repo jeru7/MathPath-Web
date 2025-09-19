@@ -21,6 +21,7 @@ export default function LoginForm(): ReactElement {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [identifier, setIdentifier] = useState("");
+  const [clickTracker, setClickTracker] = useState<number>(0);
 
   const {
     register,
@@ -78,8 +79,16 @@ export default function LoginForm(): ReactElement {
     }
   };
 
+  const handleFormClick = () => {
+    if (clickTracker === 10) return;
+    setClickTracker((prev) => prev + 1);
+  };
+
   return (
-    <main className="relative w-full min-h-screen overflow-auto md:min-h-0 flex gap-4 md:h-fit min-w-[300px] flex-col rounded-xl border-2 border-white/20 bg-black/50 py-4 px-8 shadow-lg backdrop-blur-sm  md:max-w-2xl transition-all duration-200">
+    <main
+      className="relative w-full min-h-screen overflow-auto md:min-h-0 flex gap-4 md:h-fit min-w-[300px] flex-col rounded-xl border-2 border-white/20 bg-black/50 py-4 px-8 shadow-lg backdrop-blur-sm  md:max-w-2xl transition-all duration-200"
+      onClick={handleFormClick}
+    >
       <div className="flex flex-col gap-4">
         <img
           src={mathPathTitle}
@@ -255,6 +264,17 @@ export default function LoginForm(): ReactElement {
               Register
             </button>
           </div>
+          {clickTracker === 10 && (
+            <div className="flex gap-2 self-center">
+              <button
+                type="button"
+                className="text-gray-400 hover:cursor-pointer hover:underline"
+                onClick={() => navigate("/auth/admin/login")}
+              >
+                Login as Admin
+              </button>
+            </div>
+          )}
         </div>
       </form>
     </main>
