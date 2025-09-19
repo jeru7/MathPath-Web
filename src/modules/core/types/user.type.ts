@@ -1,4 +1,4 @@
-export type UserType = "Teacher" | "Student";
+export type UserType = "Teacher" | "Student" | "Admin";
 
 export type User = {
   id: string;
@@ -7,6 +7,7 @@ export type User = {
   lastName: string;
   middleName?: string;
   email: string;
+  verified: boolean;
   profilePicture?: string;
 };
 
@@ -18,4 +19,5 @@ export type ProfilePicture =
   | "Girl_1"
   | "Girl_2"
   | "Girl_3"
-  | "Girl_4";
+  | "Girl_4"
+  | "Default";

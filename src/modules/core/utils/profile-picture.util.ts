@@ -4,6 +4,7 @@ import Boy_3 from "../../../assets/images/profile-pictures/BOY_3.png";
 import Girl_1 from "../../../assets/images/profile-pictures/GIRL_1.png";
 import Girl_2 from "../../../assets/images/profile-pictures/GIRL_1.png";
 import Girl_3 from "../../../assets/images/profile-pictures/GIRL_1.png";
+import DefaultProfile from "../../../assets/images/profile-pictures/DEFAULT_PROFILE.jpg";
 import { ProfilePicture } from "../types/user.type";
 
 export const getProfilePictures = (profilePicture: ProfilePicture) => {
@@ -20,7 +21,9 @@ export const getProfilePictures = (profilePicture: ProfilePicture) => {
       return Girl_2;
     case "Girl_3":
       return Girl_3;
-    default:
+    case "Default":
+      return DefaultProfile;
+
     // TODO: default profile
   }
 };
