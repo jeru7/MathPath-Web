@@ -31,7 +31,6 @@ export default function QuestionTypeSelect({
       placeholder="Select type"
       styles={getCustomSelectColor({
         borderRadius: "var(--radius-sm)",
-        justifyContent: "flex-start",
       })}
       isSearchable={false}
       className={classes}

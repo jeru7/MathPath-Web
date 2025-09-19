@@ -117,7 +117,6 @@ export default function Publish({
                 placeholder="Select sections"
                 styles={getCustomSelectColor({
                   borderRadius: "var(--radius-sm)",
-                  justifyContent: "flex-start",
                 })}
                 isSearchable={false}
                 className="w-full text-sm sm:text-base"
