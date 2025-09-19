@@ -2,14 +2,12 @@ import { type ReactElement } from "react";
 import { Student } from "../../../../student/types/student.type";
 
 export interface IPrimaryStatProps {
-  color: string;
   title: "Total Students" | "Online Students" | "Average Level";
   students?: Student[];
   onlineStudents?: Student[];
 }
 
 export default function PrimaryStat({
-  color,
   title,
   students,
   onlineStudents,
