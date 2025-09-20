@@ -30,7 +30,7 @@ export default function GeneratedCode({
       <h3 className="text-lg font-semibold">Registration Code</h3>
 
       {/* qr */}
-      <QRCodeCanvas value={code.code} size={200} />
+      <QRCodeCanvas value={code.link} size={200} />
 
       <p className="text-xs text-gray-300 font-bold">
         Max Uses: {code.maxUses}

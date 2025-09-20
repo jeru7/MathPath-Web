@@ -2,7 +2,7 @@ import { useState, type ReactElement } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import mathPathTitle from "../../../../../assets/svgs/mathpath-title.svg";
@@ -14,9 +14,12 @@ import {
   RegisterFormSchema,
 } from "../../../../student/types/student.schema";
 import { registerStudentService } from "../../../../auth/services/auth.service";
+import { isAxiosError } from "axios";
+import { handleApiError } from "../../../utils/api/error.util";
 
 export default function RegisterForm(): ReactElement {
   const navigate = useNavigate();
+  const { code } = useParams();
   const [referenceNumber, setReferenceNumber] = useState("");
   const [registrationCode, setRegistrationCode] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +43,7 @@ export default function RegisterForm(): ReactElement {
       referenceNumber: "",
       password: "",
       confirmNewPassword: "",
-      registrationCode: "",
+      registrationCode: code || "",
     },
   });
 
@@ -68,8 +71,31 @@ export default function RegisterForm(): ReactElement {
 
       toast.success("Registration successful!");
       navigate("/auth/login");
-    } catch (err) {
-      console.error(err);
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        const errorData = handleApiError(error);
+
+        switch (errorData.error) {
+          case "INVALID_OR_EXPIRED_CODE":
+            setError("registrationCode", {
+              type: "manual",
+              message: "Invalid or expired registration code.",
+            });
+            return;
+          case "EMAIL_ALREADY_EXISTS":
+            setError("email", {
+              type: "manual",
+              message: "Email already exists",
+            });
+            return;
+          case "REFERENCE_NUMBER_ALREADY_EXISTS":
+            setError("referenceNumber", {
+              type: "manual",
+              message: "Reference number already exists",
+            });
+            return;
+        }
+      }
       toast.error("Failed to register user");
     }
   };

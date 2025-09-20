@@ -5,6 +5,7 @@ export type RegistrationCode = {
   sectionId: string;
   maxUses: number;
   uses: number;
+  link: string;
   expiresAt: string;
   createdAt: string;
 };

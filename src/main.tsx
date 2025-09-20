@@ -54,7 +54,7 @@ const router = createBrowserRouter([
       },
       // register
       {
-        path: "/auth/register",
+        path: "/auth/register/:code?",
         element: (
           <Auth>
             <RegisterForm />
