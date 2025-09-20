@@ -18,6 +18,7 @@ import SetNewPassword from "./modules/core/components/auth/forgot-password/SetNe
 import RegisterForm from "./modules/core/components/auth/register/RegisterForm";
 import { adminRoutesConfig } from "./modules/admin/routes/adminRoutesConfig";
 import AdminLoginForm from "./modules/core/components/auth/admin/AdminLoginForm";
+import VerifyEmailPage from "./modules/core/components/auth/email-verification/VerifyEmailPage";
 
 const queryClient = new QueryClient();
 
@@ -86,7 +87,11 @@ const router = createBrowserRouter([
           </Auth>
         ),
       },
-      // register
+      // email verification
+      {
+        path: "/auth/verify-email",
+        element: <VerifyEmailPage />,
+      },
 
       // private routes
       {

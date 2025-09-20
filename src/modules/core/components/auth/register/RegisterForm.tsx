@@ -76,6 +76,16 @@ export default function RegisterForm(): ReactElement {
         const errorData = handleApiError(error);
 
         switch (errorData.error) {
+          case "EMAIL_AND_LRN_ALREADY_EXISTS":
+            setError("email", {
+              type: "manual",
+              message: "Email already exists",
+            });
+            setError("referenceNumber", {
+              type: "manual",
+              message: "Reference number already exists",
+            });
+            return;
           case "INVALID_OR_EXPIRED_CODE":
             setError("registrationCode", {
               type: "manual",

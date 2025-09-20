@@ -79,3 +79,11 @@ export const registerStudentService = async (
     { withCredentials: true },
   );
 };
+
+export const verifyEmailService = async (email: string, token: string) => {
+  await axios.post(
+    `${URL}/api/web/auth/verify-email`,
+    { email, token },
+    { withCredentials: true },
+  );
+};

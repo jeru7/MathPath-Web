@@ -25,7 +25,7 @@ export default function AddTeacherForm({
   onClose,
 }: AddTeacherFormTypes): ReactElement {
   const { adminId } = useAdminContext();
-  const { mutate: addTeacher } = useAdminAddTeacher(adminId);
+  const { mutate: addTeacher, isPending } = useAdminAddTeacher(adminId);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -33,7 +33,8 @@ export default function AddTeacherForm({
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
+    setError,
+    formState: { errors },
   } = useForm<AddTeacherDTO>({
     resolver: zodResolver(AddTeacherSchema),
     defaultValues: {
@@ -47,7 +48,6 @@ export default function AddTeacherForm({
   });
 
   const onSubmit = async (data: AddTeacherDTO) => {
-    console.log(data);
     addTeacher(data, {
       onSuccess: () => {
         navigate("..");
@@ -58,6 +58,12 @@ export default function AddTeacherForm({
           const errorData = handleApiError(err);
 
           switch (errorData.error) {
+            case "EMAIL_ALREADY_EXISTS":
+              setError("email", {
+                type: "manual",
+                message: "Email already exists",
+              });
+              break;
             default:
               toast.error("Failed to add teacher");
           }
@@ -69,7 +75,7 @@ export default function AddTeacherForm({
   return (
     <article className="h-[100vh] w-[100vw] max-w-[800px] p-4 shadow-sm md:h-fit md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] overflow-y-auto rounded-lg bg-[var(--primary-white)]">
       <header className="flex items-center justify-between border-b border-b-[var(--primary-gray)] pb-4">
-        <h3 className="">Add Student - Manual</h3>
+        <h3 className="">Add Teacher</h3>
         <button
           className="hover:scale-105 hover:cursor-pointer"
           type="button"
@@ -179,6 +185,7 @@ export default function AddTeacherForm({
                   }>({
                     minHeight: "42px",
                     padding: "0px 4px",
+                    menuBackgroundColor: "white",
                   })}
                   className="basic-select"
                   classNamePrefix="select"
@@ -250,8 +257,8 @@ export default function AddTeacherForm({
         </div>
         <FormButtons
           handleBack={onClose}
-          text={isSubmitting ? "Creating..." : "Complete"}
-          disabled={isSubmitting}
+          text={isPending ? "Creating..." : "Complete"}
+          disabled={isPending}
         />
       </form>
     </article>
