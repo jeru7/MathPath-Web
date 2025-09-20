@@ -203,6 +203,7 @@ export default function RegisterForm(): ReactElement {
                       border: true,
                       borderColor: "#2c2c2c",
                       borderFocusColor: "black",
+                      menuBackgroundColor: "white",
                     })}
                     placeholder="Select gender..."
                     onChange={(selected) => field.onChange(selected?.value)}

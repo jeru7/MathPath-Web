@@ -14,6 +14,7 @@ export type SelectStyleOptions = {
   textColor?: string;
   optionHoverColor?: string;
   optionSelectedColor?: string;
+  menuBackgroundColor?: string;
 };
 
 export const getCustomSelectColor = <T>(
@@ -74,7 +75,7 @@ export const getCustomSelectColor = <T>(
   }),
   menu: (base) => ({
     ...base,
-    backgroundColor: options?.backgroundColor || "var(--primary-white)",
+    backgroundColor: options?.menuBackgroundColor || options?.backgroundColor,
     borderRadius: "0.125rem",
     zIndex: 9999,
   }),
