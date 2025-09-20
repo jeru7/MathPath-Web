@@ -2,6 +2,7 @@ import { type ReactElement } from "react";
 import { Section } from "../../../../../core/types/section/section.type";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
 import { IoClose } from "react-icons/io5";
+import { useTeacherContext } from "../../../../context/teacher.context";
 
 type SectionItemProps = {
   data: Section;
@@ -11,6 +12,12 @@ export default function SectionItem({
   data,
   onDelete,
 }: SectionItemProps): ReactElement {
+  const { students } = useTeacherContext();
+
+  const studentCount = students.filter(
+    (student) => student.sectionId === data.id,
+  ).length;
+
   return (
     <li className="w-full flex justify-between pl-1 py-1 pr-4 border-gray-300 border rounded-xs group">
       <div className="flex gap-2">
@@ -21,7 +28,7 @@ export default function SectionItem({
         />
         <div className="flex flex-col gap-1">
           <p className="font-bold text-sm">{data.name}</p>
-          <p className="text-xs">Students: {data.studentIds?.length ?? 0}</p>
+          <p className="text-xs">Students: {studentCount}</p>
         </div>
       </div>
       <button

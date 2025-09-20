@@ -18,27 +18,15 @@ export const SectionColorEnum = z.enum([
   "primary-yellow",
 ]);
 
-export const SectionSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  teacherId: z.string(),
-  color: SectionBannerEnum,
-  banner: SectionBannerEnum,
-  lastChecked: z.string(),
-  studentIds: z.array(z.string()),
-  assessmentIds: z.array(z.string()),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-});
-
 export const CreateSectionSchema = z.object({
-  name: z.string(),
-  teacherId: z.string(),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Section name is required")
+    .max(40, "Section name must be less than 40 characters"),
+  teacherId: z.string().min(1, "Teacher ID is required"),
   color: SectionColorEnum,
   banner: SectionBannerEnum,
-  lastChecked: z.string(),
-  studentIds: z.array(z.string()),
-  assessmentIds: z.array(z.string()),
 });
 
 export type CreateSectionDTO = z.infer<typeof CreateSectionSchema>;

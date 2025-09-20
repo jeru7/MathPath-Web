@@ -4,15 +4,15 @@ import { GoPlus } from "react-icons/go";
 import SectionCard from "./SectionCard";
 import { Section } from "../../../../../core/types/section/section.type";
 
-interface ISectionGridProps {
+type SectionTableProps = {
   sections: Section[];
-  setShowForm: (show: boolean) => void;
-}
+  onShowForm: () => void;
+};
 
-export default function SectionGrid({
+export default function SectionTable({
   sections,
-  setShowForm,
-}: ISectionGridProps): ReactElement {
+  onShowForm,
+}: SectionTableProps): ReactElement {
   return (
     <section className="h-full flex flex-col">
       <section className="w-full border-b-gray-200 p-4 border-b flex justify-between">
@@ -37,18 +37,24 @@ export default function SectionGrid({
         {/* create button */}
         <button
           className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-          onClick={() => setShowForm(true)}
+          onClick={onShowForm}
         >
           <GoPlus className="w-4 h-4" />
           <p className="text-sm font-semibold">Create section</p>
         </button>
       </section>
       <div className="h-[800px] overflow-y-auto">
-        <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 grid-rows-[380px] gap-2 overflow-y-auto p-2">
-          {sections.map((section) => (
-            <SectionCard key={section.id} section={section} />
-          ))}
-        </section>
+        {sections.length > 0 ? (
+          <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 grid-rows-[380px] gap-2 overflow-y-auto p-2">
+            {sections.map((section) => (
+              <SectionCard key={section.id} section={section} />
+            ))}
+          </section>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="italic text-gray-300">No data available</p>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,14 +1,16 @@
 import { useEffect, useState, type ReactElement } from "react";
 import CreateSectionForm from "./components/CreateSectionForm";
-import SectionGrid from "./components/section_grid/SectionGrid";
 import { useTeacherContext } from "../../context/teacher.context";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoPlus } from "react-icons/go";
+import { useNavigate } from "react-router-dom";
+import SectionTable from "./components/section-table/SectionTable";
 
 export default function Sections(): ReactElement {
   const { sections } = useTeacherContext();
-  const [showForm, setShowForm] = useState(false);
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const showForm = location.pathname.endsWith("/add-section");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +37,7 @@ export default function Sections(): ReactElement {
             exit={{ opacity: 0, y: 10 }}
             className="rounded-full h-16 w-16 bg-[var(--primary-green)]/90 fixed z-5 right-5 bottom-5 flex items-center justify-center md:hidden"
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={() => navigate("add-section")}
           >
             <GoPlus className="w-5 h-5 text-white" />
           </motion.button>
@@ -49,10 +51,13 @@ export default function Sections(): ReactElement {
 
       {/* section grid list */}
       <section className="bg-white flex-1 rounded-sm shadow-sm">
-        <SectionGrid sections={sections} setShowForm={setShowForm} />
+        <SectionTable
+          sections={sections}
+          onShowForm={() => navigate("add-section")}
+        />
       </section>
 
-      {showForm && <CreateSectionForm setShowForm={setShowForm} />}
+      {showForm && <CreateSectionForm onCloseForm={() => navigate("..")} />}
     </main>
   );
 }

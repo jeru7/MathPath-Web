@@ -25,7 +25,13 @@ export const teacherRoutesConfig = [
         ],
       },
       { path: "statistics", element: <Statistics /> },
-      { path: "sections", element: <Sections /> },
+      {
+        path: "sections",
+        children: [
+          { index: true, element: <Sections /> },
+          { path: "add-section", element: <Sections /> },
+        ],
+      },
       {
         path: "assessments",
         children: [

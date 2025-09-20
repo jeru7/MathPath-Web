@@ -5,6 +5,7 @@ import { Student } from "../../student/types/student.type";
 import { Teacher } from "../types/teacher.type";
 
 type TeacherContext = {
+  teacherId: string;
   teacher: Teacher | null;
   students: Student[];
   sections: Section[];
@@ -12,13 +13,9 @@ type TeacherContext = {
   onlineStudents: Student[];
 };
 
-export const TeacherContext = createContext<TeacherContext>({
-  teacher: null,
-  students: [],
-  sections: [],
-  assessments: [],
-  onlineStudents: [],
-});
+export const TeacherContext = createContext<TeacherContext | undefined>(
+  undefined,
+);
 
 export function useTeacherContext() {
   const context = useContext(TeacherContext);

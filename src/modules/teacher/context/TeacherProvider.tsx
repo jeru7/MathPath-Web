@@ -142,6 +142,7 @@ export function TeacherProvider({
   }, [connectWebSocket]);
 
   const value = {
+    teacherId: teacherId,
     teacher: teacher || null,
     students: students || [],
     sections: sections || [],

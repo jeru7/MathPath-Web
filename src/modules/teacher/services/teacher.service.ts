@@ -7,6 +7,7 @@ import { Student } from "../../student/types/student.type";
 import { Teacher } from "../types/teacher.type";
 import { TeacherStudentActivity } from "../../core/types/activity/activity.type";
 import { RegistrationCode } from "../../core/types/registration-code/registration-code.type";
+import { CreateSectionDTO } from "../../core/types/section/section.schema";
 
 // get teacher data - teacher info
 export const useTeacher = (teacherId: string) => {
@@ -142,6 +143,29 @@ export const useTeacherDeleteRegistrationCode = (teacherId: string) => {
       return deleteData<null>(
         `${URL}/api/web/teachers/${teacherId}/registration-code/${codeId}`,
         "Failed to delete registration code.",
+      );
+    },
+  });
+};
+
+export const useTeacherCreateSection = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (sectionData: CreateSectionDTO) => {
+      return postData<Section, CreateSectionDTO>(
+        `${URL}/api/web/teachers/${teacherId}/sections`,
+        sectionData,
+        "Failed to create a new section.",
+      );
+    },
+  });
+};
+
+export const useTeacherDeleteSection = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (sectionId: string) => {
+      return deleteData<null>(
+        `${URL}/api/web/teachers/${teacherId}/sections/${sectionId}`,
+        "Failed to create a new section.",
       );
     },
   });
