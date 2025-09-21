@@ -15,20 +15,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const loadUser = async () => {
+      const authChecked = sessionStorage.getItem("authChecked");
+      if (authChecked) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const user: User = await checkAuthService();
-        if (user.id && user.role) {
-          setUser(user);
-        }
+        setUser(user);
       } catch {
         setUser(null);
       } finally {
         setIsLoading(false);
+        sessionStorage.setItem("authChecked", "true");
       }
     };
 
-    checkAuth();
+    loadUser();
   }, []);
 
   const login = async (identifier: string, password: string) => {
