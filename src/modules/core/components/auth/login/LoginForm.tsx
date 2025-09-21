@@ -73,6 +73,8 @@ export default function LoginForm(): ReactElement {
             ? "Invalid email or password. Try again."
             : "Invalid LRN or password. Try again.";
         setLoginError(message);
+      } else if (errorData.error === "EMAIL_NOT_VERIFIED") {
+        setLoginError("Email not verified. Kindly check your mails first.");
       } else {
         setLoginError("An unexpected error occurred. Try again later.");
       }
@@ -164,7 +166,7 @@ export default function LoginForm(): ReactElement {
       >
         <div className="flex flex-col justify-between flex-1 gap-4">
           <div className="flex flex-col gap-4">
-            {/* Login Error */}
+            {/* login error */}
             <AnimatePresence>
               {loginError && (
                 <motion.div

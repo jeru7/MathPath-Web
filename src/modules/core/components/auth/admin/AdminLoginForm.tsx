@@ -34,6 +34,8 @@ export default function AdminLoginForm(): ReactElement {
   });
 
   const onSubmit = async (data: AdminLoginDTO) => {
+    setLoginError(null);
+
     try {
       await adminLogin(data.email, data.password);
     } catch (error: unknown) {
@@ -44,6 +46,8 @@ export default function AdminLoginForm(): ReactElement {
         errorData.error === "INVALID_EMAIL"
       ) {
         setLoginError("Invalid email or password. Try again.");
+      } else if (errorData.error === "EMAIL_NOT_VERIFIED") {
+        setLoginError("Email not verified. Kindly check your mails first.");
       } else {
         setLoginError("An unexpected error occurred. Try again later.");
       }
