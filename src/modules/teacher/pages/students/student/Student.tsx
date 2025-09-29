@@ -60,9 +60,9 @@ export default function Student(): ReactElement {
     const getCurrentStage = () => {
       const allStages = studentData?.stages ?? [];
 
-      const unlockedLevels = allStages.filter(
-        (stage: StudentStage) => stage.unlocked,
-      );
+      const unlockedLevels = allStages
+        .filter((stage: StudentStage) => stage.unlocked)
+        .sort((a, b) => a.stage - b.stage);
 
       const latest = unlockedLevels.length
         ? unlockedLevels[unlockedLevels.length - 1]
