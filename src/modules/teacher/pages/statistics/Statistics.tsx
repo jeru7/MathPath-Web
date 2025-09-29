@@ -1,15 +1,36 @@
 import { type ReactElement } from "react";
+import QuestionStatistics from "./components/QuestionStatistics";
+import StagesStatistics from "./components/StagesStatistics";
+import AssessmentStatistics from "./components/AssessmentStatistics";
 
 export default function Statistics(): ReactElement {
   return (
-    <main className="flex flex-col min-h-screen h-full w-full max-w-[2200px] gap-2 bg-inherit p-4">
-      {/* Header */}
+    <main className="flex flex-col min-h-screen h-fit w-full max-w-[2200px] gap-2 bg-inherit p-2">
+      {/* main header */}
       <header className="flex items-center justify-between py-1">
         <h3 className="text-xl sm:text-2xl font-bold">Statistics</h3>
       </header>
 
-      {/* Stats */}
-      <section className="w-full h-full"></section>
+      {/* stats */}
+      <section className="flex-1 w-full flex gap-2">
+        {/* stats: left column*/}
+        <section className="flex-4 flex flex-col gap-2">
+          <QuestionStatistics />
+          <StagesStatistics />
+          <AssessmentStatistics />
+        </section>
+
+        {/* stats: right column*/}
+        <section className="flex-1 flex flex-col gap-2">
+          <article className="rounded-sm bg-white shadow-sm p-2 flex-1">
+            <header className="font-semibold text-lg">Top Students</header>
+          </article>
+
+          <article className="rounded-sm bg-white shadow-sm p-2 flex-1">
+            <header className="font-semibold text-lg">Top Sections</header>
+          </article>
+        </section>
+      </section>
     </main>
   );
 }
