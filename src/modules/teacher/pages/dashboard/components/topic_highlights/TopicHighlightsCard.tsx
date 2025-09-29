@@ -15,22 +15,22 @@ export default function TopicHighlightsCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col gap-3 pb-5`}
+      className={`${classes} bg-white shadow-sm rounded-sm p-2 flex flex-col gap-3`}
     >
       <header>
         <p className="font-semibold text-md md:text-lg">Topic Highlights</p>
       </header>
 
       {topicHighlights?.hasData ? (
-        <section className="flex gap-2 h-full">
+        <section className="flex flex-col sm:flex-row gap-2 h-full">
           {/* highest */}
           <article className="h-full w-full flex flex-col gap-2 items-center">
-            <header className="flex items-center gap-2 w-full">
+            <header className="flex items-center gap-2 lg:w-full">
               <div className="flex items-center justify-center bg-[var(--primary-green)] rounded-full p-2">
                 <FaMedal className="w-4 h-4 text-white" />
               </div>
               <h6
-                className="text-sm md:text-base font-semibold truncate max-w-[150px]"
+                className="text-sm md:text-base font-semibold text-wrap sm:text-nowrap truncate sm:max-w-[150px]"
                 title={topicHighlights.highest.title}
               >
                 Highest: {topicHighlights.highest.title}
@@ -67,12 +67,12 @@ export default function TopicHighlightsCard({
 
           {/* lowest */}
           <article className="h-full w-full flex flex-col gap-2 items-center">
-            <header className="flex items-center gap-2 w-full">
+            <header className="flex items-center gap-2 lg:w-full">
               <div className="flex items-center justify-center bg-[var(--primary-yellow)] rounded-full p-2">
                 <IoWarning className="w-4 h-4 text-white" />
               </div>
               <h6
-                className="text-sm md:text-base font-semibold truncate max-w-[150px]"
+                className="text-sm md:text-base font-semibold text-wrap sm:text-nowrap truncate sm:max-w-[150px]"
                 title={topicHighlights.lowest.title}
               >
                 Lowest: {topicHighlights.lowest.title}

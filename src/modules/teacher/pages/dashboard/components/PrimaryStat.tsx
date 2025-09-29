@@ -37,7 +37,7 @@ export default function PrimaryStat({
   };
   return (
     <div
-      className={`flex flex-1 min-w-[300px] flex-col rounded-sm p-2 md:p-4 text-white shadow-sm ${color}`}
+      className={`flex flex-1 min-w-[300px] flex-col rounded-sm p-2 text-white shadow-sm ${color}`}
     >
       <div className="flex w-full h-full">
         {/* Icon */}

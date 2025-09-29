@@ -26,7 +26,7 @@ export default function ActiveStudentsCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col`}
+      className={`${classes} bg-white shadow-sm rounded-sm p-2 flex flex-col`}
     >
       <header>
         <p className="font-semibold text-md md:text-lg">Active Students</p>

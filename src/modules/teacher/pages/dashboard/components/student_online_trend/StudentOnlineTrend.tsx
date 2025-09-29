@@ -22,24 +22,6 @@ type ActivityTrendProps = {
   classes: string;
 };
 
-// const CustomTooltip = ({
-//   active,
-//   payload,
-//   label,
-// }: TooltipProps<number, string>) => {
-//   if (active && payload && payload.length) {
-//     return (
-//       <div className="bg-white p-2 border border-gray-300 rounded shadow text-sm">
-//         <p className="font-medium">Stage: {label}</p>
-//         <p>Completed: {payload[0].value}</p>
-//       </div>
-//     );
-//   }
-//
-//   return null;
-// };
-//
-
 export default function StudentOnlineTrend({
   classes,
 }: ActivityTrendProps): ReactElement {
@@ -64,7 +46,7 @@ export default function StudentOnlineTrend({
 
   return (
     <article
-      className={`${classes} rounded-md shadow-sm bg-white flex flex-col py-2 px-3 gap-1 min-h-[400px]`}
+      className={`${classes} rounded-sm shadow-sm bg-white flex flex-col p-2 gap-1 min-h-[400px]`}
     >
       <header className="flex justify-between w-full items-center">
         <p className="text-sm sm:text-base md:text-lg font-semibold">

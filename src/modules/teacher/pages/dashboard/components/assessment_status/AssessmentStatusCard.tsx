@@ -15,7 +15,7 @@ export default function AssessmentStatusCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-md py-2 px-3 flex flex-col gap-1`}
+      className={`${classes} bg-white shadow-sm min-h-[300px] lg:h-auto lg:min-h-0 rounded-sm p-2 flex flex-col gap-1`}
     >
       <header className="">
         <p className="font-semibold text-lg">Assessment Status</p>
@@ -34,7 +34,7 @@ export default function AssessmentStatusCard({
           </section>
         </div>
       ) : (
-        <div className="h-full flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-300 italic">No data available</p>
         </div>
       )}
