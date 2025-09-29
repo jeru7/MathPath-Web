@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./modules/auth/contexts/AuthProvider";
 import PrivateRoute from "./modules/core/routes/PrivateRoutes";
@@ -19,8 +19,7 @@ import RegisterForm from "./modules/core/components/auth/register/RegisterForm";
 import { adminRoutesConfig } from "./modules/admin/routes/adminRoutesConfig";
 import AdminLoginForm from "./modules/core/components/auth/admin/AdminLoginForm";
 import VerifyEmailPage from "./modules/core/components/auth/email-verification/VerifyEmailPage";
-
-const queryClient = new QueryClient();
+import { queryClient } from "./modules/core/hooks/queryClient";
 
 const router = createBrowserRouter([
   {
