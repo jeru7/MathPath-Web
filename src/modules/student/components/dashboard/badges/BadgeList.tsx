@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import Select, { SingleValue, StylesConfig } from "react-select";
+import Select, { SingleValue } from "react-select";
 import BadgeItem from "./BadgeItem";
 import {
   FilterOption,
@@ -9,12 +9,6 @@ import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 
 export default function BadgeList(): ReactElement {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
-
-  const customStyles: StylesConfig<FilterOption> =
-    getCustomSelectColor<FilterOption>({
-      borderRadius: "0.5rem",
-      minHeight: "12px",
-    });
 
   return (
     <section className="w-[40%] h-full bg-white rounded-md drop-shadow-sm flex flex-col px-4 py-2">
@@ -27,7 +21,10 @@ export default function BadgeList(): ReactElement {
             if (option) setSelectedFilter(option);
           }}
           isMulti={false}
-          styles={customStyles}
+          styles={getCustomSelectColor<FilterOption>({
+            borderRadius: "0.5rem",
+            minHeight: "12px",
+          })}
           className="w-32 text-xs"
           isSearchable={false}
           menuPlacement="auto"

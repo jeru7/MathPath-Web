@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import Select, { SingleValue, StylesConfig } from "react-select";
+import Select, { SingleValue } from "react-select";
 import QuestChests from "./QuestChests";
 import QuestItem from "./QuestItem";
 import {
@@ -27,12 +27,6 @@ export default function QuestList(): ReactElement {
     return true;
   });
 
-  const customStyles: StylesConfig<FilterOption> =
-    getCustomSelectColor<FilterOption>({
-      borderRadius: "0.5rem",
-      minHeight: "12px",
-    });
-
   return (
     <section className="w-[40%] h-full bg-white rounded-md drop-shadow-sm px-4 py-2 gap-2 flex flex-col">
       <div className="w-full flex justify-between items-center pb-1 border-b-2 border-gray-300 hover:cursor-pointer">
@@ -43,8 +37,11 @@ export default function QuestList(): ReactElement {
           onChange={(option: SingleValue<FilterOption>) => {
             if (option) setSelectedFilter(option);
           }}
+          styles={getCustomSelectColor<FilterOption>({
+            borderRadius: "0.5rem",
+            minHeight: "12px",
+          })}
           isMulti={false}
-          styles={customStyles}
           className="w-32 text-xs"
           isSearchable={false}
           menuPlacement="auto"
