@@ -14,7 +14,9 @@ import mathPathTitle from "../../../../../assets/svgs/mathpath-title.svg";
 export default function VerifyCode(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = (location.state as { email: string })?.email;
+  const email =
+    (location.state as { email: string })?.email ||
+    localStorage.getItem("resetEmail");
 
   const {
     control,
@@ -35,7 +37,8 @@ export default function VerifyCode(): ReactElement {
   const onSubmit = async (data: VerifyCodeDTO) => {
     const codeValue = data.code.join(""); // join array into string for API
     try {
-      await verifyPasswordResetCodeService(email, codeValue);
+      await verifyPasswordResetCodeService(email ?? "", codeValue);
+      localStorage.removeItem("resetEmail");
       navigate("/auth/forgot-password/change-password", {
         state: { email, code: codeValue },
       });

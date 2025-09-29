@@ -75,6 +75,8 @@ export default function LoginForm(): ReactElement {
         setLoginError(message);
       } else if (errorData.error === "EMAIL_NOT_VERIFIED") {
         setLoginError("Email not verified. Kindly check your mails first.");
+      } else if (errorData.error === "RATE_LIMIT_EXCEEDED") {
+        setLoginError("Too many attempts. Please wait a minute.");
       } else {
         setLoginError("An unexpected error occurred. Try again later.");
       }
@@ -212,6 +214,7 @@ export default function LoginForm(): ReactElement {
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
+                maxLength={32}
                 placeholder=" "
                 className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] bg-gray-100/30 focus:outline-none focus:ring-0`}
               />

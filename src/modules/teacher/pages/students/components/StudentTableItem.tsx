@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
-import { format } from "date-fns";
+import { format } from "date-fns-tz";
 import { HiDotsVertical } from "react-icons/hi";
 import { useTeacherContext } from "../../../context/teacher.context";
 import {
@@ -80,10 +80,9 @@ export default function StudentTableItem({
       </td>
       <td className="w-[15%] text-center">
         {student.lastOnline ? (
-          format(
-            formatToPhDate(student.lastOnline.toString()),
-            "MMMM d, yyyy 'at' hh:mm a",
-          )
+          format(new Date(student.lastOnline), "MMMM d, yyyy 'at' hh:mm a", {
+            timeZone: "Asia/Manila",
+          })
         ) : (
           <p className="text-gray-300">N/A</p>
         )}

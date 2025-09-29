@@ -20,14 +20,16 @@ const MemberCard: React.FC<IMemberCard> = ({
   return (
     <div className={`${className} flex flex-col`}>
       {/* image */}
-      <motion.img
-        src={img}
-        className="rounded-full"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-        viewport={{ once: true }}
-      />
+      <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 aspect-square">
+        <motion.img
+          src={img}
+          className="rounded-full w-full h-full object-cover"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+          viewport={{ once: true }}
+        />
+      </div>
 
       {/* name */}
       <motion.p

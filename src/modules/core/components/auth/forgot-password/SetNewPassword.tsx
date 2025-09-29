@@ -67,6 +67,7 @@ export default function SetNewPassword(): ReactElement {
           <input
             type={showNewPassword ? "text" : "password"}
             placeholder=" "
+            maxLength={32}
             className="peer block w-full appearance-none rounded-lg border-2 px-2.5 pr-12 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0"
             {...register("newPassword")}
           />
@@ -92,6 +93,7 @@ export default function SetNewPassword(): ReactElement {
           <input
             type={showConfirmationPassword ? "text" : "password"}
             placeholder=" "
+            maxLength={32}
             className="peer block w-full appearance-none rounded-lg border-2 px-2.5 pr-12 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0"
             {...register("confirmNewPassword")}
           />

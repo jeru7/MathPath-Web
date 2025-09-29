@@ -29,3 +29,19 @@ export const formatToPhDate = (dateString: string): Date => {
 
   return toZonedTime(date, "Asia/Manila");
 };
+
+export const toPhilippinesHour = (utcHour: number): number => {
+  return (utcHour + 8) % 24;
+};
+
+export const toPhilippinesDate = (utcDate: {
+  year: number;
+  month: number;
+  day: number;
+}) => {
+  const dateUtc = new Date(
+    Date.UTC(utcDate.year, utcDate.month - 1, utcDate.day),
+  );
+  dateUtc.setHours(dateUtc.getHours() + 8);
+  return dateUtc;
+};

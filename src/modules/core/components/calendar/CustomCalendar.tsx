@@ -12,7 +12,7 @@ export default function CustomCalendar({
 }: CustomCalendarProps): ReactElement {
   return (
     <article
-      className={`${classes} w-full rounded-sm bg-white shadow-sm p-4 flex flex-col gap-8 items-center`}
+      className={`${classes} w-full rounded-sm bg-white shadow-sm p-2 flex flex-col gap-8 items-center`}
     >
       <div className="h-full w-full">
         <Calendar showFixedNumberOfWeeks={true} />

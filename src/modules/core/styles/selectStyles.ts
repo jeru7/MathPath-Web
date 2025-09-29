@@ -1,4 +1,4 @@
-import { StylesConfig } from "react-select";
+import { GroupBase, StylesConfig } from "react-select";
 
 export type SelectStyleOptions = {
   borderRadius?: string;
@@ -15,11 +15,19 @@ export type SelectStyleOptions = {
   optionHoverColor?: string;
   optionSelectedColor?: string;
   menuBackgroundColor?: string;
+  menuMinWidth?: string;
+  menuWidth?: string;
+  hideIndicator?: boolean;
+  indicatorPadding?: string;
 };
 
-export const getCustomSelectColor = <T>(
+export const getCustomSelectColor = <
+  T,
+  IsMulti extends boolean = false,
+  G extends GroupBase<T> = GroupBase<T>,
+>(
   options?: SelectStyleOptions,
-): StylesConfig<T> => ({
+): StylesConfig<T, IsMulti, G> => ({
   control: (base) => ({
     ...base,
     backgroundColor: options?.backgroundColor || "inherit",
@@ -51,9 +59,18 @@ export const getCustomSelectColor = <T>(
           : `0 0 0 1px ${options?.borderFocusColor || "var(--tertiary-green)"}`,
     },
   }),
+  valueContainer: (base) => ({
+    ...base,
+    padding: options?.padding || "0 4px",
+    gap: "6px",
+  }),
   singleValue: (base) => ({
     ...base,
     color: options?.textColor || "inherit",
+    marginRight: "6px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   }),
   input: (base) => ({
     ...base,
@@ -61,7 +78,7 @@ export const getCustomSelectColor = <T>(
   }),
   placeholder: (base) => ({
     ...base,
-    color: options?.textColor ? `${options.textColor}88` : "#9CA3AF", // slightly transparent
+    color: options?.textColor ? `${options.textColor}88` : "#9CA3AF",
   }),
   option: (base, state) => ({
     ...base,
@@ -78,17 +95,18 @@ export const getCustomSelectColor = <T>(
     backgroundColor: options?.menuBackgroundColor || options?.backgroundColor,
     borderRadius: "0.125rem",
     zIndex: 9999,
+    minWidth: options?.menuMinWidth,
+    width: options?.menuWidth,
   }),
-  valueContainer: (base) => ({
-    ...base,
-    padding: options?.padding || "0 4px",
-    gap: "2px",
-  }),
-  dropdownIndicator: (base) => ({
-    ...base,
-    padding: "0 2px",
-    cursor: "pointer",
-  }),
+  dropdownIndicator: (base) =>
+    options?.hideIndicator
+      ? { ...base, display: "none", padding: 0, width: 0 }
+      : {
+          ...base,
+          padding: options?.indicatorPadding ?? "0 4px",
+          cursor: "pointer",
+        },
+
   indicatorSeparator: () => ({
     display: "none",
   }),

@@ -4,9 +4,9 @@ import { User } from "../../core/types/user.type";
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
-  login: (identifier: string, password: string) => Promise<void>;
-  logout: (userId: string) => void;
+  login: (identifier: string, password: string) => Promise<User>;
   adminLogin: (email: string, password: string) => Promise<void>;
+  logout: (userId: string) => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(

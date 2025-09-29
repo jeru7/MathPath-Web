@@ -285,6 +285,7 @@ export default function RegisterForm(): ReactElement {
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 placeholder=" "
+                maxLength={32}
                 className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
               />
               <label
@@ -316,6 +317,7 @@ export default function RegisterForm(): ReactElement {
                 type={showConfirmationPassword ? "text" : "password"}
                 {...register("confirmNewPassword")}
                 placeholder=" "
+                maxLength={32}
                 className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
               />
               <label

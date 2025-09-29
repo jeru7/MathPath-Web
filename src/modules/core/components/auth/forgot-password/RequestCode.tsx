@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { FaAngleLeft } from "react-icons/fa6";
 import { PiShieldWarningDuotone } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ import {
   RequestCodeSchema,
 } from "../../../../student/types/student-forgot-pass.schema";
 import mathPathTitle from "../../../../../assets/svgs/mathpath-title.svg";
+import { handleApiError } from "../../../utils/api/error.util";
+import { isAxiosError } from "axios";
 
 export default function RequestCode(): ReactElement {
   const navigate = useNavigate();
@@ -28,13 +30,19 @@ export default function RequestCode(): ReactElement {
     setServerError(null);
     try {
       await requestPasswordResetCodeService(data.email);
+      localStorage.setItem("resetEmail", data.email);
       navigate("/auth/forgot-password/verify-code", {
         state: { email: data.email },
       });
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        if (err.message === "EMAIL_NOT_FOUND") {
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        const errorData = handleApiError(error);
+        if (errorData.error === "EMAIL_NOT_FOUND") {
           setServerError("We can't find that email.");
+        } else if (errorData.error === "RESET_ALREADY_REQUESTED") {
+          setServerError(
+            "You can only request a password code once every hour.",
+          );
         } else {
           setServerError("Something went wrong. Please try again.");
         }
@@ -43,6 +51,16 @@ export default function RequestCode(): ReactElement {
       }
     }
   };
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("resetEmail");
+    if (savedEmail) {
+      navigate("/forgot-password/verify", {
+        state: { email: savedEmail },
+        replace: true,
+      });
+    }
+  }, [navigate]);
 
   return (
     <main className="relative w-full min-h-screen overflow-auto md:min-h-0 flex gap-4 md:h-fit min-w-[300px] flex-col rounded-xl border-2 border-white/20 bg-black/50 py-4 px-8 shadow-lg backdrop-blur-sm  md:max-w-lg transition-all duration-200">

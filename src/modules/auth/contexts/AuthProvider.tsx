@@ -1,118 +1,66 @@
-import { useEffect, useState } from "react";
 import {
   checkAuthService,
   loginService,
   logoutService,
 } from "../services/auth.service";
 import { useNavigate } from "react-router-dom";
-import { User } from "../../core/types/user.type";
 import { AuthContext } from "./auth.context";
 import { adminLoginService } from "../services/auth-admin.service";
-
-const SESSION_USER_KEY = "authUser";
-const SESSION_TIMESTAMP_KEY = "authUserTimestamp";
-const REFRESH_INTERVAL = 30 * 60 * 1000;
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = sessionStorage.getItem(SESSION_USER_KEY);
-      const storedTimestamp = sessionStorage.getItem(SESSION_TIMESTAMP_KEY);
-      const now = Date.now();
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["auth"],
+    queryFn: checkAuthService,
+    retry: false,
+  });
 
-      if (
-        storedUser &&
-        storedTimestamp &&
-        now - Number(storedTimestamp) < REFRESH_INTERVAL
-      ) {
-        const parsedUser: User = JSON.parse(storedUser);
-        if (parsedUser.id && parsedUser.role) {
-          setUser(parsedUser);
-          setIsLoading(false);
-          return;
-        }
-      }
+  const loginMutation = useMutation({
+    mutationFn: ({
+      identifier,
+      password,
+    }: {
+      identifier: string;
+      password: string;
+    }) => loginService(identifier, password),
+    onSuccess: (loggedUser) => {
+      queryClient.setQueryData(["auth"], loggedUser);
+      navigate(`/${loggedUser.role}/${loggedUser.id}`);
+    },
+  });
 
-      // validate
-      try {
-        const freshUser: User = await checkAuthService();
-        if (freshUser.id && freshUser.role) {
-          setUser(freshUser);
-          sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(freshUser));
-          sessionStorage.setItem(SESSION_TIMESTAMP_KEY, String(Date.now()));
-        } else {
-          setUser(null);
-          sessionStorage.removeItem(SESSION_USER_KEY);
-          sessionStorage.removeItem(SESSION_TIMESTAMP_KEY);
-        }
-      } catch {
-        setUser(null);
-        sessionStorage.removeItem(SESSION_USER_KEY);
-        sessionStorage.removeItem(SESSION_TIMESTAMP_KEY);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const adminLoginMutation = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      adminLoginService(email, password),
+    onSuccess: (loggedUser) => {
+      queryClient.setQueryData(["auth"], loggedUser);
+      navigate(`/${loggedUser.role}/${loggedUser.id}`);
+    },
+  });
 
-    loadUser();
-  }, []);
+  const logoutMutation = useMutation({
+    mutationFn: (userId: string) => logoutService(userId),
+    onSuccess: () => {
+      queryClient.setQueryData(["auth"], null);
+      navigate("/login");
+    },
+  });
 
-  const login = async (identifier: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const loggedUser: User = await loginService(identifier, password);
-      if (loggedUser.id && loggedUser.role) {
-        setUser(loggedUser);
-        sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(loggedUser));
-        sessionStorage.setItem(SESSION_TIMESTAMP_KEY, String(Date.now()));
-        navigate(`/${loggedUser.role}/${loggedUser.id}`);
-      }
-    } catch (error) {
-      setUser(null);
-      sessionStorage.removeItem(SESSION_USER_KEY);
-      sessionStorage.removeItem(SESSION_TIMESTAMP_KEY);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const login = (identifier: string, password: string) =>
+    loginMutation.mutateAsync({ identifier, password });
 
-  const adminLogin = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const loggedUser: User = await adminLoginService(email, password);
-      if (loggedUser.id && loggedUser.role) {
-        setUser(loggedUser);
-        sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(loggedUser));
-        sessionStorage.setItem(SESSION_TIMESTAMP_KEY, String(Date.now()));
-        navigate(`/${loggedUser.role}/${loggedUser.id}`);
-      }
-    } catch (error) {
-      setUser(null);
-      sessionStorage.removeItem(SESSION_USER_KEY);
-      sessionStorage.removeItem(SESSION_TIMESTAMP_KEY);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const adminLogin = (email: string, password: string) =>
+    adminLoginMutation.mutateAsync({ email, password });
 
-  const logout = async (userId: string) => {
-    await logoutService(userId);
-    setUser(null);
-    sessionStorage.removeItem(SESSION_USER_KEY);
-    sessionStorage.removeItem(SESSION_TIMESTAMP_KEY);
-    navigate("/login");
-  };
+  const logout = (userId: string) => logoutMutation.mutateAsync(userId);
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user ?? null,
         isLoading,
         login,
         logout,

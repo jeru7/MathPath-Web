@@ -239,6 +239,7 @@ export default function AddTeacherForm({
               type={showPassword ? "text" : "password"}
               {...register("password")}
               name="password"
+              maxLength={32}
               placeholder="Enter password"
               className="border-1 w-full rounded-lg p-2 focus:border-[var(--tertiary-green)] focus:outline-none focus:ring-1 focus:ring-[var(--tertiary-green)]"
             />

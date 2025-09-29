@@ -9,7 +9,7 @@ export const fetchData = async <TResponse>(
     const res = await axios.get<{ data: TResponse }>(url);
     return res.data.data;
   } catch (err) {
-    if (axios.isAxiosError(err)) throw err; // preserve original error
+    if (axios.isAxiosError(err)) throw err;
     throw new Error(errorMessage);
   }
 };

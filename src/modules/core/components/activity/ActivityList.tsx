@@ -1,7 +1,4 @@
-import { useState, type ReactElement } from "react";
-import Select, { SingleValue, StylesConfig } from "react-select";
-import { FilterOption, teacherActivityFilter } from "../../types/select.type";
-import { getCustomSelectColor } from "../../styles/selectStyles";
+import { type ReactElement } from "react";
 // import StudentActivity from "./StudentActivity";
 import TeacherActivity from "../../../teacher/pages/dashboard/components/activity_list/TeacherActivity";
 import { useTeacherStudentActivities } from "../../../teacher/services/teacher.service";
@@ -21,33 +18,13 @@ export default function ActivityList({
   const { data: studentActivities } = useTeacherStudentActivities(
     teacherId ?? "",
   );
-  const [selectedFilter, setSelectedFilter] = useState(
-    teacherActivityFilter[0],
-  );
-  const customStyles: StylesConfig<FilterOption> =
-    getCustomSelectColor<FilterOption>({
-      minHeight: "24px",
-      border: false,
-    });
 
   return (
     <article
-      className={`${classes} py-2 px-3 flex flex-col h-full bg-white rounded-md gap-2 shadow-xs`}
+      className={`${classes} p-2 flex flex-col h-full bg-white rounded-sm gap-2 shadow-sm`}
     >
-      <header className="w-full flex items-center justify-between border-b-gray-300 border-b-1 pb-1">
+      <header className="w-full flex items-center justify-between">
         <p className="font-semibold">Recent Activity</p>
-        <Select
-          options={teacherActivityFilter}
-          value={selectedFilter}
-          onChange={(option: SingleValue<FilterOption>) => {
-            if (option) setSelectedFilter(option);
-          }}
-          isMulti={false}
-          styles={customStyles}
-          className="text-xs w-28"
-          isSearchable={false}
-          menuPlacement="auto"
-        />
       </header>
 
       <div
@@ -76,10 +53,6 @@ export default function ActivityList({
           </section>
         </div>
       </div>
-      {/* TODO: view all placing - initial sizing of the container above */}
-      <p className="ml-auto text-sm underline text-gray-400 hover:cursor-pointer hover:text-gray-500 transition-colors duration-200">
-        View all
-      </p>
     </article>
   );
 }

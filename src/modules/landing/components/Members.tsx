@@ -45,7 +45,7 @@ export default function Members(): ReactElement {
       className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]"
       id="members"
     >
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 w-full items-center">
         {/* title */}
         <div className="flex flex-col items-center">
           <motion.h2
@@ -69,7 +69,7 @@ export default function Members(): ReactElement {
         </div>
 
         {/* members content */}
-        <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 md:flex">
+        <div className="grid grid-cols-2 grid-rows-2 place-items-center w-fit lg:gap-x-8 gap-y-4 items-center xl:w-full xl:flex xl:justify-center">
           {members.map((member, index) => (
             <MemberCard
               key={index}

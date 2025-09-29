@@ -26,15 +26,12 @@ export function StudentProvider({
       wsRef.current.close();
     }
 
-    import.meta.env.MODE = "production";
-
     const WSS =
       import.meta.env.MODE === "production"
         ? import.meta.env.VITE_WSS_PROD_URI
         : import.meta.env.VITE_WSS_DEV_URI;
 
     wsRef.current = new WebSocket(WSS);
-    console.log(WSS);
     const ws = wsRef.current;
 
     ws.onopen = () => {
