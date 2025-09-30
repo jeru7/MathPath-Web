@@ -28,7 +28,9 @@ export default function AddStudentForm({
   handleBack,
 }: AddStudentFormProps): ReactElement {
   const { teacherId } = useParams();
-  const { mutate: addStudent } = useAddStudent(teacherId ?? "");
+  const { mutate: addStudent, isPending: isSubmitting } = useAddStudent(
+    teacherId ?? "",
+  );
   const { sections } = useTeacherContext();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -39,7 +41,7 @@ export default function AddStudentForm({
     handleSubmit,
     control,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<AddStudentDTO>({
     resolver: zodResolver(AddStudentSchema),
     defaultValues: {
@@ -217,6 +219,8 @@ export default function AddStudentForm({
                     }>({
                       minHeight: "42px",
                       padding: "0px 4px",
+                      menuWidth: "100%",
+                      menuBackgroundColor: "white",
                     })}
                     className="basic-select"
                     classNamePrefix="select"
@@ -342,6 +346,8 @@ export default function AddStudentForm({
                   styles={getCustomSelectColor<Section>({
                     minHeight: "42px",
                     padding: "0px 4px",
+                    menuWidth: "100%",
+                    menuBackgroundColor: "white",
                   })}
                   className="basic-select"
                   classNamePrefix="select"

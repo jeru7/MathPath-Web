@@ -23,7 +23,7 @@ export default function SectionTable({
               <CiSearch className="w-4 h-4 text-gray-400" />
             </div>
             <input
-              placeholder="Search student"
+              placeholder="Search section"
               className="text-xs focus:outline-none"
             />
           </div>

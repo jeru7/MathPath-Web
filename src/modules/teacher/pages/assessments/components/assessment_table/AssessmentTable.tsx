@@ -26,7 +26,7 @@ export default function AssessmentTable({
               <CiSearch className="w-4 h-4 text-gray-400" />
             </div>
             <input
-              placeholder="Search student"
+              placeholder="Search assessment"
               className="text-xs focus:outline-none"
             />
           </div>
@@ -50,38 +50,38 @@ export default function AssessmentTable({
       {/* table */}
       <div className="flex-1 flex flex-col overflow-auto">
         <div className="min-h-full flex flex-col flex-1 min-w-[1000px]">
-          {/* headers */}
-          <table className="font-primary table-auto w-full">
-            <thead className="text-gray-400 text-sm xl:text-base">
-              <tr className="text-left">
-                <th className="bg-white sticky top-0 z-20 w-[15%] xl:w-[20%]">
-                  Title
-                </th>
-                <th className="bg-white sticky top-0 z-20 w-[15%] xl:w-[20%]">
-                  Topic
-                </th>
-                <th className="bg-white sticky top-0 z-20 w-[15%] text-center">
-                  Sections
-                </th>
-                <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
-                  Status
-                </th>
-                <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
-                  Deadline
-                </th>
-                <th className="bg-white sticky top-0 z-20 w-[5%]"></th>
-              </tr>
-            </thead>
-          </table>
           {/* assessment items/list */}
-          <div
-            className={`max-h-[780px] overflow-y-auto pb-4 flex-1  ${assessments.length === 0 ? "flex" : ""}`}
-          >
-            {assessments.length === 0 ? (
-              <div className="flex-1 min-h-full items-center justify-center flex">
-                <p className="text-gray-300">No data available</p>
-              </div>
-            ) : (
+          {assessments.length === 0 ? (
+            <div className="flex-1 min-h-full items-center justify-center flex">
+              <p className="text-gray-300">No data available</p>
+            </div>
+          ) : (
+            <div
+              className={`max-h-[780px] overflow-y-auto pb-4 flex-1  ${assessments.length === 0 ? "flex" : ""}`}
+            >
+              {/* headers */}
+              <table className="font-primary table-auto w-full">
+                <thead className="text-gray-400 text-sm xl:text-base">
+                  <tr className="text-left">
+                    <th className="bg-white sticky top-0 z-20 w-[15%] xl:w-[20%]">
+                      Title
+                    </th>
+                    <th className="bg-white sticky top-0 z-20 w-[15%] xl:w-[20%]">
+                      Topic
+                    </th>
+                    <th className="bg-white sticky top-0 z-20 w-[15%] text-center">
+                      Sections
+                    </th>
+                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                      Status
+                    </th>
+                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                      Deadline
+                    </th>
+                    <th className="bg-white sticky top-0 z-20 w-[5%]"></th>
+                  </tr>
+                </thead>
+              </table>
               <table className="font-primary table-auto w-full">
                 <tbody>
                   {assessments.map((assessment) => (
@@ -92,8 +92,8 @@ export default function AssessmentTable({
                   ))}
                 </tbody>
               </table>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

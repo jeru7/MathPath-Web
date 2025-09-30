@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { SectionTopicStats, TopicStats } from "../../core/types/chart.type";
+import {
+  QuestionStat,
+  SectionQuestionStats,
+  SectionTopicStats,
+  TopicStats,
+} from "../../core/types/chart.type";
 import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
 import { fetchData } from "../../core/utils/api/api.util";
 import { ActiveStudents } from "../types/active-student.type";
@@ -17,7 +22,7 @@ export const useTeacherOverallTopicStats = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "overall-topic-stats"],
     queryFn: () => {
       return fetchData<TopicStats[]>(
-        `${URL}/api/web/teachers/${teacherId}/topic-stats/per-section`,
+        `${URL}/api/web/teachers/${teacherId}/stats/topic/overall`,
         "Failed to fetch overall topic stats.",
       );
     },
@@ -32,7 +37,7 @@ export const useTeacherSectionTopicStats = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "section-topic-stats"],
     queryFn: () => {
       return fetchData<SectionTopicStats[]>(
-        `${URL}/api/web/teachers/${teacherId}/topic-stats/per-section`,
+        `${URL}/api/web/teachers/${teacherId}/stats/topic/per-section`,
         "Failed to fetch topic stats per section.",
       );
     },
@@ -99,6 +104,36 @@ export const useTeacherAssessmentStatus = (teacherId: string) => {
       return fetchData<AssessmentStatus[]>(
         `${URL}/api/web/teachers/${teacherId}/stats/assessment-status`,
         "Failed to fetch assessment status.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get overall question stats - all students handled by the teacher
+export const useTeacherOverallQuestionStats = (teacherId: string) => {
+  return useQuery<QuestionStat[]>({
+    queryKey: ["teacher", teacherId, "overall-question-stats"],
+    queryFn: () => {
+      return fetchData<QuestionStat[]>(
+        `${URL}/api/web/teachers/${teacherId}/stats/questions/overall`,
+        "Failed to fetch overall question stats.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get question stats per section - all students (grouped by section) that is handled by the teacher
+export const useTeacherSectionQuestionStats = (teacherId: string) => {
+  return useQuery<SectionQuestionStats[]>({
+    queryKey: ["teacher", teacherId, "section-question-stats"],
+    queryFn: () => {
+      return fetchData<SectionQuestionStats[]>(
+        `${URL}/api/web/teachers/${teacherId}/stats/questions/per-section`,
+        "Failed to fetch question stats per section.",
       );
     },
     staleTime: DATA_STALE_TIME,

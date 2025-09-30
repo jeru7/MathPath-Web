@@ -1,7 +1,8 @@
 import { type ReactElement } from "react";
-import QuestionStatistics from "./components/QuestionStatistics";
 import StagesStatistics from "./components/StagesStatistics";
 import AssessmentStatistics from "./components/AssessmentStatistics";
+import TopicStatistics from "./components/TopicStatistics";
+import QuestionStatistics from "./components/QuestionStatistics";
 
 export default function Statistics(): ReactElement {
   return (
@@ -15,6 +16,7 @@ export default function Statistics(): ReactElement {
       <section className="flex-1 w-full flex gap-2">
         {/* stats: left column*/}
         <section className="flex-4 flex flex-col gap-2">
+          <TopicStatistics />
           <QuestionStatistics />
           <StagesStatistics />
           <AssessmentStatistics />
@@ -22,11 +24,11 @@ export default function Statistics(): ReactElement {
 
         {/* stats: right column*/}
         <section className="flex-1 flex flex-col gap-2">
-          <article className="rounded-sm bg-white shadow-sm p-2 flex-1">
+          <article className="rounded-sm bg-white shadow-sm p-2 h-96">
             <header className="font-semibold text-lg">Top Students</header>
           </article>
 
-          <article className="rounded-sm bg-white shadow-sm p-2 flex-1">
+          <article className="rounded-sm bg-white shadow-sm p-2 h-96">
             <header className="font-semibold text-lg">Top Sections</header>
           </article>
         </section>

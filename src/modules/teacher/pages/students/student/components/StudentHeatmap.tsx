@@ -81,7 +81,7 @@ export default function StudentHeatmap(): ReactElement {
       <header className="pl-4">
         <h3 className="text-xl xl:text-2xl font-bold">Activity Map</h3>
       </header>
-      <div className="overflow-x-auto xl:overflow-hidden xl:flex justify-center items-center">
+      <div className="h-fit pb-1 overflow-x-auto xl:overflow-hidden xl:flex justify-center items-center">
         <div className="min-h-[200px] min-w-[1200px] xl:max-h-[400px] xl:max-w-[1500px] xl:flex-1">
           <CalendarHeatmap
             startDate={startDate}

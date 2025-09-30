@@ -20,20 +20,6 @@ import { DifficultyFrequency } from "../../../../student/types/student-stats.typ
 import { StudentStage } from "../../../../student/types/student.type";
 import QuestionStatsChart from "./components/QuestionStatsChart";
 
-const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
-  if (!data) {
-    return (["easy", "medium", "hard"] as const).map((level) => ({
-      frequency: level,
-      value: 0,
-    }));
-  }
-
-  return (["easy", "medium", "hard"] as const).map((level) => ({
-    frequency: level,
-    value: data[level].percentage,
-  }));
-};
-
 export default function Student(): ReactElement {
   const navigate = useNavigate();
   const { studentId, teacherId } = useParams();
@@ -241,3 +227,17 @@ export default function Student(): ReactElement {
     </div>
   );
 }
+
+const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
+  if (!data) {
+    return (["easy", "medium", "hard"] as const).map((level) => ({
+      frequency: level,
+      value: 0,
+    }));
+  }
+
+  return (["easy", "medium", "hard"] as const).map((level) => ({
+    frequency: level,
+    value: data[level].percentage,
+  }));
+};
