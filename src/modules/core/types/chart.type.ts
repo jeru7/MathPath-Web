@@ -56,3 +56,18 @@ export type QuestionAttempt = {
   difficulty: QuestionDifficulty;
   hintUsed: boolean;
 };
+
+export type QuestionStat = {
+  question: string;
+  difficulty: "easy" | "medium" | "hard";
+  stage: number;
+  totalAttempts: number;
+  correctCount: number;
+  correctnessPercentage: number;
+};
+
+export type SectionQuestionStats = {
+  sectionId: string;
+  sectionName: string;
+  questionStats: QuestionStat[];
+};

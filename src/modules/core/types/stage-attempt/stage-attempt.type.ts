@@ -1,6 +1,6 @@
 import { AnswerCorrectness } from "../progress-log/progress-log.type";
 
-export type QuestionDifficulty = "Easy" | "Medium" | "Hard";
+export type QuestionDifficulty = "easy" | "medium" | "hard";
 
 export type StageAttempt = {
   id: string;
