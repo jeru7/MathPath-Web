@@ -9,7 +9,6 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../../../core/types/section/section.type";
 import AttemptHistory from "./components/AttemptHistory";
-import StudentHeatmap from "./components/StudentHeatmap";
 import { useTeacherSections } from "../../../services/teacher.service";
 import { useStudent } from "../../../../student/services/student.service";
 import {
@@ -18,7 +17,8 @@ import {
 } from "../../../../student/services/student-stats.service";
 import { DifficultyFrequency } from "../../../../student/types/student-stats.type";
 import { StudentStage } from "../../../../student/types/student.type";
-import QuestionStatsChart from "./components/QuestionStatsChart";
+import StudentQuestionStatistics from "../../../../student/pages/statistics/components/StudentQuestionStats";
+import StudentHeatmap from "../../../../student/pages/statistics/components/StudentHeatmap";
 
 export default function Student(): ReactElement {
   const navigate = useNavigate();
@@ -211,7 +211,7 @@ export default function Student(): ReactElement {
 
         {/* Charts section */}
         <section className="col-span-full row-span-2 rounded-sm bg-white shadow-sm">
-          <QuestionStatsChart classNames="w-full h-full" />
+          <StudentQuestionStatistics />
         </section>
 
         {/* Heatmap section */}

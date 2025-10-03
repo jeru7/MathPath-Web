@@ -13,9 +13,9 @@ export default function Statistics(): ReactElement {
       </header>
 
       {/* stats */}
-      <section className="flex-1 w-full flex gap-2">
+      <section className="flex-1 w-full flex flex-col-reverse lg:flex-row gap-2">
         {/* stats: left column*/}
-        <section className="flex-4 flex flex-col gap-2">
+        <section className="w-full flex flex-col gap-2 xl:w-[80%]">
           <TopicStatistics />
           <QuestionStatistics />
           <StagesStatistics />
@@ -23,12 +23,12 @@ export default function Statistics(): ReactElement {
         </section>
 
         {/* stats: right column*/}
-        <section className="flex-1 flex flex-col gap-2">
-          <article className="rounded-sm bg-white shadow-sm p-2 h-96">
+        <section className="w-full xl:w-[20%] flex flex-col gap-2">
+          <article className="rounded-sm bg-white shadow-sm p-2 h-56 lg:h-96">
             <header className="font-semibold text-lg">Top Students</header>
           </article>
 
-          <article className="rounded-sm bg-white shadow-sm p-2 h-96">
+          <article className="rounded-sm bg-white shadow-sm p-2 h-56 lg:h-96">
             <header className="font-semibold text-lg">Top Sections</header>
           </article>
         </section>

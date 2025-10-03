@@ -81,7 +81,7 @@ export default function QuestionStatistics(): ReactElement {
 
   if (isLoading) {
     return (
-      <article className="bg-white shadow-sm p-6 rounded-lg flex-1 border border-gray-200">
+      <article className="bg-white shadow-sm p-6 rounded-sm flex-1">
         <div className="flex items-center justify-center h-48">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
@@ -93,17 +93,17 @@ export default function QuestionStatistics(): ReactElement {
   }
 
   return (
-    <article className="bg-white shadow-sm p-2 rounded-lg flex-1 flex flex-col gap-4 border border-gray-200">
+    <article className="bg-white p-3 flex-1 flex flex-col gap-4 border border-gray-200">
       <header className="">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+        <div className="flex flex-col gap-2 lg:flex-row lg:justify-between lg:items-center">
           <div>
             <h3 className="text-xl font-bold text-gray-900">Questions</h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-xs lg:text-sm text-gray-600 mt-1">
               Student correctness across questions
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col lg:flex-row gap-3">
             <Select<StageOption>
               options={stageOptions}
               styles={getCustomSelectColor<StageOption>({
@@ -157,54 +157,56 @@ export default function QuestionStatistics(): ReactElement {
           </div>
         </div>
       ) : (
-        <div className="w-full h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: -20,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                dataKey="questionNumber"
-                height={60}
-                interval={0}
-                label={{
-                  position: "insideBottom",
-                  offset: -10,
-                  style: { textAnchor: "middle", fontSize: 12 },
+        <div className="w-full h-fit overflow-x-auto xl:overflow-x-hidden overflow-y-hidden">
+          <div className="w-full min-w-[1200px] xl:min-w-min h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: -20,
                 }}
-                tick={<CustomAxisTick />}
-              />
-              <YAxis
-                domain={[0, 100]}
-                label={{
-                  value: "Correctness (%)",
-                  angle: -90,
-                  position: "insideLeft",
-                  offset: -10,
-                  style: { textAnchor: "middle", fontSize: 12 },
-                }}
-              />
-              <Tooltip content={<QuestionCustomTooltip />} />
-              <Bar
-                dataKey="correctnessPercentage"
-                name="Correctness (%)"
-                radius={[4, 4, 0, 0]}
               >
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={getDifficultyColor(entry.difficulty)}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="questionNumber"
+                  height={60}
+                  interval={0}
+                  label={{
+                    position: "insideBottom",
+                    offset: -10,
+                    style: { textAnchor: "middle", fontSize: 12 },
+                  }}
+                  tick={<CustomAxisTick />}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  label={{
+                    value: "Correctness (%)",
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: -10,
+                    style: { textAnchor: "middle", fontSize: 12 },
+                  }}
+                />
+                <Tooltip content={<QuestionCustomTooltip />} />
+                <Bar
+                  dataKey="correctnessPercentage"
+                  name="Correctness (%)"
+                  radius={[4, 4, 0, 0]}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={getDifficultyColor(entry.difficulty)}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 
@@ -267,40 +269,45 @@ const QuestionCustomTooltip = ({
     const data = payload[0].payload as ChartDataItem;
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm max-w-xs">
-        <p className="font-bold text-base mb-2 text-gray-900 border-b pb-2">
+      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 text-xs max-w-[500px]">
+        <p className="font-bold text-sm mb-1 text-gray-900 truncate">
           Stage {data.stage} - Question {data.questionNumber}
         </p>
-        <p className="font-semibold text-gray-700 mb-3">{data.question}</p>
-        <p className="text-sm text-gray-600 mb-3 capitalize">
-          {data.difficulty} Difficulty
+        <p className="text-gray-700 mb-2 line-clamp-2 text-[11px]">
+          {data.question}
         </p>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Correctness:</span>
-            <span className="font-semibold text-blue-600">
-              {data.correctnessPercentage}%
-            </span>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-gray-700">Correctness:</span>
+              <span className="font-bold text-blue-600 ml-2">
+                {data.correctnessPercentage}%
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-700">Total Attempts:</span>
+              <span className="font-semibold">{data.totalAttempts}</span>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total Attempts:</span>
-            <span className="font-semibold text-gray-700">
-              {data.totalAttempts}
-            </span>
+
+          <div className="flex-1 flex flex-col gap-1 border-l pl-4">
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-green-600 font-semibold">Correct:</span>
+              <span className="text-gray-600">{data.correctCount}</span>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-red-600 font-semibold">Incorrect:</span>
+              <span className="text-gray-600">
+                {data.totalAttempts - data.correctCount}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Correct Answers:</span>
-            <span className="font-semibold text-green-600">
-              {data.correctCount}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Incorrect Answers:</span>
-            <span className="font-semibold text-red-600">
-              {data.totalAttempts - data.correctCount}
-            </span>
-          </div>
+        </div>
+
+        <div className="flex justify-between text-[11px] border-t pt-2">
+          <span className="text-gray-600">Difficulty:</span>
+          <span className="font-semibold capitalize">{data.difficulty}</span>
         </div>
       </div>
     );

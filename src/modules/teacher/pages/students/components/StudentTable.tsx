@@ -29,43 +29,17 @@ export default function StudentTable({
   const filterDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof Student;
+    key: keyof Student | "sectionName" | "statusComputed";
     direction: "ascending" | "descending";
-  }>({ key: "status", direction: "descending" });
-
-  const handleSort = (column: keyof Student) => {
-    let direction: "ascending" | "descending" = "ascending";
-    if (sortConfig.key === column && sortConfig.direction === "ascending") {
-      direction = "descending";
-    }
-    setSortConfig({ key: column, direction });
-  };
-
-  // const sortedStudents = [...students].sort((a, b) => {
-  //   const column = sortConfig.key;
-  //   let comparison = 0;
-  //
-  //   if (a[column] instanceof Date && b[column] instanceof Date) {
-  //     const dateA = new Date(a[column]);
-  //     const dateB = new Date(b[column]);
-  //     comparison = dateA.getTime() - dateB.getTime();
-  //   } else if (typeof a[column] === "string" && typeof b[column] === "string") {
-  //     comparison = a[column].localeCompare(b[column]);
-  //   } else if (typeof a[column] === "number" && typeof b[column] === "number") {
-  //     comparison = a[column] - b[column];
-  //   }
-  //
-  //   return sortConfig.direction === "ascending" ? comparison : -comparison;
-  // });
-  //
+  }>({ key: "statusComputed", direction: "descending" });
 
   const onlineStudentIds = useMemo(
     () => new Set(onlineStudents.map((s) => s.id)),
     [onlineStudents],
   );
 
-  const filteredStudents = students
-    .filter((student) => {
+  const filteredAndSortedStudents = useMemo(() => {
+    const filtered = students.filter((student) => {
       const {
         firstName,
         lastName,
@@ -79,36 +53,100 @@ export default function StudentTable({
       const fullName1 = `${lastName} ${firstName} ${middleName}`.toLowerCase();
       const fullName2 = `${firstName} ${lastName}`.toLowerCase();
 
-      // Search filter
-      return (
+      const matchesSearch =
         referenceNumber.toLowerCase().includes(query) ||
         sectionName.includes(query) ||
         fullName1.includes(query) ||
         fullName2.includes(query) ||
         firstName.toLowerCase().includes(query) ||
         lastName.toLowerCase().includes(query) ||
-        middleName.toLowerCase().includes(query)
-      );
-    })
-    .filter((student) => {
-      // Section filter
-      if (selectedSections.length === 0) return true;
-      return selectedSections.includes(student.sectionId);
-    })
-    .filter((student) => {
-      // Status filter: compute from onlineStudentIds
-      if (!selectedStatus) return true; // "All" selected
+        middleName.toLowerCase().includes(query);
+
+      const matchesSection =
+        selectedSections.length === 0 || selectedSections.includes(sectionId);
+
       const status = onlineStudentIds.has(student.id) ? "online" : "offline";
-      return status === selectedStatus;
+      const matchesStatus = !selectedStatus || status === selectedStatus;
+
+      return matchesSearch && matchesSection && matchesStatus;
     });
+
+    const sorted = [...filtered].sort((a, b) => {
+      const column = sortConfig.key;
+      let comparison = 0;
+
+      if (column === "sectionName") {
+        // sort by section name
+        const sectionA = getSectionName(a.sectionId, sections);
+        const sectionB = getSectionName(b.sectionId, sections);
+        comparison = sectionA.localeCompare(sectionB);
+      } else if (column === "statusComputed") {
+        // sort by online status
+        const statusA = onlineStudentIds.has(a.id) ? "online" : "offline";
+        const statusB = onlineStudentIds.has(b.id) ? "online" : "offline";
+        comparison = statusA.localeCompare(statusB);
+      } else {
+        const valueA = a[column as keyof Student];
+        const valueB = b[column as keyof Student];
+
+        if (valueA instanceof Date && valueB instanceof Date) {
+          comparison = valueA.getTime() - valueB.getTime();
+        } else if (typeof valueA === "string" && typeof valueB === "string") {
+          comparison = valueA.localeCompare(valueB);
+        } else if (typeof valueA === "number" && typeof valueB === "number") {
+          comparison = valueA - valueB;
+        } else if (valueA && valueB) {
+          comparison = valueA.toString().localeCompare(valueB.toString());
+        }
+      }
+
+      return sortConfig.direction === "ascending" ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [
+    students,
+    sections,
+    onlineStudentIds,
+    searchQuery,
+    selectedSections,
+    selectedStatus,
+    sortConfig,
+  ]);
+
+  const handleSort = (
+    column: keyof Student | "sectionName" | "statusComputed",
+  ) => {
+    let direction: "ascending" | "descending" = "ascending";
+    if (sortConfig.key === column && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key: column, direction });
+  };
 
   const handleSearchStudent = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
   const handleItemOnclick = (studentId: string) => {
     navigate(`${studentId}`, { replace: true });
   };
+
+  // clear filters
+  const handleClearAllFilters = () => {
+    setSelectedSections([]);
+    setSelectedStatus(null);
+    setSearchQuery("");
+  };
+
+  const hasActiveFilters =
+    selectedSections.length > 0 ||
+    selectedStatus !== null ||
+    searchQuery !== "";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -129,7 +167,7 @@ export default function StudentTable({
   return (
     <section className="flex flex-col flex-1 overflow-x-hidden">
       <section className="w-full border-b-gray-200 p-4 border-b flex gap-2 justify-center md:items-center md:justify-between">
-        {/* search */}
+        {/* search and filters */}
         <section className="flex gap-2 items-center w-full md:w-fit">
           <div className="flex rounded-sm border-gray-200 border h-fit items-center pr-2 w-full">
             <div className="p-2">
@@ -137,16 +175,28 @@ export default function StudentTable({
             </div>
             <input
               placeholder="Search student"
-              className="text-xs focus:outline-none"
+              className="text-xs focus:outline-none flex-1"
               value={searchQuery}
               onChange={handleSearchStudent}
             />
+            {searchQuery && (
+              <button
+                onClick={handleClearSearch}
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1"
+              >
+                ×
+              </button>
+            )}
           </div>
 
-          {/* filter */}
+          {/* filter dropdown */}
           <div className="relative">
             <button
-              className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200"
+              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${
+                hasActiveFilters
+                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                  : "border-gray-200 text-gray-400"
+              }`}
               onClick={() => setShowFilterDropdown((prev) => !prev)}
             >
               <CiFilter className="w-4 h-4" />
@@ -154,12 +204,25 @@ export default function StudentTable({
 
             {showFilterDropdown && (
               <div
-                className="absolute top-full left-0 bg-white border border-gray-300 rounded-sm p-4 shadow-lg z-10 w-64 mt-1 flex flex-col gap-4"
+                className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-sm shadow-lg z-30 w-64 p-4"
                 ref={filterDropdownRef}
               >
-                {/* Sections - multi-select checkboxes */}
-                <div className="">
-                  <p className="font-semibold mb-1">Sections</p>
+                {hasActiveFilters && (
+                  <div className="flex justify-end mb-3">
+                    <button
+                      onClick={handleClearAllFilters}
+                      className="text-xs text-[var(--primary-green)] hover:underline"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
+
+                {/* sections checkbox */}
+                <div className="mb-4">
+                  <p className="font-semibold mb-2 text-sm text-gray-700">
+                    Sections
+                  </p>
                   <div className="flex flex-col max-h-32 overflow-y-auto gap-1">
                     {sections.map((section) => {
                       const isSelected = selectedSections.includes(section.id);
@@ -192,9 +255,11 @@ export default function StudentTable({
                   </div>
                 </div>
 
-                {/* Status - radio buttons */}
-                <div className="">
-                  <p className="font-semibold mb-1">Status</p>
+                {/* status */}
+                <div className="mb-2">
+                  <p className="font-semibold mb-2 text-sm text-gray-700">
+                    Status
+                  </p>
                   <div className="flex gap-1 text-sm">
                     {["all", "online", "offline"].map((status) => {
                       const isSelected =
@@ -229,6 +294,12 @@ export default function StudentTable({
                     })}
                   </div>
                 </div>
+
+                {/* results */}
+                <div className="text-xs text-gray-500 border-t pt-2">
+                  Showing {filteredAndSortedStudents.length} of{" "}
+                  {students.length} students
+                </div>
               </div>
             )}
           </div>
@@ -253,6 +324,19 @@ export default function StudentTable({
           </button>
         </div>
       </section>
+
+      {/* results info */}
+      {hasActiveFilters && (
+        <div className="px-4 py-2 bg-blue-50 border-b">
+          <div className="text-sm text-gray-600">
+            {filteredAndSortedStudents.length} student
+            {filteredAndSortedStudents.length !== 1 ? "s" : ""} found
+            {searchQuery && ` for "${searchQuery}"`}
+            {(selectedSections.length > 0 || selectedStatus !== null) &&
+              " with filters applied"}
+          </div>
+        </div>
+      )}
 
       {students.length > 0 ? (
         <div className="flex flex-col flex-1 overflow-x-auto">
@@ -283,13 +367,13 @@ export default function StudentTable({
                   </th>
                   <th
                     className="cursor-pointer w-[15%]"
-                    onClick={() => handleSort("sectionId")}
+                    onClick={() => handleSort("sectionName")}
                   >
                     <div
-                      className={`flex items-center gap-2 ${sortConfig.key === "sectionId" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center gap-2 ${sortConfig.key === "sectionName" ? "text-[var(--primary-black)]" : ""}`}
                     >
                       Section
-                      {sortConfig.key === "sectionId" ? (
+                      {sortConfig.key === "sectionName" ? (
                         sortConfig.direction === "ascending" ? (
                           <FaChevronUp />
                         ) : (
@@ -302,13 +386,13 @@ export default function StudentTable({
                   </th>
                   <th
                     className="cursor-pointer w-[15%]"
-                    onClick={() => handleSort("status")}
+                    onClick={() => handleSort("statusComputed")}
                   >
                     <div
-                      className={`flex items-center gap-2 ${sortConfig.key === "status" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center gap-2 ${sortConfig.key === "statusComputed" ? "text-[var(--primary-black)]" : ""}`}
                     >
                       Status
-                      {sortConfig.key === "status" ? (
+                      {sortConfig.key === "statusComputed" ? (
                         sortConfig.direction === "ascending" ? (
                           <FaChevronUp />
                         ) : (
@@ -366,13 +450,36 @@ export default function StudentTable({
             <div className="flex-1 overflow-y-auto">
               <table className="font-primary table-auto w-full text-sm xl:text-base">
                 <tbody>
-                  {filteredStudents.map((student) => (
-                    <StudentTableItem
-                      student={student}
-                      key={student.referenceNumber}
-                      onClick={handleItemOnclick}
-                    />
-                  ))}
+                  {filteredAndSortedStudents.length > 0 ? (
+                    filteredAndSortedStudents.map((student) => (
+                      <StudentTableItem
+                        student={student}
+                        key={student.referenceNumber}
+                        onClick={handleItemOnclick}
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="text-center py-8 text-gray-400"
+                      >
+                        <div className="text-center">
+                          <p className="text-gray-400 mb-2">
+                            No students match your search criteria
+                          </p>
+                          {hasActiveFilters && (
+                            <button
+                              onClick={handleClearAllFilters}
+                              className="text-sm text-[var(--primary-green)] hover:underline"
+                            >
+                              Clear filters
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

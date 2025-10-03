@@ -7,7 +7,7 @@ import Girl_3 from "../../../assets/images/profile-pictures/GIRL_1.png";
 import DefaultProfile from "../../../assets/images/profile-pictures/DEFAULT_PROFILE.jpg";
 import { ProfilePicture } from "../types/user.type";
 
-export const getProfilePictures = (profilePicture: ProfilePicture) => {
+export const getProfilePicture = (profilePicture: ProfilePicture) => {
   switch (profilePicture) {
     case "Boy_1":
       return Boy_1;
@@ -23,7 +23,7 @@ export const getProfilePictures = (profilePicture: ProfilePicture) => {
       return Girl_3;
     case "Default":
       return DefaultProfile;
-
-    // TODO: default profile
+    default:
+      return DefaultProfile;
   }
 };

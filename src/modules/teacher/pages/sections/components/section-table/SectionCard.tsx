@@ -72,7 +72,9 @@ export default function SectionCard({
     <section
       className={`flex flex-col rounded-sm bg-white opacity-90 border-gray-300 border hover:cursor-pointer hover:opacity-100 h-full xl:max-w-[350px]`}
     >
-      <div className={`bg-[var(--${section.color})] h-1 w-full `}></div>
+      <div
+        className={`bg-[var(--${section.color})] h-1 w-full rounded-t-md `}
+      ></div>
       <div className="flex flex-col justify-between p-2 flex-1">
         {/* Banner */}
         <div className="rounded-sm flex items-center justify-center">

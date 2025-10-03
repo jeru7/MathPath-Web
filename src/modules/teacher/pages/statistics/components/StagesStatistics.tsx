@@ -73,12 +73,12 @@ export default function StagesStatistics(): ReactElement {
   }
 
   return (
-    <article className="bg-white shadow-sm p-2 rounded-lg flex-1 flex flex-col gap-4 border border-gray-200">
+    <article className="bg-white shadow-sm p-2 rounded-lg h-fit flex flex-col gap-4 border border-gray-200 overflow-x-hidden">
       <header className="">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+        <div className="flex flex-col gap-2 lg:flex-row lg:justify-between lg:items-center">
           <div>
             <h3 className="text-xl font-bold text-gray-900">Stages</h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-xs lg:text-sm text-gray-600 mt-1">
               Student completion rates across stages
             </p>
           </div>
@@ -116,43 +116,46 @@ export default function StagesStatistics(): ReactElement {
           </div>
         </div>
       ) : (
-        <div className="w-full h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: -20,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                dataKey="stage"
-                height={60}
-                interval={0}
-                tick={<CustomAxisTick />}
-              />
-              <YAxis
-                domain={[0, 100]}
-                label={{
-                  value: "Completion Rate (%)",
-                  angle: -90,
-                  position: "insideLeft",
-                  offset: -10,
-                  style: { textAnchor: "middle", fontSize: 12 },
+        // parent: must have static width
+        <div className="w-full h-fit overflow-x-auto xl:overflow-x-hidden overflow-y-hidden">
+          <div className="w-full min-w-[1200px] xl:min-w-min h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: -20,
                 }}
-              />
-              <Tooltip content={<StageCustomTooltip />} />
-              <Bar
-                dataKey="completionRate"
-                name="Completion Rate (%)"
-                radius={[4, 4, 0, 0]}
-                fill="#3b82f6"
-              />
-            </BarChart>
-          </ResponsiveContainer>
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="stage"
+                  height={60}
+                  interval={0}
+                  tick={<CustomAxisTick />}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  label={{
+                    value: "Completion Rate (%)",
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: -10,
+                    style: { textAnchor: "middle", fontSize: 12 },
+                  }}
+                />
+                <Tooltip content={<StageCustomTooltip />} />
+                <Bar
+                  dataKey="completionRate"
+                  name="Completion Rate (%)"
+                  radius={[4, 4, 0, 0]}
+                  fill="#3b82f6"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
     </article>
@@ -200,39 +203,45 @@ const StageCustomTooltip = ({
     const data = payload[0].payload as ChartDataItem;
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm max-w-xs">
-        <p className="font-bold text-base mb-3 text-gray-900 border-b pb-2">
+      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 text-xs max-w-[400px]">
+        <p className="font-bold text-sm mb-1 text-gray-900 truncate">
           Stage {data.stage}
         </p>
-        <p className="font-semibold text-gray-700 mb-2">{data.topicName}</p>
+        <p className="text-gray-700 mb-2 truncate text-[11px]">
+          {data.topicName}
+        </p>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Completion Rate:</span>
-            <span className="font-semibold text-blue-600">
-              {data.completionRate}%
-            </span>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-gray-700 text-nowrap">Completion:</span>
+              <span className="font-bold text-blue-600 text-nowrap">
+                {data.completionRate}%
+              </span>
+            </div>
+            <div className="flex gap-2 justify-between items-center">
+              <span className="text-gray-700 text-nowrap">Total Attempts:</span>
+              <span className="font-semibold">{data.totalAttempts}</span>
+            </div>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Avg. Hints Used:</span>
-            <span className="font-semibold text-amber-600">
-              {data.avgHintUsed.toFixed(1)}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Avg. Time Taken:</span>
-            <span className="font-semibold text-purple-600">
-              {formatDuration(data.avgSecondsPlayed)}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total Attempts:</span>
-            <span className="font-semibold text-gray-700">
-              {data.totalAttempts}
-            </span>
+          <div className="flex-1 border-l pl-4">
+            <div className="flex gap-2 justify-between items-center mb-1">
+              <span className="text-amber-600 font-semibold text-nowrap">
+                Avg Hints:
+              </span>
+              <span className="text-gray-600 text-nowrap">
+                {data.avgHintUsed.toFixed(1)}
+              </span>
+            </div>
+            <div className="flex gap-2 justify-between items-center">
+              <span className="text-purple-600 font-semibold text-nowrap">
+                Avg Time:
+              </span>
+              <span className="text-gray-600 text-nowrap">
+                {formatDuration(data.avgSecondsPlayed)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ export default function TopicHighlightsCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-sm p-2 flex flex-col gap-3`}
+      className={`${classes} bg-white shadow-sm rounded-sm p-2 flex flex-col gap-3 min-h-60`}
     >
       <header>
         <p className="font-semibold text-md md:text-lg">Topic Highlights</p>
@@ -106,7 +106,7 @@ export default function TopicHighlightsCard({
           </article>
         </section>
       ) : (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex-1 flex items-center justify-center">
           <p className="italic text-gray-300">No data available</p>
         </div>
       )}

@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
 import { FaCircle } from "react-icons/fa";
-import { getProfilePictures } from "../../../../../core/utils/profile-picture.util";
+import { getProfilePicture } from "../../../../../core/utils/profile-picture.util";
 import { TeacherStudentActivity } from "../../../../../core/types/activity/activity.type";
 import { getActivityKeyword } from "../../utils/teacher-activity.util";
 import { capitalizeWord } from "../../../../../core/utils/string.util";
@@ -33,7 +33,7 @@ export default function TeacherActivity({
       <div className="flex gap-2 items-center">
         <div className="w-8 h-8 rounded-full">
           <img
-            src={getProfilePictures(activity.profilePicture)}
+            src={getProfilePicture(activity.profilePicture)}
             alt="Student profile picture."
             className="w-full h-full rounded-full object-cover"
           />

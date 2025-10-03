@@ -79,7 +79,7 @@ export default function TopicStatistics(): ReactElement {
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
           <div>
             <h3 className="text-lg font-bold">Topics</h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-xs lg:text-sm text-gray-600 mt-1">
               Student answer correctness rates across stages
             </p>
           </div>
@@ -117,68 +117,70 @@ export default function TopicStatistics(): ReactElement {
           </div>
         </div>
       ) : (
-        <div className="w-full h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: -20,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                dataKey="stage"
-                height={60}
-                interval={0}
-                tick={<CustomAxisTick />}
-              />
-              <YAxis
-                domain={[0, 100]}
-                label={{
-                  value: "Avg. Correctness (%)",
-                  angle: -90,
-                  position: "insideLeft",
-                  offset: -10,
-                  style: { textAnchor: "middle", fontSize: 12 },
+        <div className="w-full h-fit overflow-x-auto xl:overflow-hidden">
+          <div className="w-full min-w-[1200px] xl:min-w-min h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: -20,
                 }}
-              />
-              <Tooltip content={<TopicCustomTooltip />} />
-              <Bar
-                dataKey="avgCorrectPercentage"
-                name="Avg. Correctness (%)"
-                radius={[4, 4, 0, 0]}
               >
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={getBarColor(entry.avgCorrectPercentage)}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="stage"
+                  height={60}
+                  interval={0}
+                  tick={<CustomAxisTick />}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  label={{
+                    value: "Avg. Correctness (%)",
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: -10,
+                    style: { textAnchor: "middle", fontSize: 12 },
+                  }}
+                />
+                <Tooltip content={<TopicCustomTooltip />} />
+                <Bar
+                  dataKey="avgCorrectPercentage"
+                  name="Avg. Correctness (%)"
+                  radius={[4, 4, 0, 0]}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={getBarColor(entry.avgCorrectPercentage)}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 
-      <div className="flex justify-center items-center gap-6 text-xs text-gray-600 mt-4">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-green-500"></div>
-          <span>Excellent (80-100%)</span>
+      <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-gray-600 mt-4 px-4 sm:px-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
+          <span className="whitespace-nowrap">Excellent (80-100%)</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-blue-500"></div>
-          <span>Good (60-79%)</span>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
+          <span className="whitespace-nowrap">Good (60-79%)</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-amber-500"></div>
-          <span>Average (40-59%)</span>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
+          <span className="whitespace-nowrap">Average (40-59%)</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-red-500"></div>
-          <span>Poor (0-39%)</span>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
+          <span className="whitespace-nowrap">Poor (0-39%)</span>
         </div>
       </div>
     </article>
@@ -242,16 +244,14 @@ const TopicCustomTooltip = ({
     const data = payload[0].payload as ChartDataItem;
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm max-w-xs">
-        <p className="font-bold text-base mb-3 text-gray-900 border-b pb-2">
+      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 text-xs max-w-[400px]">
+        <p className="font-bold text-sm mb-2 text-gray-900 text-nowrap truncate">
           {data.topicName}
         </p>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <span className="font-semibold text-gray-700">
-              Avg. Correctness:
-            </span>
+            <span className="font-semibold text-gray-700">Avg Correct:</span>
             <span
               className={`font-bold ${
                 data.avgCorrectPercentage >= 80
@@ -267,9 +267,11 @@ const TopicCustomTooltip = ({
             </span>
           </div>
 
-          <div className="border-t pt-2">
-            <p className="font-semibold text-gray-700 mb-1">By Difficulty:</p>
-            <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="border-t pt-1.5">
+            <p className="font-semibold text-gray-700 mb-1 text-[11px]">
+              By Difficulty:
+            </p>
+            <div className="grid grid-cols-3 gap-1 text-[10px]">
               <div className="text-center">
                 <div className="text-green-600 font-semibold">Easy</div>
                 <div className="text-gray-600">
@@ -277,7 +279,7 @@ const TopicCustomTooltip = ({
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-amber-600 font-semibold">Medium</div>
+                <div className="text-amber-600 font-semibold">Med</div>
                 <div className="text-gray-600">
                   {data.correctness.medium.correctPercentage}%
                 </div>
@@ -291,12 +293,9 @@ const TopicCustomTooltip = ({
             </div>
           </div>
 
-          {/* Key metrics */}
-          <div className="space-y-1 text-xs border-t pt-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Stage:</span>
-              <span className="font-semibold">{data.stage}</span>
-            </div>
+          <div className="flex justify-between text-[11px] border-t pt-1.5">
+            <span className="text-gray-600">Stage:</span>
+            <span className="font-semibold">{data.stage}</span>
           </div>
         </div>
       </div>
