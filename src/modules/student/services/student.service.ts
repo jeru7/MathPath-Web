@@ -6,6 +6,7 @@ import { ProgressLog } from "../../core/types/progress-log/progress-log.type";
 import { Section } from "../../core/types/section/section.type";
 import { AddStudentDTO } from "../types/student.schema";
 import { Student } from "../types/student.type";
+import { Assessment } from "../../core/types/assessment/assessment.type";
 
 export const useAddStudent = (teacherId: string) => {
   const queryClient = useQueryClient();
@@ -55,10 +56,10 @@ export const useStudentSection = (studentId: string, sectionId: string) => {
 };
 
 export const useStudentAttempts = (studentId: string) => {
-  return useQuery<StageAttempt[] | []>({
+  return useQuery<StageAttempt[]>({
     queryKey: ["student", studentId, "attempts"],
     queryFn: () => {
-      return fetchData<StageAttempt[] | []>(
+      return fetchData<StageAttempt[]>(
         `${URL}/api/web/students/${studentId}/stage-attempts`,
         "Failed to fetch student attempts.",
       );
@@ -68,14 +69,28 @@ export const useStudentAttempts = (studentId: string) => {
 };
 
 export const useStudentProgressLog = (studentId: string) => {
-  return useQuery<ProgressLog[] | []>({
+  return useQuery<ProgressLog[]>({
     queryKey: ["student", studentId, "progress-log"],
     queryFn: () => {
-      return fetchData<ProgressLog[] | []>(
+      return fetchData<ProgressLog[]>(
         `${URL}/api/web/students/${studentId}/progress-logs`,
         "Failed to fetch student progress logs",
       );
     },
     enabled: !!studentId,
+  });
+};
+
+export const useStudentAssessments = (studentId: string) => {
+  return useQuery<Assessment[]>({
+    queryKey: ["student", studentId, "assessments"],
+    queryFn: () => {
+      return fetchData<Assessment[]>(
+        `${URL}/api/web/students/${studentId}/assessments`,
+        "Failed to fetch student assessments",
+      );
+    },
+    enabled: !!studentId,
+    initialData: [],
   });
 };

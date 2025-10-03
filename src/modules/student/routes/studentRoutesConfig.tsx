@@ -1,15 +1,15 @@
 import Student from "../components/student/Student";
-import Assessments from "../components/assessment/Assessments";
-import StudentAnalytics from "../components/analytics/StudentAnalytics";
-import StudentDashboard from "../components/dashboard/StudentDashboard";
+import Assessments from "../pages/assessments/Assessments";
+import Dashboard from "../pages/dashboard/Dashboard";
+import Statistics from "../pages/statistics/Statistics";
 
 export const studentRoutesConfig = [
   {
     path: "/student/:studentId",
     element: <Student />,
     children: [
-      { index: true, element: <StudentDashboard /> },
-      { path: "analytics", element: <StudentAnalytics /> },
+      { index: true, element: <Dashboard /> },
+      { path: "statistics", element: <Statistics /> },
       { path: "assessments", element: <Assessments /> },
     ],
   },

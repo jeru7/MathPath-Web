@@ -1,3 +1,4 @@
+import { AssessmentAttempt } from "../../core/types/assessment-attempt/assessment-attempt.type";
 import { ProfilePicture } from "../../core/types/user.type";
 
 export type StudentGender = "Male" | "Female";
@@ -31,21 +32,13 @@ export type Student = {
 };
 
 export type StudentExp = {
-  currentExp: number;
-  nextLevelExp: number;
-};
-
-export type StudentAssessmentAttempt = {
-  score: number;
-  timeSpent: number;
-  status: "completed" | "paused";
-  dateAttempted: string;
-  dateCompleted: string;
+  current: number;
+  nextLevel: number;
 };
 
 export type StudentAssessment = {
   assessmentId: string;
-  attempts: StudentAssessmentAttempt[];
+  attempts: AssessmentAttempt[];
 };
 
 export type StudentStage = {
