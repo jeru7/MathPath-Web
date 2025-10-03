@@ -80,27 +80,6 @@ body {
   overflow-x: hidden;
 }
 
-/* heatmap */
-.color-empty {
-  fill: #eee;
-}
-
-.color-low {
-  fill: #b7ffbf;
-}
-
-.color-medium {
-  fill: #95f985;
-}
-
-.color-high {
-  fill: #4ded30;
-}
-
-.react-calendar-heatmap text {
-  font-size: 0.5rem !important;
-}
-
 .ProseMirror:focus {
   outline: none;
 }

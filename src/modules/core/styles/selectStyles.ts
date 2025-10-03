@@ -92,7 +92,7 @@ export const getCustomSelectColor = <
   }),
   menu: (base) => ({
     ...base,
-    backgroundColor: options?.menuBackgroundColor || options?.backgroundColor,
+    backgroundColor: options?.menuBackgroundColor || "white",
     borderRadius: "0.125rem",
     zIndex: 9999,
     minWidth: options?.menuMinWidth,
