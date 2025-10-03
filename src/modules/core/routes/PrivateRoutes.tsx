@@ -9,7 +9,7 @@ export default function PrivateRoute() {
   }
 
   if (user === null) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   if (

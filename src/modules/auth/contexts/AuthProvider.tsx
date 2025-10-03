@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     mutationFn: (userId: string) => logoutService(userId),
     onSuccess: () => {
       queryClient.setQueryData(["auth"], null);
-      navigate("/login");
+      navigate("/auth/login");
     },
   });
 
