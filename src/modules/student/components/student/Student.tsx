@@ -13,7 +13,7 @@ export default function Student(): ReactElement {
 
   return (
     <StudentProvider studentId={user?.id}>
-      <div className="font-openSans min-h-screen overflow-y-auto h-screen gap-2 w-full bg-inherit text-[var(--primary-black)] pl-16">
+      <div className="font-openSans pt-12 xl:pt-0 xl:pl-18 w-full min-h-screen h-fit bg-inherit text-[var(--primary-black)]">
         <Nav />
         <Outlet />
       </div>

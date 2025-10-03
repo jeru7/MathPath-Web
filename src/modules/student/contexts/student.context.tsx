@@ -3,11 +3,12 @@ import { Student } from "../types/student.type";
 
 type StudentContext = {
   student: Student | null;
+  studentId: string;
 };
 
-export const StudentContext = createContext<StudentContext>({
-  student: null,
-});
+export const StudentContext = createContext<StudentContext | undefined>(
+  undefined,
+);
 
 export function useStudentContext() {
   const context = useContext(StudentContext);

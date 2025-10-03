@@ -93,6 +93,7 @@ export function StudentProvider({
 
   const value = {
     student: student || null,
+    studentId: studentId,
   };
   return (
     <StudentContext.Provider value={value}>
