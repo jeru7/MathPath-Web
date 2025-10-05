@@ -3,14 +3,18 @@ import CalendarHeatmap, {
   ReactCalendarHeatmapValue,
 } from "react-calendar-heatmap";
 import { Tooltip } from "react-tooltip";
-import { useParams } from "react-router-dom";
 import { format } from "date-fns-tz";
 import { useStudentProgressLog } from "../../../services/student.service";
 import { ProgressLog } from "../../../../core/types/progress-log/progress-log.type";
 import "../../../../core/styles/customHeatmap.css";
 
-export default function StudentHeatmap(): ReactElement {
-  const { studentId } = useParams();
+type StudentHeatmapProps = {
+  studentId: string;
+};
+
+export default function StudentHeatmap({
+  studentId,
+}: StudentHeatmapProps): ReactElement {
   const { data: studentProgressLog } = useStudentProgressLog(studentId || "");
 
   const { startDate, endDate } = useMemo(getCurrentYearRange, []);

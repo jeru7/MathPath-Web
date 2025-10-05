@@ -6,6 +6,8 @@
 .react-calendar-heatmap-month-label,
 .react-calendar-heatmap-weekday-label {
   line-height: 1 !important;
+  font-weight: 400 !important;
+  fill: #6b7280 !important;
 }
 
 .react-calendar-heatmap .color-empty,

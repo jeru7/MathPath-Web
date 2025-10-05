@@ -1,11 +1,4 @@
 import { useEffect, useState, type ReactElement } from "react";
-import {
-  PolarAngleAxis,
-  PolarGrid,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-} from "recharts";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../../../core/types/section/section.type";
 import AttemptHistory from "./components/AttemptHistory";
@@ -15,21 +8,24 @@ import {
   useStudentAttemptStats,
   useStudentDifficultyFrequency,
 } from "../../../../student/services/student-stats.service";
-import { DifficultyFrequency } from "../../../../student/types/student-stats.type";
 import { StudentStage } from "../../../../student/types/student.type";
-import StudentQuestionStatistics from "../../../../student/pages/statistics/components/StudentQuestionStats";
 import StudentHeatmap from "../../../../student/pages/statistics/components/StudentHeatmap";
+import DifficultyFrequencyCard from "../../../../student/pages/statistics/components/DifficultyFrequencyCard";
+import { useTeacherContext } from "../../../context/teacher.context";
+import StudentQuestionStats from "../../../../student/pages/statistics/components/StudentQuestionStats";
 
 export default function Student(): ReactElement {
   const navigate = useNavigate();
-  const { studentId, teacherId } = useParams();
+  const { teacherId } = useTeacherContext();
+  const { studentId } = useParams();
+
   const { data: studentData, isLoading: studentDataLoading } = useStudent(
     studentId || "",
   );
   const { data: studentAttempt } = useStudentAttemptStats(studentId || "");
   const { data: difficultyFrequency, isLoading: difficultyLoading } =
     useStudentDifficultyFrequency(studentId || "");
-  const { data: sections } = useTeacherSections(teacherId || "");
+  const { data: sections } = useTeacherSections(teacherId);
 
   const [studentSection, setStudentSection] = useState<string>("");
   const [currentStage, setCurrentStage] = useState<number | undefined>(
@@ -39,8 +35,6 @@ export default function Student(): ReactElement {
   const assessmentTakenCount = studentData?.assessments.filter((assessment) =>
     assessment.attempts.some((attempt) => attempt.status === "completed"),
   ).length;
-
-  const difficultyFrequencyData = getDifficultyFrequency(difficultyFrequency);
 
   useEffect(() => {
     const getCurrentStage = () => {
@@ -77,7 +71,7 @@ export default function Student(): ReactElement {
     navigate("..");
   };
 
-  if (difficultyLoading || studentDataLoading) {
+  if (difficultyLoading || studentDataLoading || !studentId) {
     return <p>loading..</p>;
   }
 
@@ -141,33 +135,7 @@ export default function Student(): ReactElement {
         </section>
 
         {/* radar section - difficulty frequency */}
-        <section className="flex flex-col p-4 items-center rounded-sm bg-white shadow-sm relative">
-          <header>
-            <p className="font-semibold">Chosen difficulty frequency</p>
-          </header>
-          <ResponsiveContainer className="w-full h-full min-h-[200px] min-w-[200px]">
-            <RadarChart
-              cx="50%"
-              cy="60%"
-              outerRadius="80%"
-              data={difficultyFrequencyData}
-            >
-              <PolarGrid />
-              <PolarAngleAxis dataKey="frequency" />
-              <Radar
-                dataKey="value"
-                stroke="#f09319"
-                fill="#ffa725"
-                fillOpacity={0.3}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-2 w-full text-gray-400 text-xs absolute bottom-6">
-            <p>Easy: {difficultyFrequencyData[0].value}%</p>
-            <p>Medium: {difficultyFrequencyData[1].value}%</p>
-            <p>Hard: {difficultyFrequencyData[2].value}%</p>
-          </div>
-        </section>
+        <DifficultyFrequencyCard data={difficultyFrequency} />
 
         {/* Stats section */}
         <section className="col-span-full flex flex-col md:flex-row h-fit w-full gap-2">
@@ -211,12 +179,12 @@ export default function Student(): ReactElement {
 
         {/* Charts section */}
         <section className="col-span-full row-span-2 rounded-sm bg-white shadow-sm">
-          <StudentQuestionStatistics />
+          <StudentQuestionStats studentId={studentId} />
         </section>
 
         {/* Heatmap section */}
         <section className="col-span-full rounded-sm bg-white shadow-sm">
-          <StudentHeatmap />
+          <StudentHeatmap studentId={studentId} />
         </section>
 
         {/* Recent attempt history section */}
@@ -227,17 +195,3 @@ export default function Student(): ReactElement {
     </div>
   );
 }
-
-const getDifficultyFrequency = (data: DifficultyFrequency | undefined) => {
-  if (!data) {
-    return (["easy", "medium", "hard"] as const).map((level) => ({
-      frequency: level,
-      value: 0,
-    }));
-  }
-
-  return (["easy", "medium", "hard"] as const).map((level) => ({
-    frequency: level,
-    value: data[level].percentage,
-  }));
-};

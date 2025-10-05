@@ -3,10 +3,10 @@ import { IoGameController } from "react-icons/io5";
 
 export default function BadgeItem(): ReactElement {
   return (
-    <div className="flex flex-col items-center p-4 rounded-lg border border-gray-300 bg-white w-40 h-full justify-between max-h-48 max-w-48">
+    <div className="flex flex-col items-center p-4 rounded-sm border border-gray-300 bg-white justify-between h-full w-full max-h-56 max-w-56">
       {/* icon */}
       <div className="rounded-full flex items-center justify-center p-3 bg-gradient-to-br from-blue-500 to-blue-600 mb-3">
-        <IoGameController className="h-7 w-7 text-white" />
+        <IoGameController className="h-10 w-10 text-white" />
       </div>
 
       {/* info */}

@@ -1,5 +1,4 @@
 import { type ReactElement } from "react";
-import { useParams } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -22,10 +21,14 @@ import {
 import { useStudentTopicStats } from "../../../services/student-stats.service";
 import { CustomAxisTick } from "../../../../teacher/pages/statistics/components/CustomAxisTick";
 
-export default function StudentTopicStats(): ReactElement {
-  const { studentId } = useParams();
+type StudentTopicStatsProps = {
+  studentId: string;
+};
 
-  const { data: topicStats, isLoading } = useStudentTopicStats(studentId || "");
+export default function StudentTopicStats({
+  studentId,
+}: StudentTopicStatsProps): ReactElement {
+  const { data: topicStats, isLoading } = useStudentTopicStats(studentId);
 
   const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
     return topics.map((topic) => {
@@ -52,7 +55,7 @@ export default function StudentTopicStats(): ReactElement {
 
   if (isLoading) {
     return (
-      <article className="bg-white shadow-sm p-6 rounded-sm flex-1 border border-white min-h-0">
+      <article className="bg-white shadow-sm p-6 rounded-sm flex-1 min-h-0">
         <div className="flex h-full">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>

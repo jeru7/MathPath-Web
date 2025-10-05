@@ -1,5 +1,4 @@
 import { useState, type ReactElement } from "react";
-import { useParams } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -21,13 +20,17 @@ import { useStudentQuestionStats } from "../../../services/student-stats.service
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 import { CustomAxisTick } from "../../../../teacher/pages/statistics/components/CustomAxisTick";
 
-export default function StudentQuestionStatistics(): ReactElement {
-  const { studentId } = useParams();
+type StudentQuestionStatsProps = {
+  studentId: string;
+};
+
+export default function StudentQuestionStats({
+  studentId,
+}: StudentQuestionStatsProps): ReactElement {
   const [selectedStage, setSelectedStage] = useState<string>("1");
 
-  const { data: studentQuestionStats, isLoading } = useStudentQuestionStats(
-    studentId || "",
-  );
+  const { data: studentQuestionStats, isLoading } =
+    useStudentQuestionStats(studentId);
 
   const getFilteredData = (): QuestionStats[] => {
     return studentQuestionStats || [];

@@ -1,5 +1,4 @@
 import { useState, type ReactElement } from "react";
-import { useParams } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -25,15 +24,16 @@ import {
 } from "../../../../core/types/chart.type";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 import { CustomAxisTick } from "./CustomAxisTick";
+import { useTeacherContext } from "../../../context/teacher.context";
 
 export default function StagesStatistics(): ReactElement {
-  const { teacherId } = useParams();
+  const { teacherId } = useTeacherContext();
   const [selectedSection, setSelectedSection] = useState<string>("all");
 
   const { data: overallTopicStats, isLoading: isLoadingOverall } =
-    useTeacherOverallTopicStats(teacherId || "");
+    useTeacherOverallTopicStats(teacherId);
   const { data: sectionTopicStats, isLoading: isLoadingSections } =
-    useTeacherSectionTopicStats(teacherId || "");
+    useTeacherSectionTopicStats(teacherId);
 
   const isLoading = isLoadingOverall || isLoadingSections;
 

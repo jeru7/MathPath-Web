@@ -31,9 +31,9 @@ export default function BadgeList(): ReactElement {
           menuPlacement="auto"
         />
       </div>
-      <div className="flex-1 overflow-x-auto pb-3">
-        <div className="flex items-start gap-3 h-full">
-          <div className="flex gap-3 items-center">
+      <div className="flex-1 overflow-x-auto">
+        <div className="flex gap-3 h-full">
+          <div className="flex gap-3 items-start h-full w-full">
             <BadgeItem />
             <BadgeItem />
           </div>

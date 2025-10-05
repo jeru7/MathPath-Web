@@ -20,11 +20,6 @@ export default function PlayerCard(): ReactElement {
         {/* character */}
         <div className="md:w-2/5 p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 h-full">
           <div className="text-center mb-8">
-            {student?.characterName && (
-              <h2 className="text-gray-900 font-jersey text-lg mb-1">
-                {student.characterName}
-              </h2>
-            )}
             <div className="inline-flex items-center gap-1 bg-white px-3 py-1 rounded-full border border-gray-300 text-sm">
               <span className="text-[var(--primary-green)] font-bold">
                 {student?.characterName ?? "No character name"}
