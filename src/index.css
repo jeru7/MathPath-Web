@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* fonts */
   --font-primary: "Open Sans", sans-serif;
@@ -38,6 +40,12 @@
     rgba(0, 0, 0, 0) 40%,
     rgba(0, 0, 0, 0.6) 100%
   );
+}
+
+.dark {
+  --primary-green-dark: #059669;
+  --primary-orange-dark: #d97706;
+  --secondary-orange-dark: #ea580c;
 }
 
 @layer utilities {

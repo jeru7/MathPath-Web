@@ -61,11 +61,13 @@ export default function StagesStatistics(): ReactElement {
 
   if (isLoading) {
     return (
-      <article className="bg-white shadow-sm p-6 rounded-lg flex-1 border border-gray-200">
+      <article className="bg-white dark:bg-gray-800 shadow-sm p-6 rounded-sm flex-1 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
         <div className="flex items-center justify-center h-48">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-            <p className="text-gray-600">Loading stage statistics...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 dark:border-primary-400 mx-auto mb-2"></div>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading stage statistics...
+            </p>
           </div>
         </div>
       </article>
@@ -73,12 +75,14 @@ export default function StagesStatistics(): ReactElement {
   }
 
   return (
-    <article className="bg-white shadow-sm p-2 rounded-lg h-fit flex flex-col gap-4 border border-gray-200 overflow-x-hidden">
-      <header className="">
+    <article className="bg-white dark:bg-gray-800 shadow-sm p-2 rounded-sm h-fit flex flex-col gap-4 border border-gray-200 dark:border-gray-700 overflow-x-hidden transition-colors duration-200">
+      <header className="text-gray-900 dark:text-gray-100">
         <div className="flex flex-col gap-2 lg:flex-row lg:justify-between lg:items-center">
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Stages</h3>
-            <p className="text-xs lg:text-sm text-gray-600 mt-1">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+              Stages
+            </h3>
+            <p className="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mt-1">
               Student completion rates across stages
             </p>
           </div>
@@ -94,6 +98,16 @@ export default function StagesStatistics(): ReactElement {
               padding: "0px 8px",
               menuWidth: "200px",
               menuBackgroundColor: "white",
+              dark: {
+                menuBackgroundColor: "#374151",
+                backgroundColor: "#374151",
+                textColor: "#f9fafb",
+                borderColor: "#4b5563",
+                borderFocusColor: "#10b981",
+                optionHoverColor: "#1f2937",
+                optionSelectedColor: "#059669",
+                placeholderColor: "#9ca3af",
+              },
             })}
             className="basic-select min-w-[200px]"
             classNamePrefix="select"
@@ -109,8 +123,8 @@ export default function StagesStatistics(): ReactElement {
       </header>
 
       {chartData.length === 0 ? (
-        <div className="flex h-48 items-center justify-center border border-gray-200 rounded-lg">
-          <div className="text-center text-gray-500">
+        <div className="flex h-48 items-center justify-center border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+          <div className="text-center text-gray-500 dark:text-gray-400">
             <div className="text-4xl mb-2">📊</div>
             <p className="italic">No stage data available</p>
           </div>
@@ -129,21 +143,31 @@ export default function StagesStatistics(): ReactElement {
                   bottom: -20,
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#f0f0f0"
+                  className="dark:stroke-gray-600"
+                />
                 <XAxis
                   dataKey="stage"
                   height={60}
                   interval={0}
                   tick={<CustomAxisTick />}
+                  className="dark:text-gray-300"
                 />
                 <YAxis
                   domain={[0, 100]}
+                  className="dark:text-gray-300"
                   label={{
                     value: "Completion Rate (%)",
                     angle: -90,
                     position: "insideLeft",
                     offset: -10,
-                    style: { textAnchor: "middle", fontSize: 12 },
+                    style: {
+                      textAnchor: "middle",
+                      fontSize: 12,
+                      fill: "#6b7280", // gray-500 for light mode
+                    },
                   }}
                 />
                 <Tooltip content={<StageCustomTooltip />} />
@@ -203,42 +227,48 @@ const StageCustomTooltip = ({
     const data = payload[0].payload as ChartDataItem;
 
     return (
-      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 text-xs max-w-[400px]">
-        <p className="font-bold text-sm mb-1 text-gray-900 truncate">
+      <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 text-xs max-w-[400px] transition-colors duration-200">
+        <p className="font-bold text-sm mb-1 text-gray-900 dark:text-white truncate">
           Stage {data.stage}
         </p>
-        <p className="text-gray-700 mb-2 truncate text-[11px]">
+        <p className="text-gray-700 dark:text-gray-300 mb-2 truncate text-[11px]">
           {data.topicName}
         </p>
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-gray-700 text-nowrap">Completion:</span>
-              <span className="font-bold text-blue-600 text-nowrap">
+              <span className="text-gray-700 dark:text-gray-300 text-nowrap">
+                Completion:
+              </span>
+              <span className="font-bold text-blue-600 dark:text-blue-400 text-nowrap">
                 {data.completionRate}%
               </span>
             </div>
             <div className="flex gap-2 justify-between items-center">
-              <span className="text-gray-700 text-nowrap">Total Attempts:</span>
-              <span className="font-semibold">{data.totalAttempts}</span>
+              <span className="text-gray-700 dark:text-gray-300 text-nowrap">
+                Total Attempts:
+              </span>
+              <span className="font-semibold dark:text-gray-300">
+                {data.totalAttempts}
+              </span>
             </div>
           </div>
 
-          <div className="flex-1 border-l pl-4">
+          <div className="flex-1 border-l border-gray-200 dark:border-gray-600 pl-4">
             <div className="flex gap-2 justify-between items-center mb-1">
-              <span className="text-amber-600 font-semibold text-nowrap">
+              <span className="text-amber-600 dark:text-amber-400 font-semibold text-nowrap">
                 Avg Hints:
               </span>
-              <span className="text-gray-600 text-nowrap">
+              <span className="text-gray-600 dark:text-gray-400 text-nowrap">
                 {data.avgHintUsed.toFixed(1)}
               </span>
             </div>
             <div className="flex gap-2 justify-between items-center">
-              <span className="text-purple-600 font-semibold text-nowrap">
+              <span className="text-purple-600 dark:text-purple-400 font-semibold text-nowrap">
                 Avg Time:
               </span>
-              <span className="text-gray-600 text-nowrap">
+              <span className="text-gray-600 dark:text-gray-400 text-nowrap">
                 {formatDuration(data.avgSecondsPlayed)}
               </span>
             </div>

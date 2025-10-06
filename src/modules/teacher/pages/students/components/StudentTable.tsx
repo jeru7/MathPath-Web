@@ -166,23 +166,23 @@ export default function StudentTable({
 
   return (
     <section className="flex flex-col flex-1 overflow-x-hidden">
-      <section className="w-full border-b-gray-200 p-4 border-b flex gap-2 justify-center md:items-center md:justify-between">
+      <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex gap-2 justify-center md:items-center md:justify-between transition-colors duration-200">
         {/* search and filters */}
         <section className="flex gap-2 items-center w-full md:w-fit">
-          <div className="flex rounded-sm border-gray-200 border h-fit items-center pr-2 w-full">
+          <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="p-2">
-              <CiSearch className="w-4 h-4 text-gray-400" />
+              <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               placeholder="Search student"
-              className="text-xs focus:outline-none flex-1"
+              className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               value={searchQuery}
               onChange={handleSearchStudent}
             />
             {searchQuery && (
               <button
                 onClick={handleClearSearch}
-                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1"
               >
                 ×
               </button>
@@ -195,7 +195,7 @@ export default function StudentTable({
               className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${
                 hasActiveFilters
                   ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 text-gray-400"
+                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
               }`}
               onClick={() => setShowFilterDropdown((prev) => !prev)}
             >
@@ -204,14 +204,14 @@ export default function StudentTable({
 
             {showFilterDropdown && (
               <div
-                className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-sm shadow-lg z-30 w-64 p-4"
+                className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 w-64 p-4 transition-colors duration-200"
                 ref={filterDropdownRef}
               >
                 {hasActiveFilters && (
                   <div className="flex justify-end mb-3">
                     <button
                       onClick={handleClearAllFilters}
-                      className="text-xs text-[var(--primary-green)] hover:underline"
+                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
                     >
                       Clear all
                     </button>
@@ -220,7 +220,7 @@ export default function StudentTable({
 
                 {/* sections checkbox */}
                 <div className="mb-4">
-                  <p className="font-semibold mb-2 text-sm text-gray-700">
+                  <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
                     Sections
                   </p>
                   <div className="flex flex-col max-h-32 overflow-y-auto gap-1">
@@ -230,10 +230,10 @@ export default function StudentTable({
                       return (
                         <div
                           key={section.id}
-                          className={`cursor-pointer px-2 py-1 rounded text-sm border w-fit ${
+                          className={`cursor-pointer px-2 py-1 rounded text-sm border w-fit transition-colors duration-200 ${
                             isSelected
                               ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
                           }`}
                           onClick={() => {
                             if (isSelected) {
@@ -257,7 +257,7 @@ export default function StudentTable({
 
                 {/* status */}
                 <div className="mb-2">
-                  <p className="font-semibold mb-2 text-sm text-gray-700">
+                  <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
                     Status
                   </p>
                   <div className="flex gap-1 text-sm">
@@ -275,10 +275,10 @@ export default function StudentTable({
                       return (
                         <div
                           key={status}
-                          className={`cursor-pointer px-2 py-1 rounded border text-sm text-center ${
+                          className={`cursor-pointer px-2 py-1 rounded border text-sm text-center transition-colors duration-200 ${
                             isSelected
                               ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
                           }`}
                           onClick={() => {
                             if (status === "all") {
@@ -296,7 +296,7 @@ export default function StudentTable({
                 </div>
 
                 {/* results */}
-                <div className="text-xs text-gray-500 border-t pt-2">
+                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
                   Showing {filteredAndSortedStudents.length} of{" "}
                   {students.length} students
                 </div>
@@ -308,7 +308,7 @@ export default function StudentTable({
         {/* registration codes button */}
         <div className="hidden md:flex gap-2 items-center">
           <button
-            className="p-2 rounded-xs border-gray-200 border text-gray-400 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200"
+            className="p-2 rounded-xs border-gray-200 dark:border-gray-600 border text-gray-400 dark:text-gray-500 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 bg-white dark:bg-gray-800"
             type="button"
             onClick={() => navigate("registration-codes")}
           >
@@ -327,8 +327,8 @@ export default function StudentTable({
 
       {/* results info */}
       {hasActiveFilters && (
-        <div className="px-4 py-2 bg-blue-50 border-b">
-          <div className="text-sm text-gray-600">
+        <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
             {filteredAndSortedStudents.length} student
             {filteredAndSortedStudents.length !== 1 ? "s" : ""} found
             {searchQuery && ` for "${searchQuery}"`}
@@ -343,7 +343,7 @@ export default function StudentTable({
           <div className="flex flex-col w-full min-w-[1000px] flex-1">
             {/* headers */}
             <table className="font-primary table-auto w-full">
-              <thead className="text-gray-400 text-sm xl:text-base">
+              <thead className="text-gray-400 dark:text-gray-500 text-sm xl:text-base transition-colors duration-200">
                 <tr className="text-left">
                   <th className="w-[15%]">LRN</th>
                   <th
@@ -351,7 +351,7 @@ export default function StudentTable({
                     onClick={() => handleSort("lastName")}
                   >
                     <div
-                      className={`flex items-center justify-start gap-2 ${sortConfig.key === "lastName" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center justify-start gap-2 transition-colors duration-200 ${sortConfig.key === "lastName" ? "text-[var(--primary-black)] dark:text-gray-200" : ""}`}
                     >
                       Name
                       {sortConfig.key === "lastName" ? (
@@ -370,7 +370,7 @@ export default function StudentTable({
                     onClick={() => handleSort("sectionName")}
                   >
                     <div
-                      className={`flex items-center gap-2 ${sortConfig.key === "sectionName" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center gap-2 transition-colors duration-200 ${sortConfig.key === "sectionName" ? "text-[var(--primary-black)] dark:text-gray-200" : ""}`}
                     >
                       Section
                       {sortConfig.key === "sectionName" ? (
@@ -389,7 +389,7 @@ export default function StudentTable({
                     onClick={() => handleSort("statusComputed")}
                   >
                     <div
-                      className={`flex items-center gap-2 ${sortConfig.key === "statusComputed" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center gap-2 transition-colors duration-200 ${sortConfig.key === "statusComputed" ? "text-[var(--primary-black)] dark:text-gray-200" : ""}`}
                     >
                       Status
                       {sortConfig.key === "statusComputed" ? (
@@ -408,7 +408,7 @@ export default function StudentTable({
                     onClick={() => handleSort("createdAt")}
                   >
                     <div
-                      className={`flex items-center gap-2 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center gap-2 transition-colors duration-200 ${sortConfig.key === "createdAt" ? "text-[var(--primary-black)] dark:text-gray-200" : ""}`}
                     >
                       <p className="text-nowrap">Date Created</p>
                       {sortConfig.key === "createdAt" ? (
@@ -427,7 +427,7 @@ export default function StudentTable({
                     onClick={() => handleSort("lastOnline")}
                   >
                     <div
-                      className={`flex items-center gap-2 justify-center ${sortConfig.key === "lastOnline" ? "text-[var(--primary-black)]" : ""}`}
+                      className={`flex items-center gap-2 justify-center transition-colors duration-200 ${sortConfig.key === "lastOnline" ? "text-[var(--primary-black)] dark:text-gray-200" : ""}`}
                     >
                       <p className="text-nowrap">Last Played</p>
                       {sortConfig.key === "lastOnline" ? (
@@ -462,16 +462,16 @@ export default function StudentTable({
                     <tr>
                       <td
                         colSpan={7}
-                        className="text-center py-8 text-gray-400"
+                        className="text-center py-8 text-gray-400 dark:text-gray-500"
                       >
                         <div className="text-center">
-                          <p className="text-gray-400 mb-2">
+                          <p className="text-gray-400 dark:text-gray-500 mb-2">
                             No students match your search criteria
                           </p>
                           {hasActiveFilters && (
                             <button
                               onClick={handleClearAllFilters}
-                              className="text-sm text-[var(--primary-green)] hover:underline"
+                              className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
                             >
                               Clear filters
                             </button>
@@ -487,7 +487,9 @@ export default function StudentTable({
         </div>
       ) : (
         <div className="flex flex-1 w-full items-center justify-center">
-          <p className="text-gray-300 italic">No data available</p>
+          <p className="text-gray-300 dark:text-gray-600 italic">
+            No data available
+          </p>
         </div>
       )}
     </section>

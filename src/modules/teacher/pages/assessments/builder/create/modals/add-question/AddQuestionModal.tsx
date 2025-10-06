@@ -102,7 +102,7 @@ export default function AddQuestionModal({
 
   return (
     <motion.article
-      className="flex flex-col w-[100vw] h-full min-h-[100vh] overflow-y-auto fixed md:h-fit md:min-h-0 md:w-[800px] md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white"
+      className="flex flex-col w-[100vw] h-full min-h-[100vh] overflow-y-auto fixed md:h-fit md:min-h-0 md:w-[800px] md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white dark:bg-gray-800 transition-colors duration-200"
       key="add-question-modal"
       initial={{ opacity: 0, scale: 1, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -110,15 +110,17 @@ export default function AddQuestionModal({
       transition={{ duration: 0.25 }}
     >
       {/* header */}
-      <header className="p-4 bg-inherit rounded-t-sm flex items-center justify-between border-b border-b-gray-300">
-        <h3>New Question</h3>
+      <header className="p-4 bg-inherit rounded-t-sm flex items-center justify-between border-b border-b-gray-300 dark:border-b-gray-600 transition-colors duration-200">
+        <h3 className="text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          New Question
+        </h3>
         {/* close button */}
         <button
-          className="opacity-80 hidden md:block hover:opacity-100 hover:cursor-pointer transition-all duration-200"
+          className="opacity-80 hidden md:block hover:opacity-100 hover:cursor-pointer transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
           type="button"
           onClick={onClose}
         >
-          <IoClose />
+          <IoClose size={24} />
         </button>
       </header>
 
@@ -131,7 +133,7 @@ export default function AddQuestionModal({
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
                 <label
                   htmlFor="type"
-                  className="font-semibold w-32 min-w-32 md:text-right text-sm md:text-base"
+                  className="font-semibold w-32 min-w-32 md:text-right text-sm md:text-base text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 >
                   Question Type
                 </label>
@@ -145,14 +147,14 @@ export default function AddQuestionModal({
               <div className="flex flex-col md:flex-row gap-2 md:gap-4 md:items-center">
                 <label
                   htmlFor="points"
-                  className="font-semibold text-sm md:text-base"
+                  className="font-semibold text-sm md:text-base text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 >
                   Points
                 </label>
                 <input
                   id="points"
                   type="number"
-                  className="border border-gray-300 text-center text-sm md:text-base rounded-sm px-2 py-1 w-24 focus:outline-none focus:ring-1 focus:ring-green-400"
+                  className="border border-gray-300 dark:border-gray-600 text-center text-sm md:text-base rounded-sm px-2 py-1 w-24 focus:outline-none focus:ring-1 focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                   defaultValue={question.points}
                   onChange={(e) => {
                     const value = Number(e.target.value);
@@ -167,7 +169,7 @@ export default function AddQuestionModal({
               {/* Question Field */}
               <label
                 htmlFor="question"
-                className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right"
+                className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200"
               >
                 Question
               </label>
@@ -182,7 +184,7 @@ export default function AddQuestionModal({
                     errors.question &&
                     question.type !== "fill_in_the_blanks" && (
                       <motion.p
-                        className="text-xs md:text-sm text-red-500 self-end"
+                        className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{
@@ -199,7 +201,7 @@ export default function AddQuestionModal({
                 <AnimatePresence>
                   {isValidated && errors.fillInTheBlankQuestion && (
                     <motion.p
-                      className="text-xs md:text-sm text-red-500 self-end"
+                      className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 0, transition: { duration: 0.1 } }}
@@ -213,12 +215,12 @@ export default function AddQuestionModal({
                   {/* info for fill in the blanks */}
                   {question.type === "fill_in_the_blanks" && (
                     <motion.div
-                      className="p-2 bg-[var(--primary-yellow)]/80"
+                      className="p-2 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 transition-colors duration-200"
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       key="fill-in-the-blank-info"
                     >
-                      <p className="italic text-right text-xs">
+                      <p className="italic text-right text-xs text-gray-700 dark:text-gray-300 transition-colors duration-200">
                         Use brackets to indicate blanks. <br />
                         Example: The capital of the Philippines is [1] <br />
                         "The capital of the Philippines is _____"
@@ -229,7 +231,7 @@ export default function AddQuestionModal({
               </div>
             </div>
             {/* divider */}
-            <div className="border-b border-b-gray-300 "></div>
+            <div className="border-b border-b-gray-300 dark:border-b-gray-600 transition-colors duration-200"></div>
             {/* bottom section */}
             <AnimatePresence mode="wait">
               <div className="gap-4 flex flex-col">

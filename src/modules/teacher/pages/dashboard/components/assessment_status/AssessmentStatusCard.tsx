@@ -15,10 +15,12 @@ export default function AssessmentStatusCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm min-h-[300px] lg:h-auto lg:min-h-0 rounded-sm p-2 flex flex-col gap-1`}
+      className={`${classes} bg-white dark:bg-gray-800 shadow-sm min-h-[300px] lg:h-auto lg:min-h-0 rounded-sm p-2 flex flex-col gap-1 border border-gray-200 dark:border-gray-700 transition-colors duration-200`}
     >
       <header className="">
-        <p className="font-semibold text-lg">Assessment Status</p>
+        <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+          Assessment Status
+        </p>
       </header>
 
       {assessmentStatus && assessmentStatus?.length > 0 ? (
@@ -35,7 +37,9 @@ export default function AssessmentStatusCard({
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-gray-300 italic">No data available</p>
+          <p className="text-gray-300 dark:text-gray-500 italic">
+            No data available
+          </p>
         </div>
       )}
     </article>

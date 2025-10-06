@@ -38,8 +38,8 @@ export default function AssessmentStatusItem({
       case "finished":
         return (
           <div className="flex items-center gap-1">
-            <FaCircle className="text-[var(--primary-green)]" />
-            <p className="text-xs text-[var(--primary-green)]">
+            <FaCircle className="text-green-600 dark:text-green-400" />
+            <p className="text-xs text-green-600 dark:text-green-400">
               {assessmentData?.status}
             </p>
           </div>
@@ -48,8 +48,8 @@ export default function AssessmentStatusItem({
       case "published":
         return (
           <div className="flex items-center gap-1">
-            <FaRegCircle className="text-[var(--secondary-green)]" />
-            <p className="text-xs text-[var(--secondary-green)]">
+            <FaRegCircle className="text-green-500 dark:text-green-300" />
+            <p className="text-xs text-green-500 dark:text-green-300">
               {assessmentData?.status}
             </p>
           </div>
@@ -57,8 +57,8 @@ export default function AssessmentStatusItem({
       case "draft":
         return (
           <div className="flex items-center gap-1">
-            <FaRegCircle className="text-[var(--primary-yellow)]" />
-            <p className="text-xs text-[var(--primary-yellow)]">
+            <FaRegCircle className="text-yellow-500 dark:text-yellow-400" />
+            <p className="text-xs text-yellow-500 dark:text-yellow-400">
               {assessmentData?.status}
             </p>
           </div>
@@ -72,29 +72,30 @@ export default function AssessmentStatusItem({
 
   return (
     <article
-      className={`${classes} flex justify-between border-l-4 pl-2 rounded-md border-1 border-gray-200 p-2 hover:bg-gray-100 hover:cursor-pointer`}
+      className={`${classes} flex justify-between border-l-4 pl-2 rounded-md border border-gray-200 dark:border-gray-600 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer transition-colors duration-200`}
       style={{
-        borderLeftColor: `${completed ? "var(--primary-green)" : "var(--primary-yellow)"}`,
+        borderLeftColor: `${completed ? "#16a34a" : "#eab308"}`,
       }}
       onClick={handleItemClick}
     >
-      {/* Title and Status */}
+      {/* title and status */}
       <div className="flex flex-col gap-1">
-        <p className="text-md font-semibold">
+        <p className="text-md font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
           {assessmentData.name ? assessmentData.name : "N/A"}
         </p>
         {getStatus(assessmentData.status)}
       </div>
-      {/* Date and Sections */}
+
       <div className="flex flex-col justify-between items-end">
-        {/* Date: Start - End */}
-        <div className="flex gap-1 text-gray-400">
+        {/* date: start - end */}
+        <div className="flex gap-1 text-gray-400 dark:text-gray-500">
           <p className="text-[10px] font-semibold">
             {formatDateRange(assessmentData?.date)}
           </p>
           <IoCalendarClear className="" />
         </div>
-        {/* Sections */}
+
+        {/* sections */}
         <div className="flex gap-1">
           {assessmentData?.sections.map(
             (section: AssessmentStatusSection, index) => (

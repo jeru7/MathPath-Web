@@ -70,7 +70,7 @@ export default function SectionCard({
 
   return (
     <section
-      className={`flex flex-col rounded-sm bg-white opacity-90 border-gray-300 border hover:cursor-pointer hover:opacity-100 h-full xl:max-w-[350px]`}
+      className={`flex flex-col rounded-sm bg-white dark:bg-gray-800 opacity-90 border-gray-300 dark:border-gray-600 border hover:cursor-pointer hover:opacity-100 h-full xl:max-w-[350px] transition-colors duration-200`}
     >
       <div
         className={`bg-[var(--${section.color})] h-1 w-full rounded-t-md `}
@@ -87,29 +87,32 @@ export default function SectionCard({
         {/* Header */}
         <header className="flex flex-col">
           <div className="relative flex items-center justify-between">
-            <h3 className="text-lg font-semibold">{section.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {section.name}
+            </h3>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen((prev) => !prev);
               }}
+              className="text-gray-900 dark:text-gray-100"
             >
-              <FaEllipsisH className="w-8 hover:scale-105 hover:cursor-pointer" />
+              <FaEllipsisH className="w-8 hover:scale-105 hover:cursor-pointer transition-transform duration-200" />
             </button>
             {menuOpen && (
               <div
                 ref={menuRef}
-                className="absolute right-0 top-full mt-1 w-28 bg-white border border-gray-200 rounded shadow-md z-50"
+                className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-md z-50 transition-colors duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
-                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 hover:cursor-pointer"
+                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer text-gray-900 dark:text-gray-100 transition-colors duration-200"
                   onClick={handleEdit}
                 >
                   Edit
                 </button>
                 <button
-                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-red-500 hover:cursor-pointer"
+                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500 dark:text-red-400 hover:cursor-pointer transition-colors duration-200"
                   onClick={() => handleDelete(section.id)}
                 >
                   Delete
@@ -117,24 +120,34 @@ export default function SectionCard({
               </div>
             )}
           </div>
-          <p className="text-[10px] text-[var(--primary-gray)]">{`Last checked on ${format(formatToPhDate(section.lastChecked.toString()), "MMMM d, yyyy")}`}</p>
+          <p className="text-[10px] text-[var(--primary-gray)] dark:text-gray-400">{`Last checked on ${format(formatToPhDate(section.lastChecked.toString()), "MMMM d, yyyy")}`}</p>
         </header>
         {/* Section details - Top */}
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-1">
-            <p className="text-xl font-bold">{studentCount}</p>
-            <p className="text-xs text-[var(--primary-gray)]">Students</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              {studentCount}
+            </p>
+            <p className="text-xs text-[var(--primary-gray)] dark:text-gray-400">
+              Students
+            </p>
           </div>
           <div className="flex items-baseline gap-1">
-            <p className="text-xl font-bold">{assessmentCount}</p>
-            <p className="text-xs text-[var(--primary-gray)]">Assessments</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              {assessmentCount}
+            </p>
+            <p className="text-xs text-[var(--primary-gray)] dark:text-gray-400">
+              Assessments
+            </p>
           </div>
         </div>
         {/* Section details - Bottom */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between text-xs">
-            <p className="">Online</p>
-            <p className="">{onlineStudentCount()}</p>
+            <p className="text-gray-900 dark:text-gray-100">Online</p>
+            <p className="text-gray-900 dark:text-gray-100">
+              {onlineStudentCount()}
+            </p>
           </div>
           {/* Online Bar */}
           <div className="relative h-1 rounded-full">
@@ -152,7 +165,7 @@ export default function SectionCard({
               }}
             ></div>
           </div>
-          <p className="text-right text-[10px] text-[var(--primary-gray)]">{`Created on ${format(formatToPhDate(section.createdAt.toString()), "MMMM d, yyyy")}`}</p>
+          <p className="text-right text-[10px] text-[var(--primary-gray)] dark:text-gray-400">{`Created on ${format(formatToPhDate(section.createdAt.toString()), "MMMM d, yyyy")}`}</p>
         </div>
       </div>
     </section>

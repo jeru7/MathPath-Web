@@ -21,12 +21,16 @@ export default function Stepper({
     <section className="flex rounded-sm items-center w-full">
       {/* step 1 - create */}
       <button
-        className={`flex justify-center px-4 py-2 rounded-tl-sm border-t sm:border-l shadow-[-1px_0_2px_0_rgba(0,0,0,0.05)] border-gray-300 gap-2 bg-white items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex justify-center px-4 py-2 rounded-tl-sm border-t sm:border-l shadow-[-1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[-1px_0_2px_0_rgba(255,255,255,0.05)] border-gray-300 dark:border-gray-600 gap-2 bg-white dark:bg-gray-700 items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           opacity: getOpacity(currentStep, 1),
           borderBottom:
-            currentStep === 1 ? "1px solid #ffffff" : "1px solid #D1D5DB",
+            currentStep === 1
+              ? "1px solid #ffffff"
+              : currentStep === 1
+                ? "1px solid #1f2937"
+                : "1px solid #D1D5DB",
         }}
         onClick={() => onChangeStep(1)}
         key="create"
@@ -41,7 +45,9 @@ export default function Stepper({
             </div>
           </div>
           <div className="hidden sm:flex flex-col font-semibold text-lg">
-            <p className="text-xs xl:text-base font-semibold">Create</p>
+            <p className="text-xs xl:text-base font-semibold text-gray-900 dark:text-gray-100">
+              Create
+            </p>
           </div>
         </div>
 
@@ -64,11 +70,15 @@ export default function Stepper({
       </button>
       {/* step 2 - configure */}
       <button
-        className={`flex justify-center px-4 py-2 border border-gray-300 gap-2 bg-white items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 gap-2 bg-white dark:bg-gray-700 items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           borderBottom:
-            currentStep === 2 ? "1px solid #ffffff" : "1px solid #D1D5DB",
+            currentStep === 2
+              ? "1px solid #ffffff"
+              : currentStep === 2
+                ? "1px solid #1f2937"
+                : "1px solid #D1D5DB",
         }}
         onClick={() => onChangeStep(2)}
         key="configure"
@@ -83,7 +93,9 @@ export default function Stepper({
             </div>
           </div>
           <div className="hidden sm:flex flex-col text-lg">
-            <p className="text-xs xl:text-base font-semibold">Configure</p>
+            <p className="text-xs xl:text-base font-semibold text-gray-900 dark:text-gray-100">
+              Configure
+            </p>
           </div>
         </div>
 
@@ -108,11 +120,15 @@ export default function Stepper({
       </button>
       {/* step 3 - publish */}
       <button
-        className={`flex justify-center px-4 py-2 rounded-tr-sm border-t sm:border-r border-b border-gray-300 shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] gap-2 bg-white items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
+        className={`flex justify-center px-4 py-2 rounded-tr-sm border-t sm:border-r border-b border-gray-300 dark:border-gray-600 shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(255,255,255,0.05)] gap-2 bg-white dark:bg-gray-700 items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
         type="button"
         style={{
           borderBottom:
-            currentStep === 3 ? "1px solid #ffffff" : "1px solid #D1D5DB",
+            currentStep === 3
+              ? "1px solid #ffffff"
+              : currentStep === 3
+                ? "1px solid #1f2937"
+                : "1px solid #D1D5DB",
         }}
         onClick={() => onChangeStep(3)}
         key="publish"
@@ -127,7 +143,9 @@ export default function Stepper({
             </div>
           </div>
           <div className="hidden sm:flex flex-col font-semibold text-lg">
-            <p className="text-xs xl:text-base font-semibold">Publish</p>
+            <p className="text-xs xl:text-base font-semibold text-gray-900 dark:text-gray-100">
+              Publish
+            </p>
           </div>
 
           <AnimatePresence>

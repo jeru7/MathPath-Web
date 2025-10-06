@@ -24,18 +24,18 @@ export default function Answers({
 }: AnswersProp): ReactElement {
   return (
     <div className="flex flex-col md:flex-row items-start gap-2 md:gap-4">
-      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right">
+      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200">
         {type === "fill_in_the_blanks" ? "Answers" : "Answer"}
       </label>
-      <section className="border border-gray-300 rounded-sm bg-white w-full h-fit flex flex-col">
-        <div className="w-full flex justify-end p-1 bg-gray-100 border-b border-b-gray-300 h-[40px] px-2"></div>
+      <section className="border border-gray-300 dark:border-gray-600 rounded-sm bg-white dark:bg-gray-800 w-full h-fit flex flex-col transition-colors duration-200">
+        <div className="w-full flex justify-end p-1 bg-gray-100 dark:bg-gray-700 border-b border-b-gray-300 dark:border-b-gray-600 h-[40px] px-2 transition-colors duration-200"></div>
 
         <motion.section
           className="flex flex-col p-2 gap-2 relative overflow-y-auto"
           style={{ maxHeight: "250px" }}
         >
           <AnimatePresence>
-            {/* Text input for fill in the blanks */}
+            {/* fill in the blanks */}
             {type === "fill_in_the_blanks" &&
               (answers as FillInTheBlankAnswerType[])?.map((answer, index) => (
                 <motion.div
@@ -68,7 +68,7 @@ export default function Answers({
                 </motion.div>
               ))}
 
-            {/* Text input for identification */}
+            {/*  identification */}
             {type === "identification" && (
               <motion.div
                 layout
@@ -90,7 +90,7 @@ export default function Answers({
               </motion.div>
             )}
 
-            {/* Radio buttons for true or false */}
+            {/* true or false */}
             {type === "true_or_false" && (
               <motion.div
                 layout

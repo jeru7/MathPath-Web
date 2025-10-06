@@ -47,26 +47,26 @@ export default function Choice({
 
   return (
     <article
-      className={`w-full bg-white rounded-xs flex gap-2 font-primary border border-gray-200 p-2 ${isDragging ? "opacity-50" : ""}`}
+      className={`w-full bg-white dark:bg-gray-700 rounded-xs flex gap-2 font-primary border border-gray-200 dark:border-gray-600 p-2 ${isDragging ? "opacity-50" : ""} transition-colors duration-200`}
       ref={setNodeRef}
       {...attributes}
       style={style}
     >
       {/* drag indicator */}
       <div
-        className="hover:cursor-grab active:cursor-grabbing flex items-center justify-center"
+        className="hover:cursor-grab active:cursor-grabbing flex items-center justify-center text-gray-600 dark:text-gray-400"
         {...(!dragOverlay ? listeners : {})}
       >
         <MdOutlineDragIndicator />
       </div>
       {/* text input */}
       <div
-        className={`bg-white border rounded-xs p-2 w-full ${isEmpty ? "border-red-500" : "border-gray-300"}`}
+        className={`bg-white dark:bg-gray-600 border rounded-xs p-2 w-full ${isEmpty ? "border-red-500" : "border-gray-300 dark:border-gray-500"} transition-colors duration-200`}
       >
         <input
           type="text"
           placeholder="Type option here..."
-          className="text-sm focus:outline-none w-full"
+          className="text-sm focus:outline-none w-full bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
           value={choice.text}
           onChange={(e) => onTextChange(choice.id, e.target.value)}
         />
@@ -81,13 +81,16 @@ export default function Choice({
             checked={isChecked}
             onChange={(e) => onCorrectChange(choice.id, e.target.checked)}
           />
-          <label htmlFor="choices" className="text-xs">
+          <label
+            htmlFor="choices"
+            className="text-xs text-gray-700 dark:text-gray-300 transition-colors duration-200"
+          >
             Correct
           </label>
         </section>
         {/* delete button */}
         <button
-          className={`text-gray-400 hover:text-black ${isLastTwo ? "opacity-0" : "hover:cursor-pointer"}`}
+          className={`text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white ${isLastTwo ? "opacity-0" : "hover:cursor-pointer"} transition-colors duration-200`}
           type="button"
           onClick={() => onDeleteChoice(choice.id)}
         >

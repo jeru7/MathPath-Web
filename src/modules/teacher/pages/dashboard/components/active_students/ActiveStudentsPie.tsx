@@ -45,8 +45,10 @@ export default function ActiveStudentsPie({
       </ResponsiveContainer>
 
       <div className="absolute text-center">
-        <p className="text-2xl font-bold">{totalPercentage}%</p>
-        <p className="text-xs text-gray-500">Active</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {totalPercentage}%
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
       </div>
     </section>
   );

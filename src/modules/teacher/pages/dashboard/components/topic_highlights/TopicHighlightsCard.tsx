@@ -15,10 +15,12 @@ export default function TopicHighlightsCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-sm p-2 flex flex-col gap-3 min-h-60`}
+      className={`${classes} bg-white dark:bg-gray-800 shadow-sm rounded-sm p-2 flex flex-col gap-3 min-h-60 border border-gray-200 dark:border-gray-700 transition-colors duration-200`}
     >
       <header>
-        <p className="font-semibold text-md md:text-lg">Topic Highlights</p>
+        <p className="font-semibold text-md md:text-lg text-gray-900 dark:text-gray-100">
+          Topic Highlights
+        </p>
       </header>
 
       {topicHighlights?.hasData ? (
@@ -30,7 +32,7 @@ export default function TopicHighlightsCard({
                 <FaMedal className="w-4 h-4 text-white" />
               </div>
               <h6
-                className="text-sm md:text-base font-semibold text-wrap sm:text-nowrap truncate sm:max-w-[150px]"
+                className="text-sm md:text-base font-semibold text-wrap sm:text-nowrap truncate sm:max-w-[150px] text-gray-900 dark:text-gray-100"
                 title={topicHighlights.highest.title}
               >
                 Highest: {topicHighlights.highest.title}
@@ -48,14 +50,14 @@ export default function TopicHighlightsCard({
               {/* stats */}
               <section className="flex w-full text-sm items-center justify-center gap-4">
                 <article className="flex flex-col text-center">
-                  <p>Stage</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-gray-700 dark:text-gray-300">Stage</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                     {topicHighlights.highest.stage}
                   </p>
                 </article>
                 <article className="flex flex-col text-center">
-                  <p>Attempts</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-gray-700 dark:text-gray-300">Attempts</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                     {topicHighlights.highest.attempts}
                   </p>
                 </article>
@@ -63,7 +65,7 @@ export default function TopicHighlightsCard({
             </section>
           </article>
 
-          <div className="w-[2px] bg-gray-200"></div>
+          <div className="w-[2px] bg-gray-200 dark:bg-gray-600"></div>
 
           {/* lowest */}
           <article className="h-full w-full flex flex-col gap-2 items-center">
@@ -72,7 +74,7 @@ export default function TopicHighlightsCard({
                 <IoWarning className="w-4 h-4 text-white" />
               </div>
               <h6
-                className="text-sm md:text-base font-semibold text-wrap sm:text-nowrap truncate sm:max-w-[150px]"
+                className="text-sm md:text-base font-semibold text-wrap sm:text-nowrap truncate sm:max-w-[150px] text-gray-900 dark:text-gray-100"
                 title={topicHighlights.lowest.title}
               >
                 Lowest: {topicHighlights.lowest.title}
@@ -90,14 +92,14 @@ export default function TopicHighlightsCard({
               {/* stats */}
               <section className="flex w-full text-sm items-center justify-center gap-4">
                 <article className="flex flex-col text-center">
-                  <p>Stage</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-gray-700 dark:text-gray-300">Stage</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                     {topicHighlights.lowest.stage}
                   </p>
                 </article>
                 <article className="flex flex-col text-center">
-                  <p>Attempts</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-gray-700 dark:text-gray-300">Attempts</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                     {topicHighlights.lowest.attempts}
                   </p>
                 </article>
@@ -107,7 +109,9 @@ export default function TopicHighlightsCard({
         </section>
       ) : (
         <div className="flex-1 flex items-center justify-center">
-          <p className="italic text-gray-300">No data available</p>
+          <p className="italic text-gray-300 dark:text-gray-500">
+            No data available
+          </p>
         </div>
       )}
     </article>

@@ -100,7 +100,7 @@ export default function Publish({
   return (
     <div className="flex flex-col w-full sm:w-fit h-full items-center justify-center gap-2 md:gap-4">
       <AnimatePresence mode="wait">
-        <section className="border rounded-sm border-gray-300 bg-white h-fit w-full sm:w-96 flex flex-col gap-4 p-4 items-center">
+        <section className="border rounded-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 h-fit w-full sm:w-96 flex flex-col gap-4 p-4 items-center transition-colors duration-200">
           <form className="w-full flex flex-col gap-4">
             <div className="flex flex-col gap-2 w-full">
               {/* section select */}
@@ -117,6 +117,19 @@ export default function Publish({
                 placeholder="Select sections"
                 styles={getCustomSelectColor({
                   borderRadius: "var(--radius-sm)",
+                  backgroundColor: "white",
+                  textColor: "#1f2937",
+                  menuWidth: "100%",
+                  dark: {
+                    backgroundColor: "#374151",
+                    textColor: "#f9fafb",
+                    borderColor: "#4b5563",
+                    borderFocusColor: "#10b981",
+                    optionHoverColor: "#1f2937",
+                    optionSelectedColor: "#059669",
+                    menuBackgroundColor: "#374151",
+                    placeholderColor: "#9ca3af",
+                  },
                 })}
                 isSearchable={false}
                 className="w-full text-sm sm:text-base"
@@ -124,7 +137,7 @@ export default function Publish({
                 isClearable={false}
               />
               {/* section selected list */}
-              <section className="bg-inherit border-gray-300 border rounded-sm w-full">
+              <section className="bg-inherit border-gray-300 dark:border-gray-600 border rounded-sm w-full transition-colors duration-200">
                 <ul className="w-full gap-2 h-56 flex flex-col p-2 overflow-y-auto">
                   {selectedSections.map((section) => (
                     <SectionItem
@@ -138,7 +151,7 @@ export default function Publish({
               <AnimatePresence>
                 {isValidated && errors.sections && (
                   <motion.p
-                    className="text-sm text-red-500 self-end"
+                    className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                     key="section-error"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -160,7 +173,7 @@ export default function Publish({
                 <div className="flex flex-col gap-2 h-18 ">
                   <label
                     htmlFor="startDate"
-                    className="text-sm sm:text-base font-semibold"
+                    className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200"
                   >
                     Scheduled At
                   </label>
@@ -183,7 +196,7 @@ export default function Publish({
                 <AnimatePresence mode="wait">
                   {isValidated && errors.startDate && (
                     <motion.p
-                      className="text-sm text-red-500 self-end"
+                      className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                       key="start-date-error"
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -209,7 +222,7 @@ export default function Publish({
                 >
                   <label
                     htmlFor="endDate"
-                    className="text-sm sm:text-base font-semibold"
+                    className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200"
                   >
                     Deadline At
                   </label>
@@ -237,7 +250,7 @@ export default function Publish({
               <AnimatePresence mode="wait">
                 {isValidated && errors.endDate && (
                   <motion.p
-                    className="text-sm text-red-500 self-end"
+                    className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                     key="start-date-error"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -257,7 +270,7 @@ export default function Publish({
       </AnimatePresence>
       {/* publish assessment */}
       <button
-        className="bg-[var(--primary-green)] px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
+        className="bg-green-600 dark:bg-green-500 px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
         onClick={onPublishAssessment}
         type="button"
       >
@@ -268,11 +281,11 @@ export default function Publish({
 
       {/* save as draft */}
       <button
-        className={`border px-4 py-3 rounded-sm w-full opacity-60 ${isSavePending ? "opacity-100" : "hover:cursor-pointer hover:opacity-100 transition-all duration-200"}`}
+        className={`border border-gray-300 dark:border-gray-600 px-4 py-3 rounded-sm w-full opacity-60 ${isSavePending ? "opacity-100" : "hover:cursor-pointer hover:opacity-100 transition-all duration-200"} bg-white dark:bg-gray-700`}
         onClick={onSaveAssessment}
         type="button"
       >
-        <p className="text-sm md:text-base text-black font-semibold">
+        <p className="text-sm md:text-base text-black dark:text-gray-100 font-semibold transition-colors duration-200">
           {isSavePending ? "Saving..." : "Save as Draft"}
         </p>
       </button>

@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactElement } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import ModalActions from "../ModalActions";
 import { toast } from "react-toastify";
@@ -121,21 +121,23 @@ export default function AddImageModal({
 
   return (
     <motion.article
-      className="h-full min-h-[100vh] w-full flex flex-col fixed md:w-[800px] md:h-fit md:min-h-0 md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white"
+      className="h-full min-h-[100vh] w-full flex flex-col fixed md:w-[800px] md:h-fit md:min-h-0 md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white dark:bg-gray-800 transition-colors duration-200"
       key="add-image-modal"
       initial={{ opacity: 0, scale: 1, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 1, y: 50 }}
       transition={{ duration: 0.25 }}
     >
-      <header className="p-4 bg-white rounded-t-sm flex items-center justify-between border-b border-b-gray-300">
-        <h3>New Image</h3>
+      <header className="p-4 bg-white dark:bg-gray-800 rounded-t-sm flex items-center justify-between border-b border-b-gray-300 dark:border-b-gray-600 transition-colors duration-200">
+        <h3 className="text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          New Image
+        </h3>
         <button
-          className="hidden md:block opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
+          className="hidden md:block opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
           type="button"
           onClick={onClose}
         >
-          <IoClose />
+          <IoClose size={24} />
         </button>
       </header>
 
@@ -143,7 +145,7 @@ export default function AddImageModal({
         <div className="flex flex-col flex-1 gap-4 h-full">
           {/* drag-drop area */}
           <div
-            className="h-[400px] border border-dashed border-gray-400 rounded p-6 flex flex-col items-center justify-center gap-3 text-center text-gray-500 hover:cursor-pointer"
+            className="h-[400px] border border-dashed border-gray-400 dark:border-gray-500 rounded p-6 flex flex-col items-center justify-center gap-3 text-center text-gray-500 dark:text-gray-400 hover:cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={handleUploadClick}
@@ -155,14 +157,16 @@ export default function AddImageModal({
                   alt="preview"
                   className="max-w-xs max-h-64 object-contain"
                 />
-                <p className="text-sm text-gray-400">Click again to reupload</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors duration-200">
+                  Click again to reupload
+                </p>
               </article>
             ) : (
               <article>
                 <p className="hidden md:block font-medium">
                   Drop an image here
                 </p>
-                <p className="hidden md:block text-sm text-gray-400">
+                <p className="hidden md:block text-sm text-gray-400 dark:text-gray-500 transition-colors duration-200">
                   or click to upload
                 </p>
                 <p className="md:hidden font-medium">Click to upload</p>
@@ -177,10 +181,9 @@ export default function AddImageModal({
             />
           </div>
         </div>
-        <AnimatePresence></AnimatePresence>
         {isValidated && isEmpty && (
           <motion.p
-            className="text-sm text-red-500 self-center"
+            className="text-sm text-red-500 dark:text-red-400 self-center transition-colors duration-200"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
@@ -194,7 +197,7 @@ export default function AddImageModal({
 
       {isUploading &&
         createPortal(
-          <div className="fixed h-screen w-screen bg-black/20 z-50 top-0 left-0"></div>,
+          <div className="fixed h-screen w-screen bg-black/20 dark:bg-black/40 z-50 top-0 left-0 transition-colors duration-200"></div>,
           document.body,
         )}
     </motion.article>

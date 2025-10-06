@@ -31,6 +31,20 @@ export default function QuestionTypeSelect({
       placeholder="Select type"
       styles={getCustomSelectColor({
         borderRadius: "var(--radius-sm)",
+        backgroundColor: "white",
+        textColor: "#1f2937",
+        menuBackgroundColor: "white",
+        menuMinWidth: "100%",
+        dark: {
+          backgroundColor: "#374151",
+          textColor: "#f9fafb",
+          borderColor: "#4b5563",
+          borderFocusColor: "#10b981",
+          optionHoverColor: "#1f2937",
+          optionSelectedColor: "#059669",
+          menuBackgroundColor: "#374151",
+          placeholderColor: "#9ca3af",
+        },
       })}
       isSearchable={false}
       className={classes}

@@ -56,6 +56,10 @@ export default function RichTextField({
         event.preventDefault();
         return true;
       },
+      attributes: {
+        class:
+          "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[100px] text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700",
+      },
     },
   });
 
@@ -70,14 +74,14 @@ export default function RichTextField({
 
   return (
     <section
-      className={`${classes} w-full border border-gray-300 rounded-sm flex flex-col bg-white`}
+      className={`${classes} w-full border border-gray-300 dark:border-gray-600 rounded-sm flex flex-col bg-white dark:bg-gray-800 transition-colors duration-200`}
     >
-      <div className="flex gap-2 p-1 justify-end bg-gray-100 rounded-t-xs border-b border-b-gray-300 h-[40px] items-center px-2">
+      <div className="flex gap-2 p-1 justify-end bg-gray-100 dark:bg-gray-700 rounded-t-xs border-b border-b-gray-300 dark:border-b-gray-600 h-[40px] items-center px-2 transition-colors duration-200">
         {/* left align */}
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          className="border border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200"
+          className="border border-gray-500 dark:border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
           style={{
             backgroundColor: editor.isActive({ textAlign: "left" })
               ? "#CBD5E1"
@@ -90,7 +94,7 @@ export default function RichTextField({
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          className="border border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200"
+          className="border border-gray-500 dark:border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
           style={{
             backgroundColor: editor.isActive({ textAlign: "center" })
               ? "#CBD5E1"
@@ -103,7 +107,7 @@ export default function RichTextField({
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          className="border border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200"
+          className="border border-gray-500 dark:border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
           style={{
             backgroundColor: editor.isActive({ textAlign: "right" })
               ? "#CBD5E1"
@@ -116,7 +120,7 @@ export default function RichTextField({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className="border border-gray-500 rounded text-sm w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200"
+          className="border border-gray-500 dark:border-gray-500 rounded text-sm w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
           style={{
             backgroundColor: editor.isActive("bold") ? "#CBD5E1" : "",
           }}
@@ -127,7 +131,7 @@ export default function RichTextField({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className="border border-gray-500 rounded text-sm  w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200"
+          className="border border-gray-500 dark:border-gray-500 rounded text-sm  w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
           style={{
             backgroundColor: editor.isActive("italic") ? "#CBD5E1" : "",
           }}
@@ -138,7 +142,7 @@ export default function RichTextField({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className="border border-gray-500 rounded text-sm  w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200"
+          className="border border-gray-500 dark:border-gray-500 rounded text-sm  w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
           style={{
             backgroundColor: editor.isActive("underline") ? "#CBD5E1" : "",
           }}
@@ -147,10 +151,10 @@ export default function RichTextField({
         </button>
       </div>
 
-      <div className="h-fit w-full max-h-[400px] overflow-y-auto p-2 max-w-[620px]">
+      <div className="h-fit w-full max-h-[400px] overflow-y-auto p-2 max-w-[620px] bg-white dark:bg-gray-700 transition-colors duration-200">
         <EditorContent
           editor={editor}
-          className="h-full w-full max-w-full break-words whitespace-pre-wrap"
+          className="h-full w-full max-w-full break-words whitespace-pre-wrap text-gray-900 dark:text-gray-100"
           style={{ outline: "none" }}
         />
       </div>

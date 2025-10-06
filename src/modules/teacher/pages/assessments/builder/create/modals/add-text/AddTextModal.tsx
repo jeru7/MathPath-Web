@@ -48,22 +48,24 @@ export default function AddTextModal({
 
   return (
     <motion.article
-      className="flex flex-col fixed w-full h-full min-h-[100vh] md:min-h-0 md:w-[800px] md:h-fit md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white"
+      className="flex flex-col fixed w-full h-full min-h-[100vh] md:min-h-0 md:w-[800px] md:h-fit md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white dark:bg-gray-800 transition-colors duration-200"
       key="add-text-modal"
       initial={{ opacity: 0, scale: 1, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 1, y: 50 }}
       transition={{ duration: 0.25 }}
     >
-      <header className="p-4 bg-white rounded-t-sm flex items-center justify-between border-b border-b-gray-300">
-        <h3>New Text</h3>
+      <header className="p-4 bg-white dark:bg-gray-800 rounded-t-sm flex items-center justify-between border-b border-b-gray-300 dark:border-b-gray-600 transition-colors duration-200">
+        <h3 className="text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          New Text
+        </h3>
         {/* close button */}
         <button
-          className="hidden md:block opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200"
+          className="hidden md:block opacity-80 hover:opacity-100 hover:cursor-pointer transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
           type="button"
           onClick={onClose}
         >
-          <IoClose />
+          <IoClose size={24} />
         </button>
       </header>
       <section className="flex flex-col gap-4 bg-inherit rounded-b-sm p-4 justify-between h-full">
@@ -71,7 +73,7 @@ export default function AddTextModal({
           {/* label */}
           <label
             htmlFor="question"
-            className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right"
+            className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200"
           >
             Text
           </label>
@@ -88,7 +90,7 @@ export default function AddTextModal({
               {isEmpty && (
                 <motion.p
                   key="error-empty"
-                  className="text-sm text-red-500 self-end"
+                  className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}

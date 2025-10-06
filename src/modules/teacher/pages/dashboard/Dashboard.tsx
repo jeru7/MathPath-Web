@@ -14,18 +14,19 @@ export default function Dashboard(): ReactElement {
 
   const primaryStats: IPrimaryStatProps[] = [
     {
-      color: "bg-[var(--primary-green)]",
+      color: "bg-[var(--primary-green)] dark:bg-[var(--primary-green-dark)]",
       title: "Students",
       students: students.length,
       onlineStudents: onlineStudents.length,
     },
     {
-      color: "bg-[var(--primary-orange)]",
+      color: "bg-[var(--primary-orange)] dark:bg-[var(--primary-orange-dark)]",
       title: "Sections",
       sections: sections.length,
     },
     {
-      color: "bg-[var(--secondary-orange)]",
+      color:
+        "bg-[var(--secondary-orange)] dark:bg-[var(--secondary-orange-dark)]",
       title: "Assessments",
       assessments: assessments.length,
     },
@@ -34,8 +35,10 @@ export default function Dashboard(): ReactElement {
   return (
     <main className="flex flex-col min-h-screen h-fit w-full max-w-[2400px] gap-2 bg-inherit p-2">
       {/* header */}
-      <header className="flex items-center justify-between py-1">
-        <h3 className="text-xl sm:text-2xl font-bold">Dashboard</h3>
+      <header className="flex items-center justify-between">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+          Dashboard
+        </h3>
       </header>
 
       <div className="flex-1 flex flex-col xl:flex-row gap-2">
@@ -76,10 +79,7 @@ export default function Dashboard(): ReactElement {
           {/* calendar */}
           <CustomCalendar classes="" />
           {/* student activity */}
-          <ActivityList
-            classes="min-h-[400px] rounded-md bg-white w-full"
-            type="Teacher"
-          />
+          <ActivityList classes="min-h-[400px] w-full" type="Teacher" />
         </div>
       </div>
     </main>

@@ -28,7 +28,7 @@ export default function Sections(): ReactElement {
   }, []);
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-4">
+    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
       <AnimatePresence>
         {showAddButton && (
           <motion.button
@@ -45,12 +45,14 @@ export default function Sections(): ReactElement {
       </AnimatePresence>
 
       {/* header */}
-      <header className="flex items-center justify-between py-1">
-        <h3 className="text-xl sm:text-2xl font-bold">Sections</h3>
+      <header className="flex items-center justify-between">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+          Sections
+        </h3>
       </header>
 
       {/* section grid list */}
-      <section className="bg-white flex-1 rounded-sm shadow-sm">
+      <section className="flex-1 flex bg-white border border-white dark:bg-gray-800 dark:border-gray-700 rounded-sm shadow-sm">
         <SectionTable
           sections={sections}
           onShowForm={() => navigate("add-section")}

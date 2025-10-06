@@ -19,7 +19,7 @@ export default function SectionItem({
   ).length;
 
   return (
-    <li className="w-full flex justify-between pl-1 py-1 pr-4 border-gray-300 border rounded-xs group">
+    <li className="w-full flex justify-between pl-1 py-1 pr-4 border-gray-300 dark:border-gray-600 border rounded-xs group transition-colors duration-200">
       <div className="flex gap-2">
         <img
           src={getSectionBanner(data.banner)}
@@ -27,12 +27,16 @@ export default function SectionItem({
           className="w-16 h-full object-cover"
         />
         <div className="flex flex-col gap-1">
-          <p className="font-bold text-sm">{data.name}</p>
-          <p className="text-xs">Students: {studentCount}</p>
+          <p className="font-bold text-sm text-gray-900 dark:text-gray-100 transition-colors duration-200">
+            {data.name}
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 transition-colors duration-200">
+            Students: {studentCount}
+          </p>
         </div>
       </div>
       <button
-        className="flex items-center opacity-0 justify-center hover:cursor-pointer group-hover:opacity-100 transition-all duration-200"
+        className="flex items-center opacity-0 justify-center hover:cursor-pointer group-hover:opacity-100 transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
         type="button"
         onClick={() => onDelete(data)}
       >

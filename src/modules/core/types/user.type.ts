@@ -7,8 +7,13 @@ export type User = {
   lastName: string;
   middleName?: string;
   email: string;
+  verified: Verified;
+  profilePicture?: ProfilePicture;
+};
+
+export type Verified = {
   verified: boolean;
-  profilePicture?: string;
+  token: string | null;
 };
 
 export type ProfilePicture =

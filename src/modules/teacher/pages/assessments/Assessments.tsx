@@ -40,7 +40,7 @@ export default function Assessments(): ReactElement {
   if (isLoading || !teacherId) return <p>Loading</p>;
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-4">
+    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
       <AnimatePresence>
         {showAddButton && (
           <motion.button
@@ -57,12 +57,14 @@ export default function Assessments(): ReactElement {
       </AnimatePresence>
 
       {/* header */}
-      <header className="flex items-center justify-between py-1">
-        <h3 className="text-xl sm:text-2xl font-bold">Assessments</h3>
+      <header className="flex items-center justify-between">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+          Assessments
+        </h3>
       </header>
 
       {/* table section */}
-      <section className="bg-white rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
+      <section className="bg-white border border-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
         <AssessmentTable assessments={assessments} navigate={navigate} />
       </section>
     </main>

@@ -20,14 +20,17 @@ import { adminRoutesConfig } from "./modules/admin/routes/adminRoutesConfig";
 import AdminLoginForm from "./modules/core/components/auth/admin/AdminLoginForm";
 import VerifyEmailPage from "./modules/core/components/auth/email-verification/VerifyEmailPage";
 import { queryClient } from "./modules/core/hooks/queryClient";
+import ThemeProvider from "./modules/core/contexts/theme/ThemeProvider";
 
 const router = createBrowserRouter([
   {
     element: (
-      <AuthProvider>
-        <ToastContainer position="bottom-right" theme="colored" />
-        <App />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastContainer position="bottom-right" theme="colored" />
+          <App />
+        </AuthProvider>
+      </ThemeProvider>
     ),
     children: [
       // public routes

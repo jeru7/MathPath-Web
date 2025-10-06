@@ -50,15 +50,17 @@ export default function RegistrationCode({
 
   return (
     <div className="bg-[var(--primary-black)]/20 fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center overflow-hidden">
-      <article className="relative flex flex-col gap-4 rounded-md bg-[var(--primary-white)] p-4 w-[80%] md:w-96">
+      <article className="relative flex flex-col gap-4 rounded-sm border border-gray-300 bg-[var(--primary-white)] dark:bg-gray-800 dark:border-gray-700 p-4 w-[80%] md:w-96">
         <button
           className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
           onClick={() => navigate("..")}
         >
-          <IoClose />
+          <IoClose className="text-gray-900 dark:text-gray-200" />
         </button>
         <header className="border-b border-b-[var(--primary-gray)] pb-2">
-          <h3 className="">Registration Codes</h3>
+          <h3 className="text-gray-900 dark:text-gray-200">
+            Registration Codes
+          </h3>
         </header>
 
         <section className="flex flex-1 min-h-[400px] max-h-[400px] overflow-y-auto .no-scrollbar">

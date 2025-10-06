@@ -24,7 +24,7 @@ export default function FormButtons({
         <button
           type="submit"
           disabled={disabled}
-          className="border-1 bg-[var(--primary-green)] opacity-80 rounded-lg px-5 py-2 text-white hover:cursor-pointer hover:opacity-100 transition-opacity duration-200"
+          className="bg-[var(--primary-green)] opacity-80 rounded-sm px-5 py-2 text-white hover:cursor-pointer hover:opacity-100 transition-opacity duration-200"
         >
           {text}
         </button>

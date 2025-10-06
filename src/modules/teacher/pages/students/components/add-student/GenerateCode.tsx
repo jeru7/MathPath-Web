@@ -82,7 +82,21 @@ export default function GenerateCode({
     minHeight: "24px",
     border: true,
     borderRadius: ".25rem",
-    padding: "4px 2px",
+    padding: "0px 2px",
+    backgroundColor: "white",
+    textColor: "#1f2937",
+    menuBackgroundColor: "white",
+    menuWidth: "100%",
+    dark: {
+      backgroundColor: "#374151",
+      textColor: "#f9fafb",
+      borderColor: "#4b5563",
+      borderFocusColor: "#10b981",
+      optionHoverColor: "#1f2937",
+      optionSelectedColor: "#059669",
+      menuBackgroundColor: "#374151",
+      placeholderColor: "#9ca3af",
+    },
   });
 
   const handleDecrementStudents = () => {
@@ -124,7 +138,7 @@ export default function GenerateCode({
             console.log("Error data: " + errorData.error);
             if (errorData.error === "ACTIVE_CODE_EXISTS") {
               const shouldReplace = window.confirm(
-                "There’s already an active code for this section. Replace it?",
+                "There's already an active code for this section. Replace it?",
               );
 
               if (shouldReplace) {
@@ -168,22 +182,26 @@ export default function GenerateCode({
   }
 
   return (
-    <article className="relative flex flex-col gap-2 rounded-md bg-[var(--primary-white)] p-4">
-      <header className="border-b border-b-[var(--primary-gray)] pb-2">
-        <h3 className="">Add Student</h3>
+    <article className="relative flex flex-col gap-2 rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+      <header className="border-b border-b-gray-200 dark:border-b-gray-700 pb-2 transition-colors duration-200">
+        <h3 className="text-gray-900 dark:text-gray-100 font-semibold text-lg">
+          Generate Code
+        </h3>
       </header>
       <button
-        className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
+        className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
         onClick={handleBack}
       >
-        <IoClose />
+        <IoClose size={24} />
       </button>
       <form onSubmit={handleSubmit}>
-        {/* exit/close button */}
         <div className="flex flex-col gap-4">
           {/* section selection */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="section" className="font-medium">
+            <label
+              htmlFor="section"
+              className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-200"
+            >
               Section
             </label>
             <Select
@@ -206,7 +224,10 @@ export default function GenerateCode({
 
           {/* number of uses/students */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="studentNumber" className="font-medium">
+            <label
+              htmlFor="studentNumber"
+              className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-200"
+            >
               Number of Students
             </label>
             <div className="relative">
@@ -218,21 +239,21 @@ export default function GenerateCode({
                 onChange={handleNumberOfStudentsInputChange}
                 onBlur={handleNumberOfStudentsBlur}
                 placeholder=""
-                className="border-1 w-full py-2 pl-3 pr-10 [appearance:textfield] focus:border-[var(--tertiary-green)] focus:outline-none focus:ring-1 focus:ring-[var(--tertiary-green)]"
+                className="border border-gray-300 dark:border-gray-600 w-full py-2 pl-3 pr-10 [appearance:textfield] focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md transition-colors duration-200"
               />
               <div className="absolute right-0 top-0 flex h-full flex-col justify-center pr-2">
                 <div className="flex">
                   <button
                     type="button"
                     onClick={handleDecrementStudents}
-                    className="flex h-6 w-6 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    className="flex h-6 w-6 items-center justify-center rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
                   >
                     <FaMinus className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={handleIncrementStudents}
-                    className="flex h-6 w-6 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    className="flex h-6 w-6 items-center justify-center rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
                   >
                     <FaPlus className="h-4 w-4" />
                   </button>

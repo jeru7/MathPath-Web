@@ -26,10 +26,12 @@ export default function ActiveStudentsCard({
 
   return (
     <article
-      className={`${classes} bg-white shadow-sm rounded-sm p-2 flex flex-col`}
+      className={`${classes} bg-white dark:bg-gray-800 shadow-sm rounded-sm p-2 flex flex-col border border-gray-200 dark:border-gray-700 transition-colors duration-200`}
     >
       <header>
-        <p className="font-semibold text-md md:text-lg">Active Students</p>
+        <p className="font-semibold text-md md:text-lg text-gray-900 dark:text-gray-100">
+          Active Students
+        </p>
       </header>
 
       <div className="flex gap-1 xl:gap-3 h-full items-center justify-center">
@@ -49,7 +51,9 @@ export default function ActiveStudentsCard({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
               />
-              <span>{section.name}</span>
+              <span className="text-gray-700 dark:text-gray-300">
+                {section.name}
+              </span>
             </div>
           ))}
           <div className="flex items-center gap-2">
@@ -57,7 +61,7 @@ export default function ActiveStudentsCard({
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: OFFLINE_COLOR }}
             />
-            <span>Offline</span>
+            <span className="text-gray-700 dark:text-gray-300">Offline</span>
           </div>
         </section>
       </div>

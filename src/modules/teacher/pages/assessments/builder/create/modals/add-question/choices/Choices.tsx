@@ -108,12 +108,12 @@ export default function Choices({
 
   return (
     <section className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
-      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right">
+      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200">
         Options
       </label>
       <div className="flex flex-col gap-1 w-full">
-        <section className="border border-gray-300 rounded-sm bg-white w-full h-fit flex flex-col">
-          <div className="w-full flex justify-end items-center p-1 bg-gray-100 border-b border-b-gray-300 h-[40px] px-2">
+        <section className="border border-gray-300 dark:border-gray-600 rounded-sm bg-white dark:bg-gray-800 w-full h-fit flex flex-col transition-colors duration-200">
+          <div className="w-full flex justify-end items-center p-1 bg-gray-100 dark:bg-gray-700 border-b border-b-gray-300 dark:border-b-gray-600 h-[40px] px-2 transition-colors duration-200">
             {/* random position checkbox */}
             <div className="flex gap-1 items-center">
               <input
@@ -122,7 +122,9 @@ export default function Choices({
                 checked={isSingleOrMulti && question.randomPosition}
                 onChange={(e) => onToggleRandom(e.target.checked)}
               />
-              <p className="text-[10px] font-medium">Randomize position</p>
+              <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
+                Randomize position
+              </p>
             </div>
           </div>
 
@@ -205,7 +207,7 @@ export default function Choices({
                 <button
                   type="button"
                   onClick={() => handleAddChoice({ id: nanoid(), text: "" })}
-                  className="rounded-full h-8 w-8 flex items-center justify-center border-gray-400 border hover:cursor-pointer hover:text-black text-[var(--primary-green)] hover:border-[var(--primary-green)] transition-colors duration-200"
+                  className="rounded-full h-8 w-8 flex items-center justify-center border-gray-400 dark:border-gray-500 border hover:cursor-pointer hover:text-black dark:hover:text-white text-green-600 dark:text-green-400 hover:border-green-600 dark:hover:border-green-400 transition-colors duration-200"
                 >
                   <FaPlus className="w-2 h-2" />
                 </button>
@@ -217,7 +219,7 @@ export default function Choices({
           {isValidated && errors.answer && (
             <motion.p
               key="error-answer"
-              className="text-xs md:text-sm text-red-500 self-end"
+              className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
@@ -228,7 +230,7 @@ export default function Choices({
           {isValidated && errors.multiChoiceAnswer && (
             <motion.p
               key="error-multiChoice"
-              className="text-xs md:text-sm text-red-500 self-end"
+              className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
@@ -242,7 +244,7 @@ export default function Choices({
             errors.duplicateChoices && (
               <motion.p
                 key="error-duplicateChoices"
-                className="text-sm text-red-500 self-end"
+                className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
