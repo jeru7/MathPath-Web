@@ -7,6 +7,8 @@ import Assessments from "../pages/assessments/Assessments";
 import Statistics from "../pages/statistics/Statistics";
 import AssessmentBuilderWrapper from "../pages/assessments/builder/AssessmentBuilderWrapper";
 import AssessmentInfo from "../pages/assessments/info/AssessmentInfo";
+import Profile from "../pages/profile/Profile";
+import TeacherSettings from "../pages/settings/TeacherSettings";
 
 export const teacherRoutesConfig = [
   {
@@ -52,6 +54,8 @@ export const teacherRoutesConfig = [
           },
         ],
       },
+      { path: "profile", element: <Profile /> },
+      { path: "settings", element: <TeacherSettings /> },
     ],
   },
 ];

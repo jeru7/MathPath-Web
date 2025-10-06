@@ -1,5 +1,5 @@
 import { AssessmentAttempt } from "../../core/types/assessment-attempt/assessment-attempt.type";
-import { ProfilePicture } from "../../core/types/user.type";
+import { ProfilePicture, Verified } from "../../core/types/user.type";
 
 export type StudentGender = "Male" | "Female";
 export type StudentCharacter = StudentGender;
@@ -27,6 +27,7 @@ export type Student = {
   stages: StudentStage[];
   lastOnline: string;
   streak: number;
+  verified: Verified;
   createdAt: string;
   updatedAt: string;
 };
