@@ -19,6 +19,16 @@ export type SelectStyleOptions = {
   menuWidth?: string;
   hideIndicator?: boolean;
   indicatorPadding?: string;
+  dark?: {
+    backgroundColor?: string;
+    textColor?: string;
+    borderColor?: string;
+    borderFocusColor?: string;
+    optionHoverColor?: string;
+    optionSelectedColor?: string;
+    menuBackgroundColor?: string;
+    placeholderColor?: string;
+  };
 };
 
 export const getCustomSelectColor = <
@@ -42,11 +52,25 @@ export const getCustomSelectColor = <
     padding: options?.padding || "0px 4px",
     fontSize: options?.fontSize || "0.875rem",
     color: options?.textColor || "inherit",
+
+    ".dark &": options?.dark
+      ? {
+          backgroundColor: options.dark.backgroundColor || "#374151",
+          borderColor: options.dark.borderColor || "#4b5563",
+          color: options.dark.textColor || "#f9fafb",
+        }
+      : {},
+
     "&:hover": {
       border:
         options?.border === false
           ? "none"
           : `${options?.borderWidth || "1px"} solid ${options?.borderColor || "var(--primary-gray)"}`,
+      ".dark &": options?.dark
+        ? {
+            borderColor: options.dark.borderColor || "#4b5563",
+          }
+        : {},
     },
     "&:focus-within": {
       border:
@@ -57,6 +81,12 @@ export const getCustomSelectColor = <
         options?.border === false
           ? "none"
           : `0 0 0 1px ${options?.borderFocusColor || "var(--tertiary-green)"}`,
+      ".dark &": options?.dark
+        ? {
+            borderColor: options.dark.borderFocusColor || "#10b981",
+            boxShadow: `0 0 0 1px ${options.dark.borderFocusColor || "#10b981"}`,
+          }
+        : {},
     },
   }),
   valueContainer: (base) => ({
@@ -71,14 +101,32 @@ export const getCustomSelectColor = <
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+
+    ".dark &": options?.dark
+      ? {
+          color: options.dark.textColor || "#f9fafb",
+        }
+      : {},
   }),
   input: (base) => ({
     ...base,
     color: options?.textColor || "inherit",
+
+    ".dark &": options?.dark
+      ? {
+          color: options.dark.textColor || "#f9fafb",
+        }
+      : {},
   }),
   placeholder: (base) => ({
     ...base,
     color: options?.textColor ? `${options.textColor}88` : "#9CA3AF",
+
+    ".dark &": options?.dark
+      ? {
+          color: options.dark.placeholderColor || "#9ca3af",
+        }
+      : {},
   }),
   option: (base, state) => ({
     ...base,
@@ -89,6 +137,19 @@ export const getCustomSelectColor = <
         : options?.backgroundColor || "inherit",
     color: state.isSelected ? "white" : options?.textColor || "inherit",
     fontSize: options?.fontSize || "0.875rem",
+
+    ".dark &": options?.dark
+      ? {
+          backgroundColor: state.isSelected
+            ? options.dark.optionSelectedColor || "#059669"
+            : state.isFocused
+              ? options.dark.optionHoverColor || "#374151"
+              : options.dark.menuBackgroundColor || "#1f2937",
+          color: state.isSelected
+            ? "white"
+            : options.dark.textColor || "#f9fafb",
+        }
+      : {},
   }),
   menu: (base) => ({
     ...base,
@@ -97,6 +158,12 @@ export const getCustomSelectColor = <
     zIndex: 9999,
     minWidth: options?.menuMinWidth,
     width: options?.menuWidth,
+
+    ".dark &": options?.dark
+      ? {
+          backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
+        }
+      : {},
   }),
   dropdownIndicator: (base) =>
     options?.hideIndicator
@@ -105,9 +172,29 @@ export const getCustomSelectColor = <
           ...base,
           padding: options?.indicatorPadding ?? "0 4px",
           cursor: "pointer",
-        },
 
+          ".dark &": options?.dark
+            ? {
+                color: options.dark.textColor
+                  ? `${options.dark.textColor}88`
+                  : "#9ca3af",
+                "&:hover": {
+                  color: options.dark.textColor || "#f9fafb",
+                },
+              }
+            : {},
+        },
   indicatorSeparator: () => ({
     display: "none",
+  }),
+
+  menuList: (base) => ({
+    ...base,
+
+    ".dark &": options?.dark
+      ? {
+          backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
+        }
+      : {},
   }),
 });
