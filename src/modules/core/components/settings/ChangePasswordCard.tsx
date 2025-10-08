@@ -46,7 +46,7 @@ export default function ChangePasswordCard(): ReactElement {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
+    <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
       <h4 className="font-semibold text-gray-900 dark:text-white mb-6 text-lg">
         Change Password
       </h4>

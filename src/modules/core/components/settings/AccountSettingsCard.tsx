@@ -27,9 +27,6 @@ export default function AccountSettingsCard(
     firstName: user.firstName,
     lastName: user.lastName,
     middleName: user.middleName || "",
-    ...(userType === "student" && {
-      characterName: (user as Student).characterName,
-    }),
   });
   const [profilePicture, setProfilePicture] = useState(user.profilePicture);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,9 +41,6 @@ export default function AccountSettingsCard(
       firstName: user.firstName,
       lastName: user.lastName,
       middleName: user.middleName || "",
-      ...(userType === "student" && {
-        characterName: (user as Student).characterName,
-      }),
     });
     setProfilePicture(user.profilePicture);
     setIsEditing(false);
@@ -70,7 +64,7 @@ export default function AccountSettingsCard(
   const teacher = user as Teacher;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
+    <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
       <h4 className="font-semibold text-gray-900 dark:text-white mb-6 text-lg">
         Account Information
       </h4>
@@ -177,29 +171,6 @@ export default function AccountSettingsCard(
             ) : (
               <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white">
                 {user.middleName}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Student-specific Fields */}
-        {isStudent && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Character Name
-            </label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={formData.characterName}
-                onChange={(e) =>
-                  setFormData({ ...formData, characterName: e.target.value })
-                }
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            ) : (
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white">
-                {student.characterName}
               </div>
             )}
           </div>

@@ -42,7 +42,7 @@ export default function Settings({
 
       <div className="flex flex-col lg:flex-row gap-2">
         <aside className="lg:w-64 flex-shrink-0">
-          <nav className="bg-white dark:bg-gray-800 rounded-sm shadow-sm p-4">
+          <nav className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-4">
             <ul className="space-y-2">
               {settingsSections.map((section) => (
                 <li key={section.id}>
