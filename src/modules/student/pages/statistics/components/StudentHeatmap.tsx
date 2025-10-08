@@ -57,9 +57,11 @@ export default function StudentHeatmap({
   };
 
   return (
-    <div className="flex flex-col justify-between bg-white p-3 w-full h-full">
+    <div className="flex flex-col justify-between bg-white dark:bg-gray-800 p-3 w-full h-full transition-colors duration-200">
       <header className="mb-4">
-        <h3 className="font-semibold text-gray-900">Activity Map</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          Activity Map
+        </h3>
       </header>
 
       <div className="flex max-w-full overflow-x-auto overflow-y-clip">
@@ -78,9 +80,12 @@ export default function StudentHeatmap({
           />
         </div>
       </div>
-      <Tooltip id="heatmap-tooltip" className="z-50" />
+      <Tooltip
+        id="heatmap-tooltip"
+        className="z-50 dark:bg-gray-700 dark:text-gray-100"
+      />
 
-      <div className="flex self-end items-center justify-end mt-4 text-sm text-gray-600 gap-2">
+      <div className="flex self-end items-center justify-end mt-4 text-sm text-gray-600 dark:text-gray-400 gap-2 transition-colors duration-200">
         <span className="text-xs">Less</span>
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 color-empty rounded-sm"></div>

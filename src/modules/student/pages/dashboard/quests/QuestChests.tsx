@@ -10,10 +10,10 @@ export default function QuestChests({
   const percentage = quest?.percentage ?? 0;
 
   return (
-    <div className="w-full p-8 bg-gray-50 border border-gray-300 rounded-sm">
+    <div className="w-full p-8 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-sm transition-colors duration-200">
       <div className="relative">
         {/* fill container */}
-        <div className="w-full h-2 rounded-full bg-gray-200">
+        <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-200">
           {/* progress fill */}
           <div
             className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full transition-all duration-300"
@@ -35,7 +35,7 @@ export default function QuestChests({
                 alt="Chest 1"
                 className="h-6 w-6 drop-shadow-sm"
               />
-              <span className="text-[10px] text-gray-500 font-medium mt-1">
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-1 transition-colors duration-200">
                 25%
               </span>
             </div>
@@ -57,7 +57,7 @@ export default function QuestChests({
                 alt="Chest 2"
                 className="h-6 w-6 drop-shadow-sm"
               />
-              <span className="text-[10px] text-gray-500 font-medium mt-1">
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-1 transition-colors duration-200">
                 50%
               </span>
             </div>
@@ -79,7 +79,7 @@ export default function QuestChests({
                 alt="Chest 3"
                 className="h-6 w-6 drop-shadow-sm"
               />
-              <span className="text-[10px] text-gray-500 font-medium mt-1">
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-1 transition-colors duration-200">
                 100%
               </span>
             </div>

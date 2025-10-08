@@ -68,23 +68,23 @@ export default function AssessmentTable({
 
   return (
     <section className="flex flex-col flex-1">
-      <section className="w-full border-b-gray-200 p-4 border-b flex justify-between">
+      <section className="w-full border-b-gray-200 dark:border-b-gray-600 p-4 border-b flex justify-between transition-colors duration-200">
         {/* search and filters */}
         <section className="flex gap-2 items-center w-full md:w-fit">
-          <div className="flex rounded-sm border-gray-200 border h-fit items-center pr-2 w-full">
+          <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="p-2">
-              <CiSearch className="w-4 h-4 text-gray-400" />
+              <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               placeholder="Search assessment"
-              className="text-xs focus:outline-none flex-1"
+              className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               value={searchTerm}
               onChange={handleSearchChange}
             />
             {searchTerm && (
               <button
                 onClick={handleClearSearch}
-                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1"
               >
                 ×
               </button>
@@ -97,7 +97,7 @@ export default function AssessmentTable({
               className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${
                 hasActiveFilters
                   ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 text-gray-400"
+                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
               }`}
               onClick={() => setShowFilters(!showFilters)}
             >
@@ -105,12 +105,12 @@ export default function AssessmentTable({
             </button>
 
             {showFilters && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-sm shadow-lg z-30 w-64 p-4">
+              <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 w-64 p-4 transition-colors duration-200">
                 {hasActiveFilters && (
                   <div className="flex justify-end mb-3">
                     <button
                       onClick={handleClearFilters}
-                      className="text-xs text-[var(--primary-green)] hover:underline"
+                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
                     >
                       Clear all
                     </button>
@@ -118,7 +118,7 @@ export default function AssessmentTable({
                 )}
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Status
                   </label>
                   <select
@@ -133,7 +133,7 @@ export default function AssessmentTable({
                           | "failed",
                       )
                     }
-                    className="w-full p-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)]"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
                   >
                     <option value="all">All Status</option>
                     <option value="not-started">Not Started</option>
@@ -143,7 +143,7 @@ export default function AssessmentTable({
                   </select>
                 </div>
 
-                <div className="text-xs text-gray-500 border-t pt-2">
+                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
                   Showing {filteredAssessments.length} of {assessments.length}{" "}
                   assessments
                 </div>
@@ -154,8 +154,8 @@ export default function AssessmentTable({
       </section>
 
       {hasActiveFilters && (
-        <div className="px-4 py-2 bg-blue-50 border-b">
-          <div className="text-sm text-gray-600">
+        <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
             {filteredAssessments.length} assessment
             {filteredAssessments.length !== 1 ? "s" : ""} found
             {searchTerm && ` for "${searchTerm}"`}
@@ -170,18 +170,20 @@ export default function AssessmentTable({
           {/* assessment items/list */}
           {assessments.length === 0 ? (
             <div className="flex-1 min-h-full items-center justify-center flex">
-              <p className="text-gray-300">No assessments available</p>
+              <p className="text-gray-300 dark:text-gray-600">
+                No assessments available
+              </p>
             </div>
           ) : filteredAssessments.length === 0 ? (
             <div className="flex-1 min-h-full items-center justify-center flex">
               <div className="text-center">
-                <p className="text-gray-400 mb-2">
+                <p className="text-gray-400 dark:text-gray-500 mb-2">
                   No assessments match your search criteria
                 </p>
                 {hasActiveFilters && (
                   <button
                     onClick={handleClearFilters}
-                    className="text-sm text-[var(--primary-green)] hover:underline"
+                    className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
                   >
                     Clear filters
                   </button>
@@ -192,36 +194,36 @@ export default function AssessmentTable({
             <div className={`max-h-[780px] overflow-y-auto pb-4 flex-1`}>
               {/* headers */}
               <table className="font-primary table-auto w-full">
-                <thead className="text-gray-400 text-sm xl:text-base">
+                <thead className="text-gray-400 dark:text-gray-500 text-sm xl:text-base transition-colors duration-200">
                   <tr className="text-left">
-                    <th className="bg-white sticky top-0 z-20 w-[20%]">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
                       Title
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[20%]">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
                       Topic
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
                       Deadline
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
                       Duration
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
                       Status
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
                       Questions
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[10%] text-center">
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
                       Attempts
                     </th>
-                    <th className="bg-white sticky top-0 z-20 w-[5%]"></th>
+                    <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[5%] py-3 border-b border-gray-200 dark:border-gray-700"></th>
                   </tr>
                 </thead>
               </table>
               <table className="font-primary table-auto w-full">
                 <tbody>
-                  {assessments.map((assessment) => (
+                  {filteredAssessments.map((assessment) => (
                     <AssessmentTableItem
                       key={assessment.id}
                       assessment={assessment}

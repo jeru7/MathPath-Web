@@ -15,12 +15,12 @@ export default function PlayerCard(): ReactElement {
         : undefinedCharacter;
 
   return (
-    <section className="w-full h-full bg-white rounded-sm p-3 shadow-sm">
+    <section className="w-full h-full bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm p-3 shadow-sm transition-colors duration-200">
       <div className="flex flex-col md:flex-row h-full">
         {/* character */}
-        <div className="md:w-2/5 p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 h-full">
+        <div className="md:w-2/5 p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 h-full transition-colors duration-200">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-1 bg-white px-3 py-1 rounded-full border border-gray-300 text-sm">
+            <div className="inline-flex items-center gap-1 bg-white dark:bg-gray-700 px-3 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-200">
               <span className="text-[var(--primary-green)] font-bold">
                 {student?.characterName ?? "No character name"}
               </span>
@@ -36,7 +36,7 @@ export default function PlayerCard(): ReactElement {
           </div>
 
           {!student?.character && (
-            <p className="text-gray-500 text-xs mt-2 text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-2 text-center transition-colors duration-200">
               No character selected
             </p>
           )}

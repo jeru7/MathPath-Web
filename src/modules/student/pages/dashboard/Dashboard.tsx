@@ -15,7 +15,9 @@ export default function Dashboard(): ReactElement {
   return (
     <main className="flex flex-col min-h-screen h-fit w-full gap-2 bg-inherit p-2">
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold">Dashboard</h3>
+        <h3 className="text-xl sm:text-2xl font-bold dark:text-gray-300">
+          Dashboard
+        </h3>
       </header>
 
       <div className="w-full flex-1 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-3 2xl:grid-cols-5 gap-2">

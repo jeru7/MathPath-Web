@@ -29,9 +29,11 @@ export default function QuestList(): ReactElement {
   });
 
   return (
-    <section className="flex-2 h-full bg-white rounded-sm shadow-sm p-3 flex flex-col">
+    <section className="flex-2 h-full bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-3 flex flex-col transition-colors duration-200">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="font-semibold text-gray-900">Quests</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          Quests
+        </h3>
         <Select
           options={filterOptions}
           value={selectedFilter}
@@ -43,6 +45,16 @@ export default function QuestList(): ReactElement {
             minHeight: "12px",
             menuWidth: "100%",
             menuBackgroundColor: "white",
+            dark: {
+              backgroundColor: "#374151",
+              textColor: "#f9fafb",
+              borderColor: "#4b5563",
+              borderFocusColor: "#10b981",
+              optionHoverColor: "#374151",
+              optionSelectedColor: "#059669",
+              menuBackgroundColor: "#1f2937",
+              placeholderColor: "#9ca3af",
+            },
           })}
           isMulti={false}
           className="w-32 text-xs"
@@ -53,7 +65,7 @@ export default function QuestList(): ReactElement {
 
       <div className="flex flex-col gap-2 flex-1 overflow-hidden">
         <QuestChests quest={questList} />
-        <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto no-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-full overflow-y-auto no-scrollbar">
           {filteredQuestList?.map((quest, index) => (
             <QuestItem key={index} quest={quest} />
           ))}
