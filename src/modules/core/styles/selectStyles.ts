@@ -17,6 +17,7 @@ export type SelectStyleOptions = {
   menuBackgroundColor?: string;
   menuMinWidth?: string;
   menuWidth?: string;
+  menuMaxHeight?: string;
   hideIndicator?: boolean;
   indicatorPadding?: string;
   dark?: {
@@ -165,6 +166,17 @@ export const getCustomSelectColor = <
         }
       : {},
   }),
+  menuList: (base) => ({
+    ...base,
+    maxHeight: options?.menuMaxHeight || "200px",
+    overflowY: "auto",
+
+    ".dark &": options?.dark
+      ? {
+          backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
+        }
+      : {},
+  }),
   dropdownIndicator: (base) =>
     options?.hideIndicator
       ? { ...base, display: "none", padding: 0, width: 0 }
@@ -186,15 +198,5 @@ export const getCustomSelectColor = <
         },
   indicatorSeparator: () => ({
     display: "none",
-  }),
-
-  menuList: (base) => ({
-    ...base,
-
-    ".dark &": options?.dark
-      ? {
-          backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
-        }
-      : {},
   }),
 });

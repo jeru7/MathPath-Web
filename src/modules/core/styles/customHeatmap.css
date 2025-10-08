@@ -43,3 +43,18 @@
 .react-calendar-heatmap text {
   font-size: 0.5rem !important;
 }
+
+.dark .react-calendar-heatmap-month-label,
+.dark .react-calendar-heatmap-weekday-label {
+  fill: #9ca3af !important;
+}
+
+.dark .react-calendar-heatmap .color-empty,
+.dark .color-empty {
+  fill: #374151 !important;
+  background-color: #374151 !important;
+}
+
+.dark .react-calendar-heatmap {
+  background-color: transparent !important;
+}
