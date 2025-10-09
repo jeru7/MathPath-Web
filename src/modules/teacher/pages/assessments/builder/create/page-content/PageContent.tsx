@@ -83,7 +83,7 @@ export default function PageContent({
   };
 
   return (
-    <section className="flex flex-col gap-8 overflow-hidden ">
+    <section className="flex flex-col gap-8 overflow-hidden">
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -143,7 +143,7 @@ export default function PageContent({
 
                   if (activeContent.type === "question") {
                     return (
-                      <div className="rounded scale-105 bg-white p-2 border border-gray-300">
+                      <div className="rounded scale-105 bg-white dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-600 shadow-lg">
                         <Question
                           content={activeContent}
                           questionNumber={0}
@@ -155,7 +155,7 @@ export default function PageContent({
                     );
                   } else if (activeContent.type === "image") {
                     return (
-                      <div className="rounded scale-105 bg-white p-2 border border-gray-300">
+                      <div className="rounded scale-105 bg-white dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-600 shadow-lg">
                         <Image
                           content={activeContent}
                           onDeleteContent={handleDeleteContent}
@@ -165,7 +165,7 @@ export default function PageContent({
                     );
                   } else if (activeContent.type === "text") {
                     return (
-                      <div className="rounded scale-105 bg-white p-2 border border-gray-300">
+                      <div className="rounded scale-105 bg-white dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-600 shadow-lg">
                         <Text
                           content={activeContent}
                           onDeleteContent={handleDeleteContent}

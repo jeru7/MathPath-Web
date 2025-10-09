@@ -40,28 +40,28 @@ export default function Image({
 
   return (
     <article
-      className={`flex gap-2 w-full max-w-full bg-white relative group items-center justify-center ${isDragging ? "opacity-50 z-10" : ""}`}
+      className={`flex gap-2 w-full max-w-full bg-white dark:bg-gray-800 relative group items-center justify-center ${isDragging ? "opacity-50 z-10" : ""}`}
       ref={setNodeRef}
       style={style}
       {...attributes}
     >
       {/* control buttons */}
-      <div className="absolute flex gap-2 right-0 text-gray-300 opacity-0 group-hover:opacity-100 transition-all duration-200 top-0">
+      <div className="absolute flex gap-2 right-0 text-gray-300 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-all duration-200 top-0">
         <button
-          className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
+          className="hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
           type="button"
           onClick={onEdit}
         >
           <FaRegEdit />
         </button>
         <div
-          className="flex itemx-center justify-center hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
+          className="flex itemx-center justify-center hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
           {...listeners}
         >
           <MdDragIndicator />
         </div>
         <button
-          className="hover:text-gray-500 hover:cursor-pointer transition-colors duration-200"
+          className="hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
           onClick={() => onDeleteContent?.(content)}
         >
           <MdDeleteOutline />
