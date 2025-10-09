@@ -18,6 +18,8 @@ import {
   useDeleteAssessment,
 } from "../../../services/teacher-assessment.service";
 import { useTeacherAssessments } from "../../../services/teacher.service";
+import { usePreview } from "../../../../core/contexts/preview/preview.context";
+import AssessmentPreview from "./preview/AssessmentPreview";
 
 export type BuilderMode = "create" | "configure" | "publish";
 export type BuilderStep = 1 | 2 | 3;
@@ -56,6 +58,9 @@ export default function AssessmentBuilder(): ReactElement {
   const hasMounted = useRef(false);
   const prevAssessmentRef = useRef<string>();
   const savingTimeoutRef = useRef<number>();
+
+  // preview
+  const { openPreview } = usePreview();
 
   const debouncedUpdate = useRef(
     debounce((updatedAssessment: Assessment) => {
@@ -218,6 +223,16 @@ export default function AssessmentBuilder(): ReactElement {
     navigate("..");
   };
 
+  const handlePreview = () => {
+    if (assessment.pages.length === 0 || !assessment.title) {
+      console.log(
+        "Cannot preview: Assessment needs title and at least one page",
+      );
+      return;
+    }
+    openPreview(assessment, "preview");
+  };
+
   useEffect(() => {
     const shouldSkipAutoSave =
       !assessment.id || saving || isPublishPending || !assessment.teacher;
@@ -258,7 +273,7 @@ export default function AssessmentBuilder(): ReactElement {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 bg-inherit p-2 h-fit transition-colors duration-200 relative">
-      {/* auto-save toast */}
+      {/* auto save toast */}
       {showSaveToast && (
         <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-200 dark:border-gray-700 min-w-64">
@@ -322,13 +337,16 @@ export default function AssessmentBuilder(): ReactElement {
         </div>
       )}
 
+      {/* preview */}
+      <AssessmentPreview />
+
       {/* header */}
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">
           Create Assessment
         </h3>
 
-        {/* save status indicator */}
+        {/* Save Status Indicator */}
         <div className="flex items-center gap-2">
           {isSaving && (
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
@@ -363,7 +381,10 @@ export default function AssessmentBuilder(): ReactElement {
               configureErrors={Object.keys(configureErrors).length}
               publishErrors={Object.keys(publishErrors).length}
             />
-            <button className="absolute flex gap-2 items-center text-gray-400 dark:text-gray-500 px-4 right-0 -top-8 sm:-right-30 sm:top-1/2 sm:-translate-y-1/2 hover:cursor-pointer hover:text-gray-500 dark:hover:text-gray-400 transition-all duration-200">
+            <button
+              onClick={handlePreview}
+              className="absolute flex gap-2 items-center text-gray-400 dark:text-gray-500 px-4 right-0 -top-8 sm:-right-30 sm:top-1/2 sm:-translate-y-1/2 hover:cursor-pointer hover:text-gray-500 dark:hover:text-gray-400 transition-all duration-200"
+            >
               <FaEye />
               <p className="text-xs sm:text-sm">Preview</p>
             </button>

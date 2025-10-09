@@ -4,6 +4,7 @@ import AssessmentBuilder from "./AssessmentBuilder";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTeacherAssessment } from "../../../services/teacher.service";
 import { useCreateAssessmentDraft } from "../../../services/teacher-assessment.service";
+import { PreviewProvider } from "../../../../core/contexts/preview/PreviewProvider";
 
 export default function AssessmentBuilderWrapper(): ReactElement {
   const { teacherId, assessmentId } = useParams();
@@ -58,8 +59,10 @@ export default function AssessmentBuilderWrapper(): ReactElement {
   }
 
   return (
-    <AssessmentBuilderProvider initialAssessment={assessmentDraft}>
-      <AssessmentBuilder />
-    </AssessmentBuilderProvider>
+    <PreviewProvider>
+      <AssessmentBuilderProvider initialAssessment={assessmentDraft}>
+        <AssessmentBuilder />
+      </AssessmentBuilderProvider>
+    </PreviewProvider>
   );
 }
