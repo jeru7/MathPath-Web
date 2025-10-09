@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { useEffect, type ReactElement } from "react";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import { getTotalScore } from "../utils/assessment-builder.util";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,13 +20,6 @@ export default function Configure({
   const passingScoreMinLimit =
     totalScore === 0 ? 1 : Math.round(totalScore * 0.5);
 
-  // states
-  const [passingScore, setPassingScore] = useState(
-    state.passingScore ?? passingScoreMinLimit,
-  );
-  const [timeLimit, setTimeLimit] = useState(state.timeLimit ?? 10);
-  const [attemptLimit, setAttemptLimit] = useState(state.attemptLimit ?? 1);
-
   // handlers
   const handleTitleChange = (title: string) => {
     dispatch({ type: "UPDATE_ASSESSMENT_TITLE", payload: title });
@@ -41,51 +34,39 @@ export default function Configure({
   };
 
   const handlePassingScoreChange = (passingScore: number) => {
-    setPassingScore(passingScore);
+    if (isNaN(passingScore)) return;
+
+    const validatedScore = Math.max(
+      passingScoreMinLimit,
+      Math.min(passingScore, totalScore === 0 ? 1 : totalScore),
+    );
+
+    dispatch({
+      type: "UPDATE_ASSESSMENT_PASSING_SCORE",
+      payload: validatedScore,
+    });
   };
 
   const handleTimeLimitChange = (timeLimit: number) => {
-    setTimeLimit(timeLimit);
-  };
-
-  const handleAttemptLimitChange = (_attemptLimit: number) => {
-    setAttemptLimit(_attemptLimit);
-  };
-
-  const handlePassingScoreBlur = () => {
-    if (isNaN(passingScore)) return;
-    if (passingScore >= passingScoreMinLimit && passingScore <= totalScore) {
-      dispatch({
-        type: "UPDATE_ASSESSMENT_PASSING_SCORE",
-        payload: passingScoreMinLimit,
-      });
-    } else {
-      setPassingScore(state.passingScore ?? passingScoreMinLimit);
-    }
-  };
-
-  const handleAttemptLimitBlur = () => {
-    if (isNaN(attemptLimit)) return;
-    if (attemptLimit >= 1 && attemptLimit <= 3) {
-      dispatch({
-        type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT",
-        payload: attemptLimit,
-      });
-    } else {
-      setAttemptLimit(state.attemptLimit ?? 1);
-    }
-  };
-
-  const handleTimeLimitBlur = () => {
     if (isNaN(timeLimit)) return;
-    if (timeLimit >= 10 && timeLimit <= 50) {
-      dispatch({
-        type: "UPDATE_ASSESSMENT_TIME_LIMIT",
-        payload: timeLimit,
-      });
-    } else {
-      setTimeLimit(state.timeLimit ?? 10);
-    }
+
+    const validatedTimeLimit = Math.max(10, Math.min(timeLimit, 50));
+
+    dispatch({
+      type: "UPDATE_ASSESSMENT_TIME_LIMIT",
+      payload: validatedTimeLimit,
+    });
+  };
+
+  const handleAttemptLimitChange = (attemptLimit: number) => {
+    if (isNaN(attemptLimit)) return;
+
+    const validatedAttemptLimit = Math.max(1, Math.min(attemptLimit, 3));
+
+    dispatch({
+      type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT",
+      payload: validatedAttemptLimit,
+    });
   };
 
   useEffect(() => {
@@ -218,13 +199,12 @@ export default function Configure({
                   type="number"
                   name="passing-score"
                   className="border-gray-300 dark:border-gray-600 border rounded-sm outline-none px-2 py-1 w-32 resize-none disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                  value={passingScore}
+                  value={state.passingScore ?? passingScoreMinLimit}
                   min={passingScoreMinLimit}
                   max={totalScore === 0 ? 1 : totalScore}
                   onChange={(e) =>
                     handlePassingScoreChange(Number(e.target.value))
                   }
-                  onBlur={handlePassingScoreBlur}
                   disabled={totalScore === 0}
                 />
                 {totalScore === 0 ? (
@@ -250,13 +230,12 @@ export default function Configure({
                 type="number"
                 name="attempt-limit"
                 className="border-gray-300 dark:border-gray-600 border rounded-sm outline-none px-2 py-1 w-32 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                value={attemptLimit}
+                value={state.attemptLimit ?? 1}
                 min={1}
                 max={3}
                 onChange={(e) =>
                   handleAttemptLimitChange(Number(e.target.value))
                 }
-                onBlur={handleAttemptLimitBlur}
               />
             </div>
           </div>
@@ -273,11 +252,10 @@ export default function Configure({
                 type="number"
                 name="time-limit"
                 className="border-gray-300 dark:border-gray-600 border rounded-sm outline-none px-2 py-1 w-32 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                value={timeLimit}
+                value={state.timeLimit ?? 10}
                 min={10}
                 max={50}
                 onChange={(e) => handleTimeLimitChange(Number(e.target.value))}
-                onBlur={handleTimeLimitBlur}
               />
               <p className="text-sm text-gray-400 dark:text-gray-500 italic transition-colors duration-200">
                 minutes

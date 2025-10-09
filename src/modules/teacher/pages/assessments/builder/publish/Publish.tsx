@@ -19,18 +19,16 @@ type PublishProps = {
   isValidated: boolean;
   errors: { [key: string]: string | number[] };
   onPublishAssessment: () => void;
-  onSaveAssessment: () => void;
   isPublishPending: boolean;
-  isSavePending: boolean;
+  publishError?: string | null;
 };
 
 export default function Publish({
   isValidated,
   errors,
   onPublishAssessment,
-  onSaveAssessment,
   isPublishPending,
-  isSavePending,
+  publishError,
 }: PublishProps): ReactElement {
   // params
   const { teacherId } = useParams();
@@ -168,7 +166,7 @@ export default function Publish({
             </div>
 
             <div className="flex flex-col gap-4 w-full">
-              {/* Scheduled */}
+              {/* date schedule */}
               <div className="flex flex-col gap-1">
                 <div className="flex flex-col gap-2 h-18 ">
                   <label
@@ -212,7 +210,7 @@ export default function Publish({
                 </AnimatePresence>
               </div>
 
-              {/* Deadline */}
+              {/* deadline */}
               {startDate ? (
                 <motion.div
                   key="end-date-picker"
@@ -268,25 +266,34 @@ export default function Publish({
           </form>
         </section>
       </AnimatePresence>
-      {/* publish assessment */}
+
+      {/* error */}
+      <AnimatePresence>
+        {publishError && (
+          <motion.div
+            className="w-full sm:w-96"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-sm p-3">
+              <p className="text-sm text-red-800 dark:text-red-200 text-center">
+                {publishError}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* publish button */}
       <button
-        className="bg-green-600 dark:bg-green-500 px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200"
+        className="bg-green-600 dark:bg-green-500 px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={onPublishAssessment}
         type="button"
+        disabled={isPublishPending}
       >
         <p className="text-sm md:text-base text-white font-semibold">
           {isPublishPending ? "Publishing..." : "Publish Assessment"}
-        </p>
-      </button>
-
-      {/* save as draft */}
-      <button
-        className={`border border-gray-300 dark:border-gray-600 px-4 py-3 rounded-sm w-full opacity-60 ${isSavePending ? "opacity-100" : "hover:cursor-pointer hover:opacity-100 transition-all duration-200"} bg-white dark:bg-gray-700`}
-        onClick={onSaveAssessment}
-        type="button"
-      >
-        <p className="text-sm md:text-base text-black dark:text-gray-100 font-semibold transition-colors duration-200">
-          {isSavePending ? "Saving..." : "Save as Draft"}
         </p>
       </button>
     </div>

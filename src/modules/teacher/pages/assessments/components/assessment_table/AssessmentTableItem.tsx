@@ -6,8 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import AssessmentStatus from "./AssessmentStatus";
 import { format } from "date-fns-tz";
-import { useDeleteAssessment } from "../../../../../core/services/assessments/assessment.service";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDeleteAssessment } from "../../../../services/teacher-assessment.service";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
@@ -55,7 +55,7 @@ export default function AssessmentTableItem({
       className="w-full font-medium text-sm xl:text-base hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer overflow-visible transition-colors duration-200"
       onClick={() => navigate(`${assessment.id}`)}
     >
-      {/* Title */}
+      {/* title */}
       <td className="w-[15%] xl:w-[20%]">
         <div
           title={assessment.title ? assessment.title : "(No title)"}
@@ -68,7 +68,7 @@ export default function AssessmentTableItem({
           {assessment.title ? assessment.title : "(No title)"}
         </div>
       </td>
-      {/* Topic */}
+      {/* topic */}
       <td className="w-[15%] xl:w-[20%]">
         <div
           title={assessment.topic ? assessment.topic : "(No title)"}
@@ -81,7 +81,7 @@ export default function AssessmentTableItem({
           {assessment.topic ? assessment.topic : "(No topic)"}
         </div>
       </td>
-      {/* Section */}
+      {/* section */}
       <td className="w-[15%]">
         <div
           className={`flex gap-2 justify-center ${
@@ -104,13 +104,13 @@ export default function AssessmentTableItem({
               : "N/A"}
         </div>
       </td>
-      {/* Status */}
+      {/* status */}
       <td className="w-[10%]">
         <div className="w-full flex items-center justify-center">
           <AssessmentStatus status={assessment.status} />
         </div>
       </td>
-      {/* Deadline */}
+      {/* deadline */}
       <td
         className={`w-[10%] text-center ${
           assessment.date.end

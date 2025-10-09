@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import AssessmentBuilderProvider from "./context/AssessmentBuilderProvider";
 import AssessmentBuilder from "./AssessmentBuilder";
 import { useNavigate, useParams } from "react-router-dom";
-import { useCreateAssessmentDraft } from "../../../../core/services/assessments/assessment.service";
 import { useTeacherAssessment } from "../../../services/teacher.service";
+import { useCreateAssessmentDraft } from "../../../services/teacher-assessment.service";
 
 export default function AssessmentBuilderWrapper(): ReactElement {
   const { teacherId, assessmentId } = useParams();

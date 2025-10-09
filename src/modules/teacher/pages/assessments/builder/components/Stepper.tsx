@@ -1,14 +1,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { type ReactElement } from "react";
 
-interface ICreateAssessmentStepperProps {
+type CreateAssessmentStepperProps = {
   currentStep: number;
   onChangeStep: (step: 1 | 2 | 3) => void;
   isValidated: boolean;
   createErrors: number;
   configureErrors: number;
   publishErrors: number;
-}
+};
+
 export default function Stepper({
   currentStep,
   onChangeStep,
@@ -16,7 +17,7 @@ export default function Stepper({
   createErrors,
   configureErrors,
   publishErrors,
-}: ICreateAssessmentStepperProps): ReactElement {
+}: CreateAssessmentStepperProps): ReactElement {
   return (
     <section className="flex rounded-sm items-center w-full">
       {/* step 1 - create */}
@@ -139,7 +140,7 @@ export default function Stepper({
               className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
               style={{ backgroundColor: getCircleColor(currentStep, 3) }}
             >
-              <p className="text-white text-xs font-bold">3</p>
+              <p className="text-white text-xs xl:text-xl font-bold">3</p>
             </div>
           </div>
           <div className="hidden sm:flex flex-col font-semibold text-lg">

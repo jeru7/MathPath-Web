@@ -152,17 +152,6 @@ export default function Profile(): ReactElement {
                   </span>
                 </div>
               </div>
-
-              {teacher.verified.token && (
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 transition-colors duration-200">
-                    Verification Token
-                  </label>
-                  <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm font-mono truncate text-gray-900 dark:text-gray-100 transition-colors duration-200">
-                    {teacher.verified.token}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

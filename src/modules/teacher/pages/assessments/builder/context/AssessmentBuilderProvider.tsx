@@ -1,4 +1,4 @@
-import { type ReactElement, useReducer } from "react";
+import { type ReactElement, useReducer, useMemo } from "react";
 import { AssessmentBuilderContext } from "./assessment-builder.context";
 import { assessmentBuilderReducer } from "./assessment-builder.reducer";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
@@ -15,8 +15,17 @@ export default function AssessmentBuilderProvider({
     initialAssessment,
   );
 
+  // memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      state,
+      dispatch,
+    }),
+    [state],
+  );
+
   return (
-    <AssessmentBuilderContext.Provider value={{ state, dispatch }}>
+    <AssessmentBuilderContext.Provider value={contextValue}>
       {children}
     </AssessmentBuilderContext.Provider>
   );
