@@ -150,6 +150,7 @@ export default function Configure({
               </motion.p>
             )}
           </AnimatePresence>
+
           {/* assessment description */}
           <div className="flex flex-col md:flex-row md:items-start gap-2 w-full">
             <label
