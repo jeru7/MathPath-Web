@@ -1,4 +1,3 @@
-// AssessmentDetailsModal.tsx
 import { ReactElement } from "react";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import { format } from "date-fns-tz";

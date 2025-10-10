@@ -2,7 +2,7 @@ import { type ReactElement, useState, useMemo, useRef, useEffect } from "react";
 import "../../../../core/styles/customTable.css";
 import { CiSearch } from "react-icons/ci";
 import { CiFilter } from "react-icons/ci";
-import { NavigateFunction } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import AssessmentTableItem from "./AssessmentTableItem";
 import AssessmentDetailsModal from "./AssessmentDetailsModal";
@@ -24,6 +24,7 @@ export default function AssessmentTable({
     useState<Assessment | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const filterDropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const filteredAssessments = useMemo(() => {
     return assessments.filter((assessment) => {
@@ -63,9 +64,7 @@ export default function AssessmentTable({
   };
 
   const handleTakeAssessment = (assessment: Assessment) => {
-    // Navigate to assessment taking page
-    console.log("Take assessment:", assessment.id);
-    // navigate(`/assessment/${assessment.id}/take`);
+    navigate(`${assessment.id}/attempt`);
     handleCloseModal();
   };
 

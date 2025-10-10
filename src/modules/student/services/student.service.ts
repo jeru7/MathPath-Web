@@ -6,7 +6,6 @@ import { ProgressLog } from "../../core/types/progress-log/progress-log.type";
 import { Section } from "../../core/types/section/section.type";
 import { AddStudentDTO } from "../types/student.schema";
 import { Student } from "../types/student.type";
-import { Assessment } from "../../core/types/assessment/assessment.type";
 
 export const useAddStudent = (teacherId: string) => {
   const queryClient = useQueryClient();
@@ -78,19 +77,5 @@ export const useStudentProgressLog = (studentId: string) => {
       );
     },
     enabled: !!studentId,
-  });
-};
-
-export const useStudentAssessments = (studentId: string) => {
-  return useQuery<Assessment[]>({
-    queryKey: ["student", studentId, "assessments"],
-    queryFn: () => {
-      return fetchData<Assessment[]>(
-        `${URL}/api/web/students/${studentId}/assessments`,
-        "Failed to fetch student assessments",
-      );
-    },
-    enabled: !!studentId,
-    initialData: [],
   });
 };

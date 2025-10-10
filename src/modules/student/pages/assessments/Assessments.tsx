@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
-import { useStudentAssessments } from "../../services/student.service";
 import { useStudentContext } from "../../contexts/student.context";
 import AssessmentTable from "./components/AssessmentTable";
 import { useNavigate } from "react-router-dom";
+import { useStudentAssessments } from "../../services/student-assessment.service";
 
 export default function Assessments(): ReactElement {
   const { studentId } = useStudentContext();

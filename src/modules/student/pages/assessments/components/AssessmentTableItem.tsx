@@ -1,4 +1,3 @@
-// AssessmentTableItem.tsx
 import { ReactElement } from "react";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import "../../../../core/styles/customTable.css";
