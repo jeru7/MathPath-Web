@@ -10,7 +10,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import {
   getDeadlineMinTime,
   getScheduleMinTime,
+  roundToNext10Minutes,
 } from "../utils/assessment-builder.util";
+import "../../../../../core/styles/customDatePicker.css";
 import DatetimePicker from "./DatetimePicker";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import { AnimatePresence, motion } from "framer-motion";
@@ -41,12 +43,8 @@ export default function Publish({
 
   // states
   const [selectedSections, setSelectedSections] = useState<Section[]>([]);
-  const [startDate, setStartDate] = useState<Date | null>(
-    assessment.date.start ? new Date(assessment.date.start) : null,
-  );
-  const [endDate, setEndDate] = useState<Date | null>(
-    assessment.date.end ? new Date(assessment.date.end) : null,
-  );
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
   // handlers
   const handleAddSection = (sections: Section[]) => {
@@ -69,21 +67,79 @@ export default function Publish({
 
   const handleStartDateChange = (date: Date | null) => {
     if (!date) return;
-    setStartDate(date);
-    dispatch({ type: "ADD_START_DATE", payload: date });
 
-    const newMin = getDeadlineMinTime(date, null, assessment.timeLimit);
-    if (!endDate || endDate <= newMin) {
-      setEndDate(newMin);
-      dispatch({ type: "ADD_END_DATE", payload: newMin });
-    }
+    // round to next 10 min interval
+    const roundedDate = roundToNext10Minutes(date);
+    setStartDate(roundedDate);
+    dispatch({ type: "ADD_START_DATE", payload: roundedDate });
+
+    // Always recalculate end date when start date changes
+    const newEndDate = getDeadlineMinTime(roundedDate, assessment.timeLimit);
+    setEndDate(newEndDate);
+    dispatch({ type: "ADD_END_DATE", payload: newEndDate });
   };
 
   const handleEndDateChange = (date: Date | null) => {
     if (!date) return;
-    setEndDate(date);
-    dispatch({ type: "ADD_END_DATE", payload: date });
+
+    // round to next 10 min interval
+    const roundedDate = roundToNext10Minutes(date);
+    setEndDate(roundedDate);
+    dispatch({ type: "ADD_END_DATE", payload: roundedDate });
   };
+
+  // initialize dates with rounded values
+  useEffect(() => {
+    const now = new Date();
+
+    if (assessment.date.start) {
+      const existingStartDate = new Date(assessment.date.start);
+
+      if (existingStartDate < now) {
+        // if in past, set to current time rounded to next 10 minutes
+        const roundedStartDate = roundToNext10Minutes(now);
+        setStartDate(roundedStartDate);
+        dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
+
+        const calculatedEndDate = getDeadlineMinTime(
+          roundedStartDate,
+          assessment.timeLimit,
+        );
+        setEndDate(calculatedEndDate);
+        dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
+      } else {
+        // if in the future, just round the start date
+        const roundedStartDate = roundToNext10Minutes(existingStartDate);
+        setStartDate(roundedStartDate);
+        dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
+
+        // Always calculate end date based on start date + time limit
+        const calculatedEndDate = getDeadlineMinTime(
+          roundedStartDate,
+          assessment.timeLimit,
+        );
+        setEndDate(calculatedEndDate);
+        dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
+      }
+    } else {
+      // no existing date, set to current time rounded to next 10 minutes
+      const initialStartDate = roundToNext10Minutes(now);
+      setStartDate(initialStartDate);
+      dispatch({ type: "ADD_START_DATE", payload: initialStartDate });
+
+      const initialEndDate = getDeadlineMinTime(
+        initialStartDate,
+        assessment.timeLimit,
+      );
+      setEndDate(initialEndDate);
+      dispatch({ type: "ADD_END_DATE", payload: initialEndDate });
+    }
+  }, [
+    assessment.date.start,
+    assessment.date.end,
+    assessment.timeLimit,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (!sections || !assessment.sections?.length) return;
@@ -181,14 +237,19 @@ export default function Publish({
                     onChange={(date) => handleStartDateChange(date)}
                     showTimeSelect
                     timeFormat="HH:mm"
-                    timeIntervals={15}
+                    timeIntervals={10}
                     dateFormat="yyyy-MM-dd HH:mm"
                     customInput={
                       <DatetimePicker value={startDate} label="Scheduled at" />
                     }
                     minDate={new Date()}
                     minTime={getScheduleMinTime(startDate)}
-                    maxTime={new Date(0, 0, 0, 23, 45)}
+                    maxTime={new Date(0, 0, 0, 23, 50)}
+                    // force the time to be on 10 min intervals
+                    filterTime={(time) => {
+                      const minutes = time.getMinutes();
+                      return minutes % 10 === 0;
+                    }}
                   />
                 </div>
                 <AnimatePresence mode="wait">
@@ -230,18 +291,19 @@ export default function Publish({
                     onChange={(date) => handleEndDateChange(date)}
                     showTimeSelect
                     timeFormat="HH:mm"
-                    timeIntervals={15}
+                    timeIntervals={10}
                     dateFormat="yyyy-MM-dd HH:mm"
                     customInput={
                       <DatetimePicker value={endDate} label="Deadline at" />
                     }
                     minDate={startDate}
-                    minTime={getDeadlineMinTime(
-                      startDate,
-                      endDate,
-                      assessment.timeLimit,
-                    )}
-                    maxTime={new Date(0, 0, 0, 23, 45)}
+                    minTime={getScheduleMinTime(endDate)}
+                    maxTime={new Date(0, 0, 0, 23, 50)}
+                    // force the time to be on 10 min intervals
+                    filterTime={(time) => {
+                      const minutes = time.getMinutes();
+                      return minutes % 10 === 0;
+                    }}
                   />
                 </motion.div>
               ) : null}
