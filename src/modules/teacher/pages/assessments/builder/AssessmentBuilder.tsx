@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import "../../../../core/styles/customDatePopper.css";
 import Stepper from "./components/Stepper";
 import Create from "./create/Create";
 import Configure from "./configure/Configure";
