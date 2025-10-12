@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement, useRef } from "react";
 import Select from "react-select";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { useParams } from "react-router-dom";
@@ -46,6 +46,10 @@ export default function Publish({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  // refs
+  const prevStartDateRef = useRef<string | undefined>();
+  const hasInitializedDates = useRef(false);
+
   // handlers
   const handleAddSection = (sections: Section[]) => {
     setSelectedSections([...sections]);
@@ -73,10 +77,14 @@ export default function Publish({
     setStartDate(roundedDate);
     dispatch({ type: "ADD_START_DATE", payload: roundedDate });
 
-    // Always recalculate end date when start date changes
-    const newEndDate = getDeadlineMinTime(roundedDate, assessment.timeLimit);
-    setEndDate(newEndDate);
-    dispatch({ type: "ADD_END_DATE", payload: newEndDate });
+    // calculate the minimum allowed deadline
+    const minDeadline = getDeadlineMinTime(roundedDate, assessment.timeLimit);
+
+    if (!endDate || endDate < minDeadline) {
+      const newEndDate = minDeadline;
+      setEndDate(newEndDate);
+      dispatch({ type: "ADD_END_DATE", payload: newEndDate });
+    }
   };
 
   const handleEndDateChange = (date: Date | null) => {
@@ -88,58 +96,91 @@ export default function Publish({
     dispatch({ type: "ADD_END_DATE", payload: roundedDate });
   };
 
-  // initialize dates with rounded values
+  // reset end date when start date changes significantly
   useEffect(() => {
+    const currentStartDate = assessment.date.start ?? undefined;
+    if (prevStartDateRef.current !== currentStartDate) {
+      prevStartDateRef.current = currentStartDate;
+    }
+  }, [assessment.date.start]);
+
+  // initialize dates only once when component mounts
+  useEffect(() => {
+    if (hasInitializedDates.current) return;
+
     const now = new Date();
+    let roundedStartDate: Date;
 
     if (assessment.date.start) {
       const existingStartDate = new Date(assessment.date.start);
 
       if (existingStartDate < now) {
-        // if in past, set to current time rounded to next 10 minutes
-        const roundedStartDate = roundToNext10Minutes(now);
+        // If start date is in past, update to current time
+        roundedStartDate = roundToNext10Minutes(now);
         setStartDate(roundedStartDate);
         dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
 
-        const calculatedEndDate = getDeadlineMinTime(
-          roundedStartDate,
-          assessment.timeLimit,
-        );
-        setEndDate(calculatedEndDate);
-        dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
+        if (!assessment.date.end) {
+          const calculatedEndDate = getDeadlineMinTime(
+            roundedStartDate,
+            assessment.timeLimit,
+          );
+          setEndDate(calculatedEndDate);
+          dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
+        }
       } else {
-        // if in the future, just round the start date
-        const roundedStartDate = roundToNext10Minutes(existingStartDate);
+        // if start date is in future, use it as is
+        roundedStartDate = roundToNext10Minutes(existingStartDate);
         setStartDate(roundedStartDate);
         dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
 
-        // Always calculate end date based on start date + time limit
-        const calculatedEndDate = getDeadlineMinTime(
-          roundedStartDate,
-          assessment.timeLimit,
-        );
-        setEndDate(calculatedEndDate);
-        dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
+        // only set end date if it's not already set
+        if (!assessment.date.end) {
+          const calculatedEndDate = getDeadlineMinTime(
+            roundedStartDate,
+            assessment.timeLimit,
+          );
+          setEndDate(calculatedEndDate);
+          dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
+        } else {
+          // use the existing end date
+          const existingEndDate = new Date(assessment.date.end);
+          setEndDate(existingEndDate);
+        }
       }
     } else {
-      // no existing date, set to current time rounded to next 10 minutes
-      const initialStartDate = roundToNext10Minutes(now);
-      setStartDate(initialStartDate);
-      dispatch({ type: "ADD_START_DATE", payload: initialStartDate });
+      roundedStartDate = roundToNext10Minutes(now);
+      setStartDate(roundedStartDate);
+      dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
 
       const initialEndDate = getDeadlineMinTime(
-        initialStartDate,
+        roundedStartDate,
         assessment.timeLimit,
       );
       setEndDate(initialEndDate);
       dispatch({ type: "ADD_END_DATE", payload: initialEndDate });
     }
+
+    hasInitializedDates.current = true;
   }, [
     assessment.date.start,
     assessment.date.end,
     assessment.timeLimit,
     dispatch,
+    startDate,
   ]);
+
+  useEffect(() => {
+    if (assessment.date.start && !startDate) {
+      const existingStartDate = new Date(assessment.date.start);
+      setStartDate(roundToNext10Minutes(existingStartDate));
+    }
+
+    if (assessment.date.end && !endDate) {
+      const existingEndDate = new Date(assessment.date.end);
+      setEndDate(roundToNext10Minutes(existingEndDate));
+    }
+  }, [assessment.date.start, assessment.date.end, startDate, endDate]);
 
   useEffect(() => {
     if (!sections || !assessment.sections?.length) return;
@@ -311,7 +352,7 @@ export default function Publish({
                 {isValidated && errors.endDate && (
                   <motion.p
                     className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-                    key="start-date-error"
+                    key="end-date-error"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{
