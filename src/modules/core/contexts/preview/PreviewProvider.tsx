@@ -1,11 +1,10 @@
 import { useState, ReactNode } from "react";
 import { Assessment } from "../../types/assessment/assessment.type";
+import { PreviewContext, PreviewMode } from "./preview.context";
 import {
-  PreviewContext,
-  PreviewMode,
   StudentAnswer,
   StudentAnswers,
-} from "./preview.context";
+} from "../../types/assessment-attempt/assessment-attempt.type";
 
 export function PreviewProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);

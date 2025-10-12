@@ -1,15 +1,23 @@
 import { ReactElement } from "react";
-import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import "../../../../core/styles/customTable.css";
 import { format } from "date-fns-tz";
+import { Student } from "../../../types/student.type";
+import { Assessment } from "../../../../core/types/assessment/assessment.type";
+import { useAssessmentAttempt } from "../../../services/student-assessment-attempt.service";
+import {
+  getAssessmentStatus,
+  getTotalAttemptsCount,
+} from "../../../utils/assessments/assessment.util";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
+  student: Student | null;
   onAssessmentClick: (assessment: Assessment) => void;
 };
 
 export default function AssessmentTableItem({
   assessment,
+  student,
   onAssessmentClick,
 }: AssessmentTableItemProps): ReactElement {
   const totalQuestions = assessment.pages.reduce((total, page) => {
@@ -19,16 +27,38 @@ export default function AssessmentTableItem({
     return total + questionCount;
   }, 0);
 
+  const { data: attempts = [] } = useAssessmentAttempt(
+    student?.id || "",
+    assessment.id,
+  );
+
+  const totalAttempts = getTotalAttemptsCount(attempts);
+
+  const studentStatus = getAssessmentStatus(assessment);
+
   const getStatusVariant = (status: string) => {
     switch (status) {
-      case "completed":
+      case "available":
         return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200";
-      case "in-progress":
-        return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200";
-      case "failed":
+      case "expired":
         return "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200";
+      case "not-available":
+        return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
       default:
         return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "available":
+        return "Available";
+      case "expired":
+        return "Expired";
+      case "not-available":
+        return "Not Available";
+      default:
+        return "Not Available";
     }
   };
 
@@ -65,9 +95,9 @@ export default function AssessmentTableItem({
       </td>
       <td className="w-[10%] text-center">
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusVariant("not-started")}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusVariant(studentStatus)}`}
         >
-          Not Started
+          {getStatusText(studentStatus)}
         </span>
       </td>
       <td className="w-[10%] text-center">
@@ -77,7 +107,7 @@ export default function AssessmentTableItem({
       </td>
       <td className="w-[10%] text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          0/{assessment.attemptLimit}
+          {totalAttempts}/{assessment.attemptLimit || "∞"}
         </p>
       </td>
     </tr>

@@ -3,21 +3,25 @@ import "../../../../core/styles/customTable.css";
 import { CiSearch } from "react-icons/ci";
 import { CiFilter } from "react-icons/ci";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import AssessmentTableItem from "./AssessmentTableItem";
 import AssessmentDetailsModal from "./AssessmentDetailsModal";
+import { Assessment } from "../../../../core/types/assessment/assessment.type";
+import { Student } from "../../../types/student.type";
+import { getAssessmentStatus } from "../../../utils/assessments/assessment.util";
 
 type AssessmentTableProps = {
   navigate: NavigateFunction;
   assessments: Assessment[];
+  student: Student | null;
 };
 
 export default function AssessmentTable({
   assessments,
+  student,
 }: AssessmentTableProps): ReactElement {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<
-    "all" | "not-started" | "in-progress" | "completed" | "failed"
+    "all" | "available" | "not-available" | "expired"
   >("all");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedAssessment, setSelectedAssessment] =
@@ -36,9 +40,13 @@ export default function AssessmentTable({
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase());
 
-      return matchesSearch;
+      const assessmentStatus = getAssessmentStatus(assessment);
+      const matchesStatus =
+        selectedStatus === "all" || assessmentStatus === selectedStatus;
+
+      return matchesSearch && matchesStatus;
     });
-  }, [assessments, searchTerm]);
+  }, [assessments, searchTerm, selectedStatus]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -148,19 +156,17 @@ export default function AssessmentTable({
                         setSelectedStatus(
                           e.target.value as
                             | "all"
-                            | "not-started"
-                            | "in-progress"
-                            | "completed"
-                            | "failed",
+                            | "available"
+                            | "not-available"
+                            | "expired",
                         )
                       }
                       className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
                     >
                       <option value="all">All Status</option>
-                      <option value="not-started">Not Started</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                      <option value="failed">Failed</option>
+                      <option value="available">Available</option>
+                      <option value="not-available">Not Available</option>
+                      <option value="expired">Expired</option>
                     </select>
                   </div>
 
@@ -180,7 +186,7 @@ export default function AssessmentTable({
               {filteredAssessments.length} assessment
               {filteredAssessments.length !== 1 ? "s" : ""} found
               {searchTerm && ` for "${searchTerm}"`}
-              {selectedStatus !== "all" && " with filters applied"}
+              {selectedStatus !== "all" && ` with status: ${selectedStatus}`}
             </div>
           </div>
         )}
@@ -213,7 +219,6 @@ export default function AssessmentTable({
               </div>
             ) : (
               <div className={`max-h-[780px] overflow-y-auto pb-4 flex-1`}>
-                {/* headers */}
                 <table className="font-primary table-auto w-full">
                   <thead className="text-gray-400 dark:text-gray-500 text-sm xl:text-base transition-colors duration-200">
                     <tr className="text-left">
@@ -240,13 +245,12 @@ export default function AssessmentTable({
                       </th>
                     </tr>
                   </thead>
-                </table>
-                <table className="font-primary table-auto w-full">
                   <tbody>
                     {filteredAssessments.map((assessment) => (
                       <AssessmentTableItem
                         key={assessment.id}
                         assessment={assessment}
+                        student={student}
                         onAssessmentClick={handleAssessmentClick}
                       />
                     ))}
@@ -262,6 +266,7 @@ export default function AssessmentTable({
       <AssessmentDetailsModal
         isOpen={showDetailsModal}
         assessment={selectedAssessment}
+        student={student}
         onClose={handleCloseModal}
         onTakeAssessment={handleTakeAssessment}
       />

@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
 import { Assessment } from "../../types/assessment/assessment.type";
+import {
+  StudentAnswer,
+  StudentAnswers,
+} from "../../types/assessment-attempt/assessment-attempt.type";
 
 export type PreviewMode = "preview" | "assessment";
-
-export type StudentAnswer = string | string[] | Record<string, string>;
-
-export type StudentAnswers = Record<string, StudentAnswer>;
 
 type PreviewContextType = {
   isOpen: boolean;
