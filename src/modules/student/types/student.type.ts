@@ -1,4 +1,3 @@
-import { AssessmentAttempt } from "../../core/types/assessment-attempt/assessment-attempt.type";
 import { ProfilePicture, Verified } from "../../core/types/user.type";
 
 export type StudentGender = "Male" | "Female";
@@ -39,7 +38,7 @@ export type StudentExp = {
 
 export type StudentAssessment = {
   assessmentId: string;
-  attempts: AssessmentAttempt[];
+  attempts: string[];
 };
 
 export type StudentStage = {
