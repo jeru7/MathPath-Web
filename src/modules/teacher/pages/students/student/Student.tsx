@@ -32,9 +32,10 @@ export default function Student(): ReactElement {
     undefined,
   );
 
-  const assessmentTakenCount = studentData?.assessments.filter((assessment) =>
-    assessment.attempts.some((attempt) => attempt.status === "completed"),
-  ).length;
+  const assessmentTakenCount =
+    studentData?.assessments.filter(
+      (assessment) => assessment.attempts.length > 0,
+    ).length || 0;
 
   useEffect(() => {
     const getCurrentStage = () => {
