@@ -1,7 +1,6 @@
 import Teacher from "../components/Teacher";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Students from "../pages/students/Students";
-import Student from "../pages/students/student/Student";
 import Sections from "../pages/sections/Sections";
 import Assessments from "../pages/assessments/Assessments";
 import Statistics from "../pages/statistics/Statistics";
@@ -22,7 +21,6 @@ export const teacherRoutesConfig = [
           { index: true, element: <Students /> },
           { path: "add-students", element: <Students /> },
           { path: "edit-students", element: <Students /> },
-          { path: ":studentId", element: <Student /> },
           { path: "registration-codes", element: <Students /> },
         ],
       },

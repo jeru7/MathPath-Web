@@ -8,7 +8,6 @@ import {
 } from "../../../../student/types/student.type";
 import { capitalizeWord } from "../../../../core/utils/string.util";
 import { useTeacherDeleteStudent } from "../../../services/teacher.service";
-import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getSectionName } from "../utils/student-table.util";
 import { formatToPhDate } from "../../../../core/utils/date.util";
@@ -22,14 +21,16 @@ export default function StudentTableItem({
   student,
   onClick,
 }: IStudentTableItemProps): ReactElement {
-  const { teacherId } = useParams();
+  const { teacherId } = useTeacherContext();
   const queryClient = useQueryClient();
   const { sections, onlineStudents } = useTeacherContext();
-  const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId ?? "");
+  const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId);
+
   const onlineStudentIds = useMemo(
     () => new Set(onlineStudents.map((student) => student.id)),
     [onlineStudents],
   );
+
   const [status, setStatus] = useState<StudentStatusType>("Offline");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +39,7 @@ export default function StudentTableItem({
     deleteStudent(student.id, {
       onSuccess: () => {
         queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "students"],
+          queryKey: ["teacher", "students"],
         });
       },
     });
@@ -58,10 +59,32 @@ export default function StudentTableItem({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleRowClick = () => {
+    onClick(student.id);
+  };
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen((prev) => !prev);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen(false);
+    // You can implement edit functionality here if needed
+    console.log("Edit student:", student.id);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen(false);
+    handleDeleteStudent();
+  };
+
   return (
     <tr
       className="w-full font-medium text-sm xl:text-base hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer overflow-visible transition-colors duration-200"
-      onClick={() => onClick(student.id)}
+      onClick={handleRowClick}
     >
       <td className="text-left w-[15%] text-gray-900 dark:text-gray-100">
         {student.referenceNumber}
@@ -94,10 +117,7 @@ export default function StudentTableItem({
       <td className="w-[5%] text-center relative">
         <button
           className="hover:scale-110 hover:cursor-pointer text-gray-900 dark:text-gray-100 transition-transform duration-200"
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuOpen((prev) => !prev);
-          }}
+          onClick={handleMenuClick}
         >
           <HiDotsVertical />
         </button>
@@ -109,7 +129,10 @@ export default function StudentTableItem({
             onClick={(e) => e.stopPropagation()}
           >
             {/* edit button */}
-            <button className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer text-gray-900 dark:text-gray-100 transition-colors duration-200">
+            <button
+              className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer text-gray-900 dark:text-gray-100 transition-colors duration-200"
+              onClick={handleEditClick}
+            >
               Edit
             </button>
 
@@ -117,7 +140,7 @@ export default function StudentTableItem({
             <button
               className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500 dark:text-red-400 hover:cursor-pointer transition-colors duration-200"
               type="button"
-              onClick={handleDeleteStudent}
+              onClick={handleDeleteClick}
             >
               Delete
             </button>

@@ -7,12 +7,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import AddStudent from "./components/add-student/AddStudent";
 import { GoPlus } from "react-icons/go";
 import RegistrationCode from "./registration-codes/RegistrationCode";
+import { Student } from "../../../student/types/student.type";
+import StudentDetailsModal from "./components/student-details/StudentDetailsModal";
 
 export default function Students(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const { sections } = useTeacherContext();
+  const { sections, students } = useTeacherContext();
 
   const showForm = location.pathname.endsWith("/add-students");
   const showCodes = location.pathname.endsWith("/registration-codes");
@@ -20,6 +22,8 @@ export default function Students(): ReactElement {
   const mode: string | null = searchParams.get("mode");
 
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleAddStudent = () => {
     if (sections.length === 0) {
@@ -27,6 +31,19 @@ export default function Students(): ReactElement {
       return;
     }
     navigate("add-students");
+  };
+
+  const handleStudentClick = (studentId: string) => {
+    const student = students.find((s) => s.id === studentId);
+    if (student) {
+      setSelectedStudent(student);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedStudent(null);
   };
 
   useEffect(() => {
@@ -68,7 +85,10 @@ export default function Students(): ReactElement {
       </header>
 
       <section className="overflow-y-hidden w-full bg-white border border-white dark:bg-gray-800 dark:border-gray-700 shadow-sm rounded-sm flex-1 flex flex-col">
-        <StudentTable onClickAddStudent={handleAddStudent} />
+        <StudentTable
+          onClickAddStudent={handleAddStudent}
+          onStudentClick={handleStudentClick}
+        />
       </section>
 
       {showForm && (
@@ -79,6 +99,14 @@ export default function Students(): ReactElement {
       )}
 
       {showCodes && <RegistrationCode navigate={navigate} />}
+
+      {selectedStudent && (
+        <StudentDetailsModal
+          student={selectedStudent}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </main>
   );
 }

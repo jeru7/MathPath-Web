@@ -12,10 +12,12 @@ import { IoQrCodeOutline } from "react-icons/io5";
 
 type StudentTableProps = {
   onClickAddStudent: () => void;
+  onStudentClick: (studentId: string) => void;
 };
 
 export default function StudentTable({
   onClickAddStudent,
+  onStudentClick,
 }: StudentTableProps): ReactElement {
   const { students, sections, onlineStudents } = useTeacherContext();
   const navigate = useNavigate();
@@ -133,7 +135,7 @@ export default function StudentTable({
   };
 
   const handleItemOnclick = (studentId: string) => {
-    navigate(`${studentId}`, { replace: true });
+    onStudentClick(studentId);
   };
 
   // clear filters
