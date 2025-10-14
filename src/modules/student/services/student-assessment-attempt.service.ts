@@ -112,3 +112,16 @@ export const useAssessmentAttempt = (
     enabled: !!studentId && !!assessmentId,
   });
 };
+
+export const useAssessmentsAttempts = (studentId: string) => {
+  return useQuery<AssessmentAttempt[]>({
+    queryKey: ["student", studentId, "assessment-attempts"],
+    queryFn: () =>
+      fetchData<AssessmentAttempt[]>(
+        `${URL}/api/web/students/${studentId}/assessment-attempts`,
+        "Failed to fetch assessment attempts.",
+      ),
+    staleTime: DATA_STALE_TIME,
+    enabled: !!studentId,
+  });
+};

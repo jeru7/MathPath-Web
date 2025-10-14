@@ -15,6 +15,7 @@ import {
   OnlineTrendResultDay,
   OnlineTrendResultToday,
 } from "../types/student-online-trend.type";
+import { AssessmentOverview } from "../../core/types/assessment/assessment-stats.type";
 
 // get overall topic stats - all students handled by the teacher
 export const useTeacherOverallTopicStats = (teacherId: string) => {
@@ -134,6 +135,21 @@ export const useTeacherSectionQuestionStats = (teacherId: string) => {
       return fetchData<SectionQuestionStats[]>(
         `${URL}/api/web/teachers/${teacherId}/stats/questions/per-section`,
         "Failed to fetch question stats per section.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get assessment overview stats
+export const useTeacherAssessmentOverview = (teacherId: string) => {
+  return useQuery<AssessmentOverview>({
+    queryKey: ["teacher", teacherId, "assessment-overview"],
+    queryFn: () => {
+      return fetchData<AssessmentOverview>(
+        `${URL}/api/web/teachers/${teacherId}/stats/assessment-overview`,
+        "Failed to fetch assessment overview.",
       );
     },
     staleTime: DATA_STALE_TIME,
