@@ -263,13 +263,15 @@ export default function AssessmentTable({
       </section>
 
       {/* assessment details modal */}
-      <AssessmentDetailsModal
-        isOpen={showDetailsModal}
-        assessment={selectedAssessment}
-        student={student}
-        onClose={handleCloseModal}
-        onTakeAssessment={handleTakeAssessment}
-      />
+      {selectedAssessment && (
+        <AssessmentDetailsModal
+          isOpen={showDetailsModal}
+          assessment={selectedAssessment}
+          student={student}
+          onClose={handleCloseModal}
+          onTakeAssessment={handleTakeAssessment}
+        />
+      )}
     </>
   );
 }

@@ -11,7 +11,7 @@ import {
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
-  student: Student | null;
+  student: Student | null | undefined;
   onAssessmentClick: (assessment: Assessment) => void;
 };
 
