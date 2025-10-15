@@ -11,19 +11,24 @@ import {
 } from "../../../../../core/types/assessment/assessment.type";
 import DraftDecisionModal from "../DraftDecisionModal";
 import { useDeleteAssessment } from "../../../../services/teacher-assessment.service";
+import { useTeacherAssessmentAttempts } from "../../../../services/teacher-assessment-attempt.service";
 import { useTeacherContext } from "../../../../context/teacher.context";
+import AssessmentDetailsModal from "../assessment-details/AssessmentDetailsModal";
 
 type AssessmentTableProps = {
   navigate: NavigateFunction;
   assessments: Assessment[] | [];
+  onDeleteAssessment: (assessment: Assessment) => void;
 };
 
 export default function AssessmentTable({
   navigate,
   assessments,
+  onDeleteAssessment,
 }: AssessmentTableProps): ReactElement {
-  const { teacherId } = useTeacherContext();
-  const { mutate: deleteAssessment } = useDeleteAssessment(teacherId);
+  const { teacherId, students } = useTeacherContext();
+  const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<
     AssessmentStatus | "all"
@@ -32,7 +37,17 @@ export default function AssessmentTable({
   const [showFilters, setShowFilters] = useState(false);
   const [showDraftDecision, setShowDraftDecision] = useState(false);
   const [existingDraft, setExistingDraft] = useState<Assessment | null>(null);
+
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<Assessment | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
   const filterDropdownRef = useRef<HTMLDivElement>(null);
+
+  // fetch attempts for the selected assessment
+  const [selectedAssessmentId, setSelectedAssessmentId] = useState<string>("");
+  const { data: studentAttempts = [], isLoading: isLoadingAttempts } =
+    useTeacherAssessmentAttempts(teacherId, selectedAssessmentId);
 
   const uniqueTopics = useMemo(() => {
     const topics = assessments
@@ -61,8 +76,19 @@ export default function AssessmentTable({
     });
   }, [assessments, searchTerm, selectedStatus, selectedTopic]);
 
+  const handleAssessmentClick = (assessment: Assessment) => {
+    setSelectedAssessment(assessment);
+    setSelectedAssessmentId(assessment.id);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowDetailsModal(false);
+    setSelectedAssessment(null);
+    setSelectedAssessmentId("");
+  };
+
   const handleCreateAssessment = () => {
-    // check for existing drafts
     const draftAssessments = assessments.filter(
       (assessment: Assessment) => assessment.status === "draft",
     );
@@ -318,6 +344,8 @@ export default function AssessmentTable({
                       <AssessmentTableItem
                         key={assessment.id}
                         assessment={assessment}
+                        onAssessmentClick={handleAssessmentClick}
+                        onDeleteAssessment={onDeleteAssessment}
                       />
                     ))}
                   </tbody>
@@ -336,6 +364,18 @@ export default function AssessmentTable({
         onCreateNew={handleCreateNew}
         onClose={handleCloseDraftModal}
       />
+
+      {/* assessment details modal */}
+      {selectedAssessment && (
+        <AssessmentDetailsModal
+          isOpen={showDetailsModal}
+          assessment={selectedAssessment}
+          onClose={handleCloseModal}
+          studentAttempts={studentAttempts}
+          students={students}
+          isLoadingAttempts={isLoadingAttempts}
+        />
+      )}
     </>
   );
 }

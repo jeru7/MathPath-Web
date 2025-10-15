@@ -6,76 +6,49 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTeacherSections } from "../../../../services/teacher.service";
 import AssessmentStatus from "./AssessmentStatus";
 import { format } from "date-fns-tz";
-import { useQueryClient } from "@tanstack/react-query";
-import { useDeleteAssessment } from "../../../../services/teacher-assessment.service";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
+  onAssessmentClick?: (assessment: Assessment) => void;
+  onDeleteAssessment?: (assessment: Assessment) => void;
 };
 
 export default function AssessmentTableItem({
   assessment,
+  onAssessmentClick,
+  onDeleteAssessment,
 }: AssessmentTableItemProps): ReactElement {
   const navigate = useNavigate();
   const { teacherId } = useParams();
   const { data: sections } = useTeacherSections(teacherId ?? "");
-  const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
-  const queryClient = useQueryClient();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showWarning, setShowWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const sectionBanners = sections
     ?.filter((section) => assessment.sections.includes(section.id))
     .map((section) => section.banner);
 
-  const handleDeleteAssessment = () => {
-    if (assessment.status !== "draft") {
-      setShowWarning(true);
-      setMenuOpen(false);
-      return;
+  const handleRowClick = () => {
+    if (onAssessmentClick) {
+      onAssessmentClick(assessment);
+    } else {
+      navigate(`${assessment.id}`);
     }
-
-    proceedWithDeletion();
   };
 
-  const proceedWithDeletion = () => {
-    deleteAssessment(assessment.id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["teacher", teacherId, "assessments"],
-        });
-      },
-    });
-    setShowWarning(false);
+  const handleDeleteAssessment = () => {
+    if (onDeleteAssessment) {
+      onDeleteAssessment(assessment);
+    }
     setMenuOpen(false);
   };
 
-  const cancelDeletion = () => {
-    setShowWarning(false);
-  };
-
-  const getWarningMessage = () => {
-    switch (assessment.status) {
-      case "published":
-        return "This assessment has been published and is currently active. Deleting it will remove it from all assigned sections. Are you sure you want to continue?";
-      case "in-progress":
-        return "This assessment is currently in progress by students. Deleting it may disrupt ongoing assessments. Are you sure you want to continue?";
-      default:
-        return "Are you sure you want to delete this assessment?";
+  const handleEdit = () => {
+    if (assessment.status === "draft") {
+      navigate(`${assessment.id}/create`);
     }
-  };
-
-  const getWarningTitle = () => {
-    switch (assessment.status) {
-      case "published":
-        return "Delete Published Assessment";
-      case "in-progress":
-        return "Delete In-Progress Assessment";
-      default:
-        return "Delete Assessment";
-    }
+    setMenuOpen(false);
   };
 
   useEffect(() => {
@@ -92,7 +65,7 @@ export default function AssessmentTableItem({
     <>
       <tr
         className="w-full font-medium text-sm xl:text-base hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer overflow-visible transition-colors duration-200"
-        onClick={() => navigate(`${assessment.id}`)}
+        onClick={handleRowClick}
       >
         {/* title */}
         <td className="w-[15%] xl:w-[20%]">
@@ -184,7 +157,7 @@ export default function AssessmentTableItem({
                 className={`w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer text-gray-900 dark:text-gray-100 transition-colors duration-200 ${
                   assessment.status !== "draft" ? "hidden" : "block"
                 }`}
-                onClick={() => navigate(`${assessment.id}/create`)}
+                onClick={handleEdit}
               >
                 Edit
               </button>
@@ -199,39 +172,6 @@ export default function AssessmentTableItem({
           )}
         </td>
       </tr>
-
-      {/* TODO: separate file component */}
-      {showWarning && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm max-w-md w-full p-6">
-            <div className="flex flex-col gap-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {getWarningTitle()}
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  {getWarningMessage()}
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={cancelDeletion}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-sm hover:cursor-pointer transition-colors duration-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={proceedWithDeletion}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-sm hover:cursor-pointer transition-colors duration-200"
-                >
-                  Delete Anyway
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
