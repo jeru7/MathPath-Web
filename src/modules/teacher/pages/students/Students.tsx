@@ -9,12 +9,18 @@ import { GoPlus } from "react-icons/go";
 import RegistrationCode from "./registration-codes/RegistrationCode";
 import { Student } from "../../../student/types/student.type";
 import StudentDetailsModal from "./components/student-details/StudentDetailsModal";
+import { useTeacherDeleteStudent } from "../../services/teacher.service";
+import DeleteStudentConfirmationModal from "./components/DeleteStudentConfirmationModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Students(): ReactElement {
+  const { teacherId } = useTeacherContext();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const { sections, students } = useTeacherContext();
+  const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId);
 
   const showForm = location.pathname.endsWith("/add-students");
   const showCodes = location.pathname.endsWith("/registration-codes");
@@ -24,10 +30,12 @@ export default function Students(): ReactElement {
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   const handleAddStudent = () => {
     if (sections.length === 0) {
-      toast.error("You can't add students if there are no section.");
+      toast.error("You can't add students if there are no sections.");
       return;
     }
     navigate("add-students");
@@ -39,6 +47,38 @@ export default function Students(): ReactElement {
       setSelectedStudent(student);
       setIsModalOpen(true);
     }
+  };
+
+  const handleDeleteStudent = (studentId: string) => {
+    const student = students.find((s) => s.id === studentId);
+    if (student) {
+      setStudentToDelete(student);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (studentToDelete) {
+      deleteStudent(studentToDelete.id, {
+        onSuccess: () => {
+          toast.success("Student deleted successfully");
+
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "students"],
+          });
+        },
+        onError: () => {
+          toast.error("Failed to delete student");
+        },
+      });
+      setIsDeleteModalOpen(false);
+      setStudentToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setStudentToDelete(null);
   };
 
   const handleCloseModal = () => {
@@ -88,6 +128,7 @@ export default function Students(): ReactElement {
         <StudentTable
           onClickAddStudent={handleAddStudent}
           onStudentClick={handleStudentClick}
+          onDeleteStudent={handleDeleteStudent}
         />
       </section>
 
@@ -107,6 +148,14 @@ export default function Students(): ReactElement {
           onClose={handleCloseModal}
         />
       )}
+
+      {/* delete confirmation modal */}
+      <DeleteStudentConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        student={studentToDelete}
+      />
     </main>
   );
 }

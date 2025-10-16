@@ -7,24 +7,21 @@ import {
   StudentStatusType,
 } from "../../../../student/types/student.type";
 import { capitalizeWord } from "../../../../core/utils/string.util";
-import { useTeacherDeleteStudent } from "../../../services/teacher.service";
-import { useQueryClient } from "@tanstack/react-query";
 import { getSectionName } from "../utils/student-table.util";
 import { formatToPhDate } from "../../../../core/utils/date.util";
 
-interface IStudentTableItemProps {
+type StudentTableItemProps = {
   student: Student;
   onClick: (studentId: string) => void;
-}
+  onDelete: (studentId: string) => void;
+};
 
 export default function StudentTableItem({
   student,
   onClick,
-}: IStudentTableItemProps): ReactElement {
-  const { teacherId } = useTeacherContext();
-  const queryClient = useQueryClient();
+  onDelete,
+}: StudentTableItemProps): ReactElement {
   const { sections, onlineStudents } = useTeacherContext();
-  const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId);
 
   const onlineStudentIds = useMemo(
     () => new Set(onlineStudents.map((student) => student.id)),
@@ -35,14 +32,25 @@ export default function StudentTableItem({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleDeleteStudent = () => {
-    deleteStudent(student.id, {
-      onSuccess: () => {
-        queryClient.refetchQueries({
-          queryKey: ["teacher", "students"],
-        });
-      },
-    });
+  const handleRowClick = () => {
+    onClick(student.id);
+  };
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen((prev) => !prev);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen(false);
+    console.log("Edit student:", student.id);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen(false);
+    onDelete(student.id);
   };
 
   useEffect(() => {
@@ -58,28 +66,6 @@ export default function StudentTableItem({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleRowClick = () => {
-    onClick(student.id);
-  };
-
-  const handleMenuClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setMenuOpen((prev) => !prev);
-  };
-
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setMenuOpen(false);
-    // You can implement edit functionality here if needed
-    console.log("Edit student:", student.id);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setMenuOpen(false);
-    handleDeleteStudent();
-  };
 
   return (
     <tr

@@ -13,11 +13,13 @@ import { IoQrCodeOutline } from "react-icons/io5";
 type StudentTableProps = {
   onClickAddStudent: () => void;
   onStudentClick: (studentId: string) => void;
+  onDeleteStudent: (studentId: string) => void;
 };
 
 export default function StudentTable({
   onClickAddStudent,
   onStudentClick,
+  onDeleteStudent,
 }: StudentTableProps): ReactElement {
   const { students, sections, onlineStudents } = useTeacherContext();
   const navigate = useNavigate();
@@ -458,6 +460,7 @@ export default function StudentTable({
                         student={student}
                         key={student.referenceNumber}
                         onClick={handleItemOnclick}
+                        onDelete={onDeleteStudent}
                       />
                     ))
                   ) : (
