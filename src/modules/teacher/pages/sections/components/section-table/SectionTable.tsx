@@ -10,11 +10,15 @@ import {
 type SectionTableProps = {
   sections: Section[];
   onShowForm: () => void;
+  onSectionClick: (section: Section) => void;
+  onDeleteSection: (section: Section) => void;
 };
 
 export default function SectionTable({
   sections,
   onShowForm,
+  onSectionClick,
+  onDeleteSection,
 }: SectionTableProps): ReactElement {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedColor, setSelectedColor] = useState<SectionColor | "all">(
@@ -192,11 +196,16 @@ export default function SectionTable({
           filteredSections.length > 0 ? (
             <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 grid-rows-[380px] gap-2 overflow-y-auto p-2">
               {filteredSections.map((section) => (
-                <SectionCard key={section.id} section={section} />
+                <SectionCard
+                  key={section.id}
+                  section={section}
+                  onClick={() => onSectionClick(section)}
+                  onDelete={() => onDeleteSection(section)}
+                />
               ))}
             </section>
           ) : (
-            <div className="w-full  flex items-center justify-center">
+            <div className="w-full flex items-center justify-center">
               <div className="text-center">
                 <p className="text-gray-400 dark:text-gray-500 mb-2">
                   No sections match your search criteria

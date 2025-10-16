@@ -5,10 +5,23 @@ import { AnimatePresence, motion } from "framer-motion";
 import { GoPlus } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import SectionTable from "./components/section-table/SectionTable";
+import SectionDetailsModal from "./components/SectionDetailsModal";
+import { Section } from "../../../core/types/section/section.type";
+import { useTeacherDeleteSection } from "../../services/teacher.service";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import DeleteConfirmationModal from "./components/DeleteSectionConfirmationModal";
 
 export default function Sections(): ReactElement {
-  const { sections } = useTeacherContext();
+  const { sections, students, teacherId } = useTeacherContext();
+  const { mutate: deleteSection } = useTeacherDeleteSection(teacherId);
+  const queryClient = useQueryClient();
+
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
+  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
   const showForm = location.pathname.endsWith("/add-section");
 
@@ -26,6 +39,51 @@ export default function Sections(): ReactElement {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSectionClick = (section: Section) => {
+    setSelectedSection(section);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedSection(null);
+  };
+
+  const handleDeleteInitiate = (section: Section) => {
+    setSectionToDelete(section);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (sectionToDelete) {
+      deleteSection(sectionToDelete.id, {
+        onSuccess: () => {
+          toast.success("Section deleted successfully.");
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "sections"],
+          });
+          setIsDeleteModalOpen(false);
+          setSectionToDelete(null);
+        },
+        onError: (error) => {
+          toast.error("Failed to delete section.");
+          console.error("Delete section error:", error);
+        },
+      });
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+    setSectionToDelete(null);
+  };
+
+  const getStudentCountForSection = (section: Section | null): number => {
+    if (!section) return 0;
+    return students.filter((student) => student.sectionId === section.id)
+      .length;
+  };
 
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
@@ -56,10 +114,30 @@ export default function Sections(): ReactElement {
         <SectionTable
           sections={sections}
           onShowForm={() => navigate("add-section")}
+          onSectionClick={handleSectionClick}
+          onDeleteSection={handleDeleteInitiate}
         />
       </section>
 
       {showForm && <CreateSectionForm onCloseForm={() => navigate("..")} />}
+
+      {/* section details modal */}
+      {selectedSection && (
+        <SectionDetailsModal
+          section={selectedSection}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {/* delete confirmation modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        section={sectionToDelete}
+        studentCount={getStudentCountForSection(sectionToDelete)}
+      />
     </main>
   );
 }

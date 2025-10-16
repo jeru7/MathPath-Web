@@ -12,9 +12,9 @@ import { Assessment } from "../../../../../core/types/assessment/assessment.type
 import { Student } from "../../../../../student/types/student.type";
 import { AssessmentAttempt } from "../../../../../core/types/assessment-attempt/assessment-attempt.type";
 import AttemptReviewModal from "../../../../../student/pages/assessments/components/assessment-attempt/AttemptReviewModal";
-import StatsCard from "./StatsCard";
 import AssessmentInformation from "./AssessmentInformation";
 import AttemptList from "./AttemptList";
+import StatsCard from "../../../../components/details/StatsCard";
 
 type AssessmentDetailsModalProps = {
   assessment: Assessment;

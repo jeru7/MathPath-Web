@@ -5,19 +5,19 @@ import { FaEllipsisH } from "react-icons/fa";
 import { useTeacherContext } from "../../../../context/teacher.context";
 import { formatToPhDate } from "../../../../../core/utils/date.util";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
-import { useTeacherDeleteSection } from "../../../../services/teacher.service";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+
+type SectionCardProps = {
+  section: Section;
+  onClick?: () => void;
+  onDelete?: () => void;
+};
 
 export default function SectionCard({
   section,
-}: {
-  section: Section;
-}): ReactElement {
-  const { onlineStudents, students, assessments, teacherId } =
-    useTeacherContext();
-  const { mutate: deleteSection } = useTeacherDeleteSection(teacherId);
-  const queryClient = useQueryClient();
+  onClick,
+  onDelete,
+}: SectionCardProps): ReactElement {
+  const { onlineStudents, students, assessments } = useTeacherContext();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -47,15 +47,27 @@ export default function SectionCard({
     setMenuOpen(false);
   };
 
-  const handleDelete = (sectionId: string) => {
-    deleteSection(sectionId, {
-      onSuccess: () => {
-        toast.success("Section created successfully.");
-        queryClient.invalidateQueries({
-          queryKey: ["teacher", teacherId, "sections"],
-        });
-      },
-    });
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+    setMenuOpen(false);
+  };
+
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen((prev) => !prev);
+  };
+
+  const handleMenuAction = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
   };
 
   useEffect(() => {
@@ -71,6 +83,7 @@ export default function SectionCard({
   return (
     <section
       className={`flex flex-col rounded-sm bg-white dark:bg-gray-800 opacity-90 border-gray-300 dark:border-gray-600 border hover:cursor-pointer hover:opacity-100 h-full xl:max-w-[350px] transition-colors duration-200`}
+      onClick={handleCardClick}
     >
       <div
         className={`bg-[var(--${section.color})] h-1 w-full rounded-t-md `}
@@ -91,10 +104,7 @@ export default function SectionCard({
               {section.name}
             </h3>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen((prev) => !prev);
-              }}
+              onClick={handleMenuClick}
               className="text-gray-900 dark:text-gray-100"
             >
               <FaEllipsisH className="w-8 hover:scale-105 hover:cursor-pointer transition-transform duration-200" />
@@ -107,13 +117,13 @@ export default function SectionCard({
               >
                 <button
                   className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                  onClick={handleEdit}
+                  onClick={(e) => handleMenuAction(e, handleEdit)}
                 >
                   Edit
                 </button>
                 <button
                   className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500 dark:text-red-400 hover:cursor-pointer transition-colors duration-200"
-                  onClick={() => handleDelete(section.id)}
+                  onClick={(e) => handleMenuAction(e, handleDelete)}
                 >
                   Delete
                 </button>
