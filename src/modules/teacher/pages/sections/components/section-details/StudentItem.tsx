@@ -3,6 +3,7 @@ import { Student } from "../../../../../student/types/student.type";
 import { getProfilePicture } from "../../../../../core/utils/profile-picture.util";
 import { FaFire, FaGamepad } from "react-icons/fa";
 import { FaEnvelope, FaUser } from "react-icons/fa6";
+
 type StudentItemProps = {
   student: Student;
   index: number;
