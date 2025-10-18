@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// change password
 export const ChangePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
@@ -48,3 +49,27 @@ export const ChangePasswordSchema = z
   );
 
 export type ChangePasswordDTO = z.infer<typeof ChangePasswordSchema>;
+
+// account settings
+export const ChangeAccountSettingsSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .max(50, "First name is too long"),
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .max(50, "Last name is too long"),
+  middleName: z
+    .string()
+    .max(50, "Middle name is too long")
+    .optional()
+    .or(z.literal("")),
+  profilePicture: z.any().optional(),
+});
+
+export type ChangeAccountSettingsDTO = z.infer<
+  typeof ChangeAccountSettingsSchema
+>;
+
+export type ChangeAccountSettingsRequest = ChangeAccountSettingsDTO;
