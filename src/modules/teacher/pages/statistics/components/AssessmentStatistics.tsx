@@ -121,40 +121,48 @@ export default function AssessmentStatistics(): ReactElement {
                   Performance Trend
                 </h4>
                 <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={stats.trendData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        className="opacity-30"
-                      />
-                      <XAxis
-                        dataKey="label"
-                        fontSize={11}
-                        tick={{ fill: "currentColor" }}
-                        className="text-gray-600 dark:text-gray-400"
-                      />
-                      <YAxis
-                        fontSize={11}
-                        tick={{ fill: "currentColor" }}
-                        className="text-gray-600 dark:text-gray-400"
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "rgb(255, 255, 255)",
-                          borderColor: "rgb(229, 231, 235)",
-                          borderRadius: "0.375rem",
-                          color: "rgb(17, 24, 39)",
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke={COLORS.primary}
-                        strokeWidth={2}
-                        dot={{ fill: COLORS.primary, strokeWidth: 2 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {stats.trendData && stats.trendData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={stats.trendData}>
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          className="opacity-30"
+                        />
+                        <XAxis
+                          dataKey="label"
+                          fontSize={11}
+                          tick={{ fill: "currentColor" }}
+                          className="text-gray-600 dark:text-gray-400"
+                        />
+                        <YAxis
+                          fontSize={11}
+                          tick={{ fill: "currentColor" }}
+                          className="text-gray-600 dark:text-gray-400"
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "rgb(255, 255, 255)",
+                            borderColor: "rgb(229, 231, 235)",
+                            borderRadius: "0.375rem",
+                            color: "rgb(17, 24, 39)",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke={COLORS.primary}
+                          strokeWidth={2}
+                          dot={{ fill: COLORS.primary, strokeWidth: 2 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex h-full items-center justify-center border border-gray-300 dark:border-gray-700 rounded-sm bg-inherit">
+                      <div className="text-center text-gray-500 dark:text-gray-400">
+                        <p className="italic">Data not available</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -164,55 +172,63 @@ export default function AssessmentStatistics(): ReactElement {
                   Assessments
                 </h4>
                 <div className="h-48 overflow-y-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b border-gray-300 dark:border-gray-600">
-                        <th className="text-left pb-2 font-medium text-gray-600 dark:text-gray-400">
-                          Assessment
-                        </th>
-                        <th className="text-right pb-2 font-medium text-gray-600 dark:text-gray-400">
-                          Score
-                        </th>
-                        <th className="text-right pb-2 font-medium text-gray-600 dark:text-gray-400">
-                          Attempts
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-                      {stats.assessments.map((assessment) => (
-                        <tr
-                          key={assessment.id}
-                          className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
-                          onClick={() => handleAssessmentClick(assessment)}
-                        >
-                          <td className="py-2">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-2 h-2 rounded-full"
-                                style={{
-                                  backgroundColor:
-                                    STATUS_COLORS[assessment.status],
-                                }}
-                              />
-                              <span className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[120px]">
-                                {assessment.title}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="text-right py-2">
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
-                              {assessment.averageScore}%
-                            </span>
-                          </td>
-                          <td className="text-right py-2">
-                            <span className="text-gray-600 dark:text-gray-400">
-                              {assessment.totalAttempts}
-                            </span>
-                          </td>
+                  {stats.assessments && stats.assessments.length > 0 ? (
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b border-gray-300 dark:border-gray-600">
+                          <th className="text-left pb-2 font-medium text-gray-600 dark:text-gray-400">
+                            Assessment
+                          </th>
+                          <th className="text-right pb-2 font-medium text-gray-600 dark:text-gray-400">
+                            Score
+                          </th>
+                          <th className="text-right pb-2 font-medium text-gray-600 dark:text-gray-400">
+                            Attempts
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+                        {stats.assessments.map((assessment) => (
+                          <tr
+                            key={assessment.id}
+                            className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                            onClick={() => handleAssessmentClick(assessment)}
+                          >
+                            <td className="py-2">
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className="w-2 h-2 rounded-full"
+                                  style={{
+                                    backgroundColor:
+                                      STATUS_COLORS[assessment.status],
+                                  }}
+                                />
+                                <span className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[120px]">
+                                  {assessment.title}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="text-right py-2">
+                              <span className="font-medium text-gray-900 dark:text-gray-100">
+                                {assessment.averageScore}%
+                              </span>
+                            </td>
+                            <td className="text-right py-2">
+                              <span className="text-gray-600 dark:text-gray-400">
+                                {assessment.totalAttempts}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="flex h-full items-center justify-center border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+                      <div className="text-center text-gray-500 dark:text-gray-400">
+                        <p className="italic">No assessments available</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

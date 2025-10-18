@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactElement, useRef } from "react";
 import Select from "react-select";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
-import { useParams } from "react-router-dom";
 import { Section } from "../../../../../core/types/section/section.type";
 import SectionItem from "./SectionItem";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
@@ -14,8 +13,8 @@ import {
 } from "../utils/assessment-builder.util";
 import "../../../../../core/styles/customDatePicker.css";
 import DatetimePicker from "./DatetimePicker";
-import { useTeacherSections } from "../../../../services/teacher.service";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTeacherContext } from "../../../../context/teacher.context";
 
 type PublishProps = {
   isValidated: boolean;
@@ -32,11 +31,7 @@ export default function Publish({
   isPublishPending,
   publishError,
 }: PublishProps): ReactElement {
-  // params
-  const { teacherId } = useParams();
-
-  // context
-  const { data: sections } = useTeacherSections(teacherId ?? "");
+  const { sections } = useTeacherContext();
 
   // reducer
   const { state: assessment, dispatch } = useAssessmentBuilder();

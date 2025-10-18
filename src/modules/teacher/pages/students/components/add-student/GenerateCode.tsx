@@ -7,14 +7,14 @@ import { useTeacherContext } from "../../../../context/teacher.context";
 import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
 import GeneratedCode from "./GeneratedCode";
-import {
-  useTeacherDeleteRegistrationCode,
-  useTeacherGenerateCode,
-} from "../../../../services/teacher.service";
 import { RegistrationCode } from "../../../../../core/types/registration-code/registration-code.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { handleApiError } from "../../../../../core/utils/api/error.util";
 import { toast } from "react-toastify";
+import {
+  useTeacherDeleteRegistrationCode,
+  useTeacherGenerateCode,
+} from "../../../../services/teacher-registration-code.service";
 
 interface IGenerateCodeProps {
   handleBack: () => void;
@@ -23,18 +23,15 @@ interface IGenerateCodeProps {
 export default function GenerateCode({
   handleBack,
 }: IGenerateCodeProps): ReactElement {
-  const { sections } = useTeacherContext();
-  const { teacher } = useTeacherContext();
-  const { mutate: generateCode } = useTeacherGenerateCode(teacher?.id ?? "");
+  const { sections, teacherId } = useTeacherContext();
+  const { mutate: generateCode } = useTeacherGenerateCode(teacherId);
   const queryClient = useQueryClient();
   const [selectedSection, setSelectedSection] = useState<string | null>();
   const [numberOfStudents, setNumberOfStudents] = useState<number>(10);
   const [generatedCode, setGeneratedCode] = useState<RegistrationCode | null>(
     null,
   );
-  const { mutate: deleteCode } = useTeacherDeleteRegistrationCode(
-    teacher?.id ?? "",
-  );
+  const { mutate: deleteCode } = useTeacherDeleteRegistrationCode(teacherId);
 
   const handleNumberOfStudentsInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -127,7 +124,7 @@ export default function GenerateCode({
       {
         onSuccess: async (code) => {
           await queryClient.invalidateQueries({
-            queryKey: ["teacher", teacher?.id, "registration-codes"],
+            queryKey: ["teacher", teacherId, "registration-codes"],
           });
 
           setGeneratedCode(code);
@@ -158,7 +155,7 @@ export default function GenerateCode({
     deleteCode(codeId, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["teacher", teacher?.id, "registration-codes"],
+          queryKey: ["teacher", teacherId, "registration-codes"],
         });
 
         toast.success("Code deleted successfully.");

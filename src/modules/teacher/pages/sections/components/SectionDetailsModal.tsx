@@ -14,7 +14,6 @@ import {
   Section,
   SectionColor,
 } from "../../../../core/types/section/section.type";
-import { useTeacherStudents } from "../../../services/teacher.service";
 import { useTeacherContext } from "../../../context/teacher.context";
 import StudentDetailsModal from "../../students/components/student-details/StudentDetailsModal";
 import StudentItem from "./section-details/StudentItem";
@@ -39,17 +38,15 @@ export default function SectionDetailsModal({
   isOpen,
   onClose,
 }: SectionDetailsModalProps): ReactElement {
-  const { teacherId } = useTeacherContext();
-  const { data: allStudents = [], isLoading: isLoadingStudents } =
-    useTeacherStudents(teacherId);
+  const { students } = useTeacherContext();
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [showMobileStats, setShowMobileStats] = useState(false);
 
   const sectionStudents = useMemo(() => {
-    return allStudents.filter((student) => student.sectionId === section.id);
-  }, [allStudents, section.id]);
+    return students.filter((student) => student.sectionId === section.id);
+  }, [students, section.id]);
 
   // calculate section stats
   const sectionStats = useMemo((): SectionStats => {
@@ -367,7 +364,7 @@ export default function SectionDetailsModal({
                       {/* TODO: separate component */}
                       {/* students list */}
                       <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
-                        {isLoadingStudents ? (
+                        {!students ? (
                           <div className="flex items-center justify-center h-32">
                             <div className="text-center">
                               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-2"></div>

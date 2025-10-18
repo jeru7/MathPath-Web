@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AssessmentAttempt } from "../../core/types/assessment-attempt/assessment-attempt.type";
 import { fetchData, postData } from "../../core/utils/api/api.util";
-import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
+import { DATA_STALE_TIME, BASE_URI } from "../../core/constants/api.constant";
 
 export const useSubmitAssessmentAttempt = () => {
   const queryClient = useQueryClient();
@@ -9,7 +9,7 @@ export const useSubmitAssessmentAttempt = () => {
   return useMutation({
     mutationFn: async (attempt: AssessmentAttempt) => {
       return postData<AssessmentAttempt, AssessmentAttempt>(
-        `${URL}/api/web/students/${attempt.studentId}/assessment-attempts/${attempt.assessmentId}`,
+        `${BASE_URI}/api/web/students/${attempt.studentId}/assessment-attempts/${attempt.assessmentId}`,
         attempt,
         "Failed to submit assessment attempt",
       );
@@ -36,7 +36,7 @@ export const useSavePausedAssessment = () => {
   return useMutation({
     mutationFn: async (attempt: AssessmentAttempt) => {
       return postData<AssessmentAttempt, AssessmentAttempt>(
-        `${URL}/api/web/students/${attempt.studentId}/assessment-attempts/${attempt.assessmentId}/pause`,
+        `${BASE_URI}/api/web/students/${attempt.studentId}/assessment-attempts/${attempt.assessmentId}/pause`,
         attempt,
         "Failed to save paused assessment",
       );
@@ -89,7 +89,7 @@ export const useResumeAssessment = (
     ],
     queryFn: () =>
       fetchData<AssessmentAttempt>(
-        `${URL}/api/web/students/${studentId}/assessment-attempts/${assessmentId}/resume`,
+        `${BASE_URI}/api/web/students/${studentId}/assessment-attempts/${assessmentId}/resume`,
         "Failed to resume assessment",
       ),
     staleTime: DATA_STALE_TIME,
@@ -105,7 +105,7 @@ export const useAssessmentAttempt = (
     queryKey: ["student", studentId, "assessments", assessmentId, "attempts"],
     queryFn: () =>
       fetchData<AssessmentAttempt[]>(
-        `${URL}/api/web/students/${studentId}/assessment-attempts/${assessmentId}`,
+        `${BASE_URI}/api/web/students/${studentId}/assessment-attempts/${assessmentId}`,
         "Failed to fetch assessment attempts.",
       ),
     staleTime: DATA_STALE_TIME,
@@ -118,7 +118,7 @@ export const useAssessmentsAttempts = (studentId: string) => {
     queryKey: ["student", studentId, "assessment-attempts"],
     queryFn: () =>
       fetchData<AssessmentAttempt[]>(
-        `${URL}/api/web/students/${studentId}/assessment-attempts`,
+        `${BASE_URI}/api/web/students/${studentId}/assessment-attempts`,
         "Failed to fetch assessment attempts.",
       ),
     staleTime: DATA_STALE_TIME,

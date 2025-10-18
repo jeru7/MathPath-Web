@@ -16,15 +16,16 @@ import {
   useUpdateAssessmentDraft,
   useDeleteAssessment,
 } from "../../../services/teacher-assessment.service";
-import { useTeacherAssessments } from "../../../services/teacher.service";
 import { usePreview } from "../../../../core/contexts/preview/preview.context";
 import AssessmentPreview from "./preview/AssessmentPreview";
+import { useTeacherContext } from "../../../context/teacher.context";
 
 export type BuilderMode = "create" | "configure" | "publish";
 export type BuilderStep = 1 | 2 | 3;
 
 export default function AssessmentBuilder(): ReactElement {
-  const { teacherId, assessmentId } = useParams();
+  const { teacherId, assessments } = useTeacherContext();
+  const { assessmentId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const lastSegment = location.pathname.split("/").pop() ?? "create";
@@ -49,7 +50,6 @@ export default function AssessmentBuilder(): ReactElement {
     assessment.teacher ?? "",
   );
   const { mutate: deleteDraft } = useDeleteAssessment(assessment.teacher ?? "");
-  const { data: assessments = [] } = useTeacherAssessments(teacherId ?? "");
 
   const [saving, setSaving] = useState(false);
 

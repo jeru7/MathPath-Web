@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AssessmentAttempt } from "../../core/types/assessment-attempt/assessment-attempt.type";
-import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
+import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { fetchData } from "../../core/utils/api/api.util";
 
 export const useTeacherAssessmentAttempts = (
@@ -11,7 +11,7 @@ export const useTeacherAssessmentAttempts = (
     queryKey: ["teacher", teacherId, "assessment-attempts", assessmentId],
     queryFn: () =>
       fetchData<AssessmentAttempt[]>(
-        `${URL}/api/web/teachers/${teacherId}/assessment-attempts/${assessmentId}`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessment-attempts/${assessmentId}`,
         "Failed to fetch teacher.",
       ),
     staleTime: DATA_STALE_TIME,

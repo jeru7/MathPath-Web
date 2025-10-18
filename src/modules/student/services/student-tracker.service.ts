@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { QuestList } from "../../core/types/quest/quest.type";
 import { fetchData } from "../../core/utils/api/api.util";
-import { URL } from "../../core/constants/api.constant";
+import { BASE_URI } from "../../core/constants/api.constant";
 import {
   AssessmentTracker,
   StageTracker,
@@ -12,7 +12,7 @@ export const useStudentQuestListTracker = (studentId: string) => {
     queryKey: ["student", studentId, "quest-list"],
     queryFn: () => {
       return fetchData<QuestList>(
-        `${URL}/api/web/students/${studentId}/trackers/quest-list`,
+        `${BASE_URI}/api/web/students/${studentId}/trackers/quest-list`,
         "Failed to fetch student quest list.",
       );
     },
@@ -25,7 +25,7 @@ export const useStudentAssessmentTracker = (studentId: string) => {
     queryKey: ["student", studentId, "assessment-tracker"],
     queryFn: () => {
       return fetchData<AssessmentTracker>(
-        `${URL}/api/web/students/${studentId}/trackers/assessments`,
+        `${BASE_URI}/api/web/students/${studentId}/trackers/assessments`,
         "Failed to fetch student assessment tracker.",
       );
     },
@@ -39,7 +39,7 @@ export const useStudentStageTracker = (studentId: string) => {
     queryKey: ["student", studentId, "stages-tracker"],
     queryFn: () => {
       return fetchData<StageTracker>(
-        `${URL}/api/web/students/${studentId}/trackers/stages`,
+        `${BASE_URI}/api/web/students/${studentId}/trackers/stages`,
         "Failed to fetch student stage tracker.",
       );
     },

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { URL } from "../../core/constants/api.constant.js";
+import { BASE_URI } from "../../core/constants/api.constant.js";
 import { ChangeAccountSettingsRequest } from "../types/auth-settings.type.js";
 
 export type ChangePasswordRequest = {
@@ -13,7 +13,7 @@ export const changePasswordService = async (
   data: ChangePasswordRequest,
 ) => {
   await axios.post(
-    `${URL}/api/web/auth/settings/password/${userId}`,
+    `${BASE_URI}/api/web/auth/settings/password/${userId}`,
     { payload: data },
     { withCredentials: true },
   );
@@ -24,7 +24,7 @@ export const changeAccountSettingsService = async (
   data: ChangeAccountSettingsRequest,
 ) => {
   await axios.post(
-    `${URL}/api/web/auth/settings/account-information/${userId}`,
+    `${BASE_URI}/api/web/auth/settings/account-information/${userId}`,
     { payload: data },
     { withCredentials: true },
   );

@@ -2,10 +2,10 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTeacherSections } from "../../../../services/teacher.service";
+import { useNavigate } from "react-router-dom";
 import AssessmentStatus from "./AssessmentStatus";
 import { format } from "date-fns-tz";
+import { useTeacherContext } from "../../../../context/teacher.context";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
@@ -18,9 +18,8 @@ export default function AssessmentTableItem({
   onAssessmentClick,
   onDeleteAssessment,
 }: AssessmentTableItemProps): ReactElement {
+  const { sections } = useTeacherContext();
   const navigate = useNavigate();
-  const { teacherId } = useParams();
-  const { data: sections } = useTeacherSections(teacherId ?? "");
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);

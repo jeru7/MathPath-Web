@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Admin } from "../types/admin.type";
 import { fetchData, postData } from "../../core/utils/api/api.util";
-import { DATA_STALE_TIME } from "../../core/constants/api.constant";
+import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { Teacher } from "../../teacher/types/teacher.type";
-import { URL } from "../../core/constants/api.constant";
 import { AddTeacherDTO } from "../../teacher/types/teacher.schema";
 
 export const useAdmin = (adminId: string) => {
@@ -11,7 +10,7 @@ export const useAdmin = (adminId: string) => {
     queryKey: ["admin", adminId],
     queryFn: () =>
       fetchData<Admin>(
-        `${URL}/api/web/admin/${adminId}`,
+        `${BASE_URI}/api/web/admin/${adminId}`,
         "Failed to fetch admin.",
       ),
     staleTime: DATA_STALE_TIME,
@@ -24,7 +23,7 @@ export const useAdminTeacher = (adminId: string) => {
     queryKey: ["admin", adminId, "teachers"],
     queryFn: () =>
       fetchData<Teacher[]>(
-        `${URL}/api/web/admin/${adminId}/teachers`,
+        `${BASE_URI}/api/web/admin/${adminId}/teachers`,
         "Failed to fetch teachers.",
       ),
     staleTime: DATA_STALE_TIME,
@@ -37,7 +36,7 @@ export const useAdminAddTeacher = (adminId: string) => {
   return useMutation({
     mutationFn: (teacherData: AddTeacherDTO) => {
       return postData<Teacher, AddTeacherDTO>(
-        `${URL}/api/web/admin/${adminId}/teachers`,
+        `${BASE_URI}/api/web/admin/${adminId}/teachers`,
         teacherData,
         "Failed to add new teacher.",
       );

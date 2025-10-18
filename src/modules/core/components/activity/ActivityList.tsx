@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
 // import StudentActivity from "./StudentActivity";
 import TeacherActivity from "../../../teacher/pages/dashboard/components/activity_list/TeacherActivity";
-import { useTeacherStudentActivities } from "../../../teacher/services/teacher.service";
 import { useParams } from "react-router-dom";
+import { useTeacherStudentActivities } from "../../../teacher/services/teacher-student.service";
 
 interface IActivityListProps {
   classes?: string;

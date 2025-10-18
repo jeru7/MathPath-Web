@@ -1,7 +1,6 @@
 import { type ReactElement, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AssessmentTable from "./components/assessment_table/AssessmentTable";
-import { useTeacherAssessments } from "../../services/teacher.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTeacherContext } from "../../context/teacher.context";
 import { Assessment } from "../../../core/types/assessment/assessment.type";
@@ -11,13 +10,9 @@ import DeleteAssessmentConfirmationModal from "./components/DeleteAssessmentConf
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
-  const { teacherId, students } = useTeacherContext();
+  const { teacherId, students, assessments } = useTeacherContext();
   const queryClient = useQueryClient();
   const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
-
-  const { data: assessments = [], isLoading } = useTeacherAssessments(
-    teacherId ?? "",
-  );
 
   const [assessmentToDelete, setAssessmentToDelete] =
     useState<Assessment | null>(null);
@@ -76,8 +71,6 @@ export default function Assessments(): ReactElement {
     if (!assessment) return 0;
     return (assessment.sections || []).length;
   };
-
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">

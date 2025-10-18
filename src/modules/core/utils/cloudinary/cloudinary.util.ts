@@ -1,8 +1,8 @@
 import axios from "axios";
-import { URL } from "../../constants/api.constant.js";
+import { BASE_URI } from "../../constants/api.constant.js";
 
 export const uploadImage = async (file: File) => {
-  const signatureRes = await axios.get(`${URL}/api/shared/cloudinary`);
+  const signatureRes = await axios.get(`${BASE_URI}/api/shared/cloudinary`);
 
   const { timestamp, signature, cloudName, apiKey, folder } =
     signatureRes.data.data;
@@ -26,5 +26,7 @@ export const uploadImage = async (file: File) => {
 };
 
 export const deleteImage = async (publicId: string) => {
-  await axios.delete(`${URL}/api/shared/cloudinary`, { data: { publicId } });
+  await axios.delete(`${BASE_URI}/api/shared/cloudinary`, {
+    data: { publicId },
+  });
 };

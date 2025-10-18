@@ -1,15 +1,16 @@
 import { useState, type ReactElement } from "react";
 import { IoClose } from "react-icons/io5";
-import { NavigateFunction, useParams } from "react-router-dom";
-import {
-  useTeacherDeleteRegistrationCode,
-  useTeacherRegistrationCodes,
-} from "../../../services/teacher.service";
+import { NavigateFunction } from "react-router-dom";
 import RegistrationCodeItem from "./RegistrationCodeItem";
 import GeneratedCode from "../components/add-student/GeneratedCode";
 import { RegistrationCode as RegistrationCodeModel } from "../../../../core/types/registration-code/registration-code.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useTeacherContext } from "../../../context/teacher.context";
+import {
+  useTeacherDeleteRegistrationCode,
+  useTeacherRegistrationCodes,
+} from "../../../services/teacher-registration-code.service";
 
 type RegistrationCodeType = {
   navigate: NavigateFunction;
@@ -18,16 +19,13 @@ type RegistrationCodeType = {
 export default function RegistrationCode({
   navigate,
 }: RegistrationCodeType): ReactElement {
-  const { teacherId } = useParams();
-  const { data: registrationCodes, refetch } = useTeacherRegistrationCodes(
-    teacherId ?? "",
-  );
+  const { teacherId } = useTeacherContext();
+  const { data: registrationCodes, refetch } =
+    useTeacherRegistrationCodes(teacherId);
   const [selectedCode, setSelectedCode] =
     useState<RegistrationCodeModel | null>(null);
 
-  const { mutate: deleteCode } = useTeacherDeleteRegistrationCode(
-    teacherId ?? "",
-  );
+  const { mutate: deleteCode } = useTeacherDeleteRegistrationCode(teacherId);
   const queryClient = useQueryClient();
 
   const handleDelete = (codeId: string) => {

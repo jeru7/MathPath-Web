@@ -1,4 +1,4 @@
-import { URL } from "../../core/constants/api.constant";
+import { BASE_URI } from "../../core/constants/api.constant";
 import { useQuery } from "@tanstack/react-query";
 import { fetchData } from "../../core/utils/api/api.util";
 import { QuestionStats, TopicStats } from "../../core/types/chart.type";
@@ -14,7 +14,7 @@ export const useStudentAttemptStats = (studentId: string) => {
     queryKey: ["student", studentId, "attempt-stats"],
     queryFn: () => {
       return fetchData<StudentAttemptStats>(
-        `${URL}/api/web/students/${studentId}/stats/attempts`,
+        `${BASE_URI}/api/web/students/${studentId}/stats/attempts`,
         "Failed to fetch student attempt stats",
       );
     },
@@ -28,7 +28,7 @@ export const useStudentDifficultyFrequency = (studentId: string) => {
     queryKey: ["student", studentId, "difficulty-frequency"],
     queryFn: () => {
       return fetchData<DifficultyFrequency>(
-        `${URL}/api/web/students/${studentId}/stats/difficulty-frequency`,
+        `${BASE_URI}/api/web/students/${studentId}/stats/difficulty-frequency`,
         "Failed to fetch student chosen difficulty frequency stats.",
       );
     },
@@ -42,7 +42,7 @@ export const useStudentPlayerCard = (studentId: string) => {
     queryKey: ["student", studentId, "player-card"],
     queryFn: () => {
       return fetchData<PlayerCard>(
-        `${URL}/api/web/students/${studentId}/stats/player-card`,
+        `${BASE_URI}/api/web/students/${studentId}/stats/player-card`,
         "Failed to fetch student player card stats.",
       );
     },
@@ -55,7 +55,7 @@ export const useStudentTopicStats = (studentId: string) => {
     queryKey: ["student", studentId, "topic-stats"],
     queryFn: () => {
       return fetchData<TopicStats[] | []>(
-        `${URL}/api/web/students/${studentId}/stats/topics`,
+        `${BASE_URI}/api/web/students/${studentId}/stats/topics`,
         "Failed to fetch student topic stats.",
       );
     },
@@ -68,7 +68,7 @@ export const useStudentQuestionStats = (studentId: string) => {
     queryKey: ["student", studentId, "question-stats"],
     queryFn: () => {
       return fetchData<QuestionStats[] | []>(
-        `${URL}/api/web/students/${studentId}/stats/questions`,
+        `${BASE_URI}/api/web/students/${studentId}/stats/questions`,
         "Failed to fetch student question stats.",
       );
     },

@@ -5,7 +5,7 @@ import {
   SectionTopicStats,
   TopicStats,
 } from "../../core/types/chart.type";
-import { DATA_STALE_TIME, URL } from "../../core/constants/api.constant";
+import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { fetchData } from "../../core/utils/api/api.util";
 import { ActiveStudents } from "../types/active-student.type";
 import { TopicHighlights } from "../types/topic-highlights.type";
@@ -23,7 +23,7 @@ export const useTeacherOverallTopicStats = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "overall-topic-stats"],
     queryFn: () => {
       return fetchData<TopicStats[]>(
-        `${URL}/api/web/teachers/${teacherId}/stats/topic/overall`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topic/overall`,
         "Failed to fetch overall topic stats.",
       );
     },
@@ -38,7 +38,7 @@ export const useTeacherSectionTopicStats = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "section-topic-stats"],
     queryFn: () => {
       return fetchData<SectionTopicStats[]>(
-        `${URL}/api/web/teachers/${teacherId}/stats/topic/per-section`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topic/per-section`,
         "Failed to fetch topic stats per section.",
       );
     },
@@ -58,7 +58,7 @@ export const useTeacherOnlineTrend = (
       return fetchData<
         OnlineTrendResultDay[] | OnlineTrendResultToday[] | null
       >(
-        `${URL}/api/web/teachers/${teacherId}/stats/online-trend?range=${range}`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/online-trend?range=${range}`,
         "Failed to fetch online trend.",
       );
     },
@@ -73,7 +73,7 @@ export const useTeacherActiveStudent = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "active-students"],
     queryFn: () => {
       return fetchData<ActiveStudents>(
-        `${URL}/api/web/teachers/${teacherId}/stats/active-students`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/active-students`,
         "Failed to fetch activity trend.",
       );
     },
@@ -88,7 +88,7 @@ export const useTeacherTopicHighlights = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "topic-highlights"],
     queryFn: () => {
       return fetchData<TopicHighlights>(
-        `${URL}/api/web/teachers/${teacherId}/stats/topic-highlights`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topic-highlights`,
         "Failed to fetch topic highlights.",
       );
     },
@@ -103,7 +103,7 @@ export const useTeacherAssessmentStatus = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "assessment-status"],
     queryFn: () => {
       return fetchData<AssessmentStatus[]>(
-        `${URL}/api/web/teachers/${teacherId}/stats/assessment-status`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/assessment-status`,
         "Failed to fetch assessment status.",
       );
     },
@@ -118,7 +118,7 @@ export const useTeacherOverallQuestionStats = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "overall-question-stats"],
     queryFn: () => {
       return fetchData<QuestionStat[]>(
-        `${URL}/api/web/teachers/${teacherId}/stats/questions/overall`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/questions/overall`,
         "Failed to fetch overall question stats.",
       );
     },
@@ -133,7 +133,7 @@ export const useTeacherSectionQuestionStats = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "section-question-stats"],
     queryFn: () => {
       return fetchData<SectionQuestionStats[]>(
-        `${URL}/api/web/teachers/${teacherId}/stats/questions/per-section`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/questions/per-section`,
         "Failed to fetch question stats per section.",
       );
     },
@@ -148,7 +148,7 @@ export const useTeacherAssessmentOverview = (teacherId: string) => {
     queryKey: ["teacher", teacherId, "assessment-overview"],
     queryFn: () => {
       return fetchData<AssessmentOverview>(
-        `${URL}/api/web/teachers/${teacherId}/stats/assessment-overview`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/assessment-overview`,
         "Failed to fetch assessment overview.",
       );
     },

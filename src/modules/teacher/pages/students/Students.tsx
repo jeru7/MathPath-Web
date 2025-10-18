@@ -9,17 +9,16 @@ import { GoPlus } from "react-icons/go";
 import RegistrationCode from "./registration-codes/RegistrationCode";
 import { Student } from "../../../student/types/student.type";
 import StudentDetailsModal from "./components/student-details/StudentDetailsModal";
-import { useTeacherDeleteStudent } from "../../services/teacher.service";
 import DeleteStudentConfirmationModal from "./components/DeleteStudentConfirmationModal";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTeacherDeleteStudent } from "../../services/teacher-student.service";
 
 export default function Students(): ReactElement {
-  const { teacherId } = useTeacherContext();
+  const { sections, students, teacherId } = useTeacherContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const { sections, students } = useTeacherContext();
   const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId);
 
   const showForm = location.pathname.endsWith("/add-students");

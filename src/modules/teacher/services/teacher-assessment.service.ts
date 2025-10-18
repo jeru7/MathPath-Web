@@ -1,14 +1,51 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { URL } from "../../core/constants/api.constant";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DATA_STALE_TIME, BASE_URI } from "../../core/constants/api.constant";
 import { Assessment } from "../../core/types/assessment/assessment.type";
-import { deleteData, patchData, postData } from "../../core/utils/api/api.util";
+import {
+  deleteData,
+  fetchData,
+  patchData,
+  postData,
+} from "../../core/utils/api/api.util";
+
+// get teacher assessments
+export const useTeacherAssessments = (teacherId: string) => {
+  return useQuery<Assessment[] | []>({
+    queryKey: ["teacher", teacherId, "assessments"],
+    queryFn: () => {
+      return fetchData<Assessment[] | []>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments`,
+        "Failed to fetch assessments",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get single assessment
+export const useTeacherAssessment = (
+  teacherId: string,
+  assessmentId: string,
+) => {
+  return useQuery<Assessment>({
+    queryKey: ["teacher", teacherId, "assessments", assessmentId],
+    queryFn: () =>
+      fetchData<Assessment>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${assessmentId}`,
+        "Failed to fetch assessment",
+      ),
+    enabled: !!teacherId && !!assessmentId,
+    staleTime: DATA_STALE_TIME,
+  });
+};
 
 export const useCreateAssessmentDraft = (teacherId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
       return postData<Assessment, undefined>(
-        `${URL}/api/web/teachers/${teacherId}/assessments`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments`,
         undefined,
         "Failed to create assessment draft",
       );
@@ -30,14 +67,14 @@ export const usePublishAssessment = (teacherId: string) => {
     mutationFn: async (assessmentToPublish: Assessment) => {
       // first, ensure the draft is up to date with latest changes
       await patchData<Assessment, Assessment>(
-        `${URL}/api/web/teachers/${teacherId}/assessments/${assessmentToPublish.id}`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${assessmentToPublish.id}`,
         assessmentToPublish,
         "Failed to update assessment draft before publishing",
       );
 
       // then publish the assessment with proper status
       return patchData<Assessment, Assessment>(
-        `${URL}/api/web/teachers/${teacherId}/assessments/${assessmentToPublish.id}/publish`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${assessmentToPublish.id}/publish`,
         {
           ...assessmentToPublish,
           status: "published",
@@ -61,7 +98,7 @@ export const useUpdateAssessmentDraft = (teacherId: string) => {
   return useMutation({
     mutationFn: (updatedAssessment: Assessment) => {
       return patchData<Assessment, Assessment>(
-        `${URL}/api/web/teachers/${teacherId}/assessments/${updatedAssessment.id}`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${updatedAssessment.id}`,
         updatedAssessment,
         "Failed to update assessment draft",
       );
@@ -74,7 +111,7 @@ export const useDeleteAssessment = (teacherId: string) => {
   return useMutation({
     mutationFn: (assessmentId: string) => {
       return deleteData<null>(
-        `${URL}/api/web/teachers/${teacherId}/assessments/${assessmentId}`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${assessmentId}`,
         "Failed to delete assessment.",
       );
     },
@@ -96,7 +133,7 @@ export const useUploadAssessmentImage = (teacherId: string) => {
       formData.append("image", imageFile);
 
       const res = await fetch(
-        `${URL}/api/web/teachers/${teacherId}/assessments/images`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/images`,
         {
           method: "POST",
           body: formData,

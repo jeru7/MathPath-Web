@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 import SectionTable from "./components/section-table/SectionTable";
 import SectionDetailsModal from "./components/SectionDetailsModal";
 import { Section } from "../../../core/types/section/section.type";
-import { useTeacherDeleteSection } from "../../services/teacher.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import DeleteConfirmationModal from "./components/DeleteSectionConfirmationModal";
+import { useTeacherDeleteSection } from "../../services/teacher-section.service";
 
 export default function Sections(): ReactElement {
   const { sections, students, teacherId } = useTeacherContext();

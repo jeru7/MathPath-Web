@@ -1,18 +1,19 @@
 import { type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useTeacherAssessment } from "../../../services/teacher.service";
 import AssessmentStatus from "../components/assessment_table/AssessmentStatus";
 import { format } from "date-fns";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { formatToPhDate } from "../../../../core/utils/date.util";
+import { useTeacherAssessment } from "../../../services/teacher-assessment.service";
+import { useTeacherContext } from "../../../context/teacher.context";
 
 export default function AssessmentInfo(): ReactElement {
-  // TODO: display specific assessment details
-  const { teacherId, assessmentId } = useParams();
+  const { teacherId } = useTeacherContext();
+  const { assessmentId } = useParams();
   const navigate = useNavigate();
 
   const { data: assessment, isFetching } = useTeacherAssessment(
-    teacherId ?? "",
+    teacherId,
     assessmentId ?? "",
   );
 

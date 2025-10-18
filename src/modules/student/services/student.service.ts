@@ -1,4 +1,4 @@
-import { URL } from "../../core/constants/api.constant";
+import { BASE_URI } from "../../core/constants/api.constant";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchData, postData } from "../../core/utils/api/api.util";
 import { StageAttempt } from "../../core/types/stage-attempt/stage-attempt.type";
@@ -12,7 +12,7 @@ export const useAddStudent = (teacherId: string) => {
   return useMutation({
     mutationFn: (newStudent: AddStudentDTO) => {
       return postData<Student, AddStudentDTO>(
-        `${URL}/api/web/teachers/${teacherId}/students`,
+        `${BASE_URI}/api/web/teachers/${teacherId}/students`,
         newStudent,
         "Failed to add new student.",
       );
@@ -33,7 +33,7 @@ export const useStudent = (studentId: string) => {
     queryKey: ["student", studentId, "student-data"],
     queryFn: () => {
       return fetchData<Student>(
-        `${URL}/api/web/students/${studentId}`,
+        `${BASE_URI}/api/web/students/${studentId}`,
         "Failed to fetch student data.",
       );
     },
@@ -46,7 +46,7 @@ export const useStudentSection = (studentId: string, sectionId: string) => {
     queryKey: ["student", studentId, "section", sectionId],
     queryFn: () => {
       return fetchData<Section>(
-        `${URL}/api/web/students/${studentId}/sections/${sectionId}`,
+        `${BASE_URI}/api/web/students/${studentId}/sections/${sectionId}`,
         "Failed to fetch student section data.",
       );
     },
@@ -59,7 +59,7 @@ export const useStudentAttempts = (studentId: string) => {
     queryKey: ["student", studentId, "attempts"],
     queryFn: () => {
       return fetchData<StageAttempt[]>(
-        `${URL}/api/web/students/${studentId}/stage-attempts`,
+        `${BASE_URI}/api/web/students/${studentId}/stage-attempts`,
         "Failed to fetch student attempts.",
       );
     },
@@ -72,7 +72,7 @@ export const useStudentProgressLog = (studentId: string) => {
     queryKey: ["student", studentId, "progress-log"],
     queryFn: () => {
       return fetchData<ProgressLog[]>(
-        `${URL}/api/web/students/${studentId}/progress-logs`,
+        `${BASE_URI}/api/web/students/${studentId}/progress-logs`,
         "Failed to fetch student progress logs",
       );
     },

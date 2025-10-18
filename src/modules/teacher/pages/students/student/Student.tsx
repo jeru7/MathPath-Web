@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../../../core/types/section/section.type";
 import AttemptHistory from "./components/AttemptHistory";
-import { useTeacherSections } from "../../../services/teacher.service";
 import { useStudent } from "../../../../student/services/student.service";
 import {
   useStudentAttemptStats,
@@ -16,7 +15,7 @@ import StudentQuestionStats from "../../../../student/pages/statistics/component
 
 export default function Student(): ReactElement {
   const navigate = useNavigate();
-  const { teacherId } = useTeacherContext();
+  const { sections } = useTeacherContext();
   const { studentId } = useParams();
 
   const { data: studentData, isLoading: studentDataLoading } = useStudent(
@@ -25,7 +24,6 @@ export default function Student(): ReactElement {
   const { data: studentAttempt } = useStudentAttemptStats(studentId || "");
   const { data: difficultyFrequency, isLoading: difficultyLoading } =
     useStudentDifficultyFrequency(studentId || "");
-  const { data: sections } = useTeacherSections(teacherId);
 
   const [studentSection, setStudentSection] = useState<string>("");
   const [currentStage, setCurrentStage] = useState<number | undefined>(

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchData } from "../../core/utils/api/api.util";
 import { Assessment } from "../../core/types/assessment/assessment.type";
-import { URL } from "../../core/constants/api.constant";
+import { BASE_URI } from "../../core/constants/api.constant";
 
 // single assessment
 export const useStudentAssessment = (
@@ -12,7 +12,7 @@ export const useStudentAssessment = (
     queryKey: ["student", studentId, "assessments", assessmentId],
     queryFn: async () => {
       return fetchData<Assessment>(
-        `${URL}/api/web/students/${studentId}/assessments/${assessmentId}`,
+        `${BASE_URI}/api/web/students/${studentId}/assessments/${assessmentId}`,
         "Failed to fetch assessment",
       );
     },
@@ -26,7 +26,7 @@ export const useStudentAssessments = (studentId: string) => {
     queryKey: ["student", studentId, "assessments"],
     queryFn: async () => {
       return fetchData<Assessment[]>(
-        `${URL}/api/web/students/${studentId}/assessments`,
+        `${BASE_URI}/api/web/students/${studentId}/assessments`,
         "Failed to fetch student assessments",
       );
     },

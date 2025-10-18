@@ -11,10 +11,10 @@ import { getSectionBanner } from "../../../../core/utils/section/section.util";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTeacherContext } from "../../../context/teacher.context";
-import { useTeacherCreateSection } from "../../../services/teacher.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { handleApiError } from "../../../../core/utils/api/error.util";
+import { useTeacherCreateSection } from "../../../services/teacher-section.service";
 
 export default function CreateSectionForm({
   onCloseForm,
@@ -22,7 +22,7 @@ export default function CreateSectionForm({
   onCloseForm: () => void;
 }): ReactElement {
   const { teacherId } = useTeacherContext();
-  const { mutate: createSection } = useTeacherCreateSection(teacherId ?? "");
+  const { mutate: createSection } = useTeacherCreateSection(teacherId);
   const queryClient = useQueryClient();
 
   const {
