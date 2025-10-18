@@ -1,8 +1,8 @@
-export type UserType = "Teacher" | "Student" | "Admin";
+export type Role = "teacher" | "student" | "admin";
 
 export type User = {
   id: string;
-  role: UserType;
+  role: Role;
   firstName: string;
   lastName: string;
   middleName?: string;
