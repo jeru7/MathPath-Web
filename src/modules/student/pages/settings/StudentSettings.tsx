@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
 import { useStudentContext } from "../../contexts/student.context";
-import AccountSettingsCard from "../../../core/components/settings/AccountSettingsCard";
-import ChangePasswordCard from "../../../core/components/settings/ChangePasswordCard";
-import UserPreferencesCard from "../../../core/components/settings/UserPreferencesCard";
 import Settings from "../../../core/components/settings/Settings";
+import AccountSettingsCard from "../../../core/components/settings/account-settings/AccountSettingsCard";
+import ChangePasswordCard from "../../../core/components/settings/change-password/ChangePasswordCard";
+import UserPreferencesCard from "../../../core/components/settings/user-preference/UserPreferencesCard";
 
 export default function StudentSettings(): ReactElement {
   const { student } = useStudentContext();
@@ -11,7 +11,7 @@ export default function StudentSettings(): ReactElement {
   const user = student
     ? {
         id: student.id,
-        role: "Student" as const,
+        role: "student" as const,
         firstName: student.firstName,
         lastName: student.lastName,
         middleName: student.middleName,

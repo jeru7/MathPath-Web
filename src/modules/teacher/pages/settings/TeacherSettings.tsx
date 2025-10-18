@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
 import { useTeacherContext } from "../../context/teacher.context";
 import Settings from "../../../core/components/settings/Settings";
-import AccountSettingsCard from "../../../core/components/settings/AccountSettingsCard";
-import ChangePasswordCard from "../../../core/components/settings/ChangePasswordCard";
-import UserPreferencesCard from "../../../core/components/settings/UserPreferencesCard";
+import AccountSettingsCard from "../../../core/components/settings/account-settings/AccountSettingsCard";
+import ChangePasswordCard from "../../../core/components/settings/change-password/ChangePasswordCard";
+import UserPreferencesCard from "../../../core/components/settings/user-preference/UserPreferencesCard";
 
 export default function TeacherSettings(): ReactElement {
   const { teacher } = useTeacherContext();
@@ -11,7 +11,7 @@ export default function TeacherSettings(): ReactElement {
   const user = teacher
     ? {
         id: teacher.id,
-        role: "Teacher" as const,
+        role: "teacher" as const,
         firstName: teacher.firstName,
         lastName: teacher.lastName,
         middleName: teacher.middleName || undefined,

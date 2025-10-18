@@ -1,21 +1,21 @@
 import { type ReactElement, useState } from "react";
-import { Theme, useThemeContext } from "../../contexts/theme/theme.context";
+import { Theme, useThemeContext } from "../../../contexts/theme/theme.context";
 
 export default function UserPreferencesCard(): ReactElement {
-  const { theme, setTheme, resolvedTheme } = useThemeContext();
+  const { theme, setTheme } = useThemeContext();
   const [preferences, setPreferences] = useState({
     language: "english",
     soundEffects: true,
   });
-
-  console.log("🔍 Theme Debug:", { theme, resolvedTheme });
 
   const handleThemeChange = (newTheme: "light" | "dark" | "auto") => {
     setTheme(newTheme);
 
     console.log("Theme changed to:", newTheme);
 
-    // TODO: save user theme to user db
+    // TODO: save user theme to user db ???
+    // TODO: language pref
+    // TODO: sfx pref
   };
 
   return (
@@ -46,7 +46,6 @@ export default function UserPreferencesCard(): ReactElement {
           </div>
         </div>
 
-        {/* Rest of your component remains the same */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Language

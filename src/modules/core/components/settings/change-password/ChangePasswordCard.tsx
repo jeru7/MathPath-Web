@@ -3,17 +3,18 @@ import { useState, type ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { handleApiError } from "../../utils/api/error.util";
-import { changePasswordService } from "../../../auth/services/auth-settings.service";
-import { useAuth } from "../../../auth/contexts/auth.context";
+import { handleApiError } from "../../../utils/api/error.util";
+import { changePasswordService } from "../../../../auth/services/auth-settings.service";
+import { useAuth } from "../../../../auth/contexts/auth.context";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import {
   ChangePasswordDTO,
   ChangePasswordSchema,
-} from "../../../auth/types/auth-settings.type";
+} from "../../../../auth/types/auth-settings.type";
 
 export default function ChangePasswordCard(): ReactElement {
   const { user } = useAuth();
+  console.log(user);
 
   const {
     register,
@@ -44,33 +45,27 @@ export default function ChangePasswordCard(): ReactElement {
       });
 
       toast.success("Password changed successfully!");
-      reset(); // Reset form fields
+      reset();
     } catch (error: unknown) {
       if (isAxiosError(error)) {
         const errorData = handleApiError(error);
 
-        switch (errorData.message) {
+        switch (errorData.error) {
           case "INVALID_CURRENT_PASSWORD":
             setError("currentPassword", {
               type: "manual",
               message: "Invalid current password",
             });
-            toast.error("Invalid current password");
             break;
           default:
-            toast.error(
-              errorData.message ||
-                "Failed to change password. Please try again.",
-            );
+            toast.error("Failed to change password. Please try again.");
         }
       } else {
         console.error("Unexpected error:", error);
-        toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };
 
-  // show loading or message if user is not available
   if (!user) {
     return (
       <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
