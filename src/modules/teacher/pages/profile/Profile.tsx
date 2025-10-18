@@ -1,11 +1,18 @@
-import { type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { capitalizeWord } from "../../../core/utils/string.util";
 import { getProfilePicture } from "../../../core/utils/profile-picture.util";
 import { useTeacherContext } from "../../context/teacher.context";
 import { FaCheck } from "react-icons/fa";
+import ProfilePictureModal from "../../../core/components/settings/account-settings/ProfilePictureModal";
 
 export default function Profile(): ReactElement {
   const { teacher } = useTeacherContext();
+  const [showViewProfilePictureModal, setShowViewProfilePictureModal] =
+    useState(false);
+
+  const handleProfilePictureClick = () => {
+    setShowViewProfilePictureModal(true);
+  };
 
   if (!teacher) {
     return (
@@ -33,7 +40,10 @@ export default function Profile(): ReactElement {
           <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4">
             {/* profile picture */}
             <div className="relative flex-shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-blue-500 dark:border-blue-400 overflow-hidden transition-colors duration-200">
+              <div
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-blue-500 dark:border-blue-400 overflow-hidden transition-colors duration-200 hover:cursor-pointer"
+                onClick={handleProfilePictureClick}
+              >
                 <img
                   src={getProfilePicture(teacher.profilePicture ?? "Default")}
                   alt="Profile"
@@ -156,6 +166,12 @@ export default function Profile(): ReactElement {
           </div>
         </div>
       </div>
+
+      <ProfilePictureModal
+        isOpen={showViewProfilePictureModal}
+        onClose={() => setShowViewProfilePictureModal(false)}
+        picture={teacher.profilePicture}
+      />
     </main>
   );
 }

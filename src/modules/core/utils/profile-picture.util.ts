@@ -2,8 +2,8 @@ import Boy_1 from "../../../assets/images/profile-pictures/BOY_1.png";
 import Boy_2 from "../../../assets/images/profile-pictures/BOY_2.png";
 import Boy_3 from "../../../assets/images/profile-pictures/BOY_3.png";
 import Girl_1 from "../../../assets/images/profile-pictures/GIRL_1.png";
-import Girl_2 from "../../../assets/images/profile-pictures/GIRL_1.png";
-import Girl_3 from "../../../assets/images/profile-pictures/GIRL_1.png";
+import Girl_2 from "../../../assets/images/profile-pictures/GIRL_2.png";
+import Girl_3 from "../../../assets/images/profile-pictures/GIRL_3.png";
 import DefaultProfile from "../../../assets/images/profile-pictures/DEFAULT_PROFILE.jpg";
 import { ProfilePicture } from "../types/user.type";
 
