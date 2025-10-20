@@ -65,6 +65,11 @@ export const ChangeAccountSettingsSchema = z.object({
     .max(50, "Middle name is too long")
     .optional()
     .or(z.literal("")),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .min(1, "Email is required")
+    .max(100, "Email is too long"),
   profilePicture: z.any().optional(),
 });
 

@@ -1,6 +1,5 @@
 import { useState, type ReactElement } from "react";
 import { ProfilePicture } from "../../../types/user.type";
-import { CiCamera } from "react-icons/ci";
 import { getProfilePicture } from "../../../utils/profile-picture.util";
 
 const AVAILABLE_PROFILE_PICTURES: ProfilePicture[] = [
@@ -17,7 +16,6 @@ type ChangeProfilePictureModalProps = {
   onClose: () => void;
   currentProfilePicture: ProfilePicture | null;
   onSelectProfilePicture: (picture: ProfilePicture) => void;
-  onUploadPicture: () => void;
   onSave: () => void;
 };
 
@@ -25,7 +23,6 @@ export default function ChangeProfilePictureModal({
   onClose,
   currentProfilePicture,
   onSelectProfilePicture,
-  onUploadPicture,
   onSave,
 }: ChangeProfilePictureModalProps): ReactElement {
   const [selectedPicture, setSelectedPicture] = useState<ProfilePicture | null>(
@@ -73,31 +70,6 @@ export default function ChangeProfilePictureModal({
               />
             </svg>
           </button>
-        </div>
-
-        {/* TODO: upload picture */}
-        <div className="mb-6">
-          <button
-            onClick={onUploadPicture}
-            className="w-full py-3 px-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-500 dark:hover:border-green-400 transition-colors flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400"
-          >
-            <CiCamera className="w-5 h-5" />
-            <span className="font-medium">Upload Custom Picture</span>
-          </button>
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
-            Coming soon - you'll be able to upload your own photo
-          </p>
-        </div>
-
-        <div className="relative mb-4">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-              Or choose from our selection
-            </span>
-          </div>
         </div>
 
         <div className="grid grid-cols-4 gap-3 mb-6">
