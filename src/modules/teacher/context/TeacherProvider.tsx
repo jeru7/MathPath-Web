@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  useTeacher,
-  useTeacherAssessments,
-  useTeacherSections,
-  useTeacherStudents,
-} from "../services/teacher.service";
+import { useTeacher } from "../services/teacher.service";
 import { WSS } from "../../core/constants/api.constant";
 import { TeacherContext } from "./teacher.context";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTeacherStudents } from "../services/teacher-student.service";
+import { useTeacherSections } from "../services/teacher-section.service";
+import { useTeacherAssessments } from "../services/teacher-assessment.service";
+import { useTeacherRequests } from "../services/teacher-request.service";
 
 export function TeacherProvider({
   teacherId,
@@ -29,6 +28,7 @@ export function TeacherProvider({
   const { data: students } = useTeacherStudents(teacherId);
   const { data: sections } = useTeacherSections(teacherId);
   const { data: assessments } = useTeacherAssessments(teacherId);
+  const { data: requests } = useTeacherRequests(teacherId);
 
   // track student online status
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
@@ -147,6 +147,7 @@ export function TeacherProvider({
     students: students || [],
     sections: sections || [],
     assessments: assessments || [],
+    requests: requests || [],
     onlineStudents: onlineStudents || [],
   };
 

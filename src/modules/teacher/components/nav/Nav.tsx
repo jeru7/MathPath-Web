@@ -10,6 +10,7 @@ import { IoClose, IoLogOut } from "react-icons/io5";
 import { useTeacher } from "../../services/teacher.service";
 import { capitalizeWord } from "../../../core/utils/string.util";
 import { getProfilePicture } from "../../../core/utils/profile-picture.util";
+import { FaInbox } from "react-icons/fa";
 
 export default function Nav(): ReactElement {
   const { teacherId } = useParams();
@@ -48,6 +49,11 @@ export default function Nav(): ReactElement {
         <IoIosDocument className={"h-4 w-4 sm:h-6 sm:w-6 min-h-4 min-w-4"} />
       ),
       title: "Assessments",
+    },
+    {
+      to: `/teacher/${teacherId}/requests`,
+      icon: <FaInbox className={"h-4 w-4 sm:h-6 sm:w-6 min-h-4 min-w-4"} />,
+      title: "Requests",
     },
   ];
 

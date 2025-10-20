@@ -1,0 +1,437 @@
+import { type ReactElement } from "react";
+import { Request } from "../../../../core/types/requests/request.type";
+import { FaTimes } from "react-icons/fa";
+import { useTeacherContext } from "../../../context/teacher.context";
+import { useUpdateRequestStatus } from "../../../services/teacher-request.service";
+import { toast } from "react-toastify";
+import { isAxiosError } from "axios";
+import { handleApiError } from "../../../../core/utils/api/error.util";
+
+type RequestDetailsModalProps = {
+  isOpen: boolean;
+  request: Request | null;
+  onClose: () => void;
+  teacherId: string;
+};
+
+type CurrentStudentData = {
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  email: string;
+};
+
+export default function RequestDetailsModal({
+  isOpen,
+  request,
+  onClose,
+  teacherId,
+}: RequestDetailsModalProps): ReactElement {
+  const { students } = useTeacherContext();
+
+  const updateRequestStatusMutation = useUpdateRequestStatus(
+    teacherId,
+    request?.id || "",
+  );
+
+  const handleApprove = async () => {
+    if (!request?.id) return;
+
+    try {
+      await updateRequestStatusMutation.mutateAsync("approve");
+      toast.success("Request approved successfully");
+      onClose();
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        const errorData = handleApiError(error);
+        console.log("Error data: " + errorData.error);
+      }
+      toast.error("Failed to approve request");
+    }
+  };
+
+  const handleReject = async () => {
+    if (!request?.id) return;
+
+    try {
+      await updateRequestStatusMutation.mutateAsync("reject");
+      toast.success("Request rejected successfully");
+      onClose();
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        const errorData = handleApiError(error);
+        console.log("Error data: " + errorData.error);
+      }
+      toast.error("Failed to reject request");
+    }
+  };
+
+  if (!isOpen || !request) return <></>;
+
+  const getStatusColor = (status: string): string => {
+    switch (status) {
+      case "approved":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+    }
+  };
+
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getCurrentStudentData = (studentId: string): CurrentStudentData => {
+    const student = students.find((s) => s.id === studentId);
+    return {
+      firstName: student?.firstName || "Current First Name",
+      lastName: student?.lastName || "Current Last Name",
+      middleName: student?.middleName || "Current Middle Name",
+      email: student?.email || "current.email@example.com",
+    };
+  };
+
+  const getChangedFields = () => {
+    const currentData = getCurrentStudentData(request.senderId);
+    const requestedData = request.accountInfo;
+
+    const changes = {
+      firstName:
+        requestedData?.firstName &&
+        requestedData.firstName !== currentData.firstName,
+      lastName:
+        requestedData?.lastname &&
+        requestedData.lastname !== currentData.lastName,
+      middleName:
+        requestedData?.middleName &&
+        requestedData.middleName !== currentData.middleName,
+      email: requestedData?.email && requestedData.email !== currentData.email,
+    };
+
+    const hasAnyChanges = Object.values(changes).some((change) => change);
+
+    return { changes, hasAnyChanges, currentData };
+  };
+
+  const { changes, hasAnyChanges, currentData } = getChangedFields();
+
+  const isProcessing = updateRequestStatusMutation.isPending;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-4xl mx-4 flex flex-col max-h-[90vh]">
+        {/* Header - Fixed */}
+        <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Account Change Request
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Review student account modification request
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={isProcessing}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <FaTimes className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6 space-y-6">
+            {/* Status and Student Info */}
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Request Status:
+                  </span>
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                      request.status,
+                    )}`}
+                  >
+                    {request.status.charAt(0).toUpperCase() +
+                      request.status.slice(1)}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      Student Name
+                    </label>
+                    <p className="text-gray-900 dark:text-white font-medium">
+                      {currentData.firstName} {currentData.lastName}
+                      {currentData.middleName && ` ${currentData.middleName}`}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      Current Email Address
+                    </label>
+                    <p className="text-gray-900 dark:text-white">
+                      {currentData.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Changes Comparison - Only show if there are changes */}
+            {hasAnyChanges ? (
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                  Requested Changes
+                </h3>
+
+                <div className="space-y-6">
+                  {/* Name Changes - Only show if there are name changes */}
+                  {(changes.firstName ||
+                    changes.lastName ||
+                    changes.middleName ||
+                    changes.email) && (
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-4">
+                      <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
+                        Personal Information
+                      </h4>
+
+                      <div className="space-y-4">
+                        {/* First Name - Only show if changed */}
+                        {changes.firstName && (
+                          <div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                First Name
+                              </div>
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Proposed
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    Current:
+                                  </div>
+                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                    {currentData.firstName}
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    New:
+                                  </div>
+                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                    {request.accountInfo?.firstName}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Last Name - Only show if changed */}
+                        {changes.lastName && (
+                          <div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Last Name
+                              </div>
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Proposed
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    Current:
+                                  </div>
+                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                    {currentData.lastName}
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    New:
+                                  </div>
+                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                    {request.accountInfo?.lastname}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Middle Name - Only show if changed */}
+                        {changes.middleName && (
+                          <div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Middle Name
+                              </div>
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Proposed
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    Current:
+                                  </div>
+                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                    {currentData.middleName}
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    New:
+                                  </div>
+                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                    {request.accountInfo?.middleName}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Email - Only show if changed */}
+                        {changes.email && (
+                          <div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Email Address
+                              </div>
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Proposed
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    Current:
+                                  </div>
+                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                    {currentData.email}
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    New:
+                                  </div>
+                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                    {request.accountInfo?.email}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              // Show message if no changes detected
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div className="text-center py-8">
+                  <div className="text-gray-400 dark:text-gray-500 mb-2">
+                    No changes detected in this request
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    The requested information matches the current student data.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Timeline */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Request Timeline
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    Submitted Date:
+                  </span>
+                  <span className="text-sm text-gray-900 dark:text-white font-medium">
+                    {formatDate(request.createdAt)}
+                  </span>
+                </div>
+                {request.updatedAt !== request.createdAt && (
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                      Last Updated:
+                    </span>
+                    <span className="text-sm text-gray-900 dark:text-white font-medium">
+                      {formatDate(request.updatedAt)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer with Actions - Fixed */}
+        {request.status === "pending" && (
+          <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <button
+              onClick={handleReject}
+              disabled={isProcessing}
+              className="px-6 py-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isProcessing ? "Processing..." : "Reject Request"}
+            </button>
+            <button
+              onClick={handleApprove}
+              disabled={isProcessing}
+              className="px-6 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isProcessing ? "Processing..." : "Approve Changes"}
+            </button>
+          </div>
+        )}
+
+        {request.status !== "pending" && (
+          <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-gray-600 text-white rounded-sm hover:bg-gray-700 transition-colors duration-200 font-medium  hover:cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

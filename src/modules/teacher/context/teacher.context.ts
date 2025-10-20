@@ -3,6 +3,7 @@ import { Section } from "../../core/types/section/section.type";
 import { Assessment } from "../../core/types/assessment/assessment.type";
 import { Student } from "../../student/types/student.type";
 import { Teacher } from "../types/teacher.type";
+import { Request } from "../../core/types/requests/request.type";
 
 type TeacherContext = {
   teacherId: string;
@@ -10,6 +11,7 @@ type TeacherContext = {
   students: Student[];
   sections: Section[];
   assessments: Assessment[];
+  requests: Request[];
   onlineStudents: Student[];
 };
 
