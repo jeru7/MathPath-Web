@@ -9,19 +9,18 @@ import {
 } from "../../../../types/assessment-status.type";
 import { getSectionBanner } from "../../../../../core/utils/section/section.util";
 import { AssessmentStatus as Status } from "../../../../../core/types/assessment/assessment.type";
-import { useNavigate } from "react-router-dom";
 
-interface IAssessmentStatusItemProps {
+type AssessmentStatusItemProps = {
   classes: string;
   assessmentData: AssessmentStatus;
-}
+  onItemClick: (assessmentData: AssessmentStatus) => void;
+};
 
 export default function AssessmentStatusItem({
   classes,
   assessmentData,
-}: IAssessmentStatusItemProps): ReactElement {
-  const navigate = useNavigate();
-
+  onItemClick,
+}: AssessmentStatusItemProps): ReactElement {
   const completed =
     assessmentData?.status === "finished" ||
     assessmentData?.status === "published";
@@ -67,7 +66,7 @@ export default function AssessmentStatusItem({
   };
 
   const handleItemClick = () => {
-    navigate(`assessments/${assessmentData.id}`);
+    onItemClick(assessmentData);
   };
 
   return (

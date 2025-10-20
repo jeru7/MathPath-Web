@@ -5,9 +5,9 @@ import Sections from "../pages/sections/Sections";
 import Assessments from "../pages/assessments/Assessments";
 import Statistics from "../pages/statistics/Statistics";
 import AssessmentBuilderWrapper from "../pages/assessments/builder/AssessmentBuilderWrapper";
-import AssessmentInfo from "../pages/assessments/info/AssessmentInfo";
 import Profile from "../pages/profile/Profile";
 import TeacherSettings from "../pages/settings/TeacherSettings";
+import Requests from "../pages/requests/Requests";
 
 export const teacherRoutesConfig = [
   {
@@ -36,7 +36,6 @@ export const teacherRoutesConfig = [
         path: "assessments",
         children: [
           { index: true, element: <Assessments /> },
-          { path: ":assessmentId", element: <AssessmentInfo /> },
           { path: "new", element: <AssessmentBuilderWrapper /> },
           {
             path: ":assessmentId/create",
@@ -52,6 +51,7 @@ export const teacherRoutesConfig = [
           },
         ],
       },
+      { path: "requests", element: <Requests /> },
       { path: "profile", element: <Profile /> },
       { path: "settings", element: <TeacherSettings /> },
     ],

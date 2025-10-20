@@ -2,7 +2,10 @@ import { useMemo, useState, type ReactElement } from "react";
 import { FaUserGraduate } from "react-icons/fa";
 import AttemptItem from "./AttemptItem";
 import { AssessmentAttempt } from "../../../../../core/types/assessment-attempt/assessment-attempt.type";
-import { Student } from "../../../../../student/types/student.type";
+import {
+  Student,
+  StudentAssessment,
+} from "../../../../../student/types/student.type";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { format } from "date-fns-tz";
 import { useTeacherContext } from "../../../../context/teacher.context";
@@ -43,6 +46,16 @@ export default function AttemptList({
     return [];
   }, [students]);
 
+  // get all students assigned to this assessment
+  const assignedStudents = useMemo(() => {
+    return safeSectionStudents.filter((student) =>
+      student.assessments?.some(
+        (studentAssessment: StudentAssessment) =>
+          studentAssessment.assessmentId === assessment.id,
+      ),
+    );
+  }, [safeSectionStudents, assessment.id]);
+
   const attemptsWithStudents = useMemo((): AttemptWithStudent[] => {
     if (isLoading) return [];
     return safeStudentAttempts
@@ -62,13 +75,6 @@ export default function AttemptList({
         new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime(),
     );
   }, [attemptsWithStudents, isLoading]);
-
-  const uniqueStudentCount = useMemo(() => {
-    const uniqueStudentIds = new Set(
-      attemptsWithStudents.map((attempt) => attempt.studentId),
-    );
-    return uniqueStudentIds.size;
-  }, [attemptsWithStudents]);
 
   const toggleAttempt = (attemptId: string) => {
     setExpandedAttempt(expandedAttempt === attemptId ? null : attemptId);
@@ -129,7 +135,7 @@ export default function AttemptList({
                 {isLoading ? (
                   <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-4 w-48 rounded"></div>
                 ) : (
-                  `${uniqueStudentCount} ${uniqueStudentCount > 1 ? "students" : "student"} • ${allAttemptsSorted?.length} total attempts`
+                  `${assignedStudents.length} ${assignedStudents.length > 1 ? "students" : "student"} • ${allAttemptsSorted?.length} total attempts`
                 )}
               </p>
             </div>
@@ -148,15 +154,12 @@ export default function AttemptList({
               </p>
             </div>
           </div>
-        ) : attempts?.length === 0 ? (
+        ) : allAttemptsSorted.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                No Attempts Yet
+              <h4 className="text-sm text-gray-900 dark:text-gray-500 mb-2">
+                No Attempt Data
               </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
-                No students have attempted this assessment yet.
-              </p>
             </div>
           </div>
         ) : (

@@ -31,8 +31,6 @@ export default function AssessmentTableItem({
   const handleRowClick = () => {
     if (onAssessmentClick) {
       onAssessmentClick(assessment);
-    } else {
-      navigate(`${assessment.id}`);
     }
   };
 
