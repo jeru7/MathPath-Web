@@ -170,7 +170,7 @@ export default function StudentTable({
 
   return (
     <section className="flex flex-col flex-1 overflow-x-hidden">
-      <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex gap-2 justify-center md:items-center md:justify-between transition-colors duration-200">
+      <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
         {/* search and filters */}
         <section className="flex gap-2 items-center w-full md:w-fit">
           <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
