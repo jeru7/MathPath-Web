@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { CiCamera } from "react-icons/ci";
+import { FaCheckCircle, FaExclamationCircle, FaHistory } from "react-icons/fa";
 import { getProfilePicture } from "../../../../core/utils/profile-picture.util.js";
 import { Student } from "../../../../student/types/student.type.js";
 import { Teacher } from "../../../../teacher/types/teacher.type.js";
@@ -19,6 +20,9 @@ import {
 import ProfilePictureModal from "./ProfilePictureModal.js";
 import { useSubmitAccountChangeRequest } from "../../../../student/services/student-request.service.js";
 import { useStudentRequests } from "../../../../student/services/student-request.service.js";
+import { Request } from "../../../types/requests/request.type.js";
+import RequestsModal from "./requests/RequestsModal.js";
+import RequestDetailsModal from "./requests/RequestDetailsModal.js";
 
 type StudentAccountSettingsCardProps = {
   user: Student;
@@ -48,6 +52,9 @@ export default function AccountSettingsCard(
   const [showViewProfilePictureModal, setShowViewProfilePictureModal] =
     useState(false);
   const [showRequestSubmitted, setShowRequestSubmitted] = useState(false);
+  const [showRequestsModal, setShowRequestsModal] = useState(false);
+  const [showRequestDetailsModal, setShowRequestDetailsModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
 
   const submitAccountChangeRequestMutation = useSubmitAccountChangeRequest(
     authUser?.id || "",
@@ -63,9 +70,13 @@ export default function AccountSettingsCard(
       request.status === "pending" && request.type === "account-information",
   );
 
-  const pendingRequest = studentRequests?.find(
-    (request) =>
-      request.status === "pending" && request.type === "account-information",
+  // filter requests
+  const accountRequests = (
+    studentRequests?.filter(
+      (request) => request.type === "account-information",
+    ) || []
+  ).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   const {
@@ -170,8 +181,20 @@ export default function AccountSettingsCard(
       }
 
       if (userType === "student") {
+        // include original data in the payload
+        const payloadWithOriginalData = {
+          ...requestData,
+          originalData: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            middleName: user.middleName || "",
+            email: user.email,
+            profilePicture: user.profilePicture || "Default",
+          },
+        };
+
         await submitAccountChangeRequestMutation.mutateAsync({
-          payload: requestData as ChangeAccountSettingsDTO,
+          payload: payloadWithOriginalData as ChangeAccountSettingsDTO,
         });
 
         toast.success(
@@ -336,6 +359,28 @@ export default function AccountSettingsCard(
     }
   };
 
+  const handleRequestsClick = () => {
+    setShowRequestsModal(true);
+  };
+
+  const handleRequestClick = (request: Request) => {
+    setSelectedRequest(request);
+    setShowRequestDetailsModal(true);
+  };
+
+  const handleCloseRequestDetails = () => {
+    setShowRequestDetailsModal(false);
+    setSelectedRequest(null);
+  };
+
+  const handleCloseRequestsModal = () => {
+    setShowRequestsModal(false);
+    if (showRequestDetailsModal) {
+      setShowRequestDetailsModal(false);
+      setSelectedRequest(null);
+    }
+  };
+
   const isStudent = userType === "student";
   const student = user as Student;
   const teacher = user as Teacher;
@@ -364,13 +409,21 @@ export default function AccountSettingsCard(
           Account Information
         </h4>
 
-        {isStudent && hasPendingRequest && (
-          <div className="flex items-center gap-2 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-full">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-            <span className="text-yellow-800 dark:text-yellow-300 text-sm font-medium">
-              Pending Request
-            </span>
-          </div>
+        {isStudent && accountRequests.length > 0 && (
+          <button
+            onClick={handleRequestsClick}
+            className="flex items-center gap-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/40 transition-colors group cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <FaHistory className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span className="text-blue-800 dark:text-blue-300 text-sm font-medium">
+                View Requests ({accountRequests.length})
+              </span>
+            </div>
+            {hasPendingRequest && (
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+            )}
+          </button>
         )}
       </div>
 
@@ -401,33 +454,6 @@ export default function AccountSettingsCard(
             >
               ×
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* pending request info - show when there's a pending request */}
-      {isStudent && hasPendingRequest && pendingRequest && (
-        <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-sm">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 mt-0.5">
-              <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">⏳</span>
-              </div>
-            </div>
-            <div className="flex-1">
-              <h5 className="font-medium text-yellow-800 dark:text-yellow-300 text-sm">
-                Account Change Request Pending
-              </h5>
-              <p className="text-yellow-700 dark:text-yellow-400 text-sm mt-1">
-                You have a pending account change request that is waiting for
-                teacher approval. You cannot make new changes until this request
-                is resolved.
-              </p>
-              <p className="text-yellow-600 dark:text-yellow-500 text-xs mt-2">
-                Submitted on:{" "}
-                {new Date(pendingRequest.createdAt).toLocaleDateString()}
-              </p>
-            </div>
           </div>
         </div>
       )}
@@ -470,9 +496,8 @@ export default function AccountSettingsCard(
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {isEditing && !hasPendingRequest
                 ? "Click on the photo to change"
-                : hasPendingRequest
-                  ? "Cannot change photo - request pending"
-                  : "Go to edit mode to change profile picture"}
+                : hasPendingRequest &&
+                  "Go to edit mode to change profile picture"}
             </p>
           </div>
         </div>
@@ -578,16 +603,31 @@ export default function AccountSettingsCard(
           </label>
           {isEditing ? (
             <>
-              <input
-                type="email"
-                className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                  hasPendingRequest
-                    ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
-                    : "border-gray-300 dark:border-gray-600"
-                }`}
-                {...register("email")}
-                disabled={hasPendingRequest}
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                    hasPendingRequest
+                      ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
+                      : "border-gray-300 dark:border-gray-600"
+                  }`}
+                  {...register("email")}
+                  disabled={hasPendingRequest}
+                />
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                  {user.verified.verified ? (
+                    <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs">
+                      <FaCheckCircle className="w-3 h-3" />
+                      <span>Verified</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
+                      <FaExclamationCircle className="w-3 h-3" />
+                      <span>Unverified</span>
+                    </div>
+                  )}
+                </div>
+              </div>
               {errors.email && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.email.message}
@@ -595,8 +635,23 @@ export default function AccountSettingsCard(
               )}
             </>
           ) : (
-            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white">
-              {displayValues.email}
+            <div className="relative">
+              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white pr-24">
+                {displayValues.email}
+              </div>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                {user.verified.verified ? (
+                  <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs">
+                    <FaCheckCircle className="w-3 h-3" />
+                    <span>Verified</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
+                    <FaExclamationCircle className="w-3 h-3" />
+                    <span>Unverified</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -645,12 +700,11 @@ export default function AccountSettingsCard(
           <>
             <button
               type="submit"
-              form="account-form"
+              onClick={handleSubmit((data) => handleSave(data))}
               disabled={
                 isSubmitting || (isStudent && !hasChanges) || hasPendingRequest
               }
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
-              onClick={handleSubmit((data) => handleSave(data))}
             >
               {isSubmitting
                 ? "Submitting..."
@@ -689,6 +743,23 @@ export default function AccountSettingsCard(
           </p>
         </div>
       )}
+
+      {/* requests list modal */}
+      <RequestsModal
+        showRequestsModal={showRequestsModal}
+        onClose={handleCloseRequestsModal}
+        accountRequests={accountRequests}
+        isLoadingRequests={isLoadingRequests}
+        onRequestClick={handleRequestClick}
+      />
+
+      {/* request details modal */}
+      <RequestDetailsModal
+        showRequestDetailsModal={showRequestDetailsModal}
+        selectedRequest={selectedRequest}
+        onClose={handleCloseRequestDetails}
+        user={user}
+      />
     </div>
   );
 }

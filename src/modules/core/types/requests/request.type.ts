@@ -8,10 +8,17 @@ export type ReceiverModel = "Teacher" | "Admin";
 
 export type AccountInformationRequestType = {
   firstName?: string;
-  lastname?: string;
+  lastName?: string;
   middleName?: string;
   email?: string;
-  profilePicture?: ProfilePicture | string;
+  profilePicture?: ProfilePicture;
+  originalData?: {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+    email?: string;
+    profilePicture?: ProfilePicture;
+  };
 };
 
 export type Request = {

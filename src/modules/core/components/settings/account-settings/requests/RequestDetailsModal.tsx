@@ -1,76 +1,26 @@
 import { type ReactElement } from "react";
-import { Request } from "../../../../core/types/requests/request.type";
 import { FaTimes } from "react-icons/fa";
-import { useTeacherContext } from "../../../context/teacher.context";
-import { useUpdateRequestStatus } from "../../../services/teacher-request.service";
-import { toast } from "react-toastify";
-import { isAxiosError } from "axios";
-import { handleApiError } from "../../../../core/utils/api/error.util";
-import { getProfilePicture } from "../../../../core/utils/profile-picture.util.js";
-import { ProfilePicture } from "../../../../core/types/user.type.js";
+import { Student } from "../../../../../student/types/student.type";
+import { Teacher } from "../../../../../teacher/types/teacher.type";
+import { Request } from "../../../../types/requests/request.type";
+import { ProfilePicture } from "../../../../types/user.type";
+import { getProfilePicture } from "../../../../utils/profile-picture.util";
 import { format } from "date-fns-tz";
 
 type RequestDetailsModalProps = {
-  isOpen: boolean;
-  request: Request | null;
+  showRequestDetailsModal: boolean;
+  selectedRequest: Request | null;
   onClose: () => void;
-  teacherId: string;
-};
-
-type CurrentStudentData = {
-  firstName: string;
-  lastName: string;
-  middleName: string;
-  email: string;
-  profilePicture: string | null;
+  user: Student | Teacher;
 };
 
 export default function RequestDetailsModal({
-  isOpen,
-  request,
+  showRequestDetailsModal,
+  selectedRequest,
   onClose,
-  teacherId,
+  user,
 }: RequestDetailsModalProps): ReactElement {
-  const { students } = useTeacherContext();
-
-  const updateRequestStatusMutation = useUpdateRequestStatus(
-    teacherId,
-    request?.id || "",
-  );
-
-  const handleApprove = async () => {
-    if (!request?.id) return;
-
-    try {
-      await updateRequestStatusMutation.mutateAsync("approve");
-      toast.success("Request approved successfully");
-      onClose();
-    } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        const errorData = handleApiError(error);
-        console.log("Error data: " + errorData.error);
-      }
-      toast.error("Failed to approve request");
-    }
-  };
-
-  const handleReject = async () => {
-    if (!request?.id) return;
-
-    try {
-      await updateRequestStatusMutation.mutateAsync("reject");
-      toast.success("Request rejected successfully");
-      onClose();
-    } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        const errorData = handleApiError(error);
-        console.log("Error data: " + errorData.error);
-      }
-      toast.error("Failed to reject request");
-    }
-  };
-
-  if (!isOpen || !request) return <></>;
+  if (!showRequestDetailsModal || !selectedRequest) return <></>;
 
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -85,27 +35,16 @@ export default function RequestDetailsModal({
     }
   };
 
-  const getCurrentStudentData = (studentId: string): CurrentStudentData => {
-    const student = students.find((s) => s.id === studentId);
-    return {
-      firstName: student?.firstName || "Current First Name",
-      lastName: student?.lastName || "Current Last Name",
-      middleName: student?.middleName || "Current Middle Name",
-      email: student?.email || "current.email@example.com",
-      profilePicture: student?.profilePicture || null,
-    };
-  };
-
   const getChangedFields = () => {
-    const currentStudentData = getCurrentStudentData(request.senderId);
-    const requestedData = request.accountInfo;
+    const requestedData = selectedRequest.accountInfo;
 
+    // Use original data from the request if available, otherwise fall back to current user data
     const originalData = requestedData?.originalData || {
-      firstName: currentStudentData.firstName,
-      lastName: currentStudentData.lastName,
-      middleName: currentStudentData.middleName || "",
-      email: currentStudentData.email,
-      profilePicture: currentStudentData.profilePicture,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      middleName: user.middleName || "",
+      email: user.email,
+      profilePicture: user.profilePicture,
     };
 
     const changes = {
@@ -132,7 +71,7 @@ export default function RequestDetailsModal({
       hasAnyChanges,
       originalData,
       requestedData,
-      currentStudentData,
+      currentUserData: user,
     };
   };
 
@@ -141,36 +80,34 @@ export default function RequestDetailsModal({
     hasAnyChanges,
     originalData,
     requestedData,
-    currentStudentData,
+    currentUserData,
   } = getChangedFields();
-
-  const isProcessing = updateRequestStatusMutation.isPending;
+  const isApproved = selectedRequest.status === "approved";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-4xl mx-4 flex flex-col max-h-[90vh]">
+      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-4xl mx-4 flex flex-col max-h-[90vh]">
         {/* header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Account Change Request
+              Account Change Request Details
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Review student account modification request
+              Review your account modification request
             </p>
           </div>
           <button
             onClick={onClose}
-            disabled={isProcessing}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm hover:cursor-pointer"
           >
             <FaTimes className="w-4 h-4" />
           </button>
         </div>
 
+        {/* content */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-6 space-y-6">
-            {/* status and student info */}
             <div className="grid grid-cols-1 gap-6">
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -179,11 +116,11 @@ export default function RequestDetailsModal({
                   </span>
                   <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                      request.status,
+                      selectedRequest.status,
                     )}`}
                   >
-                    {request.status.charAt(0).toUpperCase() +
-                      request.status.slice(1)}
+                    {selectedRequest.status.charAt(0).toUpperCase() +
+                      selectedRequest.status.slice(1)}
                   </span>
                 </div>
 
@@ -193,18 +130,17 @@ export default function RequestDetailsModal({
                       Student Name
                     </label>
                     <p className="text-gray-900 dark:text-white font-medium">
-                      {currentStudentData.firstName}{" "}
-                      {currentStudentData.lastName}
-                      {currentStudentData.middleName &&
-                        ` ${currentStudentData.middleName}`}
+                      {currentUserData.firstName} {currentUserData.lastName}
+                      {currentUserData.middleName &&
+                        ` ${currentUserData.middleName}`}
                     </p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                      Current Email Address
+                      Email Address
                     </label>
                     <p className="text-gray-900 dark:text-white">
-                      {currentStudentData.email}
+                      {currentUserData.email}
                     </p>
                   </div>
                 </div>
@@ -230,22 +166,22 @@ export default function RequestDetailsModal({
                       </h4>
 
                       <div className="space-y-4">
-                        {/* First Name - Only show if changed */}
+                        {/* first name */}
                         {changes.firstName && (
                           <div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                                {isApproved ? "Previous" : "Current"}
                               </div>
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
+                                {isApproved ? "Current" : "Proposed"}
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                                    {isApproved ? "Before:" : "Current:"}
                                   </div>
                                   <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
                                     {originalData.firstName}
@@ -255,10 +191,12 @@ export default function RequestDetailsModal({
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
+                                    {isApproved ? "After:" : "New:"}
                                   </div>
                                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.firstName}
+                                    {isApproved
+                                      ? currentUserData.firstName
+                                      : requestedData?.firstName}
                                   </div>
                                 </div>
                               </div>
@@ -266,21 +204,22 @@ export default function RequestDetailsModal({
                           </div>
                         )}
 
+                        {/* last name */}
                         {changes.lastName && (
                           <div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                                {isApproved ? "Previous" : "Current"}
                               </div>
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
+                                {isApproved ? "Current" : "Proposed"}
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                                    {isApproved ? "Before:" : "Current:"}
                                   </div>
                                   <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
                                     {originalData.lastName}
@@ -290,10 +229,12 @@ export default function RequestDetailsModal({
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
+                                    {isApproved ? "After:" : "New:"}
                                   </div>
                                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.lastName}
+                                    {isApproved
+                                      ? currentUserData.lastName
+                                      : requestedData?.lastName}
                                   </div>
                                 </div>
                               </div>
@@ -301,21 +242,22 @@ export default function RequestDetailsModal({
                           </div>
                         )}
 
+                        {/* middle name */}
                         {changes.middleName && (
                           <div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                                {isApproved ? "Previous" : "Current"}
                               </div>
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
+                                {isApproved ? "Current" : "Proposed"}
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                                    {isApproved ? "Before:" : "Current:"}
                                   </div>
                                   <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
                                     {originalData.middleName || "—"}
@@ -325,10 +267,12 @@ export default function RequestDetailsModal({
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
+                                    {isApproved ? "After:" : "New:"}
                                   </div>
                                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.middleName || "—"}
+                                    {isApproved
+                                      ? currentUserData.middleName || "—"
+                                      : requestedData?.middleName || "—"}
                                   </div>
                                 </div>
                               </div>
@@ -336,21 +280,22 @@ export default function RequestDetailsModal({
                           </div>
                         )}
 
+                        {/* email */}
                         {changes.email && (
                           <div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                                {isApproved ? "Previous" : "Current"}
                               </div>
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
+                                {isApproved ? "Current" : "Proposed"}
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                                    {isApproved ? "Before:" : "Current:"}
                                   </div>
                                   <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
                                     {originalData.email}
@@ -360,10 +305,12 @@ export default function RequestDetailsModal({
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
+                                    {isApproved ? "After:" : "New:"}
                                   </div>
                                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.email}
+                                    {isApproved
+                                      ? currentUserData.email
+                                      : requestedData?.email}
                                   </div>
                                 </div>
                               </div>
@@ -371,21 +318,22 @@ export default function RequestDetailsModal({
                           </div>
                         )}
 
+                        {/* profile picture */}
                         {changes.profilePicture && (
                           <div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                                {isApproved ? "Previous" : "Current"}
                               </div>
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
+                                {isApproved ? "Current" : "Proposed"}
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                                    {isApproved ? "Before:" : "Current:"}
                                   </div>
                                   <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
                                     <img
@@ -393,7 +341,11 @@ export default function RequestDetailsModal({
                                         (originalData.profilePicture as ProfilePicture) ??
                                           "Default",
                                       )}
-                                      alt="Previous Profile"
+                                      alt={
+                                        isApproved
+                                          ? "Previous Profile"
+                                          : "Current Profile"
+                                      }
                                       className="w-16 h-16 rounded-full mx-auto object-cover"
                                     />
                                   </div>
@@ -402,15 +354,21 @@ export default function RequestDetailsModal({
                               <div>
                                 <div className="space-y-2">
                                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
+                                    {isApproved ? "After:" : "New:"}
                                   </div>
                                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
                                     <img
                                       src={getProfilePicture(
-                                        (requestedData?.profilePicture as ProfilePicture) ??
+                                        (isApproved
+                                          ? (currentUserData.profilePicture as ProfilePicture)
+                                          : (requestedData?.profilePicture as ProfilePicture)) ??
                                           "Default",
                                       )}
-                                      alt="New Profile"
+                                      alt={
+                                        isApproved
+                                          ? "Current Profile"
+                                          : "New Profile"
+                                      }
                                       className="w-16 h-16 rounded-full mx-auto object-cover"
                                     />
                                   </div>
@@ -431,7 +389,7 @@ export default function RequestDetailsModal({
                     No changes detected in this request
                   </div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">
-                    The requested information matches the current student data.
+                    The requested information matches your current data.
                   </div>
                 </div>
               </div>
@@ -448,19 +406,23 @@ export default function RequestDetailsModal({
                     Submitted Date:
                   </span>
                   <span className="text-sm text-gray-900 dark:text-white font-medium">
-                    {format(new Date(request.createdAt), "MMMM d 'at' h:mm a", {
-                      timeZone: "Asia/Manila",
-                    })}
+                    {format(
+                      new Date(selectedRequest.createdAt),
+                      "MMMM d 'at' h:mm a",
+                      {
+                        timeZone: "Asia/Manila",
+                      },
+                    )}
                   </span>
                 </div>
-                {request.updatedAt !== request.createdAt && (
+                {selectedRequest.updatedAt !== selectedRequest.createdAt && (
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                       Last Updated:
                     </span>
                     <span className="text-sm text-gray-900 dark:text-white font-medium">
                       {format(
-                        new Date(request.updatedAt),
+                        new Date(selectedRequest.updatedAt),
                         "MMMM d 'at' h:mm a",
                         {
                           timeZone: "Asia/Manila",
@@ -473,36 +435,6 @@ export default function RequestDetailsModal({
             </div>
           </div>
         </div>
-
-        {request.status === "pending" && (
-          <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-            <button
-              onClick={handleReject}
-              disabled={isProcessing}
-              className="px-6 py-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? "Processing..." : "Reject Request"}
-            </button>
-            <button
-              onClick={handleApprove}
-              disabled={isProcessing}
-              className="px-6 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? "Processing..." : "Approve Changes"}
-            </button>
-          </div>
-        )}
-
-        {request.status !== "pending" && (
-          <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 bg-gray-600 text-white rounded-sm hover:bg-gray-700 transition-colors duration-200 font-medium  hover:cursor-pointer"
-            >
-              Close
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
