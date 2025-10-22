@@ -1,6 +1,4 @@
 import { useState, type ReactElement } from "react";
-import { AttemptWithAssessment } from "./StudentDetailsModal";
-import { AssessmentAttempt } from "../../../../../core/types/assessment-attempt/assessment-attempt.type";
 import {
   IoAlertCircle,
   IoCheckmarkCircle,
@@ -13,9 +11,11 @@ import {
 } from "react-icons/io5";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { Assessment } from "../../../../../core/types/assessment/assessment.type";
-import AttemptReviewModal from "../../../../../student/pages/assessments/components/assessment-attempt/AttemptReviewModal";
-import { Student } from "../../../../../student/types/student.type";
+import { AttemptWithAssessment } from "../StudentDetailsModal";
+import { Student } from "../../../../../../student/types/student.type";
+import { AssessmentAttempt } from "../../../../../../core/types/assessment-attempt/assessment-attempt.type";
+import { Assessment } from "../../../../../../core/types/assessment/assessment.type";
+import AttemptReviewModal from "../../../../../../student/pages/assessments/components/assessment-attempt/AttemptReviewModal";
 
 type AssessmentAttemptItemProps = {
   attempt: AttemptWithAssessment;
