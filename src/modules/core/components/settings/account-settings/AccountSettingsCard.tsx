@@ -10,7 +10,10 @@ import { Student } from "../../../../student/types/student.type.js";
 import { Teacher } from "../../../../teacher/types/teacher.type.js";
 import { ProfilePicture } from "../../../../core/types/user.type.js";
 import ChangeProfilePictureModal from "./ChangeProfilePictureModal";
-import { changeAccountSettingsService } from "../../../../auth/services/auth-settings.service";
+import {
+  changeAccountSettingsService,
+  sendEmailVerificationService,
+} from "../../../../auth/services/auth-settings.service";
 import { useAuth } from "../../../../auth/contexts/auth.context";
 import { handleApiError } from "../../../../core/utils/api/error.util";
 import {
@@ -55,6 +58,7 @@ export default function AccountSettingsCard(
   const [showRequestsModal, setShowRequestsModal] = useState(false);
   const [showRequestDetailsModal, setShowRequestDetailsModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
 
   const submitAccountChangeRequestMutation = useSubmitAccountChangeRequest(
     authUser?.id || "",
@@ -136,6 +140,59 @@ export default function AccountSettingsCard(
     formValues.middleName !== (user.middleName || "") ||
     formValues.email !== user.email ||
     profilePicture !== user.profilePicture;
+
+  const handleSendVerificationEmail = async () => {
+    if (!authUser?.id) {
+      toast.error("User not authenticated. Please log in again.");
+      return;
+    }
+
+    setIsSendingVerification(true);
+    try {
+      await sendEmailVerificationService(authUser.id);
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold">Verification Email Sent!</span>
+          <span className="text-sm">
+            Please check your inbox and click the verification link to verify
+            your email address.
+          </span>
+        </div>,
+        {
+          autoClose: 6000,
+          closeButton: true,
+        },
+      );
+    } catch (error: unknown) {
+      console.error("Failed to send verification email:", error);
+
+      if (isAxiosError(error)) {
+        const errorData = handleApiError(error);
+
+        switch (errorData.error) {
+          case "ALREADY_VERIFIED":
+            toast.error("Your email is already verified.");
+            break;
+          case "RATE_LIMITED":
+            // The backend will send the specific cooldown message
+            toast.error(
+              errorData.message ||
+                "Please wait before requesting another verification email.",
+            );
+            break;
+          case "USER_NOT_FOUND":
+            toast.error("User account not found. Please log in again.");
+            break;
+          default:
+            toast.error("Failed to send verification email. Please try again.");
+        }
+      } else {
+        toast.error("Failed to send verification email. Please try again.");
+      }
+    } finally {
+      setIsSendingVerification(false);
+    }
+  };
 
   const handleSave = async (data: ChangeAccountSettingsDTO) => {
     if (!isEditing) return;
@@ -636,20 +693,30 @@ export default function AccountSettingsCard(
             </>
           ) : (
             <div className="relative">
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white pr-24">
+              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white pr-32">
                 {displayValues.email}
               </div>
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
                 {user.verified.verified ? (
                   <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs">
                     <FaCheckCircle className="w-3 h-3" />
                     <span>Verified</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
-                    <FaExclamationCircle className="w-3 h-3" />
-                    <span>Unverified</span>
-                  </div>
+                  <>
+                    <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
+                      <FaExclamationCircle className="w-3 h-3" />
+                      <span>Unverified</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSendVerificationEmail}
+                      disabled={isSendingVerification}
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs font-medium disabled:bg-blue-400 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                      {isSendingVerification ? "Sending..." : "Verify Email"}
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -677,22 +744,6 @@ export default function AccountSettingsCard(
             </div>
           </div>
         )}
-
-        {/* profile picture modal */}
-        {showProfilePictureModal && (
-          <ChangeProfilePictureModal
-            onClose={() => setShowProfilePictureModal(false)}
-            currentProfilePicture={profilePicture}
-            onSelectProfilePicture={handleProfilePictureSelect}
-            onSave={() => setShowProfilePictureModal(false)}
-          />
-        )}
-
-        <ProfilePictureModal
-          isOpen={showViewProfilePictureModal}
-          onClose={() => setShowViewProfilePictureModal(false)}
-          picture={displayProfilePicture}
-        />
       </form>
 
       <div className="flex gap-3 pt-4">
@@ -743,6 +794,22 @@ export default function AccountSettingsCard(
           </p>
         </div>
       )}
+
+      {/* profile picture modal */}
+      {showProfilePictureModal && (
+        <ChangeProfilePictureModal
+          onClose={() => setShowProfilePictureModal(false)}
+          currentProfilePicture={profilePicture}
+          onSelectProfilePicture={handleProfilePictureSelect}
+          onSave={() => setShowProfilePictureModal(false)}
+        />
+      )}
+
+      <ProfilePictureModal
+        isOpen={showViewProfilePictureModal}
+        onClose={() => setShowViewProfilePictureModal(false)}
+        picture={displayProfilePicture}
+      />
 
       {/* requests list modal */}
       <RequestsModal

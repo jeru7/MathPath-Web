@@ -29,3 +29,11 @@ export const changeAccountSettingsService = async (
     { withCredentials: true },
   );
 };
+
+export const sendEmailVerificationService = async (userId: string) => {
+  await axios.post(
+    `${BASE_URI}/api/web/auth/settings/email/verify/${userId}`,
+    {},
+    { withCredentials: true },
+  );
+};
