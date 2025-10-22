@@ -44,7 +44,7 @@ export default function RequestTable({
         request.accountInfo?.firstName
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        request.accountInfo?.lastname
+        request.accountInfo?.lastName
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         request.accountInfo?.email
