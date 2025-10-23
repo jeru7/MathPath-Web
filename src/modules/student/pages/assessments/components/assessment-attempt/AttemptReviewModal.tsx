@@ -536,7 +536,7 @@ export default function AttemptReviewModal({
                   {new Date(
                     attempt.dateCompleted || attempt.dateUpdated,
                   ).toLocaleDateString()}{" "}
-                  • Score: {attempt.score} • {attempt.percentage}%
+                  • Score: {attempt.score}
                   {attempt.score >= assessment.passingScore
                     ? " • Passed"
                     : " • Failed"}

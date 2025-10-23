@@ -129,14 +129,6 @@ export default function AssessmentAttemptItem({
             </span>
           </div>
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-            <span>
-              Score:{" "}
-              <span
-                className={`font-semibold ${getScoreColor(attempt.percentage, attempt.assessmentPassingScore)}`}
-              >
-                {attempt.percentage}%
-              </span>
-            </span>
             <span>Time Spent: {formatTimeSpent(attempt.timeSpent)}</span>
             <span>
               Completed:{" "}
@@ -155,9 +147,9 @@ export default function AssessmentAttemptItem({
         <div className="flex items-center gap-4">
           <div className="text-right">
             <div
-              className={`text-lg font-bold ${getScoreColor(attempt.percentage, attempt.assessmentPassingScore)}`}
+              className={`text-lg font-bold ${getScoreColor(attempt.score, attempt.assessmentPassingScore)}`}
             >
-              {attempt.percentage}%
+              {attempt.score} points
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400">
               Passing: {attempt.assessmentPassingScore} points
@@ -226,16 +218,6 @@ export default function AssessmentAttemptItem({
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Score:
-                    </span>
-                    <span
-                      className={`font-bold ${getScoreColor(attempt.percentage, attempt.assessmentPassingScore)}`}
-                    >
-                      {attempt.percentage}%
-                    </span>
-                  </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-600 dark:text-gray-400">
                       Raw Score:
