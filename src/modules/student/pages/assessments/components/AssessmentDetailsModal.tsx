@@ -345,9 +345,6 @@ export default function AssessmentDetailsModal({
                               {attempt.score !== undefined &&
                                 attempt.status !== "paused" &&
                                 ` • Score: ${attempt.score}`}
-                              {attempt.percentage !== undefined &&
-                                attempt.status !== "paused" &&
-                                ` (${attempt.percentage}%)`}
                             </p>
                             {attempt.dateCompleted && (
                               <p className="text-xs text-gray-500 dark:text-gray-400">
