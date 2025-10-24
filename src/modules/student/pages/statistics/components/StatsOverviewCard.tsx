@@ -24,6 +24,21 @@ export default function StatsOverviewCard({
   const { data: attempts } = useStudentAttemptStats(student.id);
   const { data: playerCard } = useStudentPlayerCard(student.id);
 
+  // Helper function to format playtime:
+  // Show minutes if < 1hr, otherwise show hours (1 decimal)
+  const formatPlaytime = (seconds?: number): string => {
+    if (!seconds || isNaN(seconds)) return "0mins";
+
+    const minutes = Math.floor(seconds / 60);
+    const hours = seconds / 3600;
+
+    if (minutes < 60) {
+      return `${minutes}min${minutes !== 1 ? "s" : ""}`;
+    }
+
+    return `${hours.toFixed(1)}hrs`;
+  };
+
   const stats = [
     {
       title: "Player Level",
@@ -51,9 +66,7 @@ export default function StatsOverviewCard({
     },
     {
       title: "Playtime",
-      value: playerCard?.totalPlaytime
-        ? `${playerCard.totalPlaytime}hrs`
-        : "0hrs",
+      value: formatPlaytime(playerCard?.totalPlaytime),
       icon: FaHourglassHalf,
       color: "text-blue-600 dark:text-blue-400",
       bgColor: "bg-blue-50 dark:bg-blue-900/30",
@@ -91,7 +104,7 @@ export default function StatsOverviewCard({
 
   return (
     <article className="bg-white dark:bg-gray-800 flex flex-col gap-4 w-full h-full p-3 rounded-sm transition-colors duration-200">
-      <header className="">
+      <header>
         <p className="font-semibold text-lg text-gray-800 dark:text-gray-100 transition-colors duration-200">
           Overview
         </p>
