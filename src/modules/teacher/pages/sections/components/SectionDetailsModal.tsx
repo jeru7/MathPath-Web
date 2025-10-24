@@ -361,11 +361,10 @@ export default function SectionDetailsModal({
                         </div>
                       </div>
 
-                      {/* TODO: separate component */}
-                      {/* students list */}
-                      <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
+                      {/* scrollable students list */}
+                      <div className="flex-1 min-h-0 overflow-hidden max-h-[550px]">
                         {!students ? (
-                          <div className="flex items-center justify-center h-32">
+                          <div className="flex items-center justify-center h-full">
                             <div className="text-center">
                               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-2"></div>
                               <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
@@ -374,7 +373,7 @@ export default function SectionDetailsModal({
                             </div>
                           </div>
                         ) : sectionStudents.length === 0 ? (
-                          <div className="flex items-center justify-center h-32">
+                          <div className="flex items-center justify-center h-full">
                             <div className="text-center">
                               <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
                                 <FaUsers className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" />
@@ -389,15 +388,17 @@ export default function SectionDetailsModal({
                             </div>
                           </div>
                         ) : (
-                          <div className="grid gap-2 sm:gap-3">
-                            {sectionStudents.map((student, index) => (
-                              <StudentItem
-                                key={student.id}
-                                student={student}
-                                index={index}
-                                onStudentClick={handleStudentClick}
-                              />
-                            ))}
+                          <div className="h-full overflow-y-auto p-3 sm:p-4">
+                            <div className="grid gap-2 sm:gap-3">
+                              {sectionStudents.map((student, index) => (
+                                <StudentItem
+                                  key={student.id}
+                                  student={student}
+                                  index={index}
+                                  onStudentClick={handleStudentClick}
+                                />
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
