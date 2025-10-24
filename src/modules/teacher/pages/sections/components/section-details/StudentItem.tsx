@@ -31,12 +31,12 @@ export default function StudentItem({
     };
   }, [student]);
 
-  const isActive = useMemo(() => {
-    if (!student.lastOnline) return false;
-    const lastOnline = new Date(student.lastOnline);
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    return lastOnline > sevenDaysAgo;
-  }, [student.lastOnline]);
+  // const isActive = useMemo(() => {
+  //   if (!student.lastOnline) return false;
+  //   const lastOnline = new Date(student.lastOnline);
+  //   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  //   return lastOnline > sevenDaysAgo;
+  // }, [student.lastOnline]);
 
   return (
     <div
