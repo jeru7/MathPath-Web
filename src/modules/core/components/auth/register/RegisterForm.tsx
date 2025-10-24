@@ -21,7 +21,6 @@ export default function RegisterForm(): ReactElement {
   const navigate = useNavigate();
   const { code } = useParams();
   const [referenceNumber, setReferenceNumber] = useState("");
-  const [registrationCode, setRegistrationCode] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmationPassword, setShowConfirmationPassword] =
     useState(false);
@@ -31,6 +30,7 @@ export default function RegisterForm(): ReactElement {
     handleSubmit,
     control,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormDTO>({
     resolver: zodResolver(RegisterFormSchema),
@@ -43,17 +43,9 @@ export default function RegisterForm(): ReactElement {
       referenceNumber: "",
       password: "",
       confirmNewPassword: "",
-      registrationCode: code || "",
+      registrationCode: code?.toUpperCase() || "",
     },
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase();
-
-    if (value.length <= 6) {
-      setRegistrationCode(value);
-    }
-  };
 
   const onSubmit = async (data: RegisterFormDTO) => {
     try {
@@ -127,18 +119,16 @@ export default function RegisterForm(): ReactElement {
         className="flex flex-1 flex-col gap-4 justify-between"
       >
         <div className="flex flex-col gap-2 md:gap-4">
-          {/* first + last name */}
+          {/* First + Last name */}
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
             <div className="relative w-full">
               <input
                 type="text"
                 {...register("firstName")}
                 placeholder=" "
-                className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30  text-[var(--primary-black)] focus:outline-none focus:ring-0`}
+                className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
               />
-              <label
-                className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-              >
+              <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
                 First Name
               </label>
               {errors.firstName && (
@@ -153,12 +143,9 @@ export default function RegisterForm(): ReactElement {
                 type="text"
                 {...register("lastName")}
                 placeholder=" "
-                className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30  text-[var(--primary-black)] focus:outline-none focus:ring-0 
-                ${errors.lastName ? "" : "border-transparent focus:border-black"}`}
+                className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
               />
-              <label
-                className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-              >
+              <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
                 Last Name
               </label>
               {errors.lastName && (
@@ -169,24 +156,20 @@ export default function RegisterForm(): ReactElement {
             </div>
           </div>
 
+          {/* Middle name + Gender */}
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
-            {/* middle name */}
             <div className="relative w-full">
               <input
                 type="text"
                 {...register("middleName")}
                 placeholder=" "
-                className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0 
-                ${errors.middleName ? "" : "border-transparent bg-gray-100/30 focus:border-black"}`}
+                className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
               />
-              <label
-                className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-              >
+              <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
                 Middle Name
               </label>
             </div>
 
-            {/* gender */}
             <div className="w-full">
               <Controller
                 name="gender"
@@ -200,10 +183,7 @@ export default function RegisterForm(): ReactElement {
                     ]}
                     getOptionLabel={(option) => option.label}
                     getOptionValue={(option) => option.value}
-                    styles={getCustomSelectColor<{
-                      value: StudentGender;
-                      label: string;
-                    }>({
+                    styles={getCustomSelectColor({
                       height: "54px",
                       padding: "0px 4px",
                       backgroundColor: "rgba(243, 244, 246, 0.30)",
@@ -234,17 +214,15 @@ export default function RegisterForm(): ReactElement {
             </div>
           </div>
 
-          {/* email */}
+          {/* Email */}
           <div className="relative">
             <input
               type="email"
               {...register("email")}
               placeholder=" "
-              className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
+              className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
             />
-            <label
-              className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-            >
+            <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
               Email
             </label>
             {errors.email && (
@@ -264,11 +242,9 @@ export default function RegisterForm(): ReactElement {
                 if (val.length > 12) val = val.slice(0, 12);
                 setReferenceNumber(val);
               }}
-              className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
+              className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
             />
-            <label
-              className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-            >
+            <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
               Learner Reference Number (LRN)
             </label>
             {errors.referenceNumber && (
@@ -278,7 +254,7 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* password */}
+          {/* Password */}
           <div className="flex flex-col">
             <div className="relative">
               <input
@@ -286,11 +262,9 @@ export default function RegisterForm(): ReactElement {
                 {...register("password")}
                 placeholder=" "
                 maxLength={32}
-                className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
+                className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
               />
-              <label
-                className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-              >
+              <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
                 Password
               </label>
               <button
@@ -310,7 +284,7 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* confirm password */}
+          {/* Confirm Password */}
           <div className="flex flex-col">
             <div className="relative">
               <input
@@ -318,11 +292,9 @@ export default function RegisterForm(): ReactElement {
                 {...register("confirmNewPassword")}
                 placeholder=" "
                 maxLength={32}
-                className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
+                className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
               />
-              <label
-                className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]`}
-              >
+              <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
                 Confirm Password
               </label>
               <button
@@ -346,23 +318,21 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* registration code */}
+          {/* Registration Code */}
           <div className="relative">
             <input
               type="text"
               {...register("registrationCode")}
-              value={registrationCode}
               placeholder=" "
               maxLength={6}
-              onChange={(e) => handleChange(e)}
-              className={`peer block w-full appearance-none rounded-lg border-2 px-2.5 pb-2.5 pt-5 text-sm bg-gray-100/30 text-[var(--primary-black)] focus:outline-none focus:ring-0`}
+              onChange={(e) =>
+                setValue("registrationCode", e.target.value.toUpperCase())
+              }
+              className="peer block w-full appearance-none rounded-lg border-2 border-transparent bg-gray-100/30 px-2.5 pb-2.5 pt-5 text-sm text-[var(--primary-black)] focus:border-black focus:outline-none focus:ring-0"
             />
-            <label
-              className={`absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]"}`}
-            >
+            <label className="absolute start-2.5 top-4 z-10 origin-[0] -translate-y-4 scale-75 transform text-sm duration-300 text-gray-800 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-bold peer-focus:text-[var(--primary-black)]">
               Registration Code
             </label>
-
             {errors.registrationCode && (
               <p className="text-xs text-red-500">
                 {errors.registrationCode.message as string}
@@ -370,7 +340,7 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* submit */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -380,6 +350,7 @@ export default function RegisterForm(): ReactElement {
           </button>
         </div>
 
+        {/* Already registered? */}
         <div className="flex gap-2 self-center">
           <p className="text-white">Already registered?</p>
           <button
