@@ -14,6 +14,12 @@ export default function PlayerInfo(): ReactElement {
   const { studentId } = useStudentContext();
   const { data: playerCardStats } = useStudentPlayerCard(studentId);
 
+  const formatPlaytime = (seconds?: number): string => {
+    if (!seconds || isNaN(seconds)) return "???";
+    const hours = seconds / 3600;
+    return `${hours.toFixed(1)}hrs`;
+  };
+
   const allStats = [
     {
       icon: FaStar,
@@ -26,9 +32,7 @@ export default function PlayerInfo(): ReactElement {
     {
       icon: FaHourglassHalf,
       label: "Playtime",
-      value: playerCardStats?.totalPlaytime
-        ? `${playerCardStats.totalPlaytime}hrs`
-        : "???",
+      value: formatPlaytime(playerCardStats?.totalPlaytime),
       color: "text-blue-600 dark:text-blue-400",
       bgColor: "bg-blue-50 dark:bg-blue-900/30",
       borderColor: "border-blue-200 dark:border-blue-800",
