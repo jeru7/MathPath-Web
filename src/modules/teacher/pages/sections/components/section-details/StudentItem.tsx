@@ -74,16 +74,16 @@ export default function StudentItem({
             <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
               {student.firstName} {student.lastName}
             </h4>
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <div
-                className={`w-2 h-2 rounded-full ${isActive ? "bg-green-500" : "bg-gray-300"}`}
-              />
-              <span
-                className={`text-xs font-medium hidden xs:inline ${isActive ? "text-green-600 dark:text-green-400" : "text-gray-500"}`}
-              >
-                {isActive ? "Active" : "Inactive"}
-              </span>
-            </div>
+            {/* <div className="flex items-center gap-1 flex-shrink-0"> */}
+            {/*   <div */}
+            {/*     className={`w-2 h-2 rounded-full ${isActive ? "bg-green-500" : "bg-gray-300"}`} */}
+            {/*   /> */}
+            {/*   <span */}
+            {/*     className={`text-xs font-medium hidden xs:inline ${isActive ? "text-green-600 dark:text-green-400" : "text-gray-500"}`} */}
+            {/*   > */}
+            {/*     {isActive ? "Active" : "Inactive"} */}
+            {/*   </span> */}
+            {/* </div> */}
           </div>
 
           {/* level */}

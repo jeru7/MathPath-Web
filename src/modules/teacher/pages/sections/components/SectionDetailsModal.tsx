@@ -353,8 +353,7 @@ export default function SectionDetailsModal({
                                 Student List
                               </h3>
                               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                                {sectionStats.totalStudents} enrolled •{" "}
-                                {sectionStats.activeStudents} active
+                                {sectionStats.totalStudents} enrolled
                               </p>
                             </div>
                           </div>
