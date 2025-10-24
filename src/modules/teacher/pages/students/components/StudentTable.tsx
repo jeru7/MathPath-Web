@@ -45,26 +45,34 @@ export default function StudentTable({
   const filteredAndSortedStudents = useMemo(() => {
     const filtered = students.filter((student) => {
       const {
-        firstName,
-        lastName,
+        firstName = "",
+        lastName = "",
         middleName = "",
-        referenceNumber,
+        referenceNumber = "",
         sectionId,
       } = student;
 
       const sectionName = getSectionName(sectionId, sections).toLowerCase();
       const query = searchQuery.toLowerCase();
-      const fullName1 = `${lastName} ${firstName} ${middleName}`.toLowerCase();
-      const fullName2 = `${firstName} ${lastName}`.toLowerCase();
+
+      // Ensure all name parts are strings before processing
+      const safeFirstName = firstName || "";
+      const safeLastName = lastName || "";
+      const safeMiddleName = middleName || "";
+      const safeReferenceNumber = referenceNumber || "";
+
+      const fullName1 =
+        `${safeLastName} ${safeFirstName} ${safeMiddleName}`.toLowerCase();
+      const fullName2 = `${safeFirstName} ${safeLastName}`.toLowerCase();
 
       const matchesSearch =
-        referenceNumber.toLowerCase().includes(query) ||
+        safeReferenceNumber.toLowerCase().includes(query) ||
         sectionName.includes(query) ||
         fullName1.includes(query) ||
         fullName2.includes(query) ||
-        firstName.toLowerCase().includes(query) ||
-        lastName.toLowerCase().includes(query) ||
-        middleName.toLowerCase().includes(query);
+        safeFirstName.toLowerCase().includes(query) ||
+        safeLastName.toLowerCase().includes(query) ||
+        safeMiddleName.toLowerCase().includes(query);
 
       const matchesSection =
         selectedSections.length === 0 || selectedSections.includes(sectionId);
