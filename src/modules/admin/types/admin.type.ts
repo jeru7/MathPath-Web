@@ -1,4 +1,4 @@
-import { ProfilePicture } from "../../core/types/user.type";
+import { Gender, ProfilePicture, Verified } from "../../core/types/user.type";
 
 export type Admin = {
   id: string;
@@ -6,6 +6,10 @@ export type Admin = {
   firstName: string;
   lastName: string;
   middleName: string | null;
-  changes: string[];
   profilePicture: ProfilePicture | null;
+  gender: Gender;
+  changes: string[];
+  verified: Verified;
+  createdAt: string;
+  updatedAt: string;
 };
