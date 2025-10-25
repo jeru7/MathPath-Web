@@ -1,7 +1,6 @@
-import { ProfilePicture, Verified } from "../../core/types/user.type";
+import { Gender, ProfilePicture, Verified } from "../../core/types/user.type";
 
-export type StudentGender = "Male" | "Female";
-export type StudentCharacter = StudentGender;
+export type StudentCharacter = Gender;
 export type StudentStatusType = "Online" | "Offline";
 
 export type Student = {
@@ -15,7 +14,7 @@ export type Student = {
   referenceNumber: string;
   sectionId: string;
   characterName: string;
-  gender: StudentGender;
+  gender: Gender;
   email: string;
   assessments: StudentAssessment[];
   character: StudentCharacter;

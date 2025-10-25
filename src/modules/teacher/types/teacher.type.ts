@@ -1,5 +1,4 @@
-import { ProfilePicture, Verified } from "../../core/types/user.type";
-import { StudentGender } from "../../student/types/student.type";
+import { Gender, ProfilePicture, Verified } from "../../core/types/user.type";
 
 export type Teacher = {
   id: string;
@@ -7,7 +6,7 @@ export type Teacher = {
   firstName: string;
   lastName: string;
   middleName: string | null;
-  gender: StudentGender;
+  gender: Gender;
   profilePicture: ProfilePicture | null;
   verified: Verified;
 };

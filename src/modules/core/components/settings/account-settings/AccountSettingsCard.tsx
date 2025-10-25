@@ -26,6 +26,7 @@ import { useStudentRequests } from "../../../../student/services/student-request
 import { Request } from "../../../types/requests/request.type.js";
 import RequestsModal from "./requests/RequestsModal.js";
 import RequestDetailsModal from "./requests/RequestDetailsModal.js";
+import { Admin } from "../../../../admin/types/admin.type.js";
 
 type StudentAccountSettingsCardProps = {
   user: Student;
@@ -37,9 +38,15 @@ type TeacherAccountSettingsCardProps = {
   userType: "teacher";
 };
 
+type AdminAccountSettingsCardProps = {
+  user: Admin;
+  userType: "admin";
+};
+
 type AccountSettingsCardProps =
   | StudentAccountSettingsCardProps
-  | TeacherAccountSettingsCardProps;
+  | TeacherAccountSettingsCardProps
+  | AdminAccountSettingsCardProps;
 
 export default function AccountSettingsCard(
   props: AccountSettingsCardProps,
@@ -177,7 +184,7 @@ export default function AccountSettingsCard(
             // The backend will send the specific cooldown message
             toast.error(
               errorData.message ||
-                "Please wait before requesting another verification email.",
+              "Please wait before requesting another verification email.",
             );
             break;
           case "USER_NOT_FOUND":
@@ -527,11 +534,10 @@ export default function AccountSettingsCard(
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
           <div className="relative">
             <div
-              className={`w-20 h-20 rounded-full border-2 overflow-hidden cursor-pointer ${
-                isEditing && !hasPendingRequest
+              className={`w-20 h-20 rounded-full border-2 overflow-hidden cursor-pointer ${isEditing && !hasPendingRequest
                   ? "border-green-500 dark:border-green-400 hover:border-green-600 dark:hover:border-green-300 transition-colors"
                   : "border-gray-300 dark:border-gray-600"
-              } ${hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleProfilePictureClick}
             >
               <img
@@ -554,7 +560,7 @@ export default function AccountSettingsCard(
               {isEditing && !hasPendingRequest
                 ? "Click on the photo to change"
                 : hasPendingRequest &&
-                  "Go to edit mode to change profile picture"}
+                "Go to edit mode to change profile picture"}
             </p>
           </div>
         </div>
@@ -569,11 +575,10 @@ export default function AccountSettingsCard(
               <>
                 <input
                   type="text"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                    hasPendingRequest
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
                       ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
                       : "border-gray-300 dark:border-gray-600"
-                  }`}
+                    }`}
                   {...register("firstName")}
                   disabled={hasPendingRequest}
                 />
@@ -599,11 +604,10 @@ export default function AccountSettingsCard(
               <>
                 <input
                   type="text"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                    hasPendingRequest
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
                       ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
                       : "border-gray-300 dark:border-gray-600"
-                  }`}
+                    }`}
                   {...register("lastName")}
                   disabled={hasPendingRequest}
                 />
@@ -631,11 +635,10 @@ export default function AccountSettingsCard(
               <>
                 <input
                   type="text"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                    hasPendingRequest
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
                       ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
                       : "border-gray-300 dark:border-gray-600"
-                  }`}
+                    }`}
                   {...register("middleName")}
                   disabled={hasPendingRequest}
                 />
@@ -663,11 +666,10 @@ export default function AccountSettingsCard(
               <div className="relative">
                 <input
                   type="email"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                    hasPendingRequest
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
                       ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
                       : "border-gray-300 dark:border-gray-600"
-                  }`}
+                    }`}
                   {...register("email")}
                   disabled={hasPendingRequest}
                 />

@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { RxDashboard } from "react-icons/rx";
 import { IoIosStats, IoIosDocument, IoMdSettings } from "react-icons/io";
 import { PiStudent } from "react-icons/pi";
@@ -11,11 +11,12 @@ import { useTeacher } from "../../services/teacher.service";
 import { capitalizeWord } from "../../../core/utils/string.util";
 import { getProfilePicture } from "../../../core/utils/profile-picture.util";
 import { FaInbox } from "react-icons/fa";
+import { useTeacherContext } from "../../context/teacher.context";
 
 export default function Nav(): ReactElement {
-  const { teacherId } = useParams();
+  const { teacherId } = useTeacherContext();
   const { logout } = useAuth();
-  const { data: teacher } = useTeacher(teacherId ?? "");
+  const { data: teacher } = useTeacher(teacherId);
   const navigate = useNavigate();
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -82,7 +83,7 @@ export default function Nav(): ReactElement {
               const isActive = defaultPage
                 ? location.pathname === to
                 : location.pathname.startsWith(to) &&
-                  location.pathname !== `/teacher/${teacherId}`;
+                location.pathname !== `/teacher/${teacherId}`;
               return (
                 <NavLink
                   key={index}
@@ -175,9 +176,8 @@ export default function Nav(): ReactElement {
 
         {/* sliding menu */}
         <nav
-          className={`fixed flex flex-col gap-4 top-0 left-0 z-40 h-full w-2/4 min-w-62 max-w-sm rounded-r-sm bg-[var(--tertiary-green)] dark:bg-gray-800 transform  ease-in-out xl:hidden transition-colors duration-200 ${
-            isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed flex flex-col gap-4 top-0 left-0 z-40 h-full w-2/4 min-w-62 max-w-sm rounded-r-sm bg-[var(--tertiary-green)] dark:bg-gray-800 transform  ease-in-out xl:hidden transition-colors duration-200 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="flex items-center justify-between h-16 px-4 border-b border-[var(--primary-green)]/30 dark:border-green-700/30">
             <h2 className="text-white dark:text-gray-100 font-bold text-lg font-baloo">
@@ -199,7 +199,7 @@ export default function Nav(): ReactElement {
                 const isActive = defaultPage
                   ? location.pathname === to
                   : location.pathname.startsWith(to) &&
-                    location.pathname !== `/teacher/${teacherId}`;
+                  location.pathname !== `/teacher/${teacherId}`;
                 return (
                   <NavLink
                     key={index}

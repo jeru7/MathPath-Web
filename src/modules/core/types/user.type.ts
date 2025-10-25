@@ -11,6 +11,8 @@ export type User = {
   profilePicture?: ProfilePicture;
 };
 
+export type Gender = "Male" | "Female";
+
 export type Verified = {
   verified: boolean;
   token: string | null;

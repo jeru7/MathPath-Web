@@ -6,12 +6,13 @@ import { Request } from "../../../../types/requests/request.type";
 import { ProfilePicture } from "../../../../types/user.type";
 import { getProfilePicture } from "../../../../utils/profile-picture.util";
 import { format } from "date-fns-tz";
+import { Admin } from "../../../../../admin/types/admin.type";
 
 type RequestDetailsModalProps = {
   showRequestDetailsModal: boolean;
   selectedRequest: Request | null;
   onClose: () => void;
-  user: Student | Teacher;
+  user: Student | Teacher | Admin;
 };
 
 export default function RequestDetailsModal({
@@ -160,226 +161,226 @@ export default function RequestDetailsModal({
                     changes.middleName ||
                     changes.email ||
                     changes.profilePicture) && (
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-4">
-                      <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
-                        Personal Information
-                      </h4>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-4">
+                        <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
+                          Personal Information
+                        </h4>
 
-                      <div className="space-y-4">
-                        {/* first name */}
-                        {changes.firstName && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Previous" : "Current"}
+                        <div className="space-y-4">
+                          {/* first name */}
+                          {changes.firstName && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Previous" : "Current"}
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Current" : "Proposed"}
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Current" : "Proposed"}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "Before:" : "Current:"}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "Before:" : "Current:"}
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.firstName}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.firstName}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "After:" : "New:"}
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {isApproved
+                                        ? currentUserData.firstName
+                                        : requestedData?.firstName}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "After:" : "New:"}
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {isApproved
-                                      ? currentUserData.firstName
-                                      : requestedData?.firstName}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {/* last name */}
-                        {changes.lastName && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Previous" : "Current"}
+                          {/* last name */}
+                          {changes.lastName && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Previous" : "Current"}
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Current" : "Proposed"}
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Current" : "Proposed"}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "Before:" : "Current:"}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "Before:" : "Current:"}
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.lastName}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.lastName}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "After:" : "New:"}
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {isApproved
+                                        ? currentUserData.lastName
+                                        : requestedData?.lastName}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "After:" : "New:"}
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {isApproved
-                                      ? currentUserData.lastName
-                                      : requestedData?.lastName}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {/* middle name */}
-                        {changes.middleName && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Previous" : "Current"}
+                          {/* middle name */}
+                          {changes.middleName && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Previous" : "Current"}
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Current" : "Proposed"}
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Current" : "Proposed"}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "Before:" : "Current:"}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "Before:" : "Current:"}
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.middleName || "—"}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.middleName || "—"}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "After:" : "New:"}
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {isApproved
+                                        ? currentUserData.middleName || "—"
+                                        : requestedData?.middleName || "—"}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "After:" : "New:"}
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {isApproved
-                                      ? currentUserData.middleName || "—"
-                                      : requestedData?.middleName || "—"}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {/* email */}
-                        {changes.email && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Previous" : "Current"}
+                          {/* email */}
+                          {changes.email && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Previous" : "Current"}
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Current" : "Proposed"}
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Current" : "Proposed"}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "Before:" : "Current:"}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "Before:" : "Current:"}
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.email}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.email}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "After:" : "New:"}
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {isApproved
+                                        ? currentUserData.email
+                                        : requestedData?.email}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "After:" : "New:"}
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {isApproved
-                                      ? currentUserData.email
-                                      : requestedData?.email}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {/* profile picture */}
-                        {changes.profilePicture && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Previous" : "Current"}
+                          {/* profile picture */}
+                          {changes.profilePicture && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Previous" : "Current"}
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  {isApproved ? "Current" : "Proposed"}
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {isApproved ? "Current" : "Proposed"}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "Before:" : "Current:"}
-                                  </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
-                                    <img
-                                      src={getProfilePicture(
-                                        (originalData.profilePicture as ProfilePicture) ??
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "Before:" : "Current:"}
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
+                                      <img
+                                        src={getProfilePicture(
+                                          (originalData.profilePicture as ProfilePicture) ??
                                           "Default",
-                                      )}
-                                      alt={
-                                        isApproved
-                                          ? "Previous Profile"
-                                          : "Current Profile"
-                                      }
-                                      className="w-16 h-16 rounded-full mx-auto object-cover"
-                                    />
+                                        )}
+                                        alt={
+                                          isApproved
+                                            ? "Previous Profile"
+                                            : "Current Profile"
+                                        }
+                                        className="w-16 h-16 rounded-full mx-auto object-cover"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {isApproved ? "After:" : "New:"}
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
-                                    <img
-                                      src={getProfilePicture(
-                                        (isApproved
-                                          ? (currentUserData.profilePicture as ProfilePicture)
-                                          : (requestedData?.profilePicture as ProfilePicture)) ??
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      {isApproved ? "After:" : "New:"}
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
+                                      <img
+                                        src={getProfilePicture(
+                                          (isApproved
+                                            ? (currentUserData.profilePicture as ProfilePicture)
+                                            : (requestedData?.profilePicture as ProfilePicture)) ??
                                           "Default",
-                                      )}
-                                      alt={
-                                        isApproved
-                                          ? "Current Profile"
-                                          : "New Profile"
-                                      }
-                                      className="w-16 h-16 rounded-full mx-auto object-cover"
-                                    />
+                                        )}
+                                        alt={
+                                          isApproved
+                                            ? "Current Profile"
+                                            : "New Profile"
+                                        }
+                                        className="w-16 h-16 rounded-full mx-auto object-cover"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             ) : (
