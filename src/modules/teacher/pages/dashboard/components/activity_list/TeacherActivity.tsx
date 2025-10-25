@@ -18,7 +18,6 @@ export default function TeacherActivity({
     const diffInDays = differenceInDays(new Date(), date);
 
     if (diffInDays === 0) {
-      // Same day → show "x minutes/hours ago"
       return formatDistanceToNow(date, { addSuffix: true });
     }
     if (diffInDays === 1) {
@@ -39,7 +38,7 @@ export default function TeacherActivity({
           />
         </div>
         <div className="flex flex-col">
-          <p className="text-xs">
+          <p className="text-xs text-gray-900 dark:text-gray-300">
             {activity.firstName} {activity.lastName}{" "}
             {getActivityKeyword(activity.type)}{" "}
             <span className="font-semibold">{activity.highlight}</span>.

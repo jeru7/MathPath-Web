@@ -55,7 +55,6 @@ export default function StudentTable({
       const sectionName = getSectionName(sectionId, sections).toLowerCase();
       const query = searchQuery.toLowerCase();
 
-      // Ensure all name parts are strings before processing
       const safeFirstName = firstName || "";
       const safeLastName = lastName || "";
       const safeMiddleName = middleName || "";
