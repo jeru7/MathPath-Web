@@ -1,11 +1,13 @@
 import { createContext, useContext } from "react";
 import { Admin } from "../types/admin.type";
 import { Teacher } from "../../teacher/types/teacher.type";
+import { Student } from "../../student/types/student.type";
 
 type AdminContextType = {
   adminId: string;
   admin: Admin | null;
   teachers: Teacher[];
+  students: Student[];
 };
 
 export const AdminContext = createContext<AdminContextType | undefined>(
