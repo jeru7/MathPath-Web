@@ -9,6 +9,7 @@ import { handleApiError } from "../../../../core/utils/api/error.util";
 import { getProfilePicture } from "../../../../core/utils/profile-picture.util.js";
 import { ProfilePicture } from "../../../../core/types/user.type.js";
 import { format } from "date-fns-tz";
+import ModalOverlay from "../../../../core/components/modal/ModalOverlay.js";
 
 type RequestDetailsModalProps = {
   isOpen: boolean;
@@ -147,7 +148,7 @@ export default function RequestDetailsModal({
   const isProcessing = updateRequestStatusMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <ModalOverlay isOpen={isOpen} onClose={onClose}>
       <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-4xl mx-4 flex flex-col max-h-[90vh]">
         {/* header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
@@ -224,204 +225,204 @@ export default function RequestDetailsModal({
                     changes.middleName ||
                     changes.email ||
                     changes.profilePicture) && (
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-4">
-                      <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
-                        Personal Information
-                      </h4>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-4">
+                        <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
+                          Personal Information
+                        </h4>
 
-                      <div className="space-y-4">
-                        {/* First Name - Only show if changed */}
-                        {changes.firstName && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                        <div className="space-y-4">
+                          {/* First Name - Only show if changed */}
+                          {changes.firstName && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Previous
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Proposed
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      Before:
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.firstName}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.firstName}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      After:
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {requestedData?.firstName}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.firstName}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {changes.lastName && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                          {changes.lastName && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Previous
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Proposed
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      Before:
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.lastName}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.lastName}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      After:
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {requestedData?.lastName}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.lastName}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {changes.middleName && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                          {changes.middleName && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Previous
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Proposed
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      Before:
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.middleName || "—"}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.middleName || "—"}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      After:
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {requestedData?.middleName || "—"}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.middleName || "—"}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {changes.email && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                          {changes.email && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Previous
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Proposed
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      Before:
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+                                      {originalData.email}
+                                    </div>
                                   </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                    {originalData.email}
+                                </div>
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      After:
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
+                                      {requestedData?.email}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                    {requestedData?.email}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {changes.profilePicture && (
-                          <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Previous
+                          {changes.profilePicture && (
+                            <div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Previous
+                                </div>
+                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Proposed
+                                </div>
                               </div>
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Proposed
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    Before:
-                                  </div>
-                                  <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
-                                    <img
-                                      src={getProfilePicture(
-                                        (originalData.profilePicture as ProfilePicture) ??
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      Before:
+                                    </div>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
+                                      <img
+                                        src={getProfilePicture(
+                                          (originalData.profilePicture as ProfilePicture) ??
                                           "Default",
-                                      )}
-                                      alt="Previous Profile"
-                                      className="w-16 h-16 rounded-full mx-auto object-cover"
-                                    />
+                                        )}
+                                        alt="Previous Profile"
+                                        className="w-16 h-16 rounded-full mx-auto object-cover"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div>
-                                <div className="space-y-2">
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    After:
-                                  </div>
-                                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
-                                    <img
-                                      src={getProfilePicture(
-                                        (requestedData?.profilePicture as ProfilePicture) ??
+                                <div>
+                                  <div className="space-y-2">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                      After:
+                                    </div>
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
+                                      <img
+                                        src={getProfilePicture(
+                                          (requestedData?.profilePicture as ProfilePicture) ??
                                           "Default",
-                                      )}
-                                      alt="New Profile"
-                                      className="w-16 h-16 rounded-full mx-auto object-cover"
-                                    />
+                                        )}
+                                        alt="New Profile"
+                                        className="w-16 h-16 rounded-full mx-auto object-cover"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             ) : (
@@ -504,6 +505,6 @@ export default function RequestDetailsModal({
           </div>
         )}
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
