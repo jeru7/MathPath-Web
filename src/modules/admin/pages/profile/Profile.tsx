@@ -24,7 +24,7 @@ export default function Profile(): ReactElement {
     );
   }
 
-  const isVerified = admin.verified;
+  const isVerified = admin.verified.verified;
 
   return (
     <main className="flex flex-col min-h-screen h-fit w-full gap-2 bg-inherit p-2 transition-colors duration-200">
