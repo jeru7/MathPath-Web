@@ -4,16 +4,18 @@ import { useTeacherContext } from "../../context/teacher.context";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoPlus } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import SectionTable from "./components/section-table/SectionTable";
-import SectionDetailsModal from "./components/SectionDetailsModal";
 import { Section } from "../../../core/types/section/section.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import DeleteConfirmationModal from "./components/DeleteSectionConfirmationModal";
 import { useTeacherDeleteSection } from "../../services/teacher-section.service";
+import SectionTable from "../../../core/components/section-table/SectionTable";
+import SectionDetailsModal from "../../../core/components/section-table/SectionDetailsModal";
+import DeleteConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
+import { getStudentCountForSection } from "../../../core/utils/section/section.util";
 
 export default function Sections(): ReactElement {
-  const { sections, students, teacherId } = useTeacherContext();
+  const teacherContext = useTeacherContext();
+  const { sections, students, teacherId } = teacherContext;
   const { mutate: deleteSection } = useTeacherDeleteSection(teacherId);
   const queryClient = useQueryClient();
 
@@ -79,12 +81,6 @@ export default function Sections(): ReactElement {
     setSectionToDelete(null);
   };
 
-  const getStudentCountForSection = (section: Section | null): number => {
-    if (!section) return 0;
-    return students.filter((student) => student.sectionId === section.id)
-      .length;
-  };
-
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
       <AnimatePresence>
@@ -112,6 +108,7 @@ export default function Sections(): ReactElement {
       {/* section grid list */}
       <section className="flex-1 flex bg-white border border-white dark:bg-gray-800 dark:border-gray-700 rounded-sm shadow-sm">
         <SectionTable
+          context={teacherContext}
           sections={sections}
           onShowForm={() => navigate("add-section")}
           onSectionClick={handleSectionClick}
@@ -124,6 +121,7 @@ export default function Sections(): ReactElement {
       {/* section details modal */}
       {selectedSection && (
         <SectionDetailsModal
+          context={teacherContext}
           section={selectedSection}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
@@ -137,7 +135,7 @@ export default function Sections(): ReactElement {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         section={sectionToDelete}
-        studentCount={getStudentCountForSection(sectionToDelete)}
+        studentCount={getStudentCountForSection(sectionToDelete, students)}
       />
     </main>
   );

@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import { Section } from "../../../../core/types/section/section.type";
+import { Section } from "../../types/section/section.type";
 
 type DeleteConfirmationModalProps = {
   isOpen: boolean;

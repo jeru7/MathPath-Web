@@ -13,12 +13,16 @@ import StudentStageStats from "../../../../student/pages/statistics/components/S
 import StudentQuestionStats from "../../../../student/pages/statistics/components/StudentQuestionStats";
 import ModalOverlay from "../../modal/ModalOverlay";
 import { Section } from "../../../types/section/section.type";
+import FooterActions from "../../modal/FooterActions";
 
 type StudentDetailsModalProps = {
   student: Student;
   isOpen: boolean;
   onClose: () => void;
   sections: Section[];
+  onEdit?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
 };
 
 export type AttemptWithAssessment = AssessmentAttempt & {
@@ -32,10 +36,32 @@ export default function StudentDetailsModal({
   isOpen,
   onClose,
   sections,
+  onEdit,
+  onArchive,
+  onDelete,
 }: StudentDetailsModalProps): ReactElement {
+  // TODO: edit, archive and delete
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
+  const handleArchive = () => {
+    if (onArchive) {
+      onArchive();
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm min-w-7xl h-[85vh] flex flex-col overflow-hidden">
         {/* header */}
         <header className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
           <div>
@@ -94,6 +120,14 @@ export default function StudentDetailsModal({
             </div>
           </div>
         </div>
+
+        {/* action buttons */}
+        <FooterActions
+          lastUpdated={student?.updatedAt}
+          onEdit={handleEdit}
+          onArchive={handleArchive}
+          onDelete={handleDelete}
+        />
       </div>
     </ModalOverlay>
   );

@@ -21,15 +21,9 @@ import {
   Assessment,
   AssessmentStatus,
 } from "../../../core/types/assessment/assessment.type";
-import {
-  FaEdit,
-  FaFileAlt,
-  FaPencilAlt,
-  FaTimes,
-  FaArchive,
-  FaTrash,
-} from "react-icons/fa";
+import { FaFileAlt, FaPencilAlt, FaTimes } from "react-icons/fa";
 import { getSectionBanner } from "../../../core/utils/section/section.util";
+import FooterActions from "../../../core/components/modal/FooterActions";
 
 type TeacherDetailsModalProps = {
   isOpen: boolean;
@@ -155,7 +149,7 @@ export default function TeacherDetailsModal({
         key={section.id}
         className={`bg-white dark:bg-gray-800 rounded-sm border-l-4 border border-y-gray-300 border-r-gray-300 dark:border-y-gray-700 dark:border-r-gray-700 ${getSectionColorClass(
           section.color,
-        )} border shadow-sm hover:shadow-md transition-shadow duration-200 p-4`}
+        )} border p-4`}
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
@@ -277,7 +271,7 @@ export default function TeacherDetailsModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm min-w-5xl max-w-7xl max-h-[75vh] overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm min-w-7xl h-[85vh] overflow-hidden flex flex-col">
         {/* header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center gap-6">
@@ -403,7 +397,7 @@ export default function TeacherDetailsModal({
                     {teacherAssessments.map(renderAssessmentCard)}
                   </div>
                 ) : (
-                  <div className="bg-gray-50 dark:bg-gray-900/30 rounded-2xl p-8 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
+                  <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900/30 rounded-sm p-8 text-center border-2 min-h-64 border-dashed border-gray-200 dark:border-gray-700">
                     <FaFileAlt className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                     <h3 className="text-gray-500 dark:text-gray-400 font-medium mb-2">
                       No Assessments Created
@@ -437,29 +431,14 @@ export default function TeacherDetailsModal({
           </div>
 
           {/* action buttons */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-sm transition-colors duration-200 border border-blue-200 dark:border-blue-800 shadow-sm"
-            >
-              <FaEdit className="w-4 h-4" />
-              Edit
-            </button>
-            <button
-              onClick={handleArchive}
-              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-sm transition-colors duration-200 border border-gray-300 dark:border-gray-600 shadow-sm"
-            >
-              <FaArchive className="w-4 h-4" />
-              Archive
-            </button>
-            <button
-              onClick={handleDelete}
-              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-sm transition-colors duration-200 shadow-sm"
-            >
-              <FaTrash className="w-4 h-4" />
-              Delete
-            </button>
-          </div>
+          {teacher && (
+            <FooterActions
+              lastUpdated={teacher?.updatedAt}
+              onEdit={handleEdit}
+              onArchive={handleArchive}
+              onDelete={handleDelete}
+            />
+          )}
         </div>
       </div>
     </ModalOverlay>

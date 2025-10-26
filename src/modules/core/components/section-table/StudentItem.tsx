@@ -1,8 +1,8 @@
 import { useMemo, type ReactElement } from "react";
-import { Student } from "../../../../../student/types/student.type";
-import { getProfilePicture } from "../../../../../core/utils/profile-picture.util";
 import { FaFire, FaGamepad } from "react-icons/fa";
 import { FaEnvelope, FaUser } from "react-icons/fa6";
+import { Student } from "../../../student/types/student.type";
+import { getProfilePicture } from "../../utils/profile-picture.util";
 
 type StudentItemProps = {
   student: Student;
@@ -40,7 +40,7 @@ export default function StudentItem({
 
   return (
     <div
-      className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm transition-all duration-200 hover:border-green-200 dark:hover:border-green-800 group cursor-pointer"
+      className="h-fit flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm transition-all duration-200 hover:border-green-200 dark:hover:border-green-800 group cursor-pointer"
       onClick={() => onStudentClick(student)}
     >
       {/* student number: hidden on mobile */}

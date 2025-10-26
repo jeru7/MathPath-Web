@@ -15,6 +15,7 @@ import AttemptReviewModal from "../../../../../student/pages/assessments/compone
 import AssessmentInformation from "./AssessmentInformation";
 import AttemptList from "./AttemptList";
 import StatsCard from "../../../../components/details/StatsCard";
+import FooterActions from "../../../../../core/components/modal/FooterActions";
 
 type AssessmentDetailsModalProps = {
   assessment: Assessment;
@@ -23,6 +24,9 @@ type AssessmentDetailsModalProps = {
   studentAttempts?: AssessmentAttempt[];
   students?: Student[];
   isLoadingAttempts?: boolean;
+  onEdit?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
 };
 
 type AttemptWithStudent = AssessmentAttempt & {
@@ -36,6 +40,9 @@ export default function AssessmentDetailsModal({
   studentAttempts,
   students,
   isLoadingAttempts = false,
+  onEdit,
+  onArchive,
+  onDelete,
 }: AssessmentDetailsModalProps): ReactElement {
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [selectedAttempt, setSelectedAttempt] =
@@ -80,6 +87,25 @@ export default function AssessmentDetailsModal({
     setSelectedStudent(null);
   };
 
+  // TODO: edit, archive and delete
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
+  const handleArchive = () => {
+    if (onArchive) {
+      onArchive();
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
   if (!assessment) return <div>Loading...</div>;
 
   return (
@@ -96,11 +122,11 @@ export default function AssessmentDetailsModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-sm"
+            className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm min-w-7xl h-[85vh] flex flex-col overflow-hidden shadow-sm"
             onClick={(e) => e.stopPropagation()}
           >
             {/* header */}
-            <header className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <header className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
                   <IoDocumentText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -119,9 +145,9 @@ export default function AssessmentDetailsModal({
               </button>
             </header>
 
-            <div className="flex-1 overflow-hidden flex flex-col">
+            <div className="flex-1 overflow-auto flex flex-col">
               {/* quick stats bar */}
-              <div className="grid grid-cols-4 gap-4 p-6 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-4 gap-4 p-6 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                 <StatsCard
                   icon={<FaFile />}
                   title="Total Attempts"
@@ -161,23 +187,28 @@ export default function AssessmentDetailsModal({
                 />
               </div>
 
-              {/* main content */}
-              <div className="flex-1 grid grid-cols-3 gap-6 p-6 overflow-hidden">
-                {/* left column: assessment details */}
-                <div className="col-span-1 space-y-6">
-                  <AssessmentInformation assessment={assessment} />
-                </div>
+              {/* assessment information */}
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <AssessmentInformation assessment={assessment} />
+              </div>
 
-                {/* right column: student attempts */}
-                <div className="col-span-2 flex flex-col h-full">
-                  <AttemptList
-                    students={students}
-                    assessment={assessment}
-                    onReview={handleReviewAttempt}
-                  />
-                </div>
+              {/* student attempts list */}
+              <div className="flex-1 p-6">
+                <AttemptList
+                  students={students}
+                  assessment={assessment}
+                  onReview={handleReviewAttempt}
+                />
               </div>
             </div>
+
+            {/* action buttons */}
+            <FooterActions
+              lastUpdated={assessment?.updatedAt}
+              onEdit={handleEdit}
+              onArchive={handleArchive}
+              onDelete={handleDelete}
+            />
           </motion.div>
         </motion.div>
       )}

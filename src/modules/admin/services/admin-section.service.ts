@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Section } from "../../core/types/section/section.type";
-import { fetchData, postData } from "../../core/utils/api/api.util";
+import { deleteData, fetchData, postData } from "../../core/utils/api/api.util";
 import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { CreateSectionDTO } from "../../core/types/section/section.schema";
 
@@ -25,6 +25,18 @@ export const useAdminCreateSection = (adminId: string) => {
       return postData<Section, CreateSectionDTO>(
         `${BASE_URI}/api/web/admins/${adminId}/sections`,
         sectionData,
+        "Failed to create a new section.",
+      );
+    },
+  });
+};
+
+// admin delete section
+export const useAdminDeleteSection = (adminId: string) => {
+  return useMutation({
+    mutationFn: (sectionId: string) => {
+      return deleteData<null>(
+        `${BASE_URI}/api/web/admins/${adminId}/sections/${sectionId}`,
         "Failed to create a new section.",
       );
     },

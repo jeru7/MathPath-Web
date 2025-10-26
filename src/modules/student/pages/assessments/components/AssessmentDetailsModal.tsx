@@ -183,7 +183,7 @@ export default function AssessmentDetailsModal({
   if (!assessment || !student) {
     return (
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm  min-w-7xl h-[85vh] overflow-hidden">
           <header className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
               Assessment Not Found
@@ -216,7 +216,7 @@ export default function AssessmentDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full min-w-5xl max-h-[85vh] overflow-hidden">
           {/* header */}
           <header className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
@@ -341,12 +341,12 @@ export default function AssessmentDetailsModal({
                         <div className="flex items-center gap-2">
                           {(attempt.status === "completed" ||
                             attempt.status === "failed") && (
-                            <div className="text-right mr-2">
-                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {attempt.score || 0}/{getTotalScore(assessment)}
-                              </p>
-                            </div>
-                          )}
+                              <div className="text-right mr-2">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                  {attempt.score || 0}/{getTotalScore(assessment)}
+                                </p>
+                              </div>
+                            )}
                           {/* hide review button for paused attempts */}
                           {attempt.status !== "paused" && (
                             <button
@@ -432,12 +432,12 @@ export default function AssessmentDetailsModal({
                 <p className="text-gray-900 dark:text-gray-100">
                   {assessment.date.start
                     ? format(
-                        new Date(assessment.date.start),
-                        "MMM d, yyyy 'at' h:mm a",
-                        {
-                          timeZone: "Asia/Manila",
-                        },
-                      )
+                      new Date(assessment.date.start),
+                      "MMM d, yyyy 'at' h:mm a",
+                      {
+                        timeZone: "Asia/Manila",
+                      },
+                    )
                     : "Immediately"}
                 </p>
               </div>
@@ -446,12 +446,12 @@ export default function AssessmentDetailsModal({
                 <p className="text-gray-900 dark:text-gray-100">
                   {assessment.date.end
                     ? format(
-                        new Date(assessment.date.end),
-                        "MMM d, yyyy 'at' h:mm a",
-                        {
-                          timeZone: "Asia/Manila",
-                        },
-                      )
+                      new Date(assessment.date.end),
+                      "MMM d, yyyy 'at' h:mm a",
+                      {
+                        timeZone: "Asia/Manila",
+                      },
+                    )
                     : "No deadline"}
                 </p>
               </div>
@@ -469,13 +469,12 @@ export default function AssessmentDetailsModal({
             <button
               onClick={() => handleTakeAssessmentDirect(assessment)}
               disabled={!canTakeAssessment}
-              className={`px-6 py-2 text-sm font-medium text-white rounded-sm transition-all duration-200 flex items-center ${
-                canTakeAssessment
+              className={`px-6 py-2 text-sm font-medium text-white rounded-sm transition-all duration-200 flex items-center ${canTakeAssessment
                   ? hasPausedAttempt
                     ? "bg-yellow-600 hover:bg-yellow-700 cursor-pointer"
                     : "bg-[var(--primary-green)] hover:bg-green-600 cursor-pointer"
                   : "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-              }`}
+                }`}
             >
               {getActionButtonIcon()}
               {getActionButtonText()}

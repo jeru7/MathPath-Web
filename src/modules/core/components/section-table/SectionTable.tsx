@@ -1,13 +1,19 @@
 import { type ReactElement, useState, useMemo, useRef, useEffect } from "react";
 import { CiFilter, CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
-import SectionCard from "./SectionCard";
-import {
-  Section,
-  SectionColor,
-} from "../../../../../core/types/section/section.type";
+import SectionItem from "./SectionItem";
+import { Section, SectionColor } from "../../types/section/section.type";
+import { Student } from "../../../student/types/student.type";
+import { Assessment } from "../../types/assessment/assessment.type";
+
+export type SectionTableContext = {
+  onlineStudents: Student[];
+  students: Student[];
+  assessments: Assessment[];
+};
 
 type SectionTableProps = {
+  context: SectionTableContext;
   sections: Section[];
   onShowForm: () => void;
   onSectionClick: (section: Section) => void;
@@ -15,6 +21,7 @@ type SectionTableProps = {
 };
 
 export default function SectionTable({
+  context,
   sections,
   onShowForm,
   onSectionClick,
@@ -111,11 +118,10 @@ export default function SectionTable({
           {/* filter dropdown */}
           <div className="relative" ref={filterDropdownRef}>
             <button
-              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${
-                hasActiveFilters
+              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
                   ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
                   : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-              }`}
+                }`}
               onClick={() => setShowFilters(!showFilters)}
             >
               <CiFilter className="w-4 h-4" />
@@ -135,7 +141,7 @@ export default function SectionTable({
                   </div>
                 )}
 
-                {/* color filter with color chips only */}
+                {/* color filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
                     Colors
@@ -144,11 +150,10 @@ export default function SectionTable({
                     {colorOptions.map((option) => (
                       <button
                         key={option.value}
-                        className={`w-8 h-8 rounded-full ${option.color} border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedColor === option.value
+                        className={`w-8 h-8 rounded-full ${option.color} border-2 transition-all duration-200 hover:scale-110 ${selectedColor === option.value
                             ? "border-[var(--primary-green)] dark:border-green-400 ring-2 ring-[var(--primary-green)] dark:ring-green-400 ring-opacity-50 dark:ring-opacity-50"
                             : "border-gray-300 dark:border-gray-500 hover:border-gray-400 dark:hover:border-gray-400"
-                        }`}
+                          }`}
                         onClick={() => setSelectedColor(option.value)}
                         title={
                           option.value === "all"
@@ -179,7 +184,7 @@ export default function SectionTable({
         </button>
       </section>
 
-      {/* results info - enhanced banner */}
+      {/* results info */}
       {hasActiveFilters && (
         <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
           <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -196,11 +201,12 @@ export default function SectionTable({
           filteredSections.length > 0 ? (
             <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 grid-rows-[380px] gap-2 overflow-y-auto p-2">
               {filteredSections.map((section) => (
-                <SectionCard
+                <SectionItem
                   key={section.id}
                   section={section}
                   onClick={() => onSectionClick(section)}
                   onDelete={() => onDeleteSection(section)}
+                  context={context}
                 />
               ))}
             </section>

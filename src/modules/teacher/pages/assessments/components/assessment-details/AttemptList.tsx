@@ -144,7 +144,7 @@ export default function AttemptList({
       </div>
 
       {/* list */}
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4 min-h-96 max-h-96 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-center">

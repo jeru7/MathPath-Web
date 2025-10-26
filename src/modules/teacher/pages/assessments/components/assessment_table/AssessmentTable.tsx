@@ -192,11 +192,10 @@ export default function AssessmentTable({
             {/* filter dropdown */}
             <div className="relative" ref={filterDropdownRef}>
               <button
-                className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${
-                  hasActiveFilters
+                className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
                     ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
                     : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
+                  }`}
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <CiFilter className="w-4 h-4" />
@@ -334,7 +333,6 @@ export default function AssessmentTable({
                       <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
                         Deadline
                       </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[5%] py-3 border-b border-gray-200 dark:border-gray-700"></th>
                     </tr>
                   </thead>
                 </table>

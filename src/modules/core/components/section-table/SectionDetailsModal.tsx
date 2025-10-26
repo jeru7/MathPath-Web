@@ -9,22 +9,24 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 import { IoSchool } from "react-icons/io5";
-import { Student } from "../../../../student/types/student.type";
-import {
-  Section,
-  SectionColor,
-} from "../../../../core/types/section/section.type";
-import { useTeacherContext } from "../../../context/teacher.context";
-import StudentItem from "./section-details/StudentItem";
-import StatsCard from "../../../components/details/StatsCard";
-import ModalOverlay from "../../../../core/components/modal/ModalOverlay";
-import StudentDetailsModal from "../../../../core/components/student-table/student-details/StudentDetailsModal";
+import { Section, SectionColor } from "../../types/section/section.type";
+import { Student } from "../../../student/types/student.type";
+import ModalOverlay from "../modal/ModalOverlay";
+import StatsCard from "../../../teacher/components/details/StatsCard";
+import StudentDetailsModal from "../student-table/student-details/StudentDetailsModal";
+import StudentItem from "./StudentItem";
+import { SectionTableContext } from "./SectionTable";
+import FooterActions from "../modal/FooterActions";
 
 type SectionDetailsModalProps = {
+  context: SectionTableContext;
   section: Section;
   isOpen: boolean;
   onClose: () => void;
   sections: Section[];
+  onEdit?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
 };
 
 type SectionStats = {
@@ -36,12 +38,16 @@ type SectionStats = {
 };
 
 export default function SectionDetailsModal({
+  context,
   section,
   isOpen,
   onClose,
   sections,
+  onEdit,
+  onArchive,
+  onDelete,
 }: SectionDetailsModalProps): ReactElement {
-  const { students } = useTeacherContext();
+  const { students } = context;
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
@@ -100,6 +106,25 @@ export default function SectionDetailsModal({
     setSelectedStudent(null);
   };
 
+  // TODO: edit, archive and delete functionalities
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
+  const handleArchive = () => {
+    if (onArchive) {
+      onArchive();
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
   const getBannerColor = (color: SectionColor): string => {
     const colorMap: Record<SectionColor, string> = {
       "primary-green": "bg-green-500",
@@ -121,7 +146,7 @@ export default function SectionDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden shadow-sm">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm min-w-7xl h-[85vh] flex flex-col overflow-hidden shadow-sm">
           {/* header */}
           <header className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -284,33 +309,33 @@ export default function SectionDetailsModal({
               />
             </div>
 
-            {/* main content */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6 p-3 sm:p-4 lg:p-6 overflow-hidden">
-              {/* left column: section details */}
-              <div className="lg:col-span-1 space-y-4 order-2 lg:order-1">
-                {/* information */}
-                <div className="bg-white dark:bg-gray-800 rounded-sm p-4 border border-gray-200 dark:border-gray-700 h-fit">
-                  <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <IoSchool className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    Section Details
-                  </h3>
+            {/* main content - scrollable part */}
+            <div className="flex-1 overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                {/* Section details */}
 
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                        Section Name
-                      </label>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 p-2 rounded-md">
-                        {section.name}
-                      </p>
-                    </div>
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-gray-800 rounded-sm p-5 border border-gray-200 dark:border-gray-700 h-fit">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                      <IoSchool className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      Section Details
+                    </h3>
 
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                          Section Name
+                        </label>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 p-2 rounded-sm border border-gray-200 dark:border-gray-600">
+                          {section.name}
+                        </p>
+                      </div>
+
                       <div>
                         <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                           Created
                         </label>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-2 rounded-md">
+                        <p className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-sm border border-gray-200 dark:border-gray-600">
                           {formatDate(section.createdAt)}
                         </p>
                       </div>
@@ -319,40 +344,37 @@ export default function SectionDetailsModal({
                         <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                           Last Updated
                         </label>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-2 rounded-md">
+                        <p className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-sm border border-gray-200 dark:border-gray-600">
                           {formatDate(section.updatedAt)}
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* right column: students list */}
-              <div className="lg:col-span-3 flex flex-col h-full order-1 lg:order-2">
-                <div className="bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                  <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 rounded-t-sm bg-white dark:bg-gray-800">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="p-1.5 sm:p-2 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
-                          <FaUsers className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-                            Student List
-                          </h3>
-                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                            {sectionStats.totalStudents} enrolled
-                          </p>
+                {/* student list */}
+                <div className="p-4 sm:p-6  border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+                    <div className="p-5 border-b border-gray-200 rounded-t-sm dark:border-gray-700 bg-white dark:bg-gray-800">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
+                            <FaUsers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                              Student List
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {sectionStats.totalStudents} enrolled
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* scrollable students list */}
-                  <div className="flex-1 min-h-0 overflow-hidden max-h-[550px]">
                     {!students ? (
-                      <div className="flex items-center justify-center h-full">
+                      <div className="flex items-center justify-center min-h-96 max-h-96">
                         <div className="text-center">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-2"></div>
                           <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
@@ -361,31 +383,29 @@ export default function SectionDetailsModal({
                         </div>
                       </div>
                     ) : sectionStudents.length === 0 ? (
-                      <div className="flex items-center justify-center h-full">
+                      <div className="flex items-center justify-center min-h-96 max-h-96">
                         <div className="text-center">
-                          <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                            <FaUsers className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" />
+                          <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                            <FaUsers className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                           </div>
-                          <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                          <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
                             No Students Enrolled
                           </h4>
-                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
                             No students are currently assigned to this section.
                           </p>
                         </div>
                       </div>
                     ) : (
-                      <div className="h-full overflow-y-auto p-3 sm:p-4">
-                        <div className="grid gap-2 sm:gap-3">
-                          {sectionStudents.map((student, index) => (
-                            <StudentItem
-                              key={student.id}
-                              student={student}
-                              index={index}
-                              onStudentClick={handleStudentClick}
-                            />
-                          ))}
-                        </div>
+                      <div className="grid gap-3 p-4 min-h-96 max-h-96 overflow-y-auto">
+                        {sectionStudents.map((student, index) => (
+                          <StudentItem
+                            key={student.id}
+                            student={student}
+                            index={index}
+                            onStudentClick={handleStudentClick}
+                          />
+                        ))}
                       </div>
                     )}
                   </div>
@@ -393,6 +413,14 @@ export default function SectionDetailsModal({
               </div>
             </div>
           </div>
+
+          {/* action buttons */}
+          <FooterActions
+            lastUpdated={section.updatedAt}
+            onEdit={handleEdit}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+          />
         </div>
       </ModalOverlay>
 
