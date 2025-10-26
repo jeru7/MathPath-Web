@@ -15,14 +15,14 @@ export const AddTeacherSchema = z.object({
     .trim()
     .min(1, "Last name is required")
     .min(2, "Last name must have at least 2 characters")
-    .regex(/^[A-Za-z]+$/, "First name must contain only letters")
+    .regex(/^[A-Za-z\s]+$/, "Last name must contain only letters")
     .transform((val) =>
       val.toLowerCase().replace(/^\w/, (c) => c.toUpperCase()),
     ),
   middleName: z
     .string()
     .trim()
-    .regex(/^[A-Za-z]*$/, "Middle name must contain only letters")
+    .regex(/^[A-Za-z\s]*$/, "Middle name must contain only letters")
     .transform((val) => (val === "" ? undefined : val))
     .optional()
     .transform((val) => {
@@ -44,4 +44,5 @@ export const AddTeacherSchema = z.object({
       "Password must contain at least one special character",
     ),
 });
+
 export type AddTeacherDTO = z.infer<typeof AddTeacherSchema>;

@@ -1,10 +1,24 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Student } from "../../student/types/student.type";
-import { deleteData, fetchData } from "../../core/utils/api/api.util";
+import { deleteData, fetchData, postData } from "../../core/utils/api/api.util";
 import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { TeacherStudentActivity } from "../../core/types/activity/activity.type";
+import { AddStudentDTO } from "../../student/types/student.schema";
 
-// get teacher students
+// teacher add student
+export const useTeacherAddStudent = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (newStudent: AddStudentDTO) => {
+      return postData<Student, AddStudentDTO>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/students`,
+        newStudent,
+        "Failed to add new student.",
+      );
+    },
+  });
+};
+
+// teacher get students
 export const useTeacherStudents = (teacherId: string) => {
   return useQuery<Student[] | []>({
     queryKey: ["teacher", teacherId, "students"],
@@ -19,6 +33,7 @@ export const useTeacherStudents = (teacherId: string) => {
   });
 };
 
+// teacher delete student
 export const useTeacherDeleteStudent = (teacherId: string) => {
   return useMutation({
     mutationFn: (studentId: string) => {
@@ -30,6 +45,7 @@ export const useTeacherDeleteStudent = (teacherId: string) => {
   });
 };
 
+// teacher get student activities
 export const useTeacherStudentActivities = (teacherId: string) => {
   return useQuery<TeacherStudentActivity[]>({
     queryKey: ["teacher", teacherId, "student-activities"],

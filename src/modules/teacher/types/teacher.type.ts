@@ -9,4 +9,6 @@ export type Teacher = {
   gender: Gender;
   profilePicture: ProfilePicture | null;
   verified: Verified;
+  createdAt: string;
+  updatedAt: string;
 };

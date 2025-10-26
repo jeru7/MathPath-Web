@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
@@ -9,8 +9,6 @@ import {
   AddStudentDTO,
   AddStudentSchema,
 } from "../../../../../student/types/student.schema";
-import { useAddStudent } from "../../../../../student/services/student.service";
-import { StudentGender } from "../../../../../student/types/student.type";
 import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { Section } from "../../../../../core/types/section/section.type";
 import FormButtons from "../../../../../core/components/buttons/FormButtons";
@@ -19,6 +17,8 @@ import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { APIErrorResponse } from "../../../../../core/types/api/api.type";
 import { handleApiError } from "../../../../../core/utils/api/error.util";
+import { Gender } from "../../../../../core/types/user.type";
+import { useTeacherAddStudent } from "../../../../services/teacher-student.service";
 
 type AddStudentFormProps = {
   handleBack: () => void;
@@ -27,10 +27,9 @@ type AddStudentFormProps = {
 export default function AddStudentForm({
   handleBack,
 }: AddStudentFormProps): ReactElement {
-  const { teacherId } = useParams();
-  const { mutate: addStudent, isPending: isSubmitting } = useAddStudent(
-    teacherId ?? "",
-  );
+  const { teacherId } = useTeacherContext();
+  const { mutate: addStudent, isPending: isSubmitting } =
+    useTeacherAddStudent(teacherId);
   const { sections } = useTeacherContext();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -122,7 +121,7 @@ export default function AddStudentForm({
         </header>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2 md:flex-row">
-            {/* First name */}
+            {/* first name */}
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
                 <label
@@ -145,7 +144,7 @@ export default function AddStudentForm({
                 className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
               />
             </div>
-            {/* Last name */}
+            {/* last name */}
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
                 <label
@@ -170,7 +169,7 @@ export default function AddStudentForm({
             </div>
           </div>
           <div className="flex flex-col gap-2 md:flex-row">
-            {/* Middle name */}
+            {/* middle name */}
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
                 <label
@@ -198,7 +197,7 @@ export default function AddStudentForm({
                 className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
               />
             </div>
-            {/* Gender */}
+            {/* gender */}
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center gap-2">
                 <label
@@ -217,7 +216,7 @@ export default function AddStudentForm({
                 name="gender"
                 control={control}
                 render={({ field }) => (
-                  <Select<{ value: StudentGender; label: string }>
+                  <Select<{ value: Gender; label: string }>
                     {...field}
                     id="gender"
                     name="gender"
@@ -228,7 +227,7 @@ export default function AddStudentForm({
                     getOptionLabel={(option) => option.label}
                     getOptionValue={(option) => option.value}
                     styles={getCustomSelectColor<{
-                      value: StudentGender;
+                      value: Gender;
                       label: string;
                     }>({
                       minHeight: "42px",
@@ -255,9 +254,9 @@ export default function AddStudentForm({
                     value={
                       field.value
                         ? {
-                            value: field.value,
-                            label: field.value === "Male" ? "Male" : "Female",
-                          }
+                          value: field.value,
+                          label: field.value === "Male" ? "Male" : "Female",
+                        }
                         : null
                     }
                   />
@@ -265,7 +264,7 @@ export default function AddStudentForm({
               />
             </div>
           </div>
-          {/* Email */}
+          {/* email */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <label
@@ -288,7 +287,7 @@ export default function AddStudentForm({
               className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
             />
           </div>
-          {/* Student Number */}
+          {/* LRN */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <label
@@ -314,16 +313,16 @@ export default function AddStudentForm({
               placeholder="Enter reference number"
               value={referenceNumber}
               onChange={(e) => {
-                // Remove non-numeric characters
+                // remove non numeric characters
                 let val = e.target.value.replace(/\D/g, "");
-                // Limit to 12 digits
+                // limit to 12 digits
                 if (val.length > 12) val = val.slice(0, 12);
                 setReferenceNumber(val);
               }}
               className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 [appearance:textfield] focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
             />
           </div>
-          {/* Password */}
+          {/* password */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <label
@@ -360,7 +359,7 @@ export default function AddStudentForm({
               </button>
             </div>
           </div>
-          {/* Section */}
+          {/* section */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <label

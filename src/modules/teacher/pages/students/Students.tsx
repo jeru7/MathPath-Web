@@ -1,20 +1,21 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import StudentTable from "./components/StudentTable";
 import { useTeacherContext } from "../../context/teacher.context";
 import { AnimatePresence, motion } from "framer-motion";
 import AddStudent from "./components/add-student/AddStudent";
 import { GoPlus } from "react-icons/go";
 import RegistrationCode from "./registration-codes/RegistrationCode";
 import { Student } from "../../../student/types/student.type";
-import StudentDetailsModal from "./components/student-details/StudentDetailsModal";
-import DeleteStudentConfirmationModal from "./components/DeleteStudentConfirmationModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTeacherDeleteStudent } from "../../services/teacher-student.service";
+import StudentTable from "../../../core/components/student-table/StudentTable";
+import DeleteStudentConfirmationModal from "../../../core/components/student-table/DeleteStudentConfirmationModal";
+import StudentDetailsModal from "../../../core/components/student-table/student-details/StudentDetailsModal";
 
 export default function Students(): ReactElement {
-  const { sections, students, teacherId } = useTeacherContext();
+  const teacherContext = useTeacherContext();
+  const { sections, students, teacherId } = teacherContext;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,14 +46,6 @@ export default function Students(): ReactElement {
     if (student) {
       setSelectedStudent(student);
       setIsModalOpen(true);
-    }
-  };
-
-  const handleDeleteStudent = (studentId: string) => {
-    const student = students.find((s) => s.id === studentId);
-    if (student) {
-      setStudentToDelete(student);
-      setIsDeleteModalOpen(true);
     }
   };
 
@@ -127,7 +120,8 @@ export default function Students(): ReactElement {
         <StudentTable
           onClickAddStudent={handleAddStudent}
           onStudentClick={handleStudentClick}
-          onDeleteStudent={handleDeleteStudent}
+          context={teacherContext}
+          showRegistrationCodes={true}
         />
       </section>
 
@@ -145,6 +139,7 @@ export default function Students(): ReactElement {
           student={selectedStudent}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+          sections={sections}
         />
       )}
 
