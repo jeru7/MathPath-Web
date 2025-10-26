@@ -412,34 +412,15 @@ export default function TeacherDetailsModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex-shrink-0">
-          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            {teacher && (
-              <>
-                <span>Last updated:</span>
-                <span className="font-medium">
-                  {format(
-                    new Date(teacher.updatedAt),
-                    "MMM d, yyyy 'at' h:mm a",
-                    {
-                      timeZone: TIMEZONE,
-                    },
-                  )}
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* action buttons */}
-          {teacher && (
-            <FooterActions
-              lastUpdated={teacher?.updatedAt}
-              onEdit={handleEdit}
-              onArchive={handleArchive}
-              onDelete={handleDelete}
-            />
-          )}
-        </div>
+        {/* action buttons */}
+        {teacher && (
+          <FooterActions
+            lastUpdated={teacher?.updatedAt}
+            onEdit={handleEdit}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
     </ModalOverlay>
   );
