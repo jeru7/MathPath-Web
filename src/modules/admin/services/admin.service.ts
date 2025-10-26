@@ -10,7 +10,7 @@ export const useAdmin = (adminId: string) => {
     queryKey: ["admin", adminId],
     queryFn: () =>
       fetchData<Admin>(
-        `${BASE_URI}/api/web/admin/${adminId}`,
+        `${BASE_URI}/api/web/admins/${adminId}`,
         "Failed to fetch admin.",
       ),
     staleTime: DATA_STALE_TIME,
@@ -23,7 +23,7 @@ export const useAdminTeacher = (adminId: string) => {
     queryKey: ["admin", adminId, "teachers"],
     queryFn: () =>
       fetchData<Teacher[]>(
-        `${BASE_URI}/api/web/admin/${adminId}/teachers`,
+        `${BASE_URI}/api/web/admins/${adminId}/teachers`,
         "Failed to fetch teachers.",
       ),
     staleTime: DATA_STALE_TIME,
@@ -36,7 +36,7 @@ export const useAdminAddTeacher = (adminId: string) => {
   return useMutation({
     mutationFn: (teacherData: AddTeacherDTO) => {
       return postData<Teacher, AddTeacherDTO>(
-        `${BASE_URI}/api/web/admin/${adminId}/teachers`,
+        `${BASE_URI}/api/web/admins/${adminId}/teachers`,
         teacherData,
         "Failed to add new teacher.",
       );
