@@ -1,16 +1,16 @@
 import { type ReactElement } from "react";
 
-interface IFormButtonsProps {
+type FormButtonsProps = {
   handleBack: () => void;
   text: string;
   disabled: boolean;
-}
+};
 
 export default function FormButtons({
   handleBack,
   text,
   disabled,
-}: IFormButtonsProps): ReactElement {
+}: FormButtonsProps): ReactElement {
   return (
     <>
       <div className="flex w-full justify-between gap-4">

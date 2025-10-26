@@ -1,4 +1,3 @@
-// assessment
 export type Assessment = {
   id: string;
   title: string | null;
@@ -37,35 +36,35 @@ export type QuestionType =
 // assessment question structure based on types
 export type AssessmentQuestion =
   | {
-      id: string;
-      type: "single_choice" | "multiple_choice";
-      question: string;
-      points: number;
-      choices: AssessmentQuestionChoice[];
-      answers: string[];
-      randomPosition: boolean;
-    }
+    id: string;
+    type: "single_choice" | "multiple_choice";
+    question: string;
+    points: number;
+    choices: AssessmentQuestionChoice[];
+    answers: string[];
+    randomPosition: boolean;
+  }
   | {
-      id: string;
-      type: "fill_in_the_blanks";
-      question: string;
-      points: number;
-      answers: FillInTheBlankAnswerType[];
-    }
+    id: string;
+    type: "fill_in_the_blanks";
+    question: string;
+    points: number;
+    answers: FillInTheBlankAnswerType[];
+  }
   | {
-      id: string;
-      type: "true_or_false";
-      question: string;
-      points: number;
-      answers: boolean;
-    }
+    id: string;
+    type: "true_or_false";
+    question: string;
+    points: number;
+    answers: boolean;
+  }
   | {
-      id: string;
-      type: "identification";
-      question: string;
-      points: number;
-      answers: string;
-    };
+    id: string;
+    type: "identification";
+    question: string;
+    points: number;
+    answers: string;
+  };
 
 // assessment question choice for multi or single choice
 export type AssessmentQuestionChoice = {
@@ -88,20 +87,20 @@ export type AssessmentImage = {
 // assessment page content
 export type AssessmentContent =
   | {
-      id: string;
-      type: "image";
-      data: AssessmentImage;
-    }
+    id: string;
+    type: "image";
+    data: AssessmentImage;
+  }
   | {
-      id: string;
-      type: "question";
-      data: AssessmentQuestion;
-    }
+    id: string;
+    type: "question";
+    data: AssessmentQuestion;
+  }
   | {
-      id: string;
-      type: "text";
-      data: string;
-    };
+    id: string;
+    type: "text";
+    data: string;
+  };
 
 export type AssessmentContentTypes = "image" | "question" | "text";
 

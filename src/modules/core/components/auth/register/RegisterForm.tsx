@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import mathPathTitle from "../../../../../assets/svgs/mathpath-title.svg";
 
 import { getCustomSelectColor } from "../../../styles/selectStyles";
-import { StudentGender } from "../../../../student/types/student.type";
 import {
   RegisterFormDTO,
   RegisterFormSchema,
@@ -16,6 +15,7 @@ import {
 import { registerStudentService } from "../../../../auth/services/auth.service";
 import { isAxiosError } from "axios";
 import { handleApiError } from "../../../utils/api/error.util";
+import { Gender } from "../../../types/user.type";
 
 export default function RegisterForm(): ReactElement {
   const navigate = useNavigate();
@@ -175,7 +175,7 @@ export default function RegisterForm(): ReactElement {
                 name="gender"
                 control={control}
                 render={({ field }) => (
-                  <Select<{ value: StudentGender; label: string }>
+                  <Select<{ value: Gender; label: string }>
                     {...field}
                     options={[
                       { value: "Male", label: "Male" },
@@ -200,9 +200,9 @@ export default function RegisterForm(): ReactElement {
                     value={
                       field.value
                         ? {
-                            value: field.value,
-                            label: field.value === "Male" ? "Male" : "Female",
-                          }
+                          value: field.value,
+                          label: field.value === "Male" ? "Male" : "Female",
+                        }
                         : null
                     }
                   />

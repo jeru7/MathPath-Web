@@ -24,7 +24,9 @@ export const CreateSectionSchema = z.object({
     .trim()
     .min(1, "Section name is required")
     .max(40, "Section name must be less than 40 characters"),
-  teacherId: z.string().min(1, "Teacher ID is required"),
+  teacherIds: z
+    .array(z.string().min(1, "Teacher ID is required"))
+    .min(1, "At least one teacher is required"),
   color: SectionColorEnum,
   banner: SectionBannerEnum,
 });
