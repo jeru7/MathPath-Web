@@ -35,7 +35,7 @@ export default function CreateSectionForm({
     resolver: zodResolver(CreateSectionSchema),
     defaultValues: {
       name: "",
-      teacherId: teacherId,
+      teacherIds: [teacherId],
       color: "primary-green",
       banner: "SBanner_1",
     },
@@ -131,11 +131,10 @@ export default function CreateSectionForm({
                           className="hidden"
                         />
                         <div
-                          className={`border-2 h-20 w-32 rounded-lg hover:scale-105 transition-transform duration-200 ${
-                            selectedBanner === banner
+                          className={`border-2 h-20 w-32 rounded-lg hover:scale-105 transition-transform duration-200 ${selectedBanner === banner
                               ? "border-4 border-green-500 dark:border-green-400 shadow-md"
                               : "border-gray-300 dark:border-gray-600"
-                          }`}
+                            }`}
                         >
                           <img
                             src={getSectionBanner(
@@ -169,11 +168,10 @@ export default function CreateSectionForm({
                         className="hidden"
                       />
                       <span
-                        className={`bg-[var(--${color})] border-2 h-10 w-10 rounded-sm hover:scale-105 transition-transform duration-200 ${
-                          selectedColor === color
+                        className={`bg-[var(--${color})] border-2 h-10 w-10 rounded-sm hover:scale-105 transition-transform duration-200 ${selectedColor === color
                             ? "border-3 border-gray-900 dark:border-gray-100 shadow-md"
                             : "border-gray-300 dark:border-gray-600"
-                        }`}
+                          }`}
                       />
                     </label>
                   ))}

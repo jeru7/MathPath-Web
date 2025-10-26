@@ -15,15 +15,16 @@ import {
   SectionColor,
 } from "../../../../core/types/section/section.type";
 import { useTeacherContext } from "../../../context/teacher.context";
-import StudentDetailsModal from "../../students/components/student-details/StudentDetailsModal";
 import StudentItem from "./section-details/StudentItem";
 import StatsCard from "../../../components/details/StatsCard";
 import ModalOverlay from "../../../../core/components/modal/ModalOverlay";
+import StudentDetailsModal from "../../../../core/components/student-table/student-details/StudentDetailsModal";
 
 type SectionDetailsModalProps = {
   section: Section;
   isOpen: boolean;
   onClose: () => void;
+  sections: Section[];
 };
 
 type SectionStats = {
@@ -38,6 +39,7 @@ export default function SectionDetailsModal({
   section,
   isOpen,
   onClose,
+  sections,
 }: SectionDetailsModalProps): ReactElement {
   const { students } = useTeacherContext();
 
@@ -400,6 +402,7 @@ export default function SectionDetailsModal({
           student={selectedStudent}
           isOpen={isStudentModalOpen}
           onClose={handleStudentModalClose}
+          sections={sections}
         />
       )}
     </>

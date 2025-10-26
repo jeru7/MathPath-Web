@@ -127,6 +127,7 @@ export default function Sections(): ReactElement {
           section={selectedSection}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+          sections={sections}
         />
       )}
 
