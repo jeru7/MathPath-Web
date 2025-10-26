@@ -9,6 +9,7 @@ import { MdOutlineMenu } from "react-icons/md";
 import { useAuth } from "../../auth/contexts/auth.context";
 import { getProfilePicture } from "../../core/utils/profile-picture.util";
 import { FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
+import { GrGroup } from "react-icons/gr";
 
 export default function Nav(): ReactElement {
   const { adminId, admin } = useAdminContext();
@@ -48,6 +49,11 @@ export default function Nav(): ReactElement {
       ),
       title: "Students",
       defaultPage: false,
+    },
+    {
+      to: `/admin/${adminId}/sections`,
+      icon: <GrGroup className={"h-4 w-4 sm:h-6 sm:w-6 min-h-4 min-w-4"} />,
+      title: "Sections",
     },
   ];
 
