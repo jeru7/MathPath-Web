@@ -123,11 +123,10 @@ export default function AssessmentTable({
             {/* filter dropdown */}
             <div className="relative" ref={filterDropdownRef}>
               <button
-                className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${
-                  hasActiveFilters
+                className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
                     ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
                     : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
+                  }`}
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <CiFilter className="w-4 h-4" />
@@ -155,10 +154,10 @@ export default function AssessmentTable({
                       onChange={(e) =>
                         setSelectedStatus(
                           e.target.value as
-                            | "all"
-                            | "available"
-                            | "not-available"
-                            | "expired",
+                          | "all"
+                          | "available"
+                          | "not-available"
+                          | "expired",
                         )
                       }
                       className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"

@@ -1,4 +1,5 @@
 import Admin from "../components/admin/Admin";
+import Assessments from "../pages/assessments/Assessments";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Profile from "../pages/profile/Profile";
 import Sections from "../pages/sections/Sections";
@@ -13,7 +14,6 @@ export const adminRoutesConfig = [
     element: <Admin />,
     children: [
       { index: true, element: <Dashboard /> },
-      { path: "add-teacher", element: <Dashboard /> },
       {
         path: "teachers",
         children: [
@@ -29,6 +29,7 @@ export const adminRoutesConfig = [
           { path: "add-student", element: <Students /> },
         ],
       },
+      { path: "assessments", element: <Assessments /> },
       { path: "profile", element: <Profile /> },
       { path: "settings", element: <AdminSettings /> },
       { path: "statistics", element: <Statistics /> },
