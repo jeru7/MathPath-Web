@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// allows withCredentials globally, para makapag send ng cookies
+axios.defaults.withCredentials = true;
+
 // for useQuery
 export const fetchData = async <TResponse>(
   url: string,
