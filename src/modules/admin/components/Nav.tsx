@@ -2,7 +2,7 @@ import { useState, type ReactElement } from "react";
 import { RxDashboard } from "react-icons/rx";
 import { useAdminContext } from "../context/admin.context";
 import { NavLink, useNavigate } from "react-router-dom";
-import { IoIosStats, IoMdSettings } from "react-icons/io";
+import { IoIosDocument, IoIosStats, IoMdSettings } from "react-icons/io";
 import { IoClose, IoLogOut } from "react-icons/io5";
 import { capitalizeWord } from "../../core/utils/string.util";
 import { MdOutlineMenu } from "react-icons/md";
@@ -54,6 +54,13 @@ export default function Nav(): ReactElement {
       to: `/admin/${adminId}/sections`,
       icon: <GrGroup className={"h-4 w-4 sm:h-6 sm:w-6 min-h-4 min-w-4"} />,
       title: "Sections",
+    },
+    {
+      to: `/admin/${adminId}/assessments`,
+      icon: (
+        <IoIosDocument className={"h-4 w-4 sm:h-6 sm:w-6 min-h-4 min-w-4"} />
+      ),
+      title: "Assessments",
     },
   ];
 
