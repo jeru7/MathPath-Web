@@ -187,7 +187,7 @@ export default function AssessmentDetailsModal({
   if (!assessment || !student) {
     return (
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100dvh] w-[100dvw] md:h-[85dvh] md:max-w-5xl overflow-hidden flex flex-col">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100svh] w-[100svw] md:h-[85svh] md:max-w-5xl overflow-hidden flex flex-col">
           <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
               Assessment Not Found

@@ -118,7 +118,7 @@ export default function AssessmentDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100vh] w-[100vw] md:h-[85vh] md:w-[90vw] lg:w-[75vw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100svh] w-[100svw] md:h-[85svh] md:w-[90svw] lg:w-[75svw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
           {/* header */}
           <header className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex items-center gap-3 sm:gap-4">
