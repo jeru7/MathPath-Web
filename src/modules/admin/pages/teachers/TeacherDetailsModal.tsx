@@ -157,7 +157,7 @@ export default function TeacherDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm h-[100vh] w-[100vw] md:h-[90vh] md:w-[90vw] lg:w-[85vw] xl:w-[80vw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
+        <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm h-[100dvh] w-[100dvw] md:h-[90dvh] md:w-[90dvw] lg:w-[85dvw] xl:w-[80dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
           {/* header */}
           <div className="flex items-start justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 flex-1 min-w-0">

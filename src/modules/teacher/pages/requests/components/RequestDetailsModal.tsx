@@ -149,7 +149,7 @@ export default function RequestDetailsModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm min-w-7xl h-[85vh] mx-4 flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm min-w-7xl h-[85dvh] mx-4 flex flex-col">
         {/* header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div>

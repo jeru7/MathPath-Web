@@ -60,7 +60,7 @@ export default function StudentDetailsModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100vh] w-[100vw] md:h-[85vh] md:w-[90vw] lg:w-[75vw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
+      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100dvh] w-[100dvw] md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
         {/* header */}
         <header className="flex items-center justify-between p-4 sm:p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div>

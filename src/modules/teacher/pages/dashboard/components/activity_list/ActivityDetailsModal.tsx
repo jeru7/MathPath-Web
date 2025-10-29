@@ -87,7 +87,7 @@ export default function ActivityDetailsModal({
         </div>
 
         {/* activity list */}
-        <div className="flex flex-1 overflow-y-auto p-6 h-full min-h-92 max-h-[60vh]">
+        <div className="flex flex-1 overflow-y-auto p-6 h-full min-h-92 max-h-[60dvh]">
           <div className="relative flex flex-col w-full flex-1">
             {/* vertical line */}
             {activities && activities.length > 0 && (
