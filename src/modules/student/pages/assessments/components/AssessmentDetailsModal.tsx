@@ -187,7 +187,7 @@ export default function AssessmentDetailsModal({
   if (!assessment || !student) {
     return (
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100svh] w-[100svw] md:h-[85svh] md:max-w-5xl overflow-hidden flex flex-col">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100svh] w-[100svw] md:h-[85svh] md:w-[90svw] lg:w-[75svw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
           <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
               Assessment Not Found
@@ -220,7 +220,7 @@ export default function AssessmentDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100vh] w-[100vw] md:h-[85vh] md:max-w-5xl overflow-hidden flex flex-col">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100svh] w-[100svw] md:h-[85svh] md:max-w-5xl overflow-hidden flex flex-col">
           {/* header */}
           <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3 flex-1 min-w-0">

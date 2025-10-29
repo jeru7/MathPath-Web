@@ -17,10 +17,10 @@ export default function ProfilePictureModal({
 }: ProfilePictureModalProps): ReactElement {
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col gap-2 items-end bg-white p-3 dark:bg-gray-800 rounded-sm overflow-hidden shadow-2xl max-w-sm w-full mx-4 border border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col gap-2 items-center bg-white p-3 dark:bg-gray-800 rounded-sm overflow-hidden shadow-2xl max-w-sm mx-4 border border-gray-200 dark:border-gray-700">
         <button
           type="button"
-          className="hover:cursor-pointer"
+          className="hover:cursor-pointer self-end"
           onClick={onClose}
         >
           <FaTimes className="h-4 w-4 text-gray-900 dark:text-gray-300" />
