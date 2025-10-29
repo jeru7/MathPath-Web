@@ -106,7 +106,6 @@ export default function SectionDetailsModal({
     setSelectedStudent(null);
   };
 
-  // TODO: edit, archive and delete functionalities
   const handleEdit = () => {
     if (onEdit) {
       onEdit();
@@ -146,7 +145,7 @@ export default function SectionDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm min-w-7xl h-[85vh] flex flex-col overflow-hidden shadow-sm">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100vh] w-[100vw] md:h-[85vh] md:w-[90vw] lg:w-[75vw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
           {/* header */}
           <header className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -170,9 +169,9 @@ export default function SectionDetailsModal({
             </div>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 hover:cursor-pointer flex-shrink-0"
+              className="text-gray-900 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
             >
-              <FaTimes className="w-4 h-4 sm:w-5 sm:h-5" />
+              <FaTimes className="w-4 h-4" />
             </button>
           </header>
 

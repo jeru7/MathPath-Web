@@ -5,7 +5,7 @@ import { formatToPhDate } from "../../../core/utils/date.util";
 import { getSectionBanner } from "../../../core/utils/section/section.util";
 import { SectionTableContext } from "./SectionTable";
 
-type SectionCardProps = {
+type SectionItemProps = {
   section: Section;
   onClick?: () => void;
   onDelete?: () => void;
@@ -16,7 +16,7 @@ export default function SectionItem({
   section,
   onClick,
   context,
-}: SectionCardProps): ReactElement {
+}: SectionItemProps): ReactElement {
   const { onlineStudents, students, assessments } = context;
 
   const studentCount = students.filter(
@@ -70,7 +70,6 @@ export default function SectionItem({
               {section.name}
             </h3>
           </div>
-          <p className="text-[10px] text-[var(--primary-gray)] dark:text-gray-400">{`Last checked on ${format(formatToPhDate(section.lastChecked.toString()), "MMMM d, yyyy")}`}</p>
         </header>
         {/* section details */}
         <div className="flex items-center justify-between">

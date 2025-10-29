@@ -5,11 +5,14 @@ import SectionItem from "./SectionItem";
 import { Section, SectionColor } from "../../types/section/section.type";
 import { Student } from "../../../student/types/student.type";
 import { Assessment } from "../../types/assessment/assessment.type";
+import { toast } from "react-toastify";
+import { Teacher } from "../../../teacher/types/teacher.type";
 
 export type SectionTableContext = {
   onlineStudents: Student[];
   students: Student[];
   assessments: Assessment[];
+  teachers?: Teacher[];
 };
 
 type SectionTableProps = {
@@ -62,6 +65,27 @@ export default function SectionTable({
   const handleClearFilters = () => {
     setSearchTerm("");
     setSelectedColor("all");
+  };
+
+  const handleCreateSection = () => {
+    // check if there are any teachers available
+    if (!context.teachers || context.teachers.length === 0) {
+      toast.error(
+        "You can't create a section if there's no teacher available.",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        },
+      );
+      return;
+    }
+
+    // if teachers exist, proceed to show the form
+    onShowForm();
   };
 
   const hasActiveFilters = searchTerm !== "" || selectedColor !== "all";
@@ -177,7 +201,7 @@ export default function SectionTable({
         {/* create button */}
         <button
           className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-          onClick={onShowForm}
+          onClick={handleCreateSection}
         >
           <GoPlus className="w-4 h-4" />
           <p className="text-sm font-semibold">Create section</p>
@@ -234,6 +258,16 @@ export default function SectionTable({
             </p>
           </div>
         )}
+      </div>
+
+      {/* floating action button for mobile */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <button
+          className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white shadow-lg hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          onClick={handleCreateSection}
+        >
+          <GoPlus className="w-6 h-6" />
+        </button>
       </div>
     </section>
   );
