@@ -183,3 +183,33 @@ export const RegisterFormSchema = RegisterStudentSchema.extend({
   message: "Passwords do not match",
 });
 export type RegisterFormDTO = z.infer<typeof RegisterFormSchema>;
+
+export const EditStudentSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "First name is required")
+    .min(2, "First name must have at least 2 characters")
+    .regex(/^[A-Za-z\s]+$/, "First name must contain only letters"),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Last name is required")
+    .min(2, "Last name must have at least 2 characters")
+    .regex(/^[A-Za-z\s]+$/, "Last name must contain only letters"),
+  middleName: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z\s]*$/, "Middle name must contain only letters")
+    .optional()
+    .nullable(),
+  gender: z
+    .enum(["Male", "Female"], {
+      required_error: "Gender is required",
+    })
+    .nullable(),
+  email: z.string().email("Invalid email address"),
+  sectionId: z.string().min(1, "Section is required"),
+});
+
+export type EditStudentDTO = z.infer<typeof EditStudentSchema>;

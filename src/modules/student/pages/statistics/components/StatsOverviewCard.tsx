@@ -24,8 +24,6 @@ export default function StatsOverviewCard({
   const { data: attempts } = useStudentAttemptStats(student.id);
   const { data: playerCard } = useStudentPlayerCard(student.id);
 
-  // Helper function to format playtime:
-  // Show minutes if < 1hr, otherwise show hours (1 decimal)
   const formatPlaytime = (seconds?: number): string => {
     if (!seconds || isNaN(seconds)) return "0mins";
 
