@@ -17,6 +17,9 @@ export const uploadImage = async (file: File) => {
   const cloudRes = await axios.post(
     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
     formData,
+    {
+      withCredentials: false,
+    },
   );
 
   return {
