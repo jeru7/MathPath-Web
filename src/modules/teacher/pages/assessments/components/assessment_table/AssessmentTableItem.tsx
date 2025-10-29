@@ -8,7 +8,6 @@ import { useTeacherContext } from "../../../../context/teacher.context";
 type AssessmentTableItemProps = {
   assessment: Assessment;
   onAssessmentClick?: (assessment: Assessment) => void;
-  onDeleteAssessment?: (assessment: Assessment) => void;
 };
 
 export default function AssessmentTableItem({
@@ -22,6 +21,7 @@ export default function AssessmentTableItem({
     .map((section) => section.banner);
 
   const handleRowClick = () => {
+    // only call the click handler to open the details modal
     if (onAssessmentClick) {
       onAssessmentClick(assessment);
     }

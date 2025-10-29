@@ -63,13 +63,11 @@ export default function AssessmentBuilder(): ReactElement {
 
   const debouncedUpdate = useRef(
     debounce((updatedAssessment: Assessment) => {
-      console.log("Auto-saving assessment...");
       setIsSaving(true);
       setShowSaveToast(true);
 
       updateDraft(updatedAssessment, {
         onSuccess: () => {
-          console.log("Auto-save successful");
           setIsSaving(false);
           // show toast
           savingTimeoutRef.current = window.setTimeout(() => {
@@ -77,7 +75,7 @@ export default function AssessmentBuilder(): ReactElement {
           }, 2000);
         },
         onError: (error) => {
-          console.error("Auto-save failed:", error);
+          console.error("Auto save failed:", error);
           setIsSaving(false);
           setShowSaveToast(false);
         },
@@ -104,8 +102,15 @@ export default function AssessmentBuilder(): ReactElement {
     };
 
     const currentMode = modeMap[step];
+
+    let targetPath: string;
+    if (assessmentId === "new") {
+      targetPath = `/teacher/${teacherId}/assessments/new/${currentMode}`;
+    } else {
+      targetPath = `/teacher/${teacherId}/assessments/${assessmentId}/${currentMode}`;
+    }
+
     const currentPath = location.pathname;
-    const targetPath = `/teacher/${teacherId}/assessments/${assessmentId}/${currentMode}`;
 
     if (teacherId && currentPath !== targetPath) {
       navigate(targetPath, {
@@ -342,7 +347,7 @@ export default function AssessmentBuilder(): ReactElement {
       {/* header */}
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          Create Assessment
+          {assessmentId === "new" ? "Create Assessment" : "Edit Assessment"}
         </h3>
 
         {/* Save Status Indicator */}

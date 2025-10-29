@@ -144,7 +144,7 @@ export default function AttemptList({
       </div>
 
       {/* list */}
-      <div className="flex-1 p-4 min-h-96 max-h-96 overflow-y-auto">
+      <div className="flex flex-col flex-1 p-4 min-h-96 max-h-96 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-center">
@@ -155,9 +155,9 @@ export default function AttemptList({
             </div>
           </div>
         ) : allAttemptsSorted.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex flex-1 items-center justify-center h-full">
             <div className="text-center">
-              <h4 className="text-sm text-gray-900 dark:text-gray-500 mb-2">
+              <h4 className="text-sm text-gray-900 dark:text-gray-500 mb-2 italic">
                 No Attempt Data
               </h4>
             </div>

@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import AssessmentTable from "./components/assessment_table/AssessmentTable";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTeacherContext } from "../../context/teacher.context";
@@ -7,9 +7,13 @@ import { Assessment } from "../../../core/types/assessment/assessment.type";
 import { useDeleteAssessment } from "../../services/teacher-assessment.service";
 import { toast } from "react-toastify";
 import DeleteAssessmentConfirmationModal from "./components/DeleteAssessmentConfirmationModal";
+import AssessmentDetailsModal from "./components/assessment-details/AssessmentDetailsModal";
+import { useTeacherAssessmentAttempts } from "../../services/teacher-assessment-attempt.service";
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { assessmentId } = useParams();
   const { teacherId, students, assessments } = useTeacherContext();
   const queryClient = useQueryClient();
   const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
@@ -17,12 +21,27 @@ export default function Assessments(): ReactElement {
   const [assessmentToDelete, setAssessmentToDelete] =
     useState<Assessment | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<Assessment | null>(null);
+
+  // fetch attempts for the selected assessment
+  const { data: studentAttempts = [], isLoading: isLoadingAttempts } =
+    useTeacherAssessmentAttempts(teacherId, selectedAssessment?.id || "");
 
   useEffect(() => {
     queryClient.invalidateQueries({
       queryKey: ["teacher", teacherId, "assessments"],
     });
   }, [queryClient, teacherId]);
+
+  useEffect(() => {
+    if (assessmentId) {
+      const assessment = assessments.find((a) => a.id === assessmentId);
+      setSelectedAssessment(assessment || null);
+    } else {
+      setSelectedAssessment(null);
+    }
+  }, [assessmentId, assessments]);
 
   const handleDeleteInitiate = (assessment: Assessment) => {
     setAssessmentToDelete(assessment);
@@ -39,6 +58,7 @@ export default function Assessments(): ReactElement {
           });
           setIsDeleteModalOpen(false);
           setAssessmentToDelete(null);
+          navigate("..");
         },
         onError: (error) => {
           toast.error("Failed to delete assessment.");
@@ -51,6 +71,23 @@ export default function Assessments(): ReactElement {
   const handleDeleteCancel = () => {
     setIsDeleteModalOpen(false);
     setAssessmentToDelete(null);
+  };
+
+  const handleAssessmentClick = (assessment: Assessment) => {
+    setSelectedAssessment(assessment);
+    navigate(assessment.id);
+  };
+
+  const handleCloseDetailsModal = () => {
+    navigate("..");
+    setSelectedAssessment(null);
+  };
+
+  const handleEditAssessment = () => {
+    if (selectedAssessment) {
+      navigate(`configure`);
+      setSelectedAssessment(null);
+    }
   };
 
   // calculate student and section counts for the assessment to delete
@@ -72,6 +109,11 @@ export default function Assessments(): ReactElement {
     return (assessment.sections || []).length;
   };
 
+  // check if we're on assessment details route
+  const pathEnd = location.pathname.split("/").pop();
+  const isAssessmentDetailsRoute =
+    selectedAssessment !== null && pathEnd === selectedAssessment.id;
+
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
       {/* header */}
@@ -86,9 +128,23 @@ export default function Assessments(): ReactElement {
         <AssessmentTable
           assessments={assessments}
           navigate={navigate}
-          onDeleteAssessment={handleDeleteInitiate}
+          onAssessmentClick={handleAssessmentClick}
         />
       </section>
+
+      {/* assessment details modal */}
+      {selectedAssessment && (
+        <AssessmentDetailsModal
+          isOpen={isAssessmentDetailsRoute}
+          assessment={selectedAssessment}
+          onClose={handleCloseDetailsModal}
+          studentAttempts={studentAttempts}
+          students={students}
+          isLoadingAttempts={isLoadingAttempts}
+          onEdit={handleEditAssessment}
+          onDelete={() => handleDeleteInitiate(selectedAssessment)}
+        />
+      )}
 
       {assessmentToDelete && (
         <DeleteAssessmentConfirmationModal
