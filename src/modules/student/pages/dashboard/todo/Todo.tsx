@@ -3,19 +3,36 @@ import { FaCircleCheck, FaFile } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useStudentContext } from "../../../contexts/student.context";
 import { useStudentAssessments } from "../../../services/student-assessment.service";
-import { getAssessmentStatus } from "../../../utils/assessments/assessment.util";
 
 export default function Todo(): ReactElement {
   const navigate = useNavigate();
-  const { studentId } = useStudentContext();
+  const { studentId, student } = useStudentContext();
   const { data: assessments = [] } = useStudentAssessments(studentId);
 
-  const assessmentsInProgress = assessments.filter((assessment) => {
-    const status = getAssessmentStatus(assessment);
-    return status === "available";
+  const assessmentsDue = assessments.filter((assessment) => {
+    if (assessment.status !== "published") return false;
+
+    // check if current date is within assessment date range
+    const now = new Date();
+    const startDate = assessment.date.start
+      ? new Date(assessment.date.start)
+      : null;
+    const endDate = assessment.date.end ? new Date(assessment.date.end) : null;
+
+    if (startDate && now < startDate) return false;
+    if (endDate && now > endDate) return false;
+
+    // find student's attempt data for this assessment
+    const studentAssessment = student?.assessments?.find(
+      (sa) => sa.assessmentId === assessment.id,
+    );
+
+    // check if student hasn't reached attempt limit
+    const attemptsCount = studentAssessment?.attempts?.length || 0;
+    return attemptsCount < assessment.attemptLimit;
   }).length;
 
-  const hasAssessmentsDue = assessmentsInProgress > 0;
+  const hasAssessmentsDue = assessmentsDue > 0;
 
   const handleTextClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,8 +53,8 @@ export default function Todo(): ReactElement {
                 className="hover:text-[var(--primary-green)] text-sm hover:cursor-pointer transition-colors duration-200 dark:text-gray-300"
                 onClick={handleTextClick}
               >
-                {assessmentsInProgress} Assessment
-                {assessmentsInProgress !== 1 ? "s" : ""} due
+                {assessmentsDue} Assessment
+                {assessmentsDue !== 1 ? "s" : ""} due
               </p>
             </>
           ) : (

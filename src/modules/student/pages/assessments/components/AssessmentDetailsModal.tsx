@@ -1,4 +1,5 @@
 import { ReactElement, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import { format } from "date-fns-tz";
 import {
@@ -10,6 +11,8 @@ import {
   FaHistory,
   FaPause,
   FaPlay,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 import { Student } from "../../../types/student.type";
 import {
@@ -48,6 +51,7 @@ export default function AssessmentDetailsModal({
   const [selectedAttempt, setSelectedAttempt] =
     useState<AssessmentAttempt | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [showMobileStats, setShowMobileStats] = useState(false);
 
   const handleViewAttempt = (attempt: AssessmentAttempt) => {
     setSelectedAttempt(attempt);
@@ -150,7 +154,7 @@ export default function AssessmentDetailsModal({
   const handleTakeAssessmentDirect = (assessment: Assessment) => {
     // if there's a paused attempt, resume it
     if (hasPausedAttempt) {
-      navigate(`${assessment.id}/attempt`);
+      navigate(`${assessment.id}/attempt?resume=true`);
     } else {
       // start a new attempt
       const isRetake = attempts.length > 0;
@@ -183,8 +187,8 @@ export default function AssessmentDetailsModal({
   if (!assessment || !student) {
     return (
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm  min-w-7xl h-[85vh] overflow-hidden">
-          <header className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100vh] w-[100vw] md:h-[85vh] md:max-w-5xl overflow-hidden flex flex-col">
+          <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
               Assessment Not Found
             </h2>
@@ -192,15 +196,15 @@ export default function AssessmentDetailsModal({
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer"
             >
-              <FaTimes className="w-3 h-3" />
+              <FaTimes className="w-4 h-4" />
             </button>
           </header>
-          <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="flex-1 p-6 flex items-center justify-center">
+            <p className="text-gray-600 dark:text-gray-400 text-center">
               Unable to load assessment details. Please try again.
             </p>
           </div>
-          <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             <button
               onClick={onClose}
               className="px-4 py-2 text-sm text-gray-900 border border-gray-900 dark:border-gray-400 dark:text-gray-400 hover:text-gray-800 rounded-sm dark:hover:text-gray-200 transition-colors duration-200 hover:cursor-pointer"
@@ -216,158 +220,143 @@ export default function AssessmentDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full min-w-5xl max-h-[85vh] overflow-hidden">
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm h-[100vh] w-[100vw] md:h-[85vh] md:max-w-5xl overflow-hidden flex flex-col">
           {/* header */}
-          <header className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
-              {assessment.title || "Untitled Assessment"}
-            </h2>
+          <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200 truncate">
+                  {assessment.title || "Untitled Assessment"}
+                </h2>
+                {/* mobile only summary */}
+                <div className="sm:hidden flex items-center gap-2 mt-1">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    {totalQuestions} questions
+                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    • {totalAttempts}/{assessment.attemptLimit || "∞"} attempts
+                  </span>
+                  {hasPausedAttempt && (
+                    <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                      • Paused
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer flex-shrink-0 ml-2"
             >
-              <FaTimes className="w-3 h-3" />
+              <FaTimes className="w-4 h-4" />
             </button>
           </header>
 
-          {/* content */}
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-            {/* paused assessment banner */}
-            {hasPausedAttempt && currentPausedAttempt && (
-              <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-sm">
-                <div className="flex items-center gap-3">
-                  <FaPause className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                  <div>
-                    <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">
-                      Assessment Paused
-                    </h3>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
-                      You have an incomplete attempt. You can continue where you
-                      left off.
-                      {currentPausedAttempt.timeSpent > 0 && (
-                        <span className="block text-xs mt-1">
-                          Time spent:{" "}
-                          {Math.floor(currentPausedAttempt.timeSpent / 60)}:
-                          {(currentPausedAttempt.timeSpent % 60)
-                            .toString()
-                            .padStart(2, "0")}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+          {/* mobile stats toggle */}
+          <div className="sm:hidden border-b border-gray-200 dark:border-gray-700">
+            <button
+              onClick={() => setShowMobileStats(!showMobileStats)}
+              className="w-full p-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50"
+            >
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Assessment Details
+              </span>
+              {showMobileStats ? (
+                <FaChevronUp className="w-4 h-4 text-gray-500" />
+              ) : (
+                <FaChevronDown className="w-4 h-4 text-gray-500" />
+              )}
+            </button>
 
-            {/* description */}
-            {assessment.description && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Description
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  {assessment.description}
-                </p>
-              </div>
-            )}
-
-            {/* topic */}
-            {assessment.topic && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Topic
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  {assessment.topic}
-                </p>
-              </div>
-            )}
-
-            {/* attempt history */}
-            {attemptsLoading ? (
-              <div className="mb-6">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Loading attempts...
-                </p>
-              </div>
-            ) : attempts.length > 0 ? (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                  <FaHistory className="w-4 h-4" />
-                  Attempt History
-                </h3>
-                <div className="space-y-2">
-                  {attempts
-                    .slice()
-                    .reverse()
-                    .map((attempt, index) => (
-                      <div
-                        key={attempt.id}
-                        className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-sm"
-                      >
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            Attempt {attempts.length - index}
-                          </p>
-                          <p
-                            className={`text-xs ${getAttemptDisplayColor(attempt.status)}`}
-                          >
-                            {getAttemptDisplayText(attempt.status)}
-                            {attempt.score !== undefined &&
-                              attempt.status !== "paused" &&
-                              ` • Score: ${attempt.score}`}
-                          </p>
-                          {attempt.dateCompleted && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {format(
-                                new Date(attempt.dateCompleted),
-                                "MMM d, yyyy 'at' h:mm a",
-                                { timeZone: "Asia/Manila" },
-                              )}
-                            </p>
-                          )}
-                          {attempt.status === "paused" &&
-                            attempt.dateUpdated && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                Last updated:{" "}
-                                {format(
-                                  new Date(attempt.dateUpdated),
-                                  "MMM d, yyyy 'at' h:mm a",
-                                  { timeZone: "Asia/Manila" },
-                                )}
-                              </p>
-                            )}
-                        </div>
+            {/* mobile stats dropdown */}
+            <AnimatePresence>
+              {showMobileStats && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-2">
-                          {(attempt.status === "completed" ||
-                            attempt.status === "failed") && (
-                              <div className="text-right mr-2">
-                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                  {attempt.score || 0}/{getTotalScore(assessment)}
-                                </p>
-                              </div>
-                            )}
-                          {/* hide review button for paused attempts */}
-                          {attempt.status !== "paused" && (
-                            <button
-                              onClick={() => handleViewAttempt(attempt)}
-                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors"
-                            >
-                              Review
-                            </button>
-                          )}
+                          <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
+                            <FaListAlt className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Questions
+                            </p>
+                            <p className="text-base font-bold text-gray-900 dark:text-gray-100">
+                              {totalQuestions}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    ))}
-                </div>
-              </div>
-            ) : null}
 
-            {/* assessment details grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {/* questions */}
-              <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
-                <FaListAlt className="w-4 h-4 text-[var(--primary-green)]" />
+                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-sm">
+                            <FaClock className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Duration
+                            </p>
+                            <p className="text-base font-bold text-orange-600 dark:text-orange-400">
+                              {assessment.timeLimit
+                                ? `${assessment.timeLimit}m`
+                                : "No limit"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-sm">
+                            <FaRedo className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Attempts
+                            </p>
+                            <p className="text-base font-bold text-purple-600 dark:text-purple-400">
+                              {totalAttempts}/{assessment.attemptLimit || "∞"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-sm">
+                            <FaCalendarAlt className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Time Left
+                            </p>
+                            <p className="font-bold text-green-600 dark:text-green-400 text-xs">
+                              {getTimeRemaining()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* content */}
+          <div className="flex-1 overflow-y-auto">
+            {/* desktop stats grid */}
+            <div className="hidden sm:grid grid-cols-2 gap-3 p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
+                <FaListAlt className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Questions
@@ -378,9 +367,8 @@ export default function AssessmentDetailsModal({
                 </div>
               </div>
 
-              {/* duration */}
-              <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
-                <FaClock className="w-4 h-4 text-[var(--primary-green)]" />
+              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
+                <FaClock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Duration
@@ -393,9 +381,8 @@ export default function AssessmentDetailsModal({
                 </div>
               </div>
 
-              {/* attempts */}
-              <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
-                <FaRedo className="w-4 h-4 text-[var(--primary-green)]" />
+              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
+                <FaRedo className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Attempts
@@ -411,9 +398,8 @@ export default function AssessmentDetailsModal({
                 </div>
               </div>
 
-              {/* time remaining */}
-              <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
-                <FaCalendarAlt className="w-4 h-4 text-[var(--primary-green)]" />
+              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
+                <FaCalendarAlt className="w-4 h-4 text-green-600 dark:text-green-400" />
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Time Remaining
@@ -425,41 +411,177 @@ export default function AssessmentDetailsModal({
               </div>
             </div>
 
-            {/* schedule */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-500 dark:text-gray-400 mb-1">Starts</p>
-                <p className="text-gray-900 dark:text-gray-100">
-                  {assessment.date.start
-                    ? format(
-                      new Date(assessment.date.start),
-                      "MMM d, yyyy 'at' h:mm a",
-                      {
-                        timeZone: "Asia/Manila",
-                      },
-                    )
-                    : "Immediately"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-400 mb-1">Ends</p>
-                <p className="text-gray-900 dark:text-gray-100">
-                  {assessment.date.end
-                    ? format(
-                      new Date(assessment.date.end),
-                      "MMM d, yyyy 'at' h:mm a",
-                      {
-                        timeZone: "Asia/Manila",
-                      },
-                    )
-                    : "No deadline"}
-                </p>
+            <div className="p-4">
+              {/* paused assessment banner */}
+              {hasPausedAttempt && currentPausedAttempt && (
+                <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-sm">
+                  <div className="flex items-start gap-3">
+                    <FaPause className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">
+                        Assessment Paused
+                      </h3>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
+                        You have an incomplete attempt. You can continue where
+                        you left off.
+                        {currentPausedAttempt.timeSpent > 0 && (
+                          <span className="block text-xs mt-1">
+                            Time spent:{" "}
+                            {Math.floor(currentPausedAttempt.timeSpent / 60)}:
+                            {(currentPausedAttempt.timeSpent % 60)
+                              .toString()
+                              .padStart(2, "0")}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* description */}
+              {assessment.description && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    {assessment.description}
+                  </p>
+                </div>
+              )}
+
+              {/* topic */}
+              {assessment.topic && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Topic
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    {assessment.topic}
+                  </p>
+                </div>
+              )}
+
+              {/* attempt history */}
+              {attemptsLoading ? (
+                <div className="mb-4">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Loading attempts...
+                  </p>
+                </div>
+              ) : attempts.length > 0 ? (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                    <FaHistory className="w-4 h-4" />
+                    Attempt History
+                  </h3>
+                  <div className="space-y-2">
+                    {attempts
+                      .slice()
+                      .reverse()
+                      .map((attempt, index) => (
+                        <div
+                          key={attempt.id}
+                          className="flex justify-between items-start p-3 bg-gray-50 dark:bg-gray-700 rounded-sm"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                              Attempt {attempts.length - index}
+                            </p>
+                            <p
+                              className={`text-xs ${getAttemptDisplayColor(attempt.status)}`}
+                            >
+                              {getAttemptDisplayText(attempt.status)}
+                              {attempt.score !== undefined &&
+                                attempt.status !== "paused" &&
+                                ` • Score: ${attempt.score}`}
+                            </p>
+                            {attempt.dateCompleted && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {format(
+                                  new Date(attempt.dateCompleted),
+                                  "MMM d, yyyy 'at' h:mm a",
+                                  { timeZone: "Asia/Manila" },
+                                )}
+                              </p>
+                            )}
+                            {attempt.status === "paused" &&
+                              attempt.dateUpdated && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                  Last updated:{" "}
+                                  {format(
+                                    new Date(attempt.dateUpdated),
+                                    "MMM d, yyyy 'at' h:mm a",
+                                    { timeZone: "Asia/Manila" },
+                                  )}
+                                </p>
+                              )}
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                            {(attempt.status === "completed" ||
+                              attempt.status === "failed") && (
+                                <div className="text-right">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    {attempt.score || 0}/
+                                    {getTotalScore(assessment)}
+                                  </p>
+                                </div>
+                              )}
+                            {/* hide review button for paused attempts */}
+                            {attempt.status !== "paused" && (
+                              <button
+                                onClick={() => handleViewAttempt(attempt)}
+                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0"
+                              >
+                                Review
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* schedule */}
+              <div className="grid grid-cols-1 gap-3 text-sm">
+                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
+                  <p className="text-gray-500 dark:text-gray-400 mb-1">
+                    Starts
+                  </p>
+                  <p className="text-gray-900 dark:text-gray-100">
+                    {assessment.date.start
+                      ? format(
+                        new Date(assessment.date.start),
+                        "MMM d, yyyy 'at' h:mm a",
+                        {
+                          timeZone: "Asia/Manila",
+                        },
+                      )
+                      : "Immediately"}
+                  </p>
+                </div>
+                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
+                  <p className="text-gray-500 dark:text-gray-400 mb-1">Ends</p>
+                  <p className="text-gray-900 dark:text-gray-100">
+                    {assessment.date.end
+                      ? format(
+                        new Date(assessment.date.end),
+                        "MMM d, yyyy 'at' h:mm a",
+                        {
+                          timeZone: "Asia/Manila",
+                        },
+                      )
+                      : "No deadline"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* bottom section */}
-          <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             <button
               onClick={onClose}
               className="px-4 py-2 text-sm text-gray-900 border border-gray-900 dark:border-gray-400 dark:text-gray-400 hover:text-gray-800 rounded-sm dark:hover:text-gray-200 transition-colors duration-200 hover:cursor-pointer"
@@ -469,7 +591,7 @@ export default function AssessmentDetailsModal({
             <button
               onClick={() => handleTakeAssessmentDirect(assessment)}
               disabled={!canTakeAssessment}
-              className={`px-6 py-2 text-sm font-medium text-white rounded-sm transition-all duration-200 flex items-center ${canTakeAssessment
+              className={`px-4 py-2 text-sm font-medium text-white rounded-sm transition-all duration-200 flex items-center justify-center min-w-[140px] ${canTakeAssessment
                   ? hasPausedAttempt
                     ? "bg-yellow-600 hover:bg-yellow-700 cursor-pointer"
                     : "bg-[var(--primary-green)] hover:bg-green-600 cursor-pointer"

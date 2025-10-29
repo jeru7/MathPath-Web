@@ -125,28 +125,3 @@ export const useDeleteAssessment = (teacherId: string) => {
     },
   });
 };
-
-export const useUploadAssessmentImage = (teacherId: string) => {
-  return useMutation({
-    mutationFn: async (imageFile: File): Promise<string> => {
-      const formData = new FormData();
-      formData.append("image", imageFile);
-
-      const res = await fetch(
-        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/images`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to upload image.");
-      }
-
-      const data = await res.json();
-      return data.data as string;
-    },
-  });
-};

@@ -14,14 +14,19 @@ export const studentRoutesConfig = [
     children: [
       { index: true, element: <Dashboard /> },
       { path: "statistics", element: <Statistics /> },
-      { path: "assessments", element: <Assessments /> },
       {
-        path: "assessments/:assessmentId/attempt",
-        element: (
-          <PreviewProvider>
-            <AnswerAssessment />
-          </PreviewProvider>
-        ),
+        path: "assessments",
+        children: [
+          { index: true, element: <Assessments /> },
+          {
+            path: ":assessmentId/attempt",
+            element: (
+              <PreviewProvider>
+                <AnswerAssessment />
+              </PreviewProvider>
+            ),
+          },
+        ],
       },
       { path: "profile", element: <Profile /> },
       { path: "settings", element: <StudentSettings /> },

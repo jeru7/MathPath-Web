@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import AssessmentContent from "./AssessmentContent";
 import AssessmentNavigation from "./AssessmentNavigation";
 import AssessmentHeader from "./AssessmentHeader";
-import MobileFloatingCard from "./modals/MobileFloatingCard";
 import { FloatingCard } from "./modals/FloatingCard";
 import ExitConfirmationModal from "./modals/ExitConfirmationModal";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
@@ -26,6 +25,7 @@ import {
 } from "../../../../services/student-assessment-attempt.service";
 import { APIErrorResponse } from "../../../../../core/types/api/api.type";
 import { handleApiError } from "../../../../../core/utils/api/error.util";
+import { FaInfoCircle } from "react-icons/fa";
 
 type StudentAssessmentProps = {
   assessment: Assessment;
@@ -44,13 +44,17 @@ export default function StudentAssessment({
     usePreview();
 
   const initialTimeRemaining = useMemo(() => {
-    if (currentAttempt?.timeSpent && assessment.timeLimit) {
-      const timeSpent = currentAttempt.timeSpent;
-      const totalTime = assessment.timeLimit * 60;
-      return Math.max(totalTime - timeSpent, 0);
+    if (!assessment.timeLimit) return 0;
+
+    const totalTime = assessment.timeLimit * 60;
+
+    if (currentAttempt?.timeSpent && currentAttempt.timeSpent > 0) {
+      const remaining = Math.max(totalTime - currentAttempt.timeSpent, 0);
+      return remaining;
     }
-    return assessment.timeLimit ? assessment.timeLimit * 60 : 0;
-  }, [currentAttempt?.timeSpent, assessment.timeLimit]);
+
+    return totalTime;
+  }, [currentAttempt, assessment.timeLimit]);
 
   const [timeRemaining, setTimeRemaining] =
     useState<number>(initialTimeRemaining);
@@ -58,6 +62,7 @@ export default function StudentAssessment({
   const [isPausing, setIsPausing] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [isCardVisible, setIsCardVisible] = useState(false);
 
   const timerRef = useRef<number | null>(null);
   const studentAnswersRef = useRef<StudentAnswers | null>(studentAnswers);
@@ -65,6 +70,22 @@ export default function StudentAssessment({
   const hasAttemptedSubmitRef = useRef<boolean>(hasAttemptedSubmit);
   const handleSubmitAssessmentRef =
     useRef<(answers: StudentAnswers, isAutoSubmit?: boolean) => void>();
+  const sessionStartTimeRef = useRef<number>(Date.now()); // track session start time
+
+  const getSessionTimeSpent = useCallback(() => {
+    const sessionTime = Math.floor(
+      (Date.now() - sessionStartTimeRef.current) / 1000,
+    );
+    return sessionTime;
+  }, []);
+
+  const getTotalTimeSpent = useCallback(() => {
+    const sessionTimeSpent = getSessionTimeSpent();
+    const previousTimeSpent = currentAttempt?.timeSpent || 0;
+    const totalTimeSpent = previousTimeSpent + sessionTimeSpent;
+
+    return totalTimeSpent;
+  }, [currentAttempt?.timeSpent, getSessionTimeSpent]);
 
   useEffect(() => {
     studentAnswersRef.current = studentAnswers;
@@ -95,19 +116,11 @@ export default function StudentAssessment({
     ],
   );
 
-  const getAccurateTimeSpent = useCallback(() => {
-    if (assessment.timeLimit) {
-      return assessment.timeLimit * 60 - timeRemainingRef.current;
-    }
-    return 0;
-  }, [assessment.timeLimit]);
-
   const submissionHandlersRef = useRef({
     handleSubmissionSuccess: (
       savedAttempt: AssessmentAttempt,
       isAutoSubmit: boolean = false,
     ) => {
-      console.log("✅ Assessment submitted successfully:", savedAttempt);
       setIsSubmitting(false);
       resetAnswers();
       closePreview();
@@ -126,7 +139,6 @@ export default function StudentAssessment({
     },
     handleSubmissionError: (error: unknown) => {
       const apiError: APIErrorResponse = handleApiError(error);
-      console.error("❌ Failed to submit assessment:", apiError);
       setIsSubmitting(false);
       setHasAttemptedSubmit(false);
 
@@ -153,7 +165,6 @@ export default function StudentAssessment({
     },
     handlePauseError: (error: unknown) => {
       const apiError: APIErrorResponse = handleApiError(error);
-      console.error("❌ Failed to pause assessment:", apiError);
       setIsPausing(false);
 
       toast.error(apiError.message, {
@@ -169,7 +180,6 @@ export default function StudentAssessment({
       savedAttempt: AssessmentAttempt,
       isAutoSubmit: boolean = false,
     ) => {
-      console.log("✅ Assessment submitted successfully:", savedAttempt);
       setIsSubmitting(false);
       resetAnswers();
       closePreview();
@@ -224,10 +234,12 @@ export default function StudentAssessment({
         timerRef.current = null;
       }
 
+      const totalTimeSpent = getTotalTimeSpent();
+
       const completedAttempt: AssessmentAttempt = {
         ...attemptData,
         score: 0,
-        timeSpent: getAccurateTimeSpent(),
+        timeSpent: totalTimeSpent,
         status: "completed",
         answers: answers,
         dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
@@ -248,7 +260,7 @@ export default function StudentAssessment({
     },
     [
       attemptData,
-      getAccurateTimeSpent,
+      getTotalTimeSpent,
       currentAttempt?.dateStarted,
       submitAssessment,
     ],
@@ -263,10 +275,12 @@ export default function StudentAssessment({
         timerRef.current = null;
       }
 
+      const totalTimeSpent = getTotalTimeSpent();
+
       const pausedAttempt: AssessmentAttempt = {
         ...attemptData,
         score: 0,
-        timeSpent: getAccurateTimeSpent(),
+        timeSpent: totalTimeSpent,
         status: "paused",
         answers: answers,
         dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
@@ -282,7 +296,7 @@ export default function StudentAssessment({
     },
     [
       attemptData,
-      getAccurateTimeSpent,
+      getTotalTimeSpent,
       currentAttempt?.dateStarted,
       savePausedAssessment,
     ],
@@ -297,31 +311,33 @@ export default function StudentAssessment({
       return;
     }
 
-    timeRemainingRef.current = prevValid(
-      timeRemainingRef.current,
-      initialTimeRemaining,
-    );
-    setTimeRemaining(timeRemainingRef.current);
+    sessionStartTimeRef.current = Date.now();
 
-    if (timerRef.current == null) {
-      timerRef.current = window.setInterval(() => {
-        timeRemainingRef.current = Math.max(timeRemainingRef.current - 1, 0);
-        setTimeRemaining(timeRemainingRef.current);
+    timeRemainingRef.current = initialTimeRemaining;
+    setTimeRemaining(initialTimeRemaining);
 
-        if (timeRemainingRef.current <= 0) {
-          if (timerRef.current) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-          }
-          if (handleSubmitAssessmentRef.current) {
-            handleSubmitAssessmentRef.current(
-              (studentAnswersRef.current as StudentAnswers) || {},
-              true,
-            );
-          }
-        }
-      }, 1000);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
+
+    timerRef.current = window.setInterval(() => {
+      timeRemainingRef.current = Math.max(timeRemainingRef.current - 1, 0);
+      setTimeRemaining(timeRemainingRef.current);
+
+      if (timeRemainingRef.current <= 0) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        if (handleSubmitAssessmentRef.current) {
+          handleSubmitAssessmentRef.current(
+            (studentAnswersRef.current as StudentAnswers) || {},
+            true,
+          );
+        }
+      }
+    }, 1000);
 
     return () => {
       if (timerRef.current) {
@@ -369,6 +385,10 @@ export default function StudentAssessment({
     setShowExitConfirm(false);
   };
 
+  const toggleCardVisibility = () => {
+    setIsCardVisible(!isCardVisible);
+  };
+
   if (!isOpen || mode !== "assessment") {
     return <></>;
   }
@@ -389,13 +409,23 @@ export default function StudentAssessment({
           </div>
         </div>
 
-        <div className="hidden lg:block absolute top-6 right-6 w-80">
-          <FloatingCard assessment={assessment} />
-        </div>
+        {/* toggle button for information */}
+        {!isCardVisible && (
+          <button
+            onClick={toggleCardVisibility}
+            className="flex absolute top-6 right-6 w-10 h-10 bg-white dark:bg-gray-800 rounded-sm shadow-sm border border-gray-200 dark:border-gray-700 items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors z-10"
+            title="Show assessment details"
+          >
+            <FaInfoCircle className="w-4 h-4" />
+          </button>
+        )}
 
-        <div className="lg:hidden fixed bottom-6 right-6">
-          <MobileFloatingCard assessment={assessment} />
-        </div>
+        {isCardVisible && (
+          <FloatingCard
+            assessment={assessment}
+            onClose={toggleCardVisibility}
+          />
+        )}
       </div>
 
       <AssessmentNavigation
@@ -420,12 +450,4 @@ export default function StudentAssessment({
       />
     </div>
   );
-}
-
-/** utility to ensure the ref stored remaining time is valid */
-function prevValid(currentRefValue: number, fallback: number) {
-  if (typeof currentRefValue !== "number" || Number.isNaN(currentRefValue)) {
-    return fallback;
-  }
-  return currentRefValue >= 0 ? currentRefValue : fallback;
 }

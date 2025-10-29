@@ -43,6 +43,7 @@ export default function AnswerAssessment(): ReactElement {
   const [isResumingPaused, setIsResumingPaused] = useState(false);
 
   const isRetakeFromDetails = searchParams.get("retake") === "true";
+  const isResume = searchParams.get("resume") === "true";
   const completedAttemptsCount = getCompletedAttemptsCount(attempts);
 
   const checkIfCanRetake = useCallback(() => {
@@ -64,13 +65,6 @@ export default function AnswerAssessment(): ReactElement {
 
   useEffect(() => {
     if (assessment && student && !hasInitialized) {
-      console.log("🔄 Starting initialization...", {
-        attemptsCount: attempts.length,
-        isRetakeFromDetails,
-        assessmentId,
-        hasPausedAttempt: !!pausedAttempt,
-      });
-
       const canTakeNew = checkIfCanRetake();
 
       const completedAttempt = attempts
@@ -84,16 +78,24 @@ export default function AnswerAssessment(): ReactElement {
             new Date(a.dateCompleted || a.dateUpdated).getTime(),
         )[0];
 
-      // show result if there's a completed attempt
-      if (completedAttempt && !isRetakeFromDetails && !pausedAttempt) {
+      // handle resume first if resume param exists and paused attempt available
+      if (isResume && pausedAttempt) {
+        setCurrentAttempt(pausedAttempt);
+        setIsResumingPaused(true);
+        setHasInitialized(true);
+        return;
+      }
+
+      // show result if there's a completed attempt (and not resuming or retaking)
+      if (completedAttempt && !isRetakeFromDetails && !isResume) {
         setSubmittedAttempt(completedAttempt);
         setShowResult(true);
         setHasInitialized(true);
         return;
       }
 
-      //  redirect if no more attempts allowed
-      if (!canTakeNew && !isRetakeFromDetails && !pausedAttempt) {
+      // redirect if no more attempts allowed
+      if (!canTakeNew && !isRetakeFromDetails && !isResume) {
         toast.error(
           "You have reached the maximum number of attempts for this assessment.",
           { position: "top-right", autoClose: 5000 },
@@ -105,14 +107,18 @@ export default function AnswerAssessment(): ReactElement {
         return;
       }
 
-      // start or resume assessment
+      let newAttempt: AssessmentAttempt;
+
       if (pausedAttempt && !isRetakeFromDetails) {
-        console.log("⏸️ Resuming paused attempt:", pausedAttempt);
-        setCurrentAttempt(pausedAttempt);
+        // use the existing paused attempt to preserve timespent and other data
+        newAttempt = {
+          ...pausedAttempt,
+          dateUpdated: new Date().toISOString(),
+        };
         setIsResumingPaused(true);
       } else {
-        console.log("🆕 Creating new attempt (MongoDB will handle _id)");
-        const newAttempt: AssessmentAttempt = {
+        // create a completely new attempt for retakes or when no paused attempt exists
+        newAttempt = {
           studentId: studentId ?? "",
           assessmentId: assessmentId ?? "",
           score: 0,
@@ -124,10 +130,10 @@ export default function AnswerAssessment(): ReactElement {
           currentPage: 0,
           percentage: 0,
         };
-        setCurrentAttempt(newAttempt);
         setIsResumingPaused(false);
       }
 
+      setCurrentAttempt(newAttempt);
       setHasInitialized(true);
     }
   }, [
@@ -136,6 +142,7 @@ export default function AnswerAssessment(): ReactElement {
     attempts,
     pausedAttempt,
     isRetakeFromDetails,
+    isResume,
     checkIfCanRetake,
     navigate,
     studentId,
@@ -200,7 +207,6 @@ export default function AnswerAssessment(): ReactElement {
       return;
     }
 
-    console.log("🔄 Starting retake assessment");
     setShowResult(false);
     setSubmittedAttempt(null);
     setHasInitialized(false);
@@ -264,7 +270,6 @@ export default function AnswerAssessment(): ReactElement {
     );
   }
 
-  // result screen
   if (showResult && submittedAttempt && assessment) {
     return (
       <AssessmentResult
@@ -281,11 +286,10 @@ export default function AnswerAssessment(): ReactElement {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div
-        className={`transition-opacity duration-200 ${
-          currentAttempt && hasInitialized
+        className={`transition-opacity duration-200 ${currentAttempt && hasInitialized
             ? "opacity-100"
             : "opacity-0 pointer-events-none"
-        }`}
+          }`}
       >
         {assessment && currentAttempt && (
           <StudentAssessmentComponent
