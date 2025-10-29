@@ -3,29 +3,53 @@ import CreateSectionForm from "./components/CreateSectionForm";
 import { useTeacherContext } from "../../context/teacher.context";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoPlus } from "react-icons/go";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Section } from "../../../core/types/section/section.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useTeacherDeleteSection } from "../../services/teacher-section.service";
+import {
+  useTeacherDeleteSection,
+  useTeacherEditSection,
+} from "../../services/teacher-section.service";
 import SectionTable from "../../../core/components/section-table/SectionTable";
 import SectionDetailsModal from "../../../core/components/section-table/SectionDetailsModal";
-import DeleteConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
 import { getStudentCountForSection } from "../../../core/utils/section/section.util";
+import DeleteSectionConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
+import EditSectionModal from "../../../core/components/section-table/EditSectionModal";
+import { EditSectionDTO } from "../../../core/types/section/section.schema";
+import { APIErrorResponse } from "../../../core/types/api/api.type";
+import { handleApiError } from "../../../core/utils/api/error.util";
 
 export default function Sections(): ReactElement {
   const teacherContext = useTeacherContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { sectionId } = useParams();
   const { sections, students, teacherId } = teacherContext;
   const { mutate: deleteSection } = useTeacherDeleteSection(teacherId);
+  const { mutate: editSection, isPending: isEditPending } =
+    useTeacherEditSection(teacherId);
   const queryClient = useQueryClient();
 
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const showForm = location.pathname.endsWith("/add-section");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const pathEnd = location.pathname.split("/").pop();
+  const isCreateSectionRoute = pathEnd === "add-section";
+  const isSectionDetailsRoute =
+    selectedSection !== null && pathEnd === selectedSection.id;
+
+  useEffect(() => {
+    if (sectionId) {
+      const section = sections.find((s) => s.id === sectionId);
+      setSelectedSection(section || null);
+    } else {
+      setSelectedSection(null);
+    }
+  }, [sectionId, sections]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,12 +68,20 @@ export default function Sections(): ReactElement {
 
   const handleSectionClick = (section: Section) => {
     setSelectedSection(section);
-    setIsModalOpen(true);
+    navigate(section.id);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseDetailsModal = () => {
+    navigate("..");
     setSelectedSection(null);
+  };
+
+  const handleCreateSection = () => {
+    navigate("add-section");
+  };
+
+  const handleCloseCreateModal = () => {
+    navigate("..");
   };
 
   const handleDeleteInitiate = (section: Section) => {
@@ -67,6 +99,11 @@ export default function Sections(): ReactElement {
           });
           setIsDeleteModalOpen(false);
           setSectionToDelete(null);
+
+          if (selectedSection?.id === sectionToDelete.id) {
+            navigate("..");
+            setSelectedSection(null);
+          }
         },
         onError: (error) => {
           toast.error("Failed to delete section.");
@@ -81,6 +118,49 @@ export default function Sections(): ReactElement {
     setSectionToDelete(null);
   };
 
+  const handleEditInitiate = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleUpdateSection = async (
+    sectionId: string,
+    data: EditSectionDTO,
+  ) => {
+    return new Promise<void>((resolve, reject) => {
+      editSection(
+        { sectionId, sectionData: data },
+        {
+          onSuccess: () => {
+            toast.success("Section updated successfully.");
+            queryClient.invalidateQueries({
+              queryKey: ["teacher", teacherId, "sections"],
+            });
+            resolve();
+          },
+          onError: (error: unknown) => {
+            const errorData: APIErrorResponse = handleApiError(error);
+
+            if (errorData.error === "SECTION_NAME_TAKEN") {
+              toast.error("A section with this name already exists.");
+            } else if (errorData.error === "INVALID_SECTION_COLOR") {
+              toast.error("Invalid section color provided.");
+            } else if (errorData.error === "INVALID_SECTION_BANNER") {
+              toast.error("Invalid section banner provided.");
+            } else {
+              toast.error("Failed to update section.");
+            }
+
+            reject(error);
+          },
+        },
+      );
+    });
+  };
+
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
       <AnimatePresence>
@@ -91,7 +171,7 @@ export default function Sections(): ReactElement {
             exit={{ opacity: 0, y: 10 }}
             className="rounded-full h-16 w-16 bg-[var(--primary-green)]/90 fixed z-5 right-5 bottom-5 flex items-center justify-center md:hidden"
             type="button"
-            onClick={() => navigate("add-section")}
+            onClick={handleCreateSection}
           >
             <GoPlus className="w-5 h-5 text-white" />
           </motion.button>
@@ -110,27 +190,44 @@ export default function Sections(): ReactElement {
         <SectionTable
           context={teacherContext}
           sections={sections}
-          onShowForm={() => navigate("add-section")}
+          onShowForm={handleCreateSection}
           onSectionClick={handleSectionClick}
           onDeleteSection={handleDeleteInitiate}
         />
       </section>
 
-      {showForm && <CreateSectionForm onCloseForm={() => navigate("..")} />}
+      {/* create section modal */}
+      <CreateSectionForm
+        isOpen={isCreateSectionRoute}
+        onClose={handleCloseCreateModal}
+      />
 
       {/* section details modal */}
       {selectedSection && (
         <SectionDetailsModal
           context={teacherContext}
           section={selectedSection}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
+          isOpen={isSectionDetailsRoute}
+          onClose={handleCloseDetailsModal}
           sections={sections}
+          onEdit={handleEditInitiate}
+          onDelete={() => handleDeleteInitiate(selectedSection)}
+        />
+      )}
+
+      {/* edit section modal */}
+      {selectedSection && (
+        <EditSectionModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          section={selectedSection}
+          onUpdateSection={handleUpdateSection}
+          isSubmitting={isEditPending}
         />
       )}
 
       {/* delete confirmation modal */}
-      <DeleteConfirmationModal
+      <DeleteSectionConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}

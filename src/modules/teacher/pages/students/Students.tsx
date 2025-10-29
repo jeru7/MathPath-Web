@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactElement } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useTeacherContext } from "../../context/teacher.context";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,10 +8,17 @@ import { GoPlus } from "react-icons/go";
 import RegistrationCode from "./registration-codes/RegistrationCode";
 import { Student } from "../../../student/types/student.type";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTeacherDeleteStudent } from "../../services/teacher-student.service";
+import {
+  useTeacherDeleteStudent,
+  useTeacherEditStudent,
+} from "../../services/teacher-student.service";
 import StudentTable from "../../../core/components/student-table/StudentTable";
 import DeleteStudentConfirmationModal from "../../../core/components/student-table/DeleteStudentConfirmationModal";
 import StudentDetailsModal from "../../../core/components/student-table/student-details/StudentDetailsModal";
+import EditStudentModal from "../../../core/components/student-table/EditStudentModal";
+import { EditStudentDTO } from "../../../student/types/student.schema";
+import { APIErrorResponse } from "../../../core/types/api/api.type";
+import { handleApiError } from "../../../core/utils/api/error.util";
 
 export default function Students(): ReactElement {
   const teacherContext = useTeacherContext();
@@ -19,19 +26,35 @@ export default function Students(): ReactElement {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
+  const { studentId } = useParams();
   const searchParams = new URLSearchParams(location.search);
+
   const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId);
+  const { mutate: editStudent, isPending: isEditPending } =
+    useTeacherEditStudent(teacherId);
 
   const showForm = location.pathname.endsWith("/add-students");
   const showCodes = location.pathname.endsWith("/registration-codes");
-
   const mode: string | null = searchParams.get("mode");
 
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+
+  const pathEnd = location.pathname.split("/").pop();
+  const isStudentDetailsRoute =
+    selectedStudent !== null && pathEnd === selectedStudent.id;
+
+  useEffect(() => {
+    if (studentId) {
+      const student = students.find((s) => s.id === studentId);
+      setSelectedStudent(student || null);
+    } else {
+      setSelectedStudent(null);
+    }
+  }, [studentId, students]);
 
   const handleAddStudent = () => {
     if (sections.length === 0) {
@@ -42,11 +65,58 @@ export default function Students(): ReactElement {
   };
 
   const handleStudentClick = (studentId: string) => {
-    const student = students.find((s) => s.id === studentId);
-    if (student) {
-      setSelectedStudent(student);
-      setIsModalOpen(true);
-    }
+    setSelectedStudent(students.find((s) => s.id === studentId) || null);
+    navigate(studentId);
+  };
+
+  const handleCloseDetailsModal = () => {
+    navigate("..");
+    setSelectedStudent(null);
+  };
+
+  const handleDeleteInitiate = (student: Student) => {
+    setStudentToDelete(student);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleEditInitiate = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleUpdateStudent = async (
+    studentId: string,
+    data: EditStudentDTO,
+  ) => {
+    return new Promise<void>((resolve, reject) => {
+      editStudent(
+        { studentId, studentData: data },
+        {
+          onSuccess: () => {
+            toast.success("Student updated successfully.");
+            queryClient.invalidateQueries({
+              queryKey: ["teacher", teacherId, "students"],
+            });
+            resolve();
+          },
+          onError: (error: unknown) => {
+            const errorData: APIErrorResponse = handleApiError(error);
+
+            // handle specific error cases
+            if (errorData.error === "EMAIL_ALREADY_EXISTS") {
+              console.error("A student with this email already exists.");
+            } else {
+              console.error("Failed to update student.");
+            }
+
+            reject(error);
+          },
+        },
+      );
+    });
   };
 
   const confirmDelete = () => {
@@ -54,28 +124,27 @@ export default function Students(): ReactElement {
       deleteStudent(studentToDelete.id, {
         onSuccess: () => {
           toast.success("Student deleted successfully");
-
           queryClient.invalidateQueries({
             queryKey: ["teacher", teacherId, "students"],
           });
+          setIsDeleteModalOpen(false);
+          setStudentToDelete(null);
+
+          if (selectedStudent?.id === studentToDelete.id) {
+            navigate("..");
+            setSelectedStudent(null);
+          }
         },
         onError: () => {
           toast.error("Failed to delete student");
         },
       });
-      setIsDeleteModalOpen(false);
-      setStudentToDelete(null);
     }
   };
 
   const cancelDelete = () => {
     setIsDeleteModalOpen(false);
     setStudentToDelete(null);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedStudent(null);
   };
 
   useEffect(() => {
@@ -134,12 +203,28 @@ export default function Students(): ReactElement {
 
       {showCodes && <RegistrationCode navigate={navigate} />}
 
+      {/* student details modal */}
       {selectedStudent && (
         <StudentDetailsModal
           student={selectedStudent}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
+          isOpen={isStudentDetailsRoute}
+          onClose={handleCloseDetailsModal}
           sections={sections}
+          onEdit={handleEditInitiate}
+          onDelete={() => handleDeleteInitiate(selectedStudent)}
+        />
+      )}
+
+      {/* edit student modal */}
+      {selectedStudent && (
+        <EditStudentModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          student={selectedStudent}
+          onUpdateStudent={handleUpdateStudent}
+          isSubmitting={isEditPending}
+          sections={sections}
+          showSectionSelection={false}
         />
       )}
 
