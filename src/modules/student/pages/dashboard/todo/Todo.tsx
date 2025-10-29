@@ -10,7 +10,7 @@ export default function Todo(): ReactElement {
   const { data: assessments = [] } = useStudentAssessments(studentId);
 
   const assessmentsDue = assessments.filter((assessment) => {
-    if (assessment.status !== "published") return false;
+    if (assessment.status !== "in-progress") return false;
 
     // check if current date is within assessment date range
     const now = new Date();
