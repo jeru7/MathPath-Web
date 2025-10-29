@@ -154,7 +154,7 @@ export default function AssessmentTable({
                 <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
               <input
-                placeholder="Search assessments, topics, or teachers..."
+                placeholder="Search assessments"
                 className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 value={searchTerm}
                 onChange={handleSearchChange}

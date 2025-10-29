@@ -2,31 +2,66 @@ import { useEffect, useState, type ReactElement } from "react";
 import { useAdminContext } from "../../context/admin.context";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoPlus } from "react-icons/go";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Section } from "../../../core/types/section/section.type";
 import CreateSectionForm from "./CreateSectionForm";
 import SectionTable from "../../../core/components/section-table/SectionTable";
 import SectionDetailsModal from "../../../core/components/section-table/SectionDetailsModal";
-import DeleteConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
-import { useAdminDeleteSection } from "../../services/admin-section.service";
+import DeleteSectionConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
+import {
+  useAdminDeleteSection,
+  useAdminEditSection,
+} from "../../services/admin-section.service";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import { getStudentCountForSection } from "../../../core/utils/section/section.util";
+import { EditSectionDTO } from "../../../core/types/section/section.schema";
+import { APIErrorResponse } from "../../../core/types/api/api.type";
+import { handleApiError } from "../../../core/utils/api/error.util";
+import EditSectionModal from "../../../core/components/section-table/EditSectionModal";
 
 export default function Sections(): ReactElement {
   const adminContext = useAdminContext();
-  const { sections, adminId, students } = adminContext;
+  const { sections, adminId, students, assessments } = adminContext;
   const navigate = useNavigate();
   const location = useLocation();
+  const { sectionId } = useParams();
   const queryClient = useQueryClient();
 
   const { mutate: deleteSection } = useAdminDeleteSection(adminId);
+  const { mutate: editSection, isPending: isUpdating } =
+    useAdminEditSection(adminId);
 
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const pathEnd = location.pathname.split("/").pop();
+  const isCreateSectionRoute = pathEnd === "add-section";
+  const isSectionDetailsRoute =
+    selectedSection !== null && pathEnd === selectedSection.id;
+
+  // calculate exclusive assessment count for the section to delete
+  const getExclusiveAssessmentCount = (section: Section | null): number => {
+    if (!section) return 0;
+
+    return assessments.filter(
+      (assessment) =>
+        assessment.sections.includes(section.id) &&
+        assessment.sections.length === 1,
+    ).length;
+  };
+
+  useEffect(() => {
+    if (sectionId) {
+      const section = sections.find((s) => s.id === sectionId);
+      setSelectedSection(section || null);
+    } else {
+      setSelectedSection(null);
+    }
+  }, [sectionId, sections]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,11 +80,11 @@ export default function Sections(): ReactElement {
 
   const handleSectionClick = (section: Section) => {
     setSelectedSection(section);
-    setIsDetailsModalOpen(true);
+    navigate(section.id);
   };
 
   const handleCloseDetailsModal = () => {
-    setIsDetailsModalOpen(false);
+    navigate("..");
     setSelectedSection(null);
   };
 
@@ -81,6 +116,11 @@ export default function Sections(): ReactElement {
           });
           setIsDeleteModalOpen(false);
           setSectionToDelete(null);
+
+          if (selectedSection?.id === sectionToDelete.id) {
+            navigate("..");
+            setSelectedSection(null);
+          }
         },
         onError: (error) => {
           toast.error("Failed to delete section.");
@@ -90,7 +130,49 @@ export default function Sections(): ReactElement {
     }
   };
 
-  const isCreateSectionRoute = location.pathname.endsWith("/add-section");
+  const handleEditInitiate = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleUpdateSection = async (
+    sectionId: string,
+    data: EditSectionDTO,
+  ) => {
+    return new Promise<void>((resolve, reject) => {
+      editSection(
+        { sectionId, sectionData: data },
+        {
+          onSuccess: () => {
+            toast.success("Section updated successfully.");
+            queryClient.invalidateQueries({
+              queryKey: ["admin", adminId, "sections"],
+            });
+            resolve();
+          },
+          onError: (error: unknown) => {
+            const errorData: APIErrorResponse = handleApiError(error);
+
+            // handle specific error cases
+            if (errorData.error === "SECTION_NAME_TAKEN") {
+              toast.error("A section with this name already exists.");
+            } else if (errorData.error === "INVALID_SECTION_COLOR") {
+              toast.error("Invalid section color provided.");
+            } else if (errorData.error === "INVALID_SECTION_BANNER") {
+              toast.error("Invalid section banner provided.");
+            } else {
+              toast.error("Failed to update section.");
+            }
+
+            reject(error);
+          },
+        },
+      );
+    });
+  };
 
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
@@ -138,18 +220,33 @@ export default function Sections(): ReactElement {
         <SectionDetailsModal
           context={adminContext}
           section={selectedSection}
-          isOpen={isDetailsModalOpen}
+          isOpen={isSectionDetailsRoute}
           onClose={handleCloseDetailsModal}
           sections={sections}
+          onEdit={handleEditInitiate}
+          onDelete={() => handleDeleteInitiate(selectedSection)}
         />
       )}
 
-      <DeleteConfirmationModal
+      {/* edit section modal */}
+      {selectedSection && (
+        <EditSectionModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          section={selectedSection}
+          onUpdateSection={handleUpdateSection}
+          isSubmitting={isUpdating}
+        />
+      )}
+
+      {/* delete section confirmation modal */}
+      <DeleteSectionConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         section={sectionToDelete}
         studentCount={getStudentCountForSection(sectionToDelete, students)}
+        assessmentCount={getExclusiveAssessmentCount(sectionToDelete)}
       />
     </main>
   );

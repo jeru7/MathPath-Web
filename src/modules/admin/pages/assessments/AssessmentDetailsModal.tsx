@@ -7,6 +7,8 @@ import {
   FaListAlt,
   FaFile,
   FaUserGraduate,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 import { IoDocumentText } from "react-icons/io5";
 import { format } from "date-fns-tz";
@@ -18,6 +20,8 @@ import AttemptReviewModal from "../../../student/pages/assessments/components/as
 import StatsCard from "../../../teacher/components/details/StatsCard";
 import AssessmentInformation from "./AssessmentInformation";
 import AttemptItem from "./AttemptItem";
+import ModalOverlay from "../../../core/components/modal/ModalOverlay";
+import { TIMEZONE } from "../../../core/constants/date.constant";
 
 type AssessmentDetailsModalProps = {
   assessment: Assessment;
@@ -47,11 +51,11 @@ export default function AssessmentDetailsModal({
     useState<AssessmentAttempt | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [expandedAttempt, setExpandedAttempt] = useState<string | null>(null);
+  const [showMobileStats, setShowMobileStats] = useState(false);
 
   const safeStudentAttempts = useMemo(() => {
     if (!studentAttempts) return [];
     if (Array.isArray(studentAttempts)) return studentAttempts;
-    console.warn("studentAttempts is not an array:", studentAttempts);
     return [];
   }, [studentAttempts]);
 
@@ -112,7 +116,7 @@ export default function AssessmentDetailsModal({
   const formatDate = (dateString: string): string => {
     try {
       return format(new Date(dateString), "MMM dd, yyyy 'at' hh:mm a", {
-        timeZone: "Asia/Manila",
+        timeZone: TIMEZONE,
       });
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -151,169 +155,265 @@ export default function AssessmentDetailsModal({
   if (!assessment) return <div>Loading...</div>;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm min-w-7xl h-[85vh] flex flex-col overflow-hidden shadow-sm"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* header */}
-            <header className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
-                  <IoDocumentText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {assessment.title || "Untitled Assessment"}
-                  </h2>
-                  {teacher && (
-                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      <span>
-                        Created by: {teacher.firstName} {teacher.lastName}
-                      </span>
-                    </div>
-                  )}
-                </div>
+    <>
+      <ModalOverlay isOpen={isOpen} onClose={onClose}>
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100vh] w-[100vw] md:h-[85vh] md:w-[90vw] lg:w-[75vw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
+          {/* header */}
+          <header className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
+                <IoDocumentText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <button
-                onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 hover:cursor-pointer"
-              >
-                <FaTimes className="w-4 h-4" />
-              </button>
-            </header>
-
-            <div className="flex-1 overflow-auto flex flex-col">
-              {/* quick stats bar */}
-              <div className="grid grid-cols-4 gap-4 p-6 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <StatsCard
-                  icon={<FaFile />}
-                  title="Total Attempts"
-                  value={safeStudentAttempts.length}
-                  iconBgColor="bg-blue-100 dark:bg-blue-900/30"
-                  iconColor="text-blue-600 dark:text-blue-400"
-                  isLoading={isLoadingAttempts}
-                />
-
-                <StatsCard
-                  icon={<FaChartBar />}
-                  title="Avg Score"
-                  value={`${averageScore} points`}
-                  iconBgColor="bg-green-100 dark:bg-green-900/30"
-                  iconColor="text-green-600 dark:text-green-400"
-                  isLoading={isLoadingAttempts}
-                />
-
-                <StatsCard
-                  icon={<FaListAlt />}
-                  title="Questions"
-                  value={totalQuestions}
-                  iconBgColor="bg-purple-100 dark:bg-purple-900/30"
-                  iconColor="text-purple-600 dark:text-purple-400"
-                />
-
-                <StatsCard
-                  icon={<FaClock />}
-                  title="Time Limit"
-                  value={
-                    assessment.timeLimit
-                      ? `${assessment.timeLimit}m`
-                      : "No limit"
-                  }
-                  iconBgColor="bg-orange-100 dark:bg-orange-900/30"
-                  iconColor="text-orange-600 dark:text-orange-400"
-                />
-              </div>
-
-              {/* assessment information */}
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 line-clamp-1">
+                  {assessment.title || "Untitled Assessment"}
+                </h2>
                 {teacher && (
-                  <AssessmentInformation
-                    teacher={teacher}
-                    assessment={assessment}
-                  />
+                  <div className="flex items-center gap-2 mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <span>
+                      Created by: {teacher.firstName} {teacher.lastName}
+                    </span>
+                  </div>
                 )}
               </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-900 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+            >
+              <FaTimes className="w-4 h-4" />
+            </button>
+          </header>
 
-              {/* student attempts */}
-              <div className="flex-1 p-6">
-                <div className="bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                  <div className="p-5 border-b border-gray-200 rounded-t-sm dark:border-gray-700 bg-white dark:bg-gray-800">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
-                          <FaUserGraduate className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {/* mobile stats toggle */}
+            <div className="sm:hidden border-b border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setShowMobileStats(!showMobileStats)}
+                className="w-full p-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50"
+              >
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Assessment Statistics
+                </span>
+                {showMobileStats ? (
+                  <FaChevronUp className="w-4 h-4 text-gray-500" />
+                ) : (
+                  <FaChevronDown className="w-4 h-4 text-gray-500" />
+                )}
+              </button>
+
+              {/* mobile stats dropdown */}
+              <AnimatePresence>
+                {showMobileStats && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
+                              <FaFile className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Total Attempts
+                              </p>
+                              <p className="text-base font-bold text-gray-900 dark:text-gray-100">
+                                {isLoadingAttempts ? (
+                                  <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-4 w-8 rounded"></div>
+                                ) : (
+                                  safeStudentAttempts.length
+                                )}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                            Student Attempts
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {isLoadingAttempts ? (
-                              <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-4 w-48 rounded"></div>
-                            ) : (
-                              `${allAttemptsSorted.length} total attempts`
-                            )}
-                          </p>
+
+                        <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-sm">
+                              <FaChartBar className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Avg Score
+                              </p>
+                              <p className="text-base font-bold text-gray-900 dark:text-gray-100">
+                                {isLoadingAttempts ? (
+                                  <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-4 w-12 rounded"></div>
+                                ) : (
+                                  `${averageScore} pts`
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-sm">
+                              <FaListAlt className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Questions
+                              </p>
+                              <p className="text-base font-bold text-gray-900 dark:text-gray-100">
+                                {totalQuestions}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-sm">
+                              <FaClock className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Time Limit
+                              </p>
+                              <p className="text-base font-bold text-gray-900 dark:text-gray-100">
+                                {assessment.timeLimit
+                                  ? `${assessment.timeLimit}m`
+                                  : "No limit"}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-                  {/* attempts list */}
-                  <div className="flex-1 p-4 min-h-96 max-h-96 overflow-y-auto">
-                    {isLoadingAttempts ? (
-                      <div className="flex items-center justify-center h-32">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-2"></div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Loading student attempts...
-                          </p>
+            {/* desktop stats bar */}
+            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 p-3 lg:p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+              <StatsCard
+                icon={<FaFile />}
+                title="Total Attempts"
+                value={safeStudentAttempts.length}
+                iconBgColor="bg-blue-100 dark:bg-blue-900/30"
+                iconColor="text-blue-600 dark:text-blue-400"
+                isLoading={isLoadingAttempts}
+              />
+
+              <StatsCard
+                icon={<FaChartBar />}
+                title="Avg Score"
+                value={`${averageScore} points`}
+                iconBgColor="bg-green-100 dark:bg-green-900/30"
+                iconColor="text-green-600 dark:text-green-400"
+                isLoading={isLoadingAttempts}
+              />
+
+              <StatsCard
+                icon={<FaListAlt />}
+                title="Questions"
+                value={totalQuestions}
+                iconBgColor="bg-purple-100 dark:bg-purple-900/30"
+                iconColor="text-purple-600 dark:text-purple-400"
+              />
+
+              <StatsCard
+                icon={<FaClock />}
+                title="Time Limit"
+                value={
+                  assessment.timeLimit ? `${assessment.timeLimit}m` : "No limit"
+                }
+                iconBgColor="bg-orange-100 dark:bg-orange-900/30"
+                iconColor="text-orange-600 dark:text-orange-400"
+              />
+            </div>
+
+            {/* main content - scrollable part */}
+            <div className="flex-1 overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                {/* assessment information */}
+                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                  {teacher && (
+                    <AssessmentInformation
+                      teacher={teacher}
+                      assessment={assessment}
+                    />
+                  )}
+                </div>
+
+                {/* student attempts */}
+                <div className="p-4 sm:p-6 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+                    <div className="p-4 sm:p-5 border-b border-gray-200 rounded-t-sm dark:border-gray-700 bg-white dark:bg-gray-800">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
+                            <FaUserGraduate className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                              Student Attempts
+                            </h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                              {isLoadingAttempts ? (
+                                <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-3 w-32 rounded"></div>
+                              ) : (
+                                `${allAttemptsSorted.length} total attempts`
+                              )}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    ) : allAttemptsSorted.length === 0 ? (
-                      <div className="flex items-center justify-center h-full">
-                        <div className="text-center">
-                          <h4 className="text-sm text-gray-900 dark:text-gray-500 mb-2">
-                            No Attempt Data
-                          </h4>
+                    </div>
+
+                    {/* attempts list */}
+                    <div className="flex-1 p-3 sm:p-4 min-h-96 max-h-96 overflow-y-auto">
+                      {isLoadingAttempts ? (
+                        <div className="flex items-center justify-center h-32">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-2"></div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              Loading student attempts...
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {allAttemptsSorted.map((attempt) => (
-                          <AttemptItem
-                            key={attempt.id}
-                            attempt={attempt}
-                            passingScore={assessment.passingScore || 0}
-                            formatDuration={formatDuration}
-                            formatTimeSpent={formatTimeSpent}
-                            formatDate={formatDate}
-                            isExpanded={expandedAttempt === attempt.id}
-                            onToggle={() => toggleAttempt(attempt.id || "")}
-                            onReview={() => handleReviewAttempt(attempt)}
-                          />
-                        ))}
-                      </div>
-                    )}
+                      ) : allAttemptsSorted.length === 0 ? (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center">
+                            <h4 className="text-sm text-gray-900 dark:text-gray-500 mb-2">
+                              No Attempt Data
+                            </h4>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {allAttemptsSorted.map((attempt) => (
+                            <AttemptItem
+                              key={attempt.id}
+                              attempt={attempt}
+                              passingScore={assessment.passingScore || 0}
+                              formatDuration={formatDuration}
+                              formatTimeSpent={formatTimeSpent}
+                              formatDate={formatDate}
+                              isExpanded={expandedAttempt === attempt.id}
+                              onToggle={() => toggleAttempt(attempt.id || "")}
+                              onReview={() => handleReviewAttempt(attempt)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
+          </div>
+        </div>
+      </ModalOverlay>
 
       {/* review modal */}
       <AttemptReviewModal
@@ -323,6 +423,6 @@ export default function AssessmentDetailsModal({
         student={selectedStudent}
         onClose={handleCloseReviewModal}
       />
-    </AnimatePresence>
+    </>
   );
 }

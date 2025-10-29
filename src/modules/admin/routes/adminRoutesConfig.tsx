@@ -27,6 +27,7 @@ export const adminRoutesConfig = [
         children: [
           { index: true, element: <Students /> },
           { path: "add-student", element: <Students /> },
+          { path: ":studentId", element: <Students /> },
         ],
       },
       { path: "assessments", element: <Assessments /> },
@@ -38,6 +39,7 @@ export const adminRoutesConfig = [
         children: [
           { index: true, element: <Sections /> },
           { path: "add-section", element: <Sections /> },
+          { path: ":sectionId", element: <Sections /> },
         ],
       },
     ],

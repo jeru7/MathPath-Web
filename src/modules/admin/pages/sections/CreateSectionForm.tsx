@@ -117,55 +117,60 @@ export default function CreateSectionForm({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={handleClose}>
-      <div className="rounded-md h-[90vh] w-[95vw] md:w-[500px] md:h-[80vh] lg:w-[600px] xl:w-[700px] bg-white dark:bg-gray-800 p-4 shadow-lg border border-gray-200 dark:border-gray-700 transition-colors duration-200 overflow-hidden">
+      <article className="relative h-[100vh] w-[100vw] p-4 shadow-sm md:h-fit md:max-h-[90vh] md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] lg:max-w-4xl overflow-y-auto rounded-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors duration-200 flex flex-col">
         <form
-          className="flex flex-col justify-between gap-4 h-full"
+          className="flex flex-col flex-1"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="flex flex-col gap-4 overflow-y-auto flex-1">
-            <header className="flex items-center justify-between border-b-2 border-gray-200 dark:border-gray-700 pb-4 transition-colors duration-200">
-              <h2 className="text-gray-900 dark:text-gray-100 font-semibold text-lg">
-                Create Section
-              </h2>
-              <button
-                type="button"
-                className="hover:scale-105 hover:cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
-                onClick={handleClose}
-              >
-                <IoClose size={24} />
-              </button>
-            </header>
+          <header className="flex items-center justify-between border-b border-b-gray-200 dark:border-b-gray-700 pb-4 transition-colors duration-200">
+            <h2 className="text-gray-900 dark:text-gray-100 font-semibold text-lg md:text-xl">
+              Create Section
+            </h2>
+            <button
+              type="button"
+              className="hover:scale-105 hover:cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 p-1"
+              onClick={handleClose}
+            >
+              <IoClose className="w-6 h-6 md:w-5 md:h-5" />
+            </button>
+          </header>
 
-            <div className="flex w-full flex-col gap-4">
+          {/* form content */}
+          <div className="flex-1 py-4">
+            <div className="flex flex-col gap-4 md:gap-2">
               {/* name input */}
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="name"
-                  className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  Section Name
-                </label>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="name"
+                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
+                  >
+                    Section Name
+                  </label>
+                  {errors.name && (
+                    <p className="text-xs text-red-500 dark:text-red-400">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </div>
                 <input
                   type="text"
                   id="name"
                   {...register("name")}
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
                   placeholder="Enter section name"
                 />
-                {errors.name && (
-                  <p className="text-sm text-red-500 dark:text-red-400 transition-colors duration-200">
-                    {errors.name.message}
-                  </p>
-                )}
               </div>
 
               {/* banner selection */}
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-                  Select Banner
-                </label>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <label className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base">
+                    Select Banner
+                  </label>
+                </div>
                 <div className="overflow-x-auto no-scrollbar">
-                  <div className="flex gap-4 pb-2">
+                  <div className="flex gap-4 pb-2 min-w-max">
                     {SectionBannerEnum.options.map((banner) => (
                       <label
                         key={banner}
@@ -198,11 +203,13 @@ export default function CreateSectionForm({
               </div>
 
               {/* color selection */}
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-                  Select Color
-                </label>
-                <div className="flex gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <label className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base">
+                    Select Color
+                  </label>
+                </div>
+                <div className="flex gap-4 flex-wrap">
                   {SectionColorEnum.options.map((color) => (
                     <label
                       key={color}
@@ -226,11 +233,18 @@ export default function CreateSectionForm({
               </div>
 
               {/* teacher assignment */}
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-                  Teachers
-                </label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <label className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base">
+                    Teachers
+                  </label>
+                  {errors.teacherIds && (
+                    <p className="text-xs text-red-500 dark:text-red-400">
+                      {errors.teacherIds.message}
+                    </p>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Select teachers who will manage this section
                 </p>
 
@@ -256,8 +270,8 @@ export default function CreateSectionForm({
                       }}
                       isOptionDisabled={(option) => !option.verified}
                       styles={getCustomSelectColor({
-                        minHeight: "44px",
-                        padding: "0px 4px",
+                        minHeight: "48px",
+                        padding: "0px 8px",
                         backgroundColor: "white",
                         textColor: "#1f2937",
                         optionHoverColor: "#f3f4f6",
@@ -370,13 +384,8 @@ export default function CreateSectionForm({
                     />
                   )}
                 />
-                {errors.teacherIds && (
-                  <p className="text-sm text-red-500 dark:text-red-400 transition-colors duration-200">
-                    {errors.teacherIds.message}
-                  </p>
-                )}
                 {unverifiedTeacherError && (
-                  <p className="text-sm text-red-500 dark:text-red-400 transition-colors duration-200">
+                  <p className="text-sm text-red-500 dark:text-red-400 transition-colors duration-200 mt-2">
                     {unverifiedTeacherError}
                   </p>
                 )}
@@ -384,8 +393,8 @@ export default function CreateSectionForm({
             </div>
           </div>
 
-          {/* buttons */}
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 transition-colors duration-200">
+          {/* action buttons */}
+          <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
             <FormButtons
               handleBack={handleClose}
               text={isSubmitting ? "Creating..." : "Create Section"}
@@ -393,7 +402,7 @@ export default function CreateSectionForm({
             />
           </div>
         </form>
-      </div>
+      </article>
     </ModalOverlay>
   );
 }

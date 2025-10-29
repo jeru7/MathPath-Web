@@ -5,44 +5,85 @@ import { AnimatePresence, motion } from "framer-motion";
 import { GoPlus } from "react-icons/go";
 import { Student } from "../../../student/types/student.type";
 import { useQueryClient } from "@tanstack/react-query";
-import AddStudentModal from "./AddStudentModal";
-import { useAdminDeleteStudent } from "../../services/admin-student.service";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import {
+  useAdminDeleteStudent,
+  useAdminEditStudent,
+} from "../../services/admin-student.service";
 import StudentTable from "../../../core/components/student-table/StudentTable";
 import StudentDetailsModal from "../../../core/components/student-table/student-details/StudentDetailsModal";
 import DeleteStudentConfirmationModal from "../../../core/components/student-table/DeleteStudentConfirmationModal";
+import { EditStudentDTO } from "../../../student/types/student.schema";
+import { APIErrorResponse } from "../../../core/types/api/api.type";
+import { handleApiError } from "../../../core/utils/api/error.util";
+import EditStudentModal from "../../../core/components/student-table/EditStudentModal";
+import AddStudentModal from "../../../core/components/student-table/AddStudentModal";
 
 export default function Students(): ReactElement {
   const adminContext = useAdminContext();
   const { sections, students, adminId } = adminContext;
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { studentId } = useParams();
+
   const { mutate: deleteStudent } = useAdminDeleteStudent(adminId);
+  const { mutate: editStudent, isPending: isUpdating } =
+    useAdminEditStudent(adminId);
 
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const [isAddStudentModalOpen, setIsAddStudentModalOpen] =
-    useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+
+  const pathEnd = location.pathname.split("/").pop();
+  const isAddStudentRoute = pathEnd === "add-student";
+  const isStudentDetailsRoute =
+    selectedStudent !== null && pathEnd === selectedStudent.id;
+
+  useEffect(() => {
+    if (studentId) {
+      const student = students.find((s) => s.id === studentId);
+      setSelectedStudent(student || null);
+    } else {
+      setSelectedStudent(null);
+    }
+  }, [studentId, students]);
 
   const handleAddStudent = () => {
     if (sections.length === 0) {
       toast.error("You can't add students if there are no sections.");
       return;
     }
-    setIsAddStudentModalOpen(true);
+    navigate("add-student");
   };
 
   const handleCloseAddStudentModal = () => {
-    setIsAddStudentModalOpen(false);
+    navigate("..");
   };
 
   const handleStudentClick = (studentId: string) => {
-    const student = students.find((s) => s.id === studentId);
-    if (student) {
-      setSelectedStudent(student);
-      setIsDetailsModalOpen(true);
-    }
+    setSelectedStudent(students.find((s) => s.id === studentId) || null);
+    navigate(studentId);
+  };
+
+  const handleCloseDetailsModal = () => {
+    navigate("..");
+    setSelectedStudent(null);
+  };
+
+  const handleDeleteInitiate = (student: Student) => {
+    setStudentToDelete(student);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleEditInitiate = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
   };
 
   const confirmDelete = () => {
@@ -53,24 +94,56 @@ export default function Students(): ReactElement {
           queryClient.invalidateQueries({
             queryKey: ["admin", adminId, "students"],
           });
+          setIsDeleteModalOpen(false);
+          setStudentToDelete(null);
+
+          if (selectedStudent?.id === studentToDelete.id) {
+            navigate("..");
+            setSelectedStudent(null);
+          }
         },
         onError: () => {
           toast.error("Failed to delete student");
         },
       });
-      setIsDeleteModalOpen(false);
-      setStudentToDelete(null);
     }
+  };
+
+  const handleUpdateStudent = async (
+    studentId: string,
+    data: EditStudentDTO,
+  ) => {
+    return new Promise<void>((resolve, reject) => {
+      editStudent(
+        { studentId, studentData: data },
+        {
+          onSuccess: () => {
+            toast.success("Student updated successfully.");
+            queryClient.invalidateQueries({
+              queryKey: ["admin", adminId, "students"],
+            });
+            resolve();
+          },
+          onError: (error: unknown) => {
+            const errorData: APIErrorResponse = handleApiError(error);
+
+            // handle specific error cases
+            if (errorData.error === "EMAIL_ALREADY_EXISTS") {
+              console.error("A student with this email already exists.");
+            } else {
+              console.error("Failed to update student.");
+            }
+
+            reject(error);
+          },
+        },
+      );
+    });
   };
 
   const cancelDelete = () => {
     setIsDeleteModalOpen(false);
     setStudentToDelete(null);
-  };
-
-  const handleCloseDetailsModal = () => {
-    setIsDetailsModalOpen(false);
-    setSelectedStudent(null);
   };
 
   useEffect(() => {
@@ -122,7 +195,7 @@ export default function Students(): ReactElement {
 
       {/* add student modal */}
       <AddStudentModal
-        isOpen={isAddStudentModalOpen}
+        isOpen={isAddStudentRoute}
         onClose={handleCloseAddStudentModal}
       />
 
@@ -130,9 +203,24 @@ export default function Students(): ReactElement {
       {selectedStudent && (
         <StudentDetailsModal
           student={selectedStudent}
-          isOpen={isDetailsModalOpen}
+          isOpen={isStudentDetailsRoute}
           onClose={handleCloseDetailsModal}
           sections={sections}
+          onEdit={handleEditInitiate}
+          onDelete={() => handleDeleteInitiate(selectedStudent)}
+        />
+      )}
+
+      {/* edit student modal */}
+      {selectedStudent && (
+        <EditStudentModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          student={selectedStudent}
+          onUpdateStudent={handleUpdateStudent}
+          isSubmitting={isUpdating}
+          sections={sections}
+          showSectionSelection={true}
         />
       )}
 

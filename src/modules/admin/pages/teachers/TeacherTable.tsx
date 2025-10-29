@@ -9,7 +9,6 @@ import "../../../core/styles/customTable.css";
 
 type TeacherTableProps = {
   onTeacherClick: (teacherId: string) => void;
-  onDeleteTeacher: (teacherId: string) => void;
   onAddTeacher: () => void;
 };
 
@@ -402,6 +401,16 @@ export default function TeacherTable({
           </p>
         </div>
       )}
+
+      {/* floating action button for mobile */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <button
+          className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white shadow-lg hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          onClick={onAddTeacher}
+        >
+          <GoPlus className="w-6 h-6" />
+        </button>
+      </div>
     </section>
   );
 }
