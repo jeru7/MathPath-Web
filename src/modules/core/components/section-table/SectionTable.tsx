@@ -16,6 +16,7 @@ export type SectionTableContext = {
 };
 
 type SectionTableProps = {
+  userType: "teacher" | "admin";
   context: SectionTableContext;
   sections: Section[];
   onShowForm: () => void;
@@ -24,6 +25,7 @@ type SectionTableProps = {
 };
 
 export default function SectionTable({
+  userType,
   context,
   sections,
   onShowForm,
@@ -68,6 +70,11 @@ export default function SectionTable({
   };
 
   const handleCreateSection = () => {
+    if (userType === "teacher") {
+      onShowForm();
+      return;
+    }
+
     // check if there are any teachers available
     if (!context.teachers || context.teachers.length === 0) {
       toast.error(

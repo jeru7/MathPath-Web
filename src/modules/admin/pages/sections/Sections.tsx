@@ -201,6 +201,7 @@ export default function Sections(): ReactElement {
       {/* section grid list */}
       <section className="flex-1 flex bg-white border border-white dark:bg-gray-800 dark:border-gray-700 rounded-sm shadow-sm">
         <SectionTable
+          userType="admin"
           context={adminContext}
           sections={sections}
           onShowForm={handleCreateSection}
