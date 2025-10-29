@@ -1,14 +1,35 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useState } from "react";
 import { useStudentContext } from "../../contexts/student.context";
 import AssessmentTable from "./components/AssessmentTable";
 import { useNavigate } from "react-router-dom";
 import { useStudentAssessments } from "../../services/student-assessment.service";
+import { Assessment } from "../../../core/types/assessment/assessment.type";
+import AssessmentDetailsModal from "./components/AssessmentDetailsModal";
 
 export default function Assessments(): ReactElement {
   const { studentId, student } = useStudentContext();
   const { data: assessments, isPending: assessmentPending } =
     useStudentAssessments(studentId);
   const navigate = useNavigate();
+
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<Assessment | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  const handleAssessmentClick = (assessment: Assessment) => {
+    setSelectedAssessment(assessment);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowDetailsModal(false);
+    setSelectedAssessment(null);
+  };
+
+  const handleTakeAssessment = (assessment: Assessment) => {
+    navigate(`${assessment.id}/attempt`);
+    handleCloseModal();
+  };
 
   if (assessmentPending)
     return (
@@ -30,8 +51,20 @@ export default function Assessments(): ReactElement {
           assessments={assessments}
           navigate={navigate}
           student={student}
+          onAssessmentClick={handleAssessmentClick}
         />
       </section>
+
+      {/* Assessment details modal moved to parent */}
+      {selectedAssessment && (
+        <AssessmentDetailsModal
+          isOpen={showDetailsModal}
+          assessment={selectedAssessment}
+          student={student}
+          onClose={handleCloseModal}
+          onTakeAssessment={handleTakeAssessment}
+        />
+      )}
     </main>
   );
 }

@@ -199,6 +199,8 @@ export default function AnswerAssessment(): ReactElement {
   };
 
   const handleRetakeAssessment = () => {
+    console.log("Retake initiated", { canRetake, assessmentId, studentId });
+
     if (!canRetake) {
       toast.error(
         "You have reached the maximum number of attempts for this assessment.",
@@ -209,8 +211,10 @@ export default function AnswerAssessment(): ReactElement {
 
     setShowResult(false);
     setSubmittedAttempt(null);
-    setHasInitialized(false);
-    setIsResumingPaused(false);
+    setCurrentAttempt(null);
+
+    closePreview();
+    resetAnswers();
 
     const newAttempt: AssessmentAttempt = {
       studentId: studentId ?? "",
@@ -226,11 +230,12 @@ export default function AnswerAssessment(): ReactElement {
     };
 
     setCurrentAttempt(newAttempt);
-    resetAnswers();
+    setHasInitialized(true);
 
-    setTimeout(() => {
-      setHasInitialized(true);
-    }, 100);
+    refetchAttempts();
+    refetchPausedAttempt();
+
+    console.log("Retake completed", newAttempt);
   };
 
   if (assessmentPending) {
