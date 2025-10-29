@@ -40,7 +40,6 @@ export default function StudentDetailsModal({
   onArchive,
   onDelete,
 }: StudentDetailsModalProps): ReactElement {
-  // TODO: edit, archive and delete
   const handleEdit = () => {
     if (onEdit) {
       onEdit();
@@ -61,11 +60,11 @@ export default function StudentDetailsModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm min-w-7xl h-[85vh] flex flex-col overflow-hidden">
+      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100vh] w-[100vw] md:h-[85vh] md:w-[90vw] lg:w-[75vw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
         {/* header */}
-        <header className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
+        <header className="flex items-center justify-between p-4 sm:p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
               Student Card
             </h2>
           </div>
@@ -77,7 +76,7 @@ export default function StudentDetailsModal({
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {/* student details & stats */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <div className="bg-inherit p-4 rounded-sm border border-gray-300 dark:border-gray-700">

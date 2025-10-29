@@ -31,10 +31,31 @@ export default function DetailsOverview({
             {student.lastName}, {student.firstName} {student.middleName}
           </span>
         </div>
+        {/* email */}
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">Email:</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">
+            {student.email}
+          </span>
+        </div>
         <div className="flex justify-between">
           <span className="text-gray-600 dark:text-gray-400">Section:</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
             {getSectionName(student.sectionId, sections)}
+          </span>
+        </div>
+        {/* verification status */}
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">
+            Verification Status:
+          </span>
+          <span
+            className={`font-medium ${student.verified?.verified
+                ? "text-green-600 dark:text-green-400"
+                : "text-red-600 dark:text-red-400"
+              }`}
+          >
+            {student.verified?.verified ? "Verified" : "Not Verified"}
           </span>
         </div>
         <div className="flex justify-between">

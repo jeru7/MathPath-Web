@@ -41,7 +41,7 @@ export default function AttemptHistory({
       </h3>
 
       {attempts.length === 0 ? (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        <div className="h-64 flex flex-col items-center justify-center text-center py-8 text-gray-500 dark:text-gray-400">
           <IoGameController className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
           <p>No stage attempts found</p>
         </div>

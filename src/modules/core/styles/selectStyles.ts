@@ -45,21 +45,21 @@ export const getCustomSelectColor = <
     border:
       options?.border === false
         ? "none"
-        : `${options?.borderWidth || "1px"} solid ${options?.borderColor || "var(--primary-gray)"}`,
+        : `${options?.borderWidth || "1px"} solid ${options?.borderColor || "#d1d5dc"}`,
     boxShadow: "none",
     borderRadius: options?.borderRadius || "0.500rem",
-    height: options?.height || "40px",
-    minHeight: options?.minHeight || options?.height || "40px",
-    padding: options?.padding || "0px 4px",
+    height: options?.height || "auto",
+    minHeight: options?.minHeight || options?.height || "auto",
+    padding: options?.padding || "0px 0px",
     fontSize: options?.fontSize || "0.875rem",
     color: options?.textColor || "inherit",
 
     ".dark &": options?.dark
       ? {
-          backgroundColor: options.dark.backgroundColor || "#374151",
-          borderColor: options.dark.borderColor || "#4b5563",
-          color: options.dark.textColor || "#f9fafb",
-        }
+        backgroundColor: options.dark.backgroundColor || "#374151",
+        borderColor: options.dark.borderColor || "#4b5563",
+        color: options.dark.textColor || "#f9fafb",
+      }
       : {},
 
     "&:hover": {
@@ -69,8 +69,8 @@ export const getCustomSelectColor = <
           : `${options?.borderWidth || "1px"} solid ${options?.borderColor || "var(--primary-gray)"}`,
       ".dark &": options?.dark
         ? {
-            borderColor: options.dark.borderColor || "#4b5563",
-          }
+          borderColor: options.dark.borderColor || "#4b5563",
+        }
         : {},
     },
     "&:focus-within": {
@@ -84,9 +84,9 @@ export const getCustomSelectColor = <
           : `0 0 0 1px ${options?.borderFocusColor || "var(--tertiary-green)"}`,
       ".dark &": options?.dark
         ? {
-            borderColor: options.dark.borderFocusColor || "#10b981",
-            boxShadow: `0 0 0 1px ${options.dark.borderFocusColor || "#10b981"}`,
-          }
+          borderColor: options.dark.borderFocusColor || "#10b981",
+          boxShadow: `0 0 0 1px ${options.dark.borderFocusColor || "#10b981"}`,
+        }
         : {},
     },
   }),
@@ -105,8 +105,8 @@ export const getCustomSelectColor = <
 
     ".dark &": options?.dark
       ? {
-          color: options.dark.textColor || "#f9fafb",
-        }
+        color: options.dark.textColor || "#f9fafb",
+      }
       : {},
   }),
   input: (base) => ({
@@ -115,8 +115,8 @@ export const getCustomSelectColor = <
 
     ".dark &": options?.dark
       ? {
-          color: options.dark.textColor || "#f9fafb",
-        }
+        color: options.dark.textColor || "#f9fafb",
+      }
       : {},
   }),
   placeholder: (base) => ({
@@ -125,8 +125,8 @@ export const getCustomSelectColor = <
 
     ".dark &": options?.dark
       ? {
-          color: options.dark.placeholderColor || "#9ca3af",
-        }
+        color: options.dark.placeholderColor || "#9ca3af",
+      }
       : {},
   }),
   option: (base, state) => ({
@@ -141,15 +141,15 @@ export const getCustomSelectColor = <
 
     ".dark &": options?.dark
       ? {
-          backgroundColor: state.isSelected
-            ? options.dark.optionSelectedColor || "#059669"
-            : state.isFocused
-              ? options.dark.optionHoverColor || "#374151"
-              : options.dark.menuBackgroundColor || "#1f2937",
-          color: state.isSelected
-            ? "white"
-            : options.dark.textColor || "#f9fafb",
-        }
+        backgroundColor: state.isSelected
+          ? options.dark.optionSelectedColor || "#059669"
+          : state.isFocused
+            ? options.dark.optionHoverColor || "#374151"
+            : options.dark.menuBackgroundColor || "#1f2937",
+        color: state.isSelected
+          ? "white"
+          : options.dark.textColor || "#f9fafb",
+      }
       : {},
   }),
   menu: (base) => ({
@@ -162,8 +162,8 @@ export const getCustomSelectColor = <
 
     ".dark &": options?.dark
       ? {
-          backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
-        }
+        backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
+      }
       : {},
   }),
   menuList: (base) => ({
@@ -173,29 +173,29 @@ export const getCustomSelectColor = <
 
     ".dark &": options?.dark
       ? {
-          backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
-        }
+        backgroundColor: options.dark.menuBackgroundColor || "#1f2937",
+      }
       : {},
   }),
   dropdownIndicator: (base) =>
     options?.hideIndicator
       ? { ...base, display: "none", padding: 0, width: 0 }
       : {
-          ...base,
-          padding: options?.indicatorPadding ?? "0 4px",
-          cursor: "pointer",
+        ...base,
+        padding: options?.indicatorPadding ?? "0 4px",
+        cursor: "pointer",
 
-          ".dark &": options?.dark
-            ? {
-                color: options.dark.textColor
-                  ? `${options.dark.textColor}88`
-                  : "#9ca3af",
-                "&:hover": {
-                  color: options.dark.textColor || "#f9fafb",
-                },
-              }
-            : {},
-        },
+        ".dark &": options?.dark
+          ? {
+            color: options.dark.textColor
+              ? `${options.dark.textColor}88`
+              : "#9ca3af",
+            "&:hover": {
+              color: options.dark.textColor || "#f9fafb",
+            },
+          }
+          : {},
+      },
   indicatorSeparator: () => ({
     display: "none",
   }),

@@ -17,7 +17,6 @@ export type Section = {
   teacherIds: string[];
   color: SectionColor;
   banner: SectionBanner;
-  lastChecked: string;
   createdAt: string;
   updatedAt: string;
 };
