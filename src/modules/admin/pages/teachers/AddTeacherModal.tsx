@@ -5,35 +5,34 @@ import { FaRegEye, FaRegEyeSlash, FaTimes } from "react-icons/fa";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
-import { useAdminContext } from "../../context/admin.context";
 import {
-  AddStudentDTO,
-  AddStudentSchema,
-} from "../../../student/types/student.schema";
+  AddTeacherDTO,
+  AddTeacherSchema,
+} from "../../../teacher/types/teacher.schema";
 import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
 import { Gender } from "../../../core/types/user.type";
 import { getCustomSelectColor } from "../../../core/styles/selectStyles";
-import { Section } from "../../../core/types/section/section.type";
-import { useAdminAddStudent } from "../../services/admin-student.service";
 import ModalOverlay from "../../../core/components/modal/ModalOverlay";
 import FormButtons from "../../../core/components/buttons/FormButtons";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAdminContext } from "../../../admin/context/admin.context";
+import { useAdminAddTeacher } from "../../../admin/services/admin-teacher.service";
 
-type AddStudentModalProps = {
+type AddTeacherModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export default function AddStudentModal({
+export default function AddTeacherModal({
   isOpen,
   onClose,
-}: AddStudentModalProps): ReactElement {
+}: AddTeacherModalProps): ReactElement {
   const { adminId } = useAdminContext();
-  const { mutate: addStudent, isPending: isSubmitting } =
-    useAdminAddStudent(adminId);
-  const { sections } = useAdminContext();
+  const { mutate: addTeacher, isPending: isSubmitting } =
+    useAdminAddTeacher(adminId);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [referenceNumber, setReferenceNumber] = useState("");
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -42,30 +41,31 @@ export default function AddStudentModal({
     setError,
     reset,
     formState: { errors },
-  } = useForm<AddStudentDTO>({
-    resolver: zodResolver(AddStudentSchema),
+  } = useForm<AddTeacherDTO>({
+    resolver: zodResolver(AddTeacherSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       middleName: "",
-      gender: undefined,
+      gender: null,
       email: "",
-      referenceNumber: "",
       password: "",
-      sectionId: undefined,
     },
   });
 
   const handleClose = () => {
     reset();
-    setReferenceNumber("");
     onClose();
   };
 
-  const onSubmit = async (data: AddStudentDTO) => {
-    addStudent(data, {
+  const onSubmit = async (data: AddTeacherDTO) => {
+    addTeacher(data, {
       onSuccess: () => {
-        toast.success("Student added successfully");
+        toast.success("Teacher added successfully");
+        // invalidate and refresh the teacher data
+        queryClient.invalidateQueries({
+          queryKey: ["admin", adminId, "teachers"],
+        });
         handleClose();
       },
       onError: (err: unknown) => {
@@ -73,17 +73,6 @@ export default function AddStudentModal({
           const errorData: APIErrorResponse = handleApiError(err);
 
           switch (errorData.error) {
-            case "EMAIL_AND_LRN_ALREADY_EXISTS":
-              setError("email", {
-                type: "manual",
-                message: "Email already exists",
-              });
-              setError("referenceNumber", {
-                type: "manual",
-                message: "Reference number already exists",
-              });
-              break;
-
             case "EMAIL_ALREADY_EXISTS":
               setError("email", {
                 type: "manual",
@@ -91,15 +80,8 @@ export default function AddStudentModal({
               });
               break;
 
-            case "REFERENCE_NUMBER_ALREADY_EXISTS":
-              setError("referenceNumber", {
-                type: "manual",
-                message: errorData.message || "Reference number already exists",
-              });
-              break;
-
             default:
-              toast.error("Failed to add student");
+              toast.error("Failed to add teacher");
           }
         }
       },
@@ -108,7 +90,7 @@ export default function AddStudentModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={handleClose}>
-      <article className="relative h-[100vh] w-[100vw] p-4 shadow-sm md:h-fit md:max-h-[90vh] md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] lg:max-w-4xl overflow-y-auto rounded-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors duration-200 flex flex-col">
+      <article className="relative h-[100vh] w-[100vw] p-4 shadow-sm md:h-fit md:max-h-[90vh] md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] lg:max-w-4xl rounded-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors duration-200 flex flex-col">
         <form
           className="flex flex-col flex-1"
           onSubmit={handleSubmit(onSubmit)}
@@ -116,7 +98,7 @@ export default function AddStudentModal({
           {/* header */}
           <header className="flex items-center justify-between border-b border-b-gray-200 dark:border-b-gray-700 pb-4 transition-colors duration-200">
             <h3 className="text-gray-900 dark:text-gray-100 font-semibold text-lg md:text-xl">
-              Add Student
+              Add Teacher
             </h3>
             <button
               className="hover:scale-105 hover:cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 p-1"
@@ -151,7 +133,7 @@ export default function AddStudentModal({
                     {...register("firstName")}
                     name="firstName"
                     placeholder="Enter first name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-10"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
                   />
                 </div>
 
@@ -175,7 +157,7 @@ export default function AddStudentModal({
                     {...register("lastName")}
                     name="lastName"
                     placeholder="Enter last name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-10"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
                   />
                 </div>
               </div>
@@ -206,7 +188,7 @@ export default function AddStudentModal({
                     {...register("middleName")}
                     name="middleName"
                     placeholder="Enter middle name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-10"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
                   />
                 </div>
 
@@ -225,7 +207,7 @@ export default function AddStudentModal({
                       </span>
                     )}
                   </div>
-                  <div className="h-10">
+                  <div className="h-12 md:h-10">
                     <Controller
                       name="gender"
                       control={control}
@@ -246,9 +228,8 @@ export default function AddStudentModal({
                           }>({
                             height: "100%",
                             minHeight: "100%",
-                            padding: "0px 4px",
+                            padding: "0px 2px",
                             menuWidth: "100%",
-                            borderColor: "#d1d5dc",
                             menuBackgroundColor: "white",
                             backgroundColor: "white",
                             textColor: "#1f2937",
@@ -265,7 +246,7 @@ export default function AddStudentModal({
                           })}
                           className="basic-select h-full"
                           classNamePrefix="select"
-                          placeholder="Select gender..."
+                          placeholder="Select gender"
                           onChange={(selected) =>
                             field.onChange(selected?.value)
                           }
@@ -305,42 +286,7 @@ export default function AddStudentModal({
                   {...register("email")}
                   name="email"
                   placeholder="Enter email"
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-10"
-                />
-              </div>
-
-              {/* LRN */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="referenceNumber"
-                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                  >
-                    LRN
-                    <span className="font-medium text-gray-700 dark:text-gray-300 ml-1">
-                      (Learner Reference Number)
-                    </span>
-                  </label>
-                  {errors.referenceNumber && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {errors?.referenceNumber?.message}
-                    </p>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  {...register("referenceNumber")}
-                  name="referenceNumber"
-                  placeholder="Enter reference number"
-                  value={referenceNumber}
-                  onChange={(e) => {
-                    // remove non numeric characters
-                    let val = e.target.value.replace(/\D/g, "");
-                    // limit to 12 digits
-                    if (val.length > 12) val = val.slice(0, 12);
-                    setReferenceNumber(val);
-                  }}
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 [appearance:textfield] focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-10"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
                 />
               </div>
 
@@ -366,7 +312,7 @@ export default function AddStudentModal({
                     maxLength={32}
                     name="password"
                     placeholder="Enter password"
-                    className="border border-gray-300 dark:border-gray-600 w-full rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-10 pr-12"
+                    className="border border-gray-300 dark:border-gray-600 w-full rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10 pr-12"
                   />
                   <button
                     type="button"
@@ -384,68 +330,6 @@ export default function AddStudentModal({
                   </button>
                 </div>
               </div>
-
-              {/* section */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="section"
-                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                  >
-                    Section
-                  </label>
-                  {errors.sectionId && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {errors?.sectionId?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="h-10">
-                  <Controller
-                    name="sectionId"
-                    control={control}
-                    render={({ field }) => (
-                      <Select<Section>
-                        {...field}
-                        id="section"
-                        name="section"
-                        options={sections}
-                        getOptionLabel={(option: Section) => option.name}
-                        getOptionValue={(option: Section) => option.id}
-                        styles={getCustomSelectColor<Section>({
-                          height: "100%",
-                          minHeight: "100%",
-                          padding: "0px 4px",
-                          menuWidth: "100%",
-                          borderColor: "#d1d5dc",
-                          menuBackgroundColor: "white",
-                          backgroundColor: "white",
-                          textColor: "#1f2937",
-                          dark: {
-                            backgroundColor: "#374151",
-                            textColor: "#f9fafb",
-                            borderColor: "#4b5563",
-                            borderFocusColor: "#10b981",
-                            optionHoverColor: "#1f2937",
-                            optionSelectedColor: "#059669",
-                            menuBackgroundColor: "#374151",
-                            placeholderColor: "#9ca3af",
-                          },
-                        })}
-                        className="basic-select h-full"
-                        classNamePrefix="select"
-                        placeholder="Select a section..."
-                        onChange={(selected) => field.onChange(selected?.id)}
-                        value={
-                          sections.find(
-                            (section) => section.id === field.value,
-                          ) || null
-                        }
-                      />
-                    )}
-                  />
-                </div>
-              </div>
             </div>
           </div>
 
@@ -453,7 +337,7 @@ export default function AddStudentModal({
           <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
             <FormButtons
               handleBack={handleClose}
-              text={isSubmitting ? "Creating..." : "Add Student"}
+              text={isSubmitting ? "Creating..." : "Add Teacher"}
               disabled={isSubmitting}
             />
           </div>

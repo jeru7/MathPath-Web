@@ -24,6 +24,7 @@ import {
 } from "../../services/admin-teacher.service";
 import { toast } from "react-toastify";
 import DeleteTeacherConfirmationModal from "./DeleteTeacherConfirmationModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TeacherDetailsModalProps = {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export default function TeacherDetailsModal({
 }: TeacherDetailsModalProps): ReactElement {
   const { teachers, sections, assessments, students, adminId } =
     useAdminContext();
+  const queryClient = useQueryClient();
   const [teacher, setTeacher] = useState<Teacher | null>(null);
   const [teacherSections, setTeacherSections] = useState<Section[]>([]);
   const [teacherAssessments, setTeacherAssessments] = useState<Assessment[]>(
@@ -111,6 +113,9 @@ export default function TeacherDetailsModal({
       onSuccess: () => {
         toast.success("Teacher deleted successfully");
         setIsDeleteModalOpen(false);
+        queryClient.invalidateQueries({
+          queryKey: ["admin", adminId, "teachers"],
+        });
         onClose();
       },
       onError: (error) => {
