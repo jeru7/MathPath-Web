@@ -1,7 +1,15 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteData, fetchData, postData } from "../../core/utils/api/api.util";
+import {
+  deleteData,
+  fetchData,
+  patchData,
+  postData,
+} from "../../core/utils/api/api.util";
 import { Section } from "../../core/types/section/section.type";
-import { CreateSectionDTO } from "../../core/types/section/section.schema";
+import {
+  CreateSectionDTO,
+  EditSectionDTO,
+} from "../../core/types/section/section.schema";
 import { DATA_STALE_TIME, BASE_URI } from "../../core/constants/api.constant";
 
 // get teacher sections
@@ -39,6 +47,25 @@ export const useTeacherDeleteSection = (teacherId: string) => {
       return deleteData<null>(
         `${BASE_URI}/api/web/teachers/${teacherId}/sections/${sectionId}`,
         "Failed to create a new section.",
+      );
+    },
+  });
+};
+
+// teacher edit section
+export const useTeacherEditSection = (teacherId: string) => {
+  return useMutation({
+    mutationFn: ({
+      sectionId,
+      sectionData,
+    }: {
+      sectionId: string;
+      sectionData: EditSectionDTO;
+    }) => {
+      return patchData<Section, EditSectionDTO>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/sections/${sectionId}`,
+        sectionData,
+        "Failed to edit section.",
       );
     },
   });

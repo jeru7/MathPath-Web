@@ -22,6 +22,7 @@ export const teacherRoutesConfig = [
           { path: "add-students", element: <Students /> },
           { path: "edit-students", element: <Students /> },
           { path: "registration-codes", element: <Students /> },
+          { path: ":studentId", element: <Students /> },
         ],
       },
       { path: "statistics", element: <Statistics /> },
@@ -30,12 +31,14 @@ export const teacherRoutesConfig = [
         children: [
           { index: true, element: <Sections /> },
           { path: "add-section", element: <Sections /> },
+          { path: ":sectionId", element: <Sections /> },
         ],
       },
       {
         path: "assessments",
         children: [
           { index: true, element: <Assessments /> },
+          { path: ":assessmentId", element: <Assessments /> },
           { path: "new", element: <AssessmentBuilderWrapper /> },
           {
             path: ":assessmentId/create",
