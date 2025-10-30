@@ -2,7 +2,6 @@ import { type ReactElement, useState } from "react";
 import TeacherActivity from "../../../teacher/pages/dashboard/components/activity_list/TeacherActivity";
 import { useParams } from "react-router-dom";
 import { useTeacherStudentActivities } from "../../../teacher/services/teacher-student.service";
-import { TeacherStudentActivity } from "../../../core/types/activity/activity.type";
 import ActivityDetailsModal from "../../../teacher/pages/dashboard/components/activity_list/ActivityDetailsModal";
 
 type ActivityListProps = {
@@ -16,21 +15,13 @@ export default function ActivityList({
 }: ActivityListProps): ReactElement {
   const { teacherId } = useParams();
   const [showModal, setShowModal] = useState(false);
-  const [filteredActivities, setFilteredActivities] = useState<
-    TeacherStudentActivity[]
-  >([]);
 
   const { data: studentActivities } = useTeacherStudentActivities(
     teacherId ?? "",
   );
 
   const handleViewAll = () => {
-    setFilteredActivities(studentActivities || []);
     setShowModal(true);
-  };
-
-  const handleFilterChange = (filtered: TeacherStudentActivity[]) => {
-    setFilteredActivities(filtered);
   };
 
   return (
@@ -42,7 +33,7 @@ export default function ActivityList({
           <p className="font-semibold text-gray-900 dark:text-gray-200">
             Recent Activity
           </p>
-          {studentActivities && (
+          {studentActivities && studentActivities.length > 0 && (
             <button
               onClick={handleViewAll}
               className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium px-2 py-1 rounded transition-colors hover:cursor-pointer"
@@ -93,8 +84,6 @@ export default function ActivityList({
       <ActivityDetailsModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        activities={filteredActivities}
-        onFilterChange={handleFilterChange}
         allActivities={studentActivities || []}
       />
     </>

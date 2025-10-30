@@ -59,7 +59,8 @@ export default function PreviewDownloadModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm w-[100svw] h-[100svh] md:max-w-4xl md:w-full sm:h-fit overflow-hidden flex flex-col">
+        {/* header */}
         <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-300">
@@ -94,7 +95,8 @@ export default function PreviewDownloadModal({
           </div>
         </div>
 
-        <div className="p-6 overflow-auto max-h-[60vh]">
+        {/* main content */}
+        <div className="flex-1 overflow-auto p-6">
           <div className="mb-4">
             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Preview (First 5 records)
@@ -141,12 +143,13 @@ export default function PreviewDownloadModal({
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-          <div className="flex items-center justify-end gap-3">
+        {/* action buttons */}
+        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 mt-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
             <button
               onClick={onClose}
               disabled={isGenerating}
-              className="flex items-center gap-2 px-6 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 px-6 py-3 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed order-2 sm:order-1"
             >
               <FaTimes className="w-3 h-3" />
               Cancel
@@ -154,7 +157,7 @@ export default function PreviewDownloadModal({
             <button
               onClick={onConfirm}
               disabled={isGenerating}
-              className="flex items-center gap-2 px-6 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-green-400 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 px-6 py-3 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-green-400 disabled:cursor-not-allowed order-1 sm:order-2"
             >
               {isGenerating ? (
                 <>
