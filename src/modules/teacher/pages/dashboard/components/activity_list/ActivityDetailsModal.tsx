@@ -2,15 +2,12 @@ import { useEffect, useState, type ReactElement } from "react";
 import { TeacherStudentActivity } from "../../../../../core/types/activity/activity.type";
 import TeacherActivity from "./TeacherActivity";
 import { isAfter, subDays } from "date-fns";
-import { formatToPhDate } from "../../../../../core/utils/date.util";
 import ModalOverlay from "../../../../../core/components/modal/ModalOverlay";
 import { FaTimes } from "react-icons/fa";
 
 type ActivityDetailsModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  activities: TeacherStudentActivity[];
-  onFilterChange: (activities: TeacherStudentActivity[]) => void;
   allActivities: TeacherStudentActivity[];
 };
 
@@ -19,15 +16,19 @@ type TimeFilter = "today" | "7days" | "14days" | "all";
 export default function ActivityDetailsModal({
   isOpen,
   onClose,
-  activities,
-  onFilterChange,
   allActivities,
 }: ActivityDetailsModalProps): ReactElement {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
+  const [filteredActivities, setFilteredActivities] = useState<
+    TeacherStudentActivity[]
+  >([]);
 
+  // filter activities based on time filter
   useEffect(() => {
+    if (!isOpen) return;
+
     if (timeFilter === "all") {
-      onFilterChange(allActivities);
+      setFilteredActivities(allActivities);
       return;
     }
 
@@ -49,12 +50,25 @@ export default function ActivityDetailsModal({
     }
 
     const filtered = allActivities.filter((activity) => {
-      const activityDate = formatToPhDate(activity.date);
-      return isAfter(activityDate, filterDate);
+      try {
+        console.log("date ", activity.date);
+        return isAfter(new Date(activity.date), filterDate);
+      } catch (error) {
+        console.error("Error filtering activity:", error, activity);
+        return false;
+      }
     });
 
-    onFilterChange(filtered);
-  }, [timeFilter, allActivities, onFilterChange]);
+    setFilteredActivities(filtered);
+  }, [timeFilter, allActivities, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFilteredActivities(allActivities);
+    } else {
+      setTimeFilter("all");
+    }
+  }, [isOpen, allActivities]);
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
@@ -62,7 +76,7 @@ export default function ActivityDetailsModal({
         {/* header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-            Activities
+            Activities ({filteredActivities.length})
           </h2>
           <div className="flex items-center gap-4">
             {/* dropdown */}
@@ -88,9 +102,9 @@ export default function ActivityDetailsModal({
 
         {/* activity list */}
         <div className="flex flex-1 overflow-y-auto p-6 h-full min-h-92 max-h-[60dvh]">
-          <div className="relative flex flex-col w-full flex-1">
+          <div className="relative flex flex-col w-full h-fit">
             {/* vertical line */}
-            {activities && activities.length > 0 && (
+            {filteredActivities.length > 0 && (
               <div
                 className="absolute left-2 top-0 w-1 rounded-full bg-[var(--secondary-green)]"
                 style={{ height: "calc(100% - 2rem)" }}
@@ -98,9 +112,9 @@ export default function ActivityDetailsModal({
             )}
 
             {/* list */}
-            {activities && activities.length > 0 ? (
+            {filteredActivities.length > 0 ? (
               <section className="flex-col flex pl-8 h-full gap-4">
-                {activities.map((activity) => (
+                {filteredActivities.map((activity) => (
                   <TeacherActivity
                     key={activity.activityId}
                     activity={activity}
@@ -110,7 +124,9 @@ export default function ActivityDetailsModal({
             ) : (
               <div className="flex h-full items-center justify-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-                  No activities found for the selected period
+                  {allActivities.length === 0
+                    ? "No activities available"
+                    : "No activities found for the selected period"}
                 </p>
               </div>
             )}
