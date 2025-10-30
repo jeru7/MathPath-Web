@@ -222,15 +222,14 @@ const StudentStageCustomTooltip = ({
                 Completion:
               </span>
               <span
-                className={`font-bold text-nowrap ${
-                  data.completionRate >= 80
+                className={`font-bold text-nowrap ${data.completionRate >= 80
                     ? "text-green-600 dark:text-green-400"
                     : data.completionRate >= 60
                       ? "text-blue-600 dark:text-blue-400"
                       : data.completionRate >= 40
                         ? "text-amber-600 dark:text-amber-400"
                         : "text-red-600 dark:text-red-400"
-                } transition-colors duration-200`}
+                  } transition-colors duration-200`}
               >
                 {data.completionRate}%
               </span>

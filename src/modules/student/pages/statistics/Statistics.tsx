@@ -4,9 +4,8 @@ import StudentTopicStats from "./components/StudentTopicStats";
 import StatsOverviewCard from "./components/StatsOverviewCard";
 import StudentStageStats from "./components/StudentStageStats";
 import { useStudentContext } from "../../contexts/student.context";
-// import StudentAssessmentStats from "./components/StudentAssessmentStats";
+import StudentAssessmentStats from "./components/StudentAssessmentStats";
 import StudentQuestionStats from "./components/StudentQuestionStats";
-import { FaClockRotateLeft } from "react-icons/fa6";
 
 export default function Statistics(): ReactElement {
   const { studentId, student } = useStudentContext();
@@ -51,18 +50,7 @@ export default function Statistics(): ReactElement {
           </section>
 
           <section className="flex w-full shadow-sm rounded-sm overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-            {/* <StudentAssessmentStats studentId={studentId} /> */}
-            <div className="text-center space-y-3 w-full h-full flex flex-col items-center justify-center">
-              <div className="w-12 h-12 mx-auto bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FaClockRotateLeft className="w-4 h-4 text-gray-900 dark:text-gray-300" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Assessment Statistics
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs">
-                Assessment statistics are currently in development.
-              </p>
-            </div>
+            <StudentAssessmentStats />
           </section>
         </div>
       </div>
