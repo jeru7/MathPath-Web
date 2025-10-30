@@ -181,7 +181,6 @@ export default function AccountSettingsCard(
             toast.error("Your email is already verified.");
             break;
           case "RATE_LIMITED":
-            // The backend will send the specific cooldown message
             toast.error(
               errorData.message ||
               "Please wait before requesting another verification email.",
@@ -473,22 +472,25 @@ export default function AccountSettingsCard(
           Account Information
         </h4>
 
-        {isStudent && accountRequests.length > 0 && (
-          <button
-            onClick={handleRequestsClick}
-            className="flex items-center gap-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/40 transition-colors group cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <FaHistory className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span className="text-blue-800 dark:text-blue-300 text-sm font-medium">
-                View Requests ({accountRequests.length})
-              </span>
-            </div>
-            {hasPendingRequest && (
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-            )}
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {/* existing requests button for students */}
+          {isStudent && accountRequests.length > 0 && (
+            <button
+              onClick={handleRequestsClick}
+              className="flex items-center gap-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/40 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <FaHistory className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-blue-800 dark:text-blue-300 text-sm font-medium">
+                  View Requests ({accountRequests.length})
+                </span>
+              </div>
+              {hasPendingRequest && (
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {isStudent && showRequestSubmitted && (

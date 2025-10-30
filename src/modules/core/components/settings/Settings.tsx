@@ -7,6 +7,7 @@ export type SettingsProps = {
   accountSettingsCard: ReactElement;
   changePasswordCard: ReactElement;
   userPreferencesCard: ReactElement;
+  reportsCard?: ReactElement;
 };
 
 export default function Settings({
@@ -15,6 +16,7 @@ export default function Settings({
   accountSettingsCard,
   changePasswordCard,
   userPreferencesCard,
+  reportsCard,
 }: SettingsProps): ReactElement {
   const [activeSection, setActiveSection] = useState("account");
 
@@ -26,10 +28,13 @@ export default function Settings({
     );
   }
 
+  const isTeacherOrAdmin = user.role === "teacher" || user.role === "admin";
+
   const settingsSections = [
     { id: "account", label: "Account Settings" },
     { id: "password", label: "Change Password" },
     { id: "preferences", label: "Preferences" },
+    ...(isTeacherOrAdmin ? [{ id: "reports", label: "Data Report" }] : []),
   ];
 
   return (
@@ -48,11 +53,10 @@ export default function Settings({
                 <li key={section.id}>
                   <button
                     onClick={() => setActiveSection(section.id)}
-                    className={`w-full text-left px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      activeSection === section.id
+                    className={`w-full text-left px-3 py-2 rounded text-sm font-medium transition-colors ${activeSection === section.id
                         ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-l-4 border-green-500 dark:border-green-400"
                         : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
+                      }`}
                   >
                     {section.label}
                   </button>
@@ -66,6 +70,7 @@ export default function Settings({
           {activeSection === "account" && accountSettingsCard}
           {activeSection === "password" && changePasswordCard}
           {activeSection === "preferences" && userPreferencesCard}
+          {activeSection === "reports" && reportsCard}
         </div>
       </div>
     </main>
