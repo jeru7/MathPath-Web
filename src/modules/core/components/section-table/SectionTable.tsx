@@ -91,7 +91,6 @@ export default function SectionTable({
       return;
     }
 
-    // if teachers exist, proceed to show the form
     onShowForm();
   };
 
@@ -121,11 +120,14 @@ export default function SectionTable({
     };
   }, []);
 
+  const showNoDataAvailable =
+    sections.length === 0 || filteredSections.length === 0;
+
   return (
     <section className="flex flex-col flex-1">
       <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
         {/* search and filters */}
-        <section className="flex gap-2 items-center w-full md:w-fit">
+        <section className="relative flex gap-2 items-center w-full md:w-fit">
           <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="p-2">
               <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -146,63 +148,63 @@ export default function SectionTable({
             )}
           </div>
 
-          {/* filter dropdown */}
-          <div className="relative" ref={filterDropdownRef}>
-            <button
-              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
-              onClick={() => setShowFilters(!showFilters)}
+          <button
+            className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
+                ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
+              }`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <CiFilter className="w-4 h-4" />
+          </button>
+
+          {showFilters && (
+            <div
+              className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200"
+              ref={filterDropdownRef}
             >
-              <CiFilter className="w-4 h-4" />
-            </button>
-
-            {showFilters && (
-              <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 w-48 p-4 transition-colors duration-200">
-                {/* clear all filters */}
-                {hasActiveFilters && (
-                  <div className="flex justify-end mb-3">
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                    >
-                      Clear all
-                    </button>
-                  </div>
-                )}
-
-                {/* color filter */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
-                    Colors
-                  </label>
-                  <div className="flex flex-wrap justify-center gap-3">
-                    {colorOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        className={`w-8 h-8 rounded-full ${option.color} border-2 transition-all duration-200 hover:scale-110 ${selectedColor === option.value
-                            ? "border-[var(--primary-green)] dark:border-green-400 ring-2 ring-[var(--primary-green)] dark:ring-green-400 ring-opacity-50 dark:ring-opacity-50"
-                            : "border-gray-300 dark:border-gray-500 hover:border-gray-400 dark:hover:border-gray-400"
-                          }`}
-                        onClick={() => setSelectedColor(option.value)}
-                        title={
-                          option.value === "all"
-                            ? "All colors"
-                            : option.value.replace("-", " ")
-                        }
-                      />
-                    ))}
-                  </div>
+              {/* clear all filters */}
+              {hasActiveFilters && (
+                <div className="flex justify-end mb-3">
+                  <button
+                    onClick={handleClearFilters}
+                    className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                  >
+                    Clear all
+                  </button>
                 </div>
+              )}
 
-                {/* results count */}
-                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2 text-center">
-                  {filteredSections.length} of {sections.length} sections
+              {/* color filter */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
+                  Colors
+                </label>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {colorOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      className={`w-8 h-8 rounded-full ${option.color} border-2 transition-all duration-200 hover:scale-110 ${selectedColor === option.value
+                          ? "border-[var(--primary-green)] dark:border-green-400 ring-2 ring-[var(--primary-green)] dark:ring-green-400 ring-opacity-50 dark:ring-opacity-50"
+                          : "border-gray-300 dark:border-gray-500 hover:border-gray-400 dark:hover:border-gray-400"
+                        }`}
+                      onClick={() => setSelectedColor(option.value)}
+                      title={
+                        option.value === "all"
+                          ? "All colors"
+                          : option.value.replace("-", " ")
+                      }
+                    />
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
+
+              {/* results count */}
+              <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2 text-center">
+                {filteredSections.length} of {sections.length} sections
+              </div>
+            </div>
+          )}
         </section>
 
         {/* create button */}
@@ -228,41 +230,33 @@ export default function SectionTable({
       )}
 
       <div className="flex-1 flex flex-col overflow-auto">
-        {sections.length > 0 ? (
-          filteredSections.length > 0 ? (
-            <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 grid-rows-[380px] gap-2 overflow-y-auto p-2">
-              {filteredSections.map((section) => (
-                <SectionItem
-                  key={section.id}
-                  section={section}
-                  onClick={() => onSectionClick(section)}
-                  onDelete={() => onDeleteSection(section)}
-                  context={context}
-                />
-              ))}
-            </section>
-          ) : (
-            <div className="w-full flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-gray-400 dark:text-gray-500 mb-2">
-                  No sections match your search criteria
-                </p>
-                {hasActiveFilters && (
-                  <button
-                    onClick={handleClearFilters}
-                    className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                  >
-                    Clear filters
-                  </button>
-                )}
-              </div>
-            </div>
-          )
+        {!showNoDataAvailable ? (
+          <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 grid-rows-[380px] gap-2 overflow-y-auto p-2">
+            {filteredSections.map((section) => (
+              <SectionItem
+                key={section.id}
+                section={section}
+                onClick={() => onSectionClick(section)}
+                onDelete={() => onDeleteSection(section)}
+                context={context}
+              />
+            ))}
+          </section>
         ) : (
           <div className="flex-1 flex w-full items-center justify-center">
-            <p className="italic text-gray-300 dark:text-gray-600">
-              No data available
-            </p>
+            <div className="text-center">
+              <p className="text-gray-300 dark:text-gray-600 italic mb-2">
+                No data available
+              </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearFilters}
+                  className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

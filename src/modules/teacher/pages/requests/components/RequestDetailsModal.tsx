@@ -149,11 +149,11 @@ export default function RequestDetailsModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm min-w-7xl h-[85svh] mx-4 flex flex-col">
+      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100dvh] w-[100dvw] md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
         {/* header */}
-        <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <header className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Account Change Request
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -163,331 +163,346 @@ export default function RequestDetailsModal({
           <button
             onClick={onClose}
             disabled={isProcessing}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-gray-900 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FaTimes className="w-4 h-4" />
+            <FaTimes className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
-        </div>
+        </header>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-6 space-y-6">
-            {/* status and student info */}
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Request Status:
-                  </span>
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                      request.status,
-                    )}`}
-                  >
-                    {request.status.charAt(0).toUpperCase() +
-                      request.status.slice(1)}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                      Student Name
-                    </label>
-                    <p className="text-gray-900 dark:text-white font-medium">
-                      {currentStudentData.firstName}{" "}
-                      {currentStudentData.lastName}
-                      {currentStudentData.middleName &&
-                        ` ${currentStudentData.middleName}`}
-                    </p>
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {/* main content - scrollable part */}
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full overflow-y-auto">
+              {/* status and student info */}
+              <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-gray-800 rounded-sm p-4 sm:p-5 border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Request Status:
+                    </span>
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                        request.status,
+                      )}`}
+                    >
+                      {request.status.charAt(0).toUpperCase() +
+                        request.status.slice(1)}
+                    </span>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                      Current Email Address
-                    </label>
-                    <p className="text-gray-900 dark:text-white">
-                      {currentStudentData.email}
-                    </p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        Student Name
+                      </label>
+                      <p className="text-gray-900 dark:text-white font-medium">
+                        {currentStudentData.firstName}{" "}
+                        {currentStudentData.lastName}
+                        {currentStudentData.middleName &&
+                          ` ${currentStudentData.middleName}`}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        Current Email Address
+                      </label>
+                      <p className="text-gray-900 dark:text-white">
+                        {currentStudentData.email}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* changes */}
-            {hasAnyChanges ? (
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                  Requested Changes
-                </h3>
+              {/* changes */}
+              {hasAnyChanges ? (
+                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-gray-800 rounded-sm p-4 sm:p-5 border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
+                      Requested Changes
+                    </h3>
 
-                <div className="space-y-6">
-                  {(changes.firstName ||
-                    changes.lastName ||
-                    changes.middleName ||
-                    changes.email ||
-                    changes.profilePicture) && (
-                      <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-4">
-                        <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
-                          Personal Information
-                        </h4>
+                    <div className="space-y-4 sm:space-y-6">
+                      {(changes.firstName ||
+                        changes.lastName ||
+                        changes.middleName ||
+                        changes.email ||
+                        changes.profilePicture) && (
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-sm p-3 sm:p-4">
+                            <h4 className="text-md font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
+                              Personal Information
+                            </h4>
 
-                        <div className="space-y-4">
-                          {/* First Name - Only show if changed */}
-                          {changes.firstName && (
-                            <div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Previous
-                                </div>
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Proposed
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-4 sm:space-y-4">
+                              {/* First Name - Only show if changed */}
+                              {changes.firstName && (
                                 <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      Before:
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-2">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Previous
                                     </div>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                      {originalData.firstName}
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Proposed
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          Before:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm">
+                                          {originalData.firstName}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          After:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium text-sm">
+                                          {requestedData?.firstName}
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
+                              )}
+
+                              {changes.lastName && (
                                 <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      After:
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-2">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Previous
                                     </div>
-                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                      {requestedData?.firstName}
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Proposed
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          Before:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm">
+                                          {originalData.lastName}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          After:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium text-sm">
+                                          {requestedData?.lastName}
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              )}
+
+                              {changes.middleName && (
+                                <div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-2">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Previous
+                                    </div>
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Proposed
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          Before:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm">
+                                          {originalData.middleName || "—"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          After:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium text-sm">
+                                          {requestedData?.middleName || "—"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {changes.email && (
+                                <div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-2">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Previous
+                                    </div>
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Proposed
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          Before:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm">
+                                          {originalData.email}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          After:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium text-sm">
+                                          {requestedData?.email}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {changes.profilePicture && (
+                                <div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-2">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Previous
+                                    </div>
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Proposed
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          Before:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
+                                          <img
+                                            src={getProfilePicture(
+                                              (originalData.profilePicture as ProfilePicture) ??
+                                              "Default",
+                                            )}
+                                            alt="Previous Profile"
+                                            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto object-cover"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="space-y-2">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                          After:
+                                        </div>
+                                        <div className="p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
+                                          <img
+                                            src={getProfilePicture(
+                                              (requestedData?.profilePicture as ProfilePicture) ??
+                                              "Default",
+                                            )}
+                                            alt="New Profile"
+                                            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto object-cover"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          )}
+                          </div>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-gray-800 rounded-sm p-4 sm:p-5 border border-gray-200 dark:border-gray-700">
+                    <div className="text-center py-4 sm:py-8">
+                      <div className="text-gray-400 dark:text-gray-500 mb-2 text-sm sm:text-base">
+                        No changes detected in this request
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                        The requested information matches the current student
+                        data.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                          {changes.lastName && (
-                            <div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Previous
-                                </div>
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Proposed
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      Before:
-                                    </div>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                      {originalData.lastName}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      After:
-                                    </div>
-                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                      {requestedData?.lastName}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+              {/* timeline */}
+              <div className="p-4 sm:p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-sm p-4 sm:p-5 border border-gray-200 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Request Timeline
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                        Submitted Date:
+                      </span>
+                      <span className="text-sm text-gray-900 dark:text-white font-medium">
+                        {format(
+                          new Date(request.createdAt),
+                          "MMMM d 'at' h:mm a",
+                          {
+                            timeZone: "Asia/Manila",
+                          },
+                        )}
+                      </span>
+                    </div>
+                    {request.updatedAt !== request.createdAt && (
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                          Last Updated:
+                        </span>
+                        <span className="text-sm text-gray-900 dark:text-white font-medium">
+                          {format(
+                            new Date(request.updatedAt),
+                            "MMMM d 'at' h:mm a",
+                            {
+                              timeZone: "Asia/Manila",
+                            },
                           )}
-
-                          {changes.middleName && (
-                            <div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Previous
-                                </div>
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Proposed
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      Before:
-                                    </div>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                      {originalData.middleName || "—"}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      After:
-                                    </div>
-                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                      {requestedData?.middleName || "—"}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {changes.email && (
-                            <div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Previous
-                                </div>
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Proposed
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      Before:
-                                    </div>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
-                                      {originalData.email}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      After:
-                                    </div>
-                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white font-medium">
-                                      {requestedData?.email}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {changes.profilePicture && (
-                            <div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Previous
-                                </div>
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Proposed
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      Before:
-                                    </div>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-center">
-                                      <img
-                                        src={getProfilePicture(
-                                          (originalData.profilePicture as ProfilePicture) ??
-                                          "Default",
-                                        )}
-                                        alt="Previous Profile"
-                                        className="w-16 h-16 rounded-full mx-auto object-cover"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="space-y-2">
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                      After:
-                                    </div>
-                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800 text-gray-900 dark:text-white text-center">
-                                      <img
-                                        src={getProfilePicture(
-                                          (requestedData?.profilePicture as ProfilePicture) ??
-                                          "Default",
-                                        )}
-                                        alt="New Profile"
-                                        className="w-16 h-16 rounded-full mx-auto object-cover"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                        </span>
                       </div>
                     )}
-                </div>
-              </div>
-            ) : (
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <div className="text-center py-8">
-                  <div className="text-gray-400 dark:text-gray-500 mb-2">
-                    No changes detected in this request
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    The requested information matches the current student data.
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* timeline */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Request Timeline
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                    Submitted Date:
-                  </span>
-                  <span className="text-sm text-gray-900 dark:text-white font-medium">
-                    {format(new Date(request.createdAt), "MMMM d 'at' h:mm a", {
-                      timeZone: "Asia/Manila",
-                    })}
-                  </span>
-                </div>
-                {request.updatedAt !== request.createdAt && (
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                      Last Updated:
-                    </span>
-                    <span className="text-sm text-gray-900 dark:text-white font-medium">
-                      {format(
-                        new Date(request.updatedAt),
-                        "MMMM d 'at' h:mm a",
-                        {
-                          timeZone: "Asia/Manila",
-                        },
-                      )}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </div>
 
+        {/* action buttons */}
         {request.status === "pending" && (
-          <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
             <button
               onClick={handleReject}
               disabled={isProcessing}
-              className="px-6 py-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base order-2 sm:order-1"
             >
               {isProcessing ? "Processing..." : "Reject Request"}
             </button>
             <button
               onClick={handleApprove}
               disabled={isProcessing}
-              className="px-6 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors duration-200 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base order-1 sm:order-2"
             >
               {isProcessing ? "Processing..." : "Approve Changes"}
             </button>
@@ -495,10 +510,10 @@ export default function RequestDetailsModal({
         )}
 
         {request.status !== "pending" && (
-          <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex justify-end p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-gray-600 text-white rounded-sm hover:bg-gray-700 transition-colors duration-200 font-medium  hover:cursor-pointer"
+              className="px-4 sm:px-6 py-2 bg-gray-600 text-white rounded-sm hover:bg-gray-700 transition-colors duration-200 font-medium hover:cursor-pointer text-sm sm:text-base"
             >
               Close
             </button>

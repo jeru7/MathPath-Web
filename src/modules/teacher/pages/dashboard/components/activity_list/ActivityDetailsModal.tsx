@@ -72,7 +72,7 @@ export default function ActivityDetailsModal({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 rounded-sm w-full max-w-2xl mx-4 flex flex-col shadow-xl">
+      <div className="bg-white dark:bg-gray-800 rounded-sm w-full flex flex-col shadow-xl">
         {/* header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">

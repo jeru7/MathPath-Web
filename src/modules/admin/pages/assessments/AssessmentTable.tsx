@@ -143,12 +143,15 @@ export default function AssessmentTable({
     selectedTeacher !== "all" ||
     searchTerm !== "";
 
+  const showNoDataAvailable =
+    assessments.length === 0 || filteredAssessments.length === 0;
+
   return (
     <>
-      <section className="flex flex-col flex-1">
+      <section className="flex flex-col flex-1 overflow-x-hidden">
         <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
           {/* search and filters */}
-          <section className="flex gap-2 items-center w-full md:w-fit">
+          <section className="relative flex gap-2 items-center w-full md:w-fit">
             <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
               <div className="p-2">
                 <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -170,98 +173,96 @@ export default function AssessmentTable({
             </div>
 
             {/* filter dropdown */}
-            <div className="relative" ref={filterDropdownRef}>
-              <button
-                className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                    ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                    : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                  }`}
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <CiFilter className="w-4 h-4" />
-              </button>
+            <button
+              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
+                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
+                }`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <CiFilter className="w-4 h-4" />
+            </button>
 
-              {showFilters && (
-                <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 w-64 p-4 transition-colors duration-200">
-                  {hasActiveFilters && (
-                    <div className="flex justify-end mb-3">
-                      <button
-                        onClick={handleClearFilters}
-                        className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                      >
-                        Clear all
-                      </button>
-                    </div>
-                  )}
+            {showFilters && (
+              <div className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200">
+                {hasActiveFilters && (
+                  <div className="flex justify-end mb-3">
+                    <button
+                      onClick={handleClearFilters}
+                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
 
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) =>
+                      setSelectedStatus(
+                        e.target.value as AssessmentStatus | "all",
+                      )
+                    }
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="draft">Draft</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="published">Published</option>
+                    <option value="finished">Finished</option>
+                  </select>
+                </div>
+
+                {uniqueTopics.length > 0 && (
                   <div className="mb-3">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Status
+                      Topic
                     </label>
                     <select
-                      value={selectedStatus}
-                      onChange={(e) =>
-                        setSelectedStatus(
-                          e.target.value as AssessmentStatus | "all",
-                        )
-                      }
+                      value={selectedTopic}
+                      onChange={(e) => setSelectedTopic(e.target.value)}
                       className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
                     >
-                      <option value="all">All Status</option>
-                      <option value="draft">Draft</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="published">Published</option>
-                      <option value="finished">Finished</option>
+                      <option value="all">All Topics</option>
+                      {uniqueTopics.map((topic) => (
+                        <option key={topic} value={topic}>
+                          {topic}
+                        </option>
+                      ))}
                     </select>
                   </div>
+                )}
 
-                  {uniqueTopics.length > 0 && (
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Topic
-                      </label>
-                      <select
-                        value={selectedTopic}
-                        onChange={(e) => setSelectedTopic(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
-                      >
-                        <option value="all">All Topics</option>
-                        {uniqueTopics.map((topic) => (
-                          <option key={topic} value={topic}>
-                            {topic}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  {uniqueTeachers.length > 0 && (
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Teacher
-                      </label>
-                      <select
-                        value={selectedTeacher}
-                        onChange={(e) => setSelectedTeacher(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
-                      >
-                        <option value="all">All Teachers</option>
-                        {uniqueTeachers.map((teacher) => (
-                          <option key={teacher} value={teacher}>
-                            {teacher}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                    Showing {filteredAssessments.length} of {assessments.length}{" "}
-                    assessments
+                {uniqueTeachers.length > 0 && (
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Teacher
+                    </label>
+                    <select
+                      value={selectedTeacher}
+                      onChange={(e) => setSelectedTeacher(e.target.value)}
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
+                    >
+                      <option value="all">All Teachers</option>
+                      {uniqueTeachers.map((teacher) => (
+                        <option key={teacher} value={teacher}>
+                          {teacher}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+                )}
+
+                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
+                  Showing {filteredAssessments.length} of {assessments.length}{" "}
+                  assessments
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </section>
         </section>
 
@@ -279,33 +280,10 @@ export default function AssessmentTable({
           </div>
         )}
 
-        {/* table */}
-        <div className="flex-1 flex flex-col overflow-auto">
-          <div className="min-h-full flex flex-col flex-1 min-w-[1000px]">
-            {/* assessment items/list */}
-            {assessments.length === 0 ? (
-              <div className="flex-1 min-h-full items-center justify-center flex">
-                <p className="text-gray-300 dark:text-gray-600">
-                  No assessments available
-                </p>
-              </div>
-            ) : filteredAssessments.length === 0 ? (
-              <div className="flex-1 min-h-full items-center justify-center flex">
-                <div className="text-center">
-                  <p className="text-gray-400 dark:text-gray-500 mb-2">
-                    No assessments match your search criteria
-                  </p>
-                  {hasActiveFilters && (
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                    >
-                      Clear filters
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
+        {!showNoDataAvailable ? (
+          <div className="flex flex-col flex-1 overflow-x-auto">
+            <div className="flex flex-col w-full min-w-[1000px] flex-1">
+              {/* assessment items/list */}
               <div className={`max-h-[780px] overflow-y-auto pb-4 flex-1`}>
                 {/* headers */}
                 <table className="font-primary table-auto w-full">
@@ -346,9 +324,25 @@ export default function AssessmentTable({
                   </tbody>
                 </table>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-1 w-full items-center justify-center">
+            <div className="text-center">
+              <p className="text-gray-300 dark:text-gray-600 italic mb-2">
+                No data available
+              </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearFilters}
+                  className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* admin assessment details modal */}

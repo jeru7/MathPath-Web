@@ -186,11 +186,14 @@ export default function StudentTable({
     };
   }, []);
 
+  const showNoDataAvailable =
+    students.length === 0 || filteredAndSortedStudents.length === 0;
+
   return (
     <section className="flex flex-col flex-1 overflow-x-hidden">
       <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
         {/* search and filters */}
-        <section className="flex gap-2 items-center w-full md:w-fit">
+        <section className="relative flex gap-2 items-center w-full md:w-fit">
           <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="p-2">
               <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -212,116 +215,114 @@ export default function StudentTable({
           </div>
 
           {/* filter dropdown */}
-          <div className="relative">
-            <button
-              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
-              onClick={() => setShowFilterDropdown((prev) => !prev)}
+          <button
+            className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
+                ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
+              }`}
+            onClick={() => setShowFilterDropdown((prev) => !prev)}
+          >
+            <CiFilter className="w-4 h-4" />
+          </button>
+
+          {showFilterDropdown && (
+            <div
+              className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200"
+              ref={filterDropdownRef}
             >
-              <CiFilter className="w-4 h-4" />
-            </button>
-
-            {showFilterDropdown && (
-              <div
-                className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 w-64 p-4 transition-colors duration-200"
-                ref={filterDropdownRef}
-              >
-                {hasActiveFilters && (
-                  <div className="flex justify-end mb-3">
-                    <button
-                      onClick={handleClearAllFilters}
-                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                    >
-                      Clear all
-                    </button>
-                  </div>
-                )}
-
-                {/* sections checkbox */}
-                <div className="mb-4">
-                  <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
-                    Sections
-                  </p>
-                  <div className="flex flex-col max-h-32 overflow-y-auto gap-1">
-                    {sections.map((section) => {
-                      const isSelected = selectedSections.includes(section.id);
-
-                      return (
-                        <div
-                          key={section.id}
-                          className={`cursor-pointer px-2 py-1 rounded text-sm border w-fit transition-colors duration-200 ${isSelected
-                              ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            }`}
-                          onClick={() => {
-                            if (isSelected) {
-                              setSelectedSections((prev) =>
-                                prev.filter((id) => id !== section.id),
-                              );
-                            } else {
-                              setSelectedSections((prev) => [
-                                ...prev,
-                                section.id,
-                              ]);
-                            }
-                          }}
-                        >
-                          {section.name}
-                        </div>
-                      );
-                    })}
-                  </div>
+              {hasActiveFilters && (
+                <div className="flex justify-end mb-3">
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                  >
+                    Clear all
+                  </button>
                 </div>
+              )}
 
-                {/* status */}
-                <div className="mb-2">
-                  <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
-                    Status
-                  </p>
-                  <div className="flex gap-1 text-sm">
-                    {["all", "online", "offline"].map((status) => {
-                      const isSelected =
-                        (status === "all" && selectedStatus === null) ||
-                        (status === "online" && selectedStatus === "online") ||
-                        (status === "offline" && selectedStatus === "offline");
+              {/* sections checkbox */}
+              <div className="mb-4">
+                <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
+                  Sections
+                </p>
+                <div className="flex flex-col max-h-32 overflow-y-auto gap-1">
+                  {sections.map((section) => {
+                    const isSelected = selectedSections.includes(section.id);
 
-                      const displayText =
-                        status === "all"
-                          ? "All"
-                          : status.charAt(0).toUpperCase() + status.slice(1);
-
-                      return (
-                        <div
-                          key={status}
-                          className={`cursor-pointer px-2 py-1 rounded border text-sm text-center transition-colors duration-200 ${isSelected
-                              ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            }`}
-                          onClick={() => {
-                            if (status === "all") {
-                              setSelectedStatus(null);
-                            } else {
-                              setSelectedStatus(status as "online" | "offline");
-                            }
-                          }}
-                        >
-                          {displayText}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* results */}
-                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                  Showing {filteredAndSortedStudents.length} of{" "}
-                  {students.length} students
+                    return (
+                      <div
+                        key={section.id}
+                        className={`cursor-pointer px-2 py-1 rounded text-sm border w-fit transition-colors duration-200 ${isSelected
+                            ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                            : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                          }`}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedSections((prev) =>
+                              prev.filter((id) => id !== section.id),
+                            );
+                          } else {
+                            setSelectedSections((prev) => [
+                              ...prev,
+                              section.id,
+                            ]);
+                          }
+                        }}
+                      >
+                        {section.name}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            )}
-          </div>
+
+              {/* status */}
+              <div className="mb-2">
+                <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
+                  Status
+                </p>
+                <div className="flex gap-1 text-sm">
+                  {["all", "online", "offline"].map((status) => {
+                    const isSelected =
+                      (status === "all" && selectedStatus === null) ||
+                      (status === "online" && selectedStatus === "online") ||
+                      (status === "offline" && selectedStatus === "offline");
+
+                    const displayText =
+                      status === "all"
+                        ? "All"
+                        : status.charAt(0).toUpperCase() + status.slice(1);
+
+                    return (
+                      <div
+                        key={status}
+                        className={`cursor-pointer px-2 py-1 rounded border text-sm text-center transition-colors duration-200 ${isSelected
+                            ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                            : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                          }`}
+                        onClick={() => {
+                          if (status === "all") {
+                            setSelectedStatus(null);
+                          } else {
+                            setSelectedStatus(status as "online" | "offline");
+                          }
+                        }}
+                      >
+                        {displayText}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* results */}
+              <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
+                Showing {filteredAndSortedStudents.length} of {students.length}{" "}
+                students
+              </div>
+            </div>
+          )}
         </section>
 
         {/* registration codes button: only for teachers */}
@@ -359,7 +360,7 @@ export default function StudentTable({
         </div>
       )}
 
-      {students.length > 0 ? (
+      {!showNoDataAvailable ? (
         <div className="flex flex-col flex-1 overflow-x-auto">
           <div className="flex flex-col w-full min-w-[1000px] flex-1">
             {/* headers */}
@@ -485,38 +486,15 @@ export default function StudentTable({
             <div className="flex-1 overflow-y-auto">
               <table className="font-primary table-auto w-full text-sm xl:text-base">
                 <tbody>
-                  {filteredAndSortedStudents.length > 0 ? (
-                    filteredAndSortedStudents.map((student) => (
-                      <StudentTableItem
-                        student={student}
-                        key={student.referenceNumber}
-                        onClick={handleItemOnclick}
-                        sections={sections}
-                        onlineStudentIds={onlineStudentIds}
-                      />
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={6}
-                        className="text-center py-8 text-gray-400 dark:text-gray-500"
-                      >
-                        <div className="text-center">
-                          <p className="text-gray-400 dark:text-gray-500 mb-2">
-                            No students match your search criteria
-                          </p>
-                          {hasActiveFilters && (
-                            <button
-                              onClick={handleClearAllFilters}
-                              className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                            >
-                              Clear filters
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
+                  {filteredAndSortedStudents.map((student) => (
+                    <StudentTableItem
+                      student={student}
+                      key={student.referenceNumber}
+                      onClick={handleItemOnclick}
+                      sections={sections}
+                      onlineStudentIds={onlineStudentIds}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -524,9 +502,19 @@ export default function StudentTable({
         </div>
       ) : (
         <div className="flex flex-1 w-full items-center justify-center">
-          <p className="text-gray-300 dark:text-gray-600 italic">
-            No data available
-          </p>
+          <div className="text-center">
+            <p className="text-gray-300 dark:text-gray-600 italic mb-2">
+              No data available
+            </p>
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearAllFilters}
+                className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
         </div>
       )}
 

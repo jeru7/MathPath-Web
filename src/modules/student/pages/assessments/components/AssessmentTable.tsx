@@ -84,7 +84,7 @@ export default function AssessmentTable({
     <section className="flex flex-col flex-1">
       <section className="w-full border-b-gray-200 dark:border-b-gray-600 p-4 border-b flex justify-between transition-colors duration-200">
         {/* search and filters */}
-        <section className="flex gap-2 items-center w-full md:w-fit">
+        <section className="relative flex gap-2 items-center w-full md:w-fit">
           <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="p-2">
               <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -106,61 +106,62 @@ export default function AssessmentTable({
           </div>
 
           {/* filter dropdown */}
-          <div className="relative" ref={filterDropdownRef}>
-            <button
-              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
-              onClick={() => setShowFilters(!showFilters)}
+          <button
+            className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
+                ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
+                : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
+              }`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <CiFilter className="w-4 h-4" />
+          </button>
+
+          {showFilters && (
+            <div
+              className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200"
+              ref={filterDropdownRef}
             >
-              <CiFilter className="w-4 h-4" />
-            </button>
-
-            {showFilters && (
-              <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 w-64 p-4 transition-colors duration-200">
-                {hasActiveFilters && (
-                  <div className="flex justify-end mb-3">
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                    >
-                      Clear all
-                    </button>
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) =>
-                      setSelectedStatus(
-                        e.target.value as
-                        | "all"
-                        | "available"
-                        | "not-available"
-                        | "expired",
-                      )
-                    }
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
+              {hasActiveFilters && (
+                <div className="flex justify-end mb-3">
+                  <button
+                    onClick={handleClearFilters}
+                    className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
                   >
-                    <option value="all">All Status</option>
-                    <option value="available">Available</option>
-                    <option value="not-available">Not Available</option>
-                    <option value="expired">Expired</option>
-                  </select>
+                    Clear all
+                  </button>
                 </div>
+              )}
 
-                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                  Showing {filteredAssessments.length} of {assessments.length}{" "}
-                  assessments
-                </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Status
+                </label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) =>
+                    setSelectedStatus(
+                      e.target.value as
+                      | "all"
+                      | "available"
+                      | "not-available"
+                      | "expired",
+                    )
+                  }
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
+                >
+                  <option value="all">All Status</option>
+                  <option value="available">Available</option>
+                  <option value="not-available">Not Available</option>
+                  <option value="expired">Expired</option>
+                </select>
               </div>
-            )}
-          </div>
+
+              <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
+                Showing {filteredAssessments.length} of {assessments.length}{" "}
+                assessments
+              </div>
+            </div>
+          )}
         </section>
       </section>
 
