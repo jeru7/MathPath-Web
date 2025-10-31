@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo } from "react";
+import { type ReactElement, useMemo, useState, useEffect, useRef } from "react";
 import { CiSearch, CiFilter } from "react-icons/ci";
 import {
   Request,
@@ -8,53 +8,48 @@ import RequestTableItem from "./RequestTableItem";
 
 type RequestTableProps = {
   requests: Request[];
-  searchTerm: string;
-  selectedType: RequestType | "all";
-  selectedStatus: string;
-  showFilters: boolean;
-  filterDropdownRef: React.RefObject<HTMLDivElement>;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClearSearch: () => void;
-  onTypeChange: (type: RequestType | "all") => void;
-  onStatusChange: (status: string) => void;
-  onClearFilters: () => void;
-  onShowFiltersChange: (show: boolean) => void;
   onRequestClick: (request: Request) => void;
 };
 
 export default function RequestTable({
   requests,
-  searchTerm,
-  selectedType,
-  selectedStatus,
-  showFilters,
-  filterDropdownRef,
-  onSearchChange,
-  onClearSearch,
-  onTypeChange,
-  onStatusChange,
-  onClearFilters,
-  onShowFiltersChange,
   onRequestClick,
 }: RequestTableProps): ReactElement {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState<RequestType | "all">("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [showFilters, setShowFilters] = useState(false);
+  const filterDropdownRef = useRef<HTMLDivElement>(null);
+
   const filteredRequests = useMemo(() => {
+    if (!searchTerm && selectedType === "all" && selectedStatus === "all") {
+      return requests;
+    }
+
     return requests.filter((request) => {
       const matchesSearch =
-        searchTerm === "" ||
-        request.accountInfo?.firstName
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        request.accountInfo?.lastName
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        request.accountInfo?.email
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        request.type?.toLowerCase().includes(searchTerm.toLowerCase());
+        !searchTerm ||
+        (
+          request.accountInfo?.originalData?.firstName?.toLowerCase() || ""
+        ).includes(searchTerm.toLowerCase()) ||
+        (
+          request.accountInfo?.originalData?.lastName?.toLowerCase() || ""
+        ).includes(searchTerm.toLowerCase()) ||
+        (
+          request.accountInfo?.originalData?.email?.toLowerCase() || ""
+        ).includes(searchTerm.toLowerCase()) ||
+        (request.type?.toLowerCase() || "").includes(
+          searchTerm.toLowerCase(),
+        ) ||
+        (request.status?.toLowerCase() || "").includes(
+          searchTerm.toLowerCase(),
+        );
 
+      // type filter
       const matchesType =
         selectedType === "all" || request.type === selectedType;
 
+      // status filter
       const matchesStatus =
         selectedStatus === "all" || request.status === selectedStatus;
 
@@ -62,8 +57,27 @@ export default function RequestTable({
     });
   }, [requests, searchTerm, selectedType, selectedStatus]);
 
-  const handleClearAllFilters = () => {
-    onClearFilters();
+  const handleClearFilters = () => {
+    setSelectedType("all");
+    setSelectedStatus("all");
+    setSearchTerm("");
+    setShowFilters(false);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
+
+  const handleTypeChange = (type: RequestType | "all") => {
+    setSelectedType(type);
+  };
+
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(status);
+  };
+
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
   const getStatusColor = (status: string): string => {
@@ -102,6 +116,25 @@ export default function RequestTable({
   const hasActiveFilters =
     selectedType !== "all" || selectedStatus !== "all" || searchTerm !== "";
 
+  const showNoDataAvailable =
+    requests.length === 0 || filteredRequests.length === 0;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowFilters(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <section className="bg-white border border-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
       <div className="flex flex-col flex-1">
@@ -115,11 +148,11 @@ export default function RequestTable({
                 placeholder="Search requests"
                 className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 value={searchTerm}
-                onChange={onSearchChange}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               {searchTerm && (
                 <button
-                  onClick={onClearSearch}
+                  onClick={handleClearSearch}
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1"
                 >
                   ×
@@ -132,7 +165,7 @@ export default function RequestTable({
                   ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
                   : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
                 }`}
-              onClick={() => onShowFiltersChange(!showFilters)}
+              onClick={toggleFilters}
             >
               <CiFilter className="w-4 h-4" />
             </button>
@@ -145,7 +178,7 @@ export default function RequestTable({
                 {hasActiveFilters && (
                   <div className="flex justify-end mb-3">
                     <button
-                      onClick={handleClearAllFilters}
+                      onClick={handleClearFilters}
                       className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
                     >
                       Clear all
@@ -160,7 +193,7 @@ export default function RequestTable({
                   <select
                     value={selectedType}
                     onChange={(e) =>
-                      onTypeChange(e.target.value as RequestType | "all")
+                      handleTypeChange(e.target.value as RequestType | "all")
                     }
                     className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
                   >
@@ -177,7 +210,7 @@ export default function RequestTable({
                   </label>
                   <select
                     value={selectedStatus}
-                    onChange={(e) => onStatusChange(e.target.value)}
+                    onChange={(e) => handleStatusChange(e.target.value)}
                     className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
                   >
                     <option value="all">All Status</option>
@@ -209,30 +242,8 @@ export default function RequestTable({
         )}
 
         <div className="flex-1 flex flex-col overflow-auto">
-          <div className="min-h-full flex flex-col flex-1 min-w-[1000px]">
-            {requests.length === 0 ? (
-              <div className="flex-1 min-h-full items-center justify-center flex">
-                <p className="text-gray-300 dark:text-gray-600">
-                  No requests available
-                </p>
-              </div>
-            ) : filteredRequests.length === 0 ? (
-              <div className="flex-1 min-h-full items-center justify-center flex">
-                <div className="text-center">
-                  <p className="text-gray-400 dark:text-gray-500 mb-2">
-                    No requests match your search criteria
-                  </p>
-                  {hasActiveFilters && (
-                    <button
-                      onClick={handleClearAllFilters}
-                      className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                    >
-                      Clear filters
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
+          {!showNoDataAvailable ? (
+            <div className="min-h-full flex flex-col flex-1 min-w-[1000px]">
               <div className={`max-h-[780px] overflow-y-auto pb-4 flex-1`}>
                 {/* headers */}
                 <table className="font-primary table-auto w-full">
@@ -273,8 +284,24 @@ export default function RequestTable({
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex w-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-gray-300 dark:text-gray-600 italic mb-2">
+                  No data available
+                </p>
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
