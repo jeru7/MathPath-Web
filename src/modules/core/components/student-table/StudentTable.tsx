@@ -9,6 +9,7 @@ import { Student } from "../../../student/types/student.type";
 import { IoQrCodeOutline } from "react-icons/io5";
 import { getSectionName } from "../../../teacher/pages/students/utils/student-table.util";
 import { Section } from "../../types/section/section.type";
+import { motion, AnimatePresence } from "framer-motion";
 
 // context type to distinguish between teacher and admin
 export type StudentTableContext = {
@@ -316,6 +317,22 @@ export default function StudentTable({
                 </div>
               </div>
 
+              {/* registration codes link for mobile */}
+              <div className="md:hidden border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                {showRegistrationCodes && (
+                  <button
+                    className="flex items-center gap-2 w-full p-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors duration-200"
+                    onClick={() => {
+                      navigate(registrationCodesPath);
+                      setShowFilterDropdown(false);
+                    }}
+                  >
+                    <IoQrCodeOutline className="w-4 h-4" />
+                    Registration Codes
+                  </button>
+                )}
+              </div>
+
               {/* results */}
               <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
                 Showing {filteredAndSortedStudents.length} of {students.length}{" "}
@@ -325,7 +342,7 @@ export default function StudentTable({
           )}
         </section>
 
-        {/* registration codes button: only for teachers */}
+        {/* registration codes button and create button */}
         <div className="hidden md:flex gap-2 items-center">
           {showRegistrationCodes && (
             <button
@@ -518,15 +535,34 @@ export default function StudentTable({
         </div>
       )}
 
-      {/* floating action button for mobile */}
-      <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <button
-          className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white shadow-lg hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-          onClick={onClickAddStudent}
-        >
-          <GoPlus className="w-6 h-6" />
-        </button>
-      </div>
+      {/* floating action buttons for mobile */}
+      <AnimatePresence>
+        <div className="md:hidden fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+          {showRegistrationCodes && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center justify-center w-14 h-14 rounded-full border border-gray-300 dark:border-gray-700 text-blac"
+              onClick={() => navigate(registrationCodesPath)}
+              title="Registration Codes"
+            >
+              <IoQrCodeOutline className="w-6 h-6" />
+            </motion.button>
+          )}
+
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200"
+            onClick={onClickAddStudent}
+            title="Add Student"
+          >
+            <GoPlus className="w-6 h-6" />
+          </motion.button>
+        </div>
+      </AnimatePresence>
     </section>
   );
 }
