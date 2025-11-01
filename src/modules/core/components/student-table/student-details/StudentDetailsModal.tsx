@@ -23,6 +23,8 @@ type StudentDetailsModalProps = {
   onEdit?: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
+  disableEdit?: boolean;
+  archiveLabel?: string;
 };
 
 export type AttemptWithAssessment = AssessmentAttempt & {
@@ -39,6 +41,8 @@ export default function StudentDetailsModal({
   onEdit,
   onArchive,
   onDelete,
+  disableEdit,
+  archiveLabel = "Archive",
 }: StudentDetailsModalProps): ReactElement {
   const handleEdit = () => {
     if (onEdit) {
@@ -123,9 +127,11 @@ export default function StudentDetailsModal({
         {/* action buttons */}
         <FooterActions
           lastUpdated={student?.updatedAt}
-          onEdit={handleEdit}
+          disableEdit={disableEdit}
+          onEdit={disableEdit ? undefined : handleEdit}
           onArchive={handleArchive}
           onDelete={handleDelete}
+          archiveLabel={archiveLabel}
         />
       </div>
     </ModalOverlay>

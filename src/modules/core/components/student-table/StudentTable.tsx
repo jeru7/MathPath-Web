@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa";
+import {
+  FaChevronUp,
+  FaChevronDown,
+  FaCaretUp,
+  FaCaretDown,
+} from "react-icons/fa";
 import StudentTableItem from "./StudentTableItem";
 import { useNavigate } from "react-router-dom";
 import "../../../core/styles/customTable.css";
 import { CiFilter, CiSearch } from "react-icons/ci";
-import { GoPlus } from "react-icons/go";
+import { GoArchive, GoPlus } from "react-icons/go";
 import { Student } from "../../../student/types/student.type";
 import { IoQrCodeOutline } from "react-icons/io5";
 import { getSectionName } from "../../../teacher/pages/students/utils/student-table.util";
@@ -22,16 +27,18 @@ type StudentTableProps = {
   onClickAddStudent: () => void;
   onStudentClick: (studentId: string) => void;
   context: StudentTableContext;
-  registrationCodesPath?: string;
   showRegistrationCodes?: boolean;
+  showArchive?: boolean;
+  hideFab?: boolean;
 };
 
 export default function StudentTable({
   onClickAddStudent,
   onStudentClick,
   context,
-  registrationCodesPath = "registration-codes",
   showRegistrationCodes = false,
+  showArchive = false,
+  hideFab = false,
 }: StudentTableProps): ReactElement {
   const { students, sections, onlineStudents } = context;
   const navigate = useNavigate();
@@ -42,7 +49,10 @@ export default function StudentTable({
     "online" | "offline" | null
   >(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showMobileFab, setShowMobileFab] = useState(!hideFab);
+  const [expandFab, setExpandFab] = useState(false);
   const filterDropdownRef = useRef<HTMLDivElement | null>(null);
+  const mobileFabRef = useRef<HTMLDivElement | null>(null);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Student | "sectionName" | "statusComputed";
@@ -53,6 +63,15 @@ export default function StudentTable({
     () => new Set(onlineStudents.map((s) => s.id)),
     [onlineStudents],
   );
+
+  useEffect(() => {
+    if (hideFab) {
+      setShowMobileFab(false);
+      setExpandFab(false);
+    } else {
+      setShowMobileFab(true);
+    }
+  }, [hideFab]);
 
   const filteredAndSortedStudents = useMemo(() => {
     const filtered = students.filter((student) => {
@@ -317,22 +336,6 @@ export default function StudentTable({
                 </div>
               </div>
 
-              {/* registration codes link for mobile */}
-              <div className="md:hidden border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
-                {showRegistrationCodes && (
-                  <button
-                    className="flex items-center gap-2 w-full p-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors duration-200"
-                    onClick={() => {
-                      navigate(registrationCodesPath);
-                      setShowFilterDropdown(false);
-                    }}
-                  >
-                    <IoQrCodeOutline className="w-4 h-4" />
-                    Registration Codes
-                  </button>
-                )}
-              </div>
-
               {/* results */}
               <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
                 Showing {filteredAndSortedStudents.length} of {students.length}{" "}
@@ -342,17 +345,29 @@ export default function StudentTable({
           )}
         </section>
 
-        {/* registration codes button and create button */}
+        {/* archive, registration codes button and create button */}
         <div className="hidden md:flex gap-2 items-center">
+          {/* archive button */}
+          {showArchive && (
+            <button
+              className="p-2 rounded-xs border-gray-200 dark:border-gray-600 border text-gray-400 dark:text-gray-500 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 bg-white dark:bg-gray-800"
+              onClick={() => navigate("archives")}
+            >
+              <GoArchive className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* registration code button */}
           {showRegistrationCodes && (
             <button
               className="p-2 rounded-xs border-gray-200 dark:border-gray-600 border text-gray-400 dark:text-gray-500 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 bg-white dark:bg-gray-800"
               type="button"
-              onClick={() => navigate(registrationCodesPath)}
+              onClick={() => navigate("registration-codes")}
             >
-              <IoQrCodeOutline />
+              <IoQrCodeOutline className="w-4 h-4" />
             </button>
           )}
+
           {/* create button */}
           <button
             className="flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
@@ -537,31 +552,82 @@ export default function StudentTable({
 
       {/* floating action buttons for mobile */}
       <AnimatePresence>
-        <div className="md:hidden fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-          {showRegistrationCodes && (
+        {!hideFab && showMobileFab && (
+          <div
+            className="md:hidden fixed bottom-6 right-6 z-50"
+            ref={mobileFabRef}
+          >
+            {expandFab && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                className="flex flex-col gap-3 mb-3"
+              >
+                {/* archive button */}
+                {showArchive && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                    onClick={() => {
+                      navigate("archives");
+                      setShowMobileFab(false);
+                    }}
+                    title="Archive"
+                  >
+                    <GoArchive className="w-5 h-5" />
+                  </motion.button>
+                )}
+
+                {/* registration codes button */}
+                {showRegistrationCodes && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                    onClick={() => {
+                      navigate("registration-codes");
+                      setShowMobileFab(false);
+                    }}
+                    title="Registration Codes"
+                  >
+                    <IoQrCodeOutline className="w-5 h-5" />
+                  </motion.button>
+                )}
+
+                {/* add student button */}
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                  onClick={() => {
+                    onClickAddStudent();
+                    setShowMobileFab(false);
+                  }}
+                  title="Add Student"
+                >
+                  <GoPlus className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
+            )}
+
+            {/* main fab toggle button */}
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="flex items-center justify-center w-14 h-14 rounded-full border border-gray-300 dark:border-gray-700 text-blac"
-              onClick={() => navigate(registrationCodesPath)}
-              title="Registration Codes"
+              className={`flex items-center justify-center w-14 h-14 rounded-full shadow-sm bg-[var(--primary-green)] text-white`}
+              onClick={() => setExpandFab(!expandFab)}
+              title={expandFab ? "Close" : "Menu"}
             >
-              <IoQrCodeOutline className="w-6 h-6" />
+              {expandFab ? <FaCaretDown /> : <FaCaretUp />}
             </motion.button>
-          )}
-
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200"
-            onClick={onClickAddStudent}
-            title="Add Student"
-          >
-            <GoPlus className="w-6 h-6" />
-          </motion.button>
-        </div>
+          </div>
+        )}
       </AnimatePresence>
     </section>
   );

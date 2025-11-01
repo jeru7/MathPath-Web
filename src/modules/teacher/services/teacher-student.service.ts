@@ -85,3 +85,43 @@ export const useTeacherEditStudent = (teacherId: string) => {
     },
   });
 };
+
+// teacher get archived student
+export const useTeacherArchivedStudent = (teacherId: string) => {
+  return useQuery<Student[]>({
+    queryKey: ["teacher", teacherId, "archived-students"],
+    queryFn: () =>
+      fetchData<Student[]>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/students/archive`,
+        "Failed to fetch archived students",
+      ),
+    enabled: !!teacherId,
+    staleTime: DATA_STALE_TIME,
+  });
+};
+
+// teacher archive student
+export const useTeacherArchiveStudent = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (studentId: string) => {
+      return patchData<Student, null>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/students/${studentId}/archive`,
+        null,
+        "Failed to delete student.",
+      );
+    },
+  });
+};
+
+// teacher restore student
+export const useTeacherRestoreStudent = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (studentId: string) => {
+      return patchData<Student, null>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/students/${studentId}/restore`,
+        null,
+        "Failed to delete student.",
+      );
+    },
+  });
+};

@@ -1,4 +1,9 @@
-import { Gender, ProfilePicture, Verified } from "../../core/types/user.type";
+import {
+  Archive,
+  Gender,
+  ProfilePicture,
+  Verified,
+} from "../../core/types/user.type";
 
 export type StudentCharacter = Gender;
 export type StudentStatusType = "Online" | "Offline";
@@ -26,6 +31,7 @@ export type Student = {
   lastOnline: string;
   streak: number;
   verified: Verified;
+  archive: Archive;
   createdAt: string;
   updatedAt: string;
 };
