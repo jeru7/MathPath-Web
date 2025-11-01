@@ -65,7 +65,11 @@ export default function AssessmentAttemptHistory({
         <div className="h-64 overflow-y-auto pr-2">
           <div className="space-y-3">
             {sortedAttempts.map((attempt) => (
-              <AssessmentAttemptItem attempt={attempt} student={student} />
+              <AssessmentAttemptItem
+                key={attempt.id}
+                attempt={attempt}
+                student={student}
+              />
             ))}
           </div>
         </div>
