@@ -56,7 +56,10 @@ export default function DeleteAssessmentConfirmationModal({
         <div className="space-y-3 mb-4">
           <p className="text-gray-600 dark:text-gray-400">
             {getStatusWarning()} Are you sure you want to delete "
-            {assessment.title}"? This action cannot be undone.
+            {assessment.title && assessment.title?.length > 0
+              ? assessment.title
+              : "Untitled Assessment"}
+            "? This action cannot be undone.
           </p>
 
           {(studentCount > 0 || sectionCount > 0) && (
