@@ -10,102 +10,102 @@ import { nanoid } from "nanoid";
 export type AssessmentBuilderAction =
   // assessment
   | {
-      type: "SET_ASSESSMENT";
-      payload: Assessment;
-    }
+    type: "SET_ASSESSMENT";
+    payload: Assessment;
+  }
   | {
-      type: "UPDATE_ASSESSMENT_TITLE";
-      payload: string;
-    }
+    type: "UPDATE_ASSESSMENT_TITLE";
+    payload: string;
+  }
   | {
-      type: "UPDATE_ASSESSMENT_TOPIC";
-      payload: string;
-    }
+    type: "UPDATE_ASSESSMENT_TOPIC";
+    payload: string;
+  }
   | {
-      type: "UPDATE_ASSESSMENT_DESCRIPTION";
-      payload: string;
-    }
+    type: "UPDATE_ASSESSMENT_DESCRIPTION";
+    payload: string;
+  }
   | {
-      type: "UPDATE_ASSESSMENT_PASSING_SCORE";
-      payload: number;
-    }
+    type: "UPDATE_ASSESSMENT_PASSING_SCORE";
+    payload: number;
+  }
   | {
-      type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT";
-      payload: number;
-    }
+    type: "UPDATE_ASSESSMENT_ATTEMPT_LIMIT";
+    payload: number;
+  }
   | {
-      type: "UPDATE_ASSESSMENT_TIME_LIMIT";
-      payload: number;
-    }
+    type: "UPDATE_ASSESSMENT_TIME_LIMIT";
+    payload: number;
+  }
   | {
-      type: "UPDATE_SECTION";
-      payload: string[];
-    }
+    type: "UPDATE_SECTION";
+    payload: string[];
+  }
   | {
-      type: "ADD_START_DATE";
-      payload: Date;
-    }
+    type: "ADD_START_DATE";
+    payload: Date;
+  }
   | {
-      type: "ADD_END_DATE";
-      payload: Date;
-    }
+    type: "ADD_END_DATE";
+    payload: Date;
+  }
   // page
   | {
-      type: "ADD_PAGE";
-      payload: AssessmentPage;
-    }
+    type: "ADD_PAGE";
+    payload: AssessmentPage;
+  }
   | {
-      type: "DELETE_PAGE";
-      payload: string;
-    }
+    type: "DELETE_PAGE";
+    payload: string;
+  }
   | { type: "SET_PAGE"; payload: AssessmentPage[] }
   | {
-      type: "UPDATE_PAGE_CONTENT";
-      payload: { pageId: string; contents: AssessmentContent[] };
-    }
+    type: "UPDATE_PAGE_CONTENT";
+    payload: { pageId: string; contents: AssessmentContent[] };
+  }
   | {
-      type: "UPDATE_PAGE_TITLE";
-      payload: { pageId: string; title: string };
-    }
+    type: "UPDATE_PAGE_TITLE";
+    payload: { pageId: string; title: string };
+  }
 
   // page content
   | {
-      type: "ADD_QUESTION";
-      payload: { pageId: string; question: AssessmentQuestion };
-    }
+    type: "ADD_QUESTION";
+    payload: { pageId: string; question: AssessmentQuestion };
+  }
   | {
-      type: "UPDATE_QUESTION";
-      payload: {
-        pageId: string;
-        contentId: string;
-        question: AssessmentQuestion;
-      };
-    }
-  | {
-      type: "ADD_IMAGE";
-      payload: { pageId: string; imageUrl: string; publicId: string };
-    }
-  | {
-      type: "UPDATE_IMAGE";
-      payload: {
-        pageId: string;
-        contentId: string;
-        imageUrl: string;
-        publicId: string;
-      };
-    }
-  | {
-      type: "ADD_TEXT";
-      payload: { pageId: string; text: string };
-    }
-  | {
-      type: "UPDATE_TEXT";
-      payload: { pageId: string; contentId: string; text: string };
-    }
-  | {
-      type: "DELETE_CONTENT";
-      payload: { pageId: string; content: AssessmentContent };
+    type: "UPDATE_QUESTION";
+    payload: {
+      pageId: string;
+      contentId: string;
+      question: AssessmentQuestion;
     };
+  }
+  | {
+    type: "ADD_IMAGE";
+    payload: { pageId: string; imageUrl: string; publicId: string };
+  }
+  | {
+    type: "UPDATE_IMAGE";
+    payload: {
+      pageId: string;
+      contentId: string;
+      imageUrl: string;
+      publicId: string;
+    };
+  }
+  | {
+    type: "ADD_TEXT";
+    payload: { pageId: string; text: string };
+  }
+  | {
+    type: "UPDATE_TEXT";
+    payload: { pageId: string; contentId: string; text: string };
+  }
+  | {
+    type: "DELETE_CONTENT";
+    payload: { pageId: string; content: AssessmentContent };
+  };
 
 // methods
 export const assessmentBuilderReducer = (
@@ -125,7 +125,7 @@ export const assessmentBuilderReducer = (
     case "UPDATE_ASSESSMENT_ATTEMPT_LIMIT":
       return { ...state, attemptLimit: action.payload };
     case "UPDATE_ASSESSMENT_TIME_LIMIT":
-      return { ...state, timeLimit: action.payload };
+      return { ...state, timeLimit: action.payload ?? 10 };
     case "UPDATE_SECTION": {
       return {
         ...state,

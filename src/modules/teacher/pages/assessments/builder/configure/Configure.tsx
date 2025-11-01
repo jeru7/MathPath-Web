@@ -48,7 +48,13 @@ export default function Configure({
   };
 
   const handleTimeLimitChange = (timeLimit: number) => {
-    if (isNaN(timeLimit)) return;
+    if (isNaN(timeLimit)) {
+      dispatch({
+        type: "UPDATE_ASSESSMENT_TIME_LIMIT",
+        payload: 10,
+      });
+      return;
+    }
 
     const validatedTimeLimit = Math.max(10, Math.min(timeLimit, 50));
 
