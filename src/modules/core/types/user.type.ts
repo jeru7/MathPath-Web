@@ -18,6 +18,11 @@ export type Verified = {
   token: string | null;
 };
 
+export type Archive = {
+  isArchive: boolean;
+  archiveDate: Date | null;
+};
+
 export type ProfilePicture =
   | "Boy_1"
   | "Boy_2"

@@ -1,18 +1,22 @@
 import { type ReactElement, useState, useMemo, useRef, useEffect } from "react";
 import { CiFilter, CiSearch } from "react-icons/ci";
-import { GoPlus } from "react-icons/go";
+import { GoPlus, GoArchive } from "react-icons/go";
 import SectionItem from "./SectionItem";
 import { Section, SectionColor } from "../../types/section/section.type";
 import { Student } from "../../../student/types/student.type";
 import { Assessment } from "../../types/assessment/assessment.type";
 import { toast } from "react-toastify";
 import { Teacher } from "../../../teacher/types/teacher.type";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 
 export type SectionTableContext = {
   onlineStudents: Student[];
   students: Student[];
   assessments: Assessment[];
   teachers?: Teacher[];
+  sections: Section[];
 };
 
 type SectionTableProps = {
@@ -21,7 +25,8 @@ type SectionTableProps = {
   sections: Section[];
   onShowForm: () => void;
   onSectionClick: (section: Section) => void;
-  onDeleteSection: (section: Section) => void;
+  showArchive?: boolean;
+  hideFab?: boolean;
 };
 
 export default function SectionTable({
@@ -30,14 +35,19 @@ export default function SectionTable({
   sections,
   onShowForm,
   onSectionClick,
-  onDeleteSection,
+  showArchive = false,
+  hideFab = false,
 }: SectionTableProps): ReactElement {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedColor, setSelectedColor] = useState<SectionColor | "all">(
     "all",
   );
   const [showFilters, setShowFilters] = useState(false);
+  const [showMobileFab, setShowMobileFab] = useState(!hideFab);
+  const [expandFab, setExpandFab] = useState(false);
   const filterDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileFabRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const filteredSections = useMemo(() => {
     let filtered = sections;
@@ -119,6 +129,15 @@ export default function SectionTable({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (hideFab) {
+      setShowMobileFab(false);
+      setExpandFab(false);
+    } else {
+      setShowMobileFab(true);
+    }
+  }, [hideFab]);
 
   const showNoDataAvailable =
     sections.length === 0 || filteredSections.length === 0;
@@ -207,14 +226,27 @@ export default function SectionTable({
           )}
         </section>
 
-        {/* create button */}
-        <button
-          className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-          onClick={handleCreateSection}
-        >
-          <GoPlus className="w-4 h-4" />
-          <p className="text-sm font-semibold">Create section</p>
-        </button>
+        {/* archive button and create button */}
+        <div className="hidden md:flex gap-2 items-center">
+          {/* archive button */}
+          {showArchive && (
+            <button
+              className="p-2 rounded-xs border-gray-200 dark:border-gray-600 border text-gray-400 dark:text-gray-500 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 bg-white dark:bg-gray-800"
+              onClick={() => navigate("archives")}
+            >
+              <GoArchive className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* create button */}
+          <button
+            className="flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
+            onClick={handleCreateSection}
+          >
+            <GoPlus className="w-4 h-4" />
+            <p className="text-sm font-semibold">Create section</p>
+          </button>
+        </div>
       </section>
 
       {/* results info */}
@@ -237,7 +269,6 @@ export default function SectionTable({
                 key={section.id}
                 section={section}
                 onClick={() => onSectionClick(section)}
-                onDelete={() => onDeleteSection(section)}
                 context={context}
               />
             ))}
@@ -261,15 +292,68 @@ export default function SectionTable({
         )}
       </div>
 
-      {/* floating action button for mobile */}
-      <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <button
-          className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white shadow-lg hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-          onClick={handleCreateSection}
-        >
-          <GoPlus className="w-6 h-6" />
-        </button>
-      </div>
+      {/* floating action buttons for mobile */}
+      <AnimatePresence>
+        {!hideFab && showMobileFab && (
+          <div
+            className="md:hidden fixed bottom-6 right-6 z-50"
+            ref={mobileFabRef}
+          >
+            {expandFab && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                className="flex flex-col gap-3 mb-3"
+              >
+                {/* archive button */}
+                {showArchive && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                    onClick={() => {
+                      navigate("archives");
+                      setShowMobileFab(false);
+                    }}
+                    title="Archive"
+                  >
+                    <GoArchive className="w-5 h-5" />
+                  </motion.button>
+                )}
+
+                {/* create section button */}
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                  onClick={() => {
+                    handleCreateSection();
+                    setShowMobileFab(false);
+                  }}
+                  title="Create Section"
+                >
+                  <GoPlus className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
+            )}
+
+            {/* main fab toggle button */}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className={`flex items-center justify-center w-14 h-14 rounded-full shadow-sm bg-[var(--primary-green)] text-white`}
+              onClick={() => setExpandFab(!expandFab)}
+              title={expandFab ? "Close" : "Menu"}
+            >
+              {expandFab ? <FaCaretDown /> : <FaCaretUp />}
+            </motion.button>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

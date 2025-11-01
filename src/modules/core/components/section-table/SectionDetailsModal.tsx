@@ -27,6 +27,8 @@ type SectionDetailsModalProps = {
   onEdit?: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
+  disableEdit?: boolean;
+  archiveLabel?: string;
 };
 
 type SectionStats = {
@@ -46,6 +48,8 @@ export default function SectionDetailsModal({
   onEdit,
   onArchive,
   onDelete,
+  disableEdit = false,
+  archiveLabel = "Archive",
 }: SectionDetailsModalProps): ReactElement {
   const { students } = context;
 
@@ -308,11 +312,10 @@ export default function SectionDetailsModal({
               />
             </div>
 
-            {/* main content - scrollable part */}
+            {/* main content */}
             <div className="flex-1 overflow-hidden">
               <div className="h-full overflow-y-auto">
-                {/* Section details */}
-
+                {/* section details */}
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                   <div className="bg-white dark:bg-gray-800 rounded-sm p-5 border border-gray-200 dark:border-gray-700 h-fit">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
@@ -352,7 +355,7 @@ export default function SectionDetailsModal({
                 </div>
 
                 {/* student list */}
-                <div className="p-4 sm:p-6  border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="p-4 sm:p-6 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                   <div className="bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full">
                     <div className="p-5 border-b border-gray-200 rounded-t-sm dark:border-gray-700 bg-white dark:bg-gray-800">
                       <div className="flex items-center justify-between">
@@ -413,12 +416,14 @@ export default function SectionDetailsModal({
             </div>
           </div>
 
-          {/* action buttons */}
+          {/* action buttons using FooterActions */}
           <FooterActions
             lastUpdated={section.updatedAt}
-            onEdit={handleEdit}
+            disableEdit={disableEdit}
+            onEdit={disableEdit ? undefined : handleEdit}
             onArchive={handleArchive}
             onDelete={handleDelete}
+            archiveLabel={archiveLabel}
           />
         </div>
       </ModalOverlay>

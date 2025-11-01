@@ -1,8 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import CreateSectionForm from "./components/CreateSectionForm";
 import { useTeacherContext } from "../../context/teacher.context";
-import { AnimatePresence, motion } from "framer-motion";
-import { GoPlus } from "react-icons/go";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Section } from "../../../core/types/section/section.type";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,6 +8,9 @@ import { toast } from "react-toastify";
 import {
   useTeacherDeleteSection,
   useTeacherEditSection,
+  useTeacherArchiveSection,
+  useTeacherRestoreSection,
+  useTeacherArchivedSections,
 } from "../../services/teacher-section.service";
 import SectionTable from "../../../core/components/section-table/SectionTable";
 import SectionDetailsModal from "../../../core/components/section-table/SectionDetailsModal";
@@ -19,28 +20,39 @@ import EditSectionModal from "../../../core/components/section-table/EditSection
 import { EditSectionDTO } from "../../../core/types/section/section.schema";
 import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
+import SectionArchiveModal from "../../../core/components/section-table/section-archive/SectionArchiveModal";
+import SectionArchiveConfirmationModal from "../../../core/components/section-table/SectionArchiveConfirmationModal";
 
 export default function Sections(): ReactElement {
   const teacherContext = useTeacherContext();
   const navigate = useNavigate();
   const location = useLocation();
   const { sectionId } = useParams();
-  const { sections, students, teacherId } = teacherContext;
+  const { sections, students, teacherId, assessments } = teacherContext;
   const { mutate: deleteSection } = useTeacherDeleteSection(teacherId);
   const { mutate: editSection, isPending: isEditPending } =
     useTeacherEditSection(teacherId);
   const queryClient = useQueryClient();
 
-  const [showAddButton, setShowAddButton] = useState<boolean>(false);
+  const { data: archivedSections } = useTeacherArchivedSections(teacherId);
+  const { mutate: archiveSection } = useTeacherArchiveSection(teacherId);
+  const { mutate: restoreSection } = useTeacherRestoreSection(teacherId);
+
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
+  const [sectionToArchive, setSectionToArchive] = useState<Section | null>(
+    null,
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [hideFab, setHideFab] = useState<boolean>(false);
 
   const pathEnd = location.pathname.split("/").pop();
   const isCreateSectionRoute = pathEnd === "add-section";
   const isSectionDetailsRoute =
     selectedSection !== null && pathEnd === selectedSection.id;
+  const showArchiveRoute = location.pathname.endsWith("/archives");
 
   useEffect(() => {
     if (sectionId) {
@@ -52,19 +64,12 @@ export default function Sections(): ReactElement {
   }, [sectionId, sections]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight;
-      const pageHeight = document.documentElement.scrollHeight;
-      const atBottom = scrollPosition >= pageHeight - 10;
-
-      setShowAddButton(!atBottom);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (isCreateSectionRoute || showArchiveRoute) {
+      setHideFab(true);
+    } else {
+      setHideFab(false);
+    }
+  }, [isCreateSectionRoute, showArchiveRoute]);
 
   const handleSectionClick = (section: Section) => {
     setSelectedSection(section);
@@ -118,6 +123,90 @@ export default function Sections(): ReactElement {
     setSectionToDelete(null);
   };
 
+  // Archive handlers
+  const handleArchiveInitiate = (section: Section) => {
+    setSectionToArchive(section);
+    setIsArchiveModalOpen(true);
+  };
+
+  const handleArchiveConfirm = () => {
+    if (sectionToArchive) {
+      archiveSection(sectionToArchive.id, {
+        onSuccess: () => {
+          toast.success("Section archived successfully.");
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "sections"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "archived-sections"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "archived-students"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "students"],
+          });
+          setIsArchiveModalOpen(false);
+          setSectionToArchive(null);
+
+          if (selectedSection?.id === sectionToArchive.id) {
+            navigate("..");
+            setSelectedSection(null);
+          }
+        },
+        onError: (error) => {
+          toast.error("Failed to archive section.");
+          console.error("Archive section error:", error);
+        },
+      });
+    }
+  };
+
+  const handleArchiveCancel = () => {
+    setIsArchiveModalOpen(false);
+    setSectionToArchive(null);
+  };
+
+  const handleRestoreSection = (sectionId: string) => {
+    restoreSection(sectionId, {
+      onSuccess: () => {
+        toast.success("Section restored successfully");
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "sections"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "archived-sections"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "archived-students"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "students"],
+        });
+      },
+      onError: () => {
+        toast.error("Failed to restore section");
+      },
+    });
+  };
+
+  const handlePermanentDelete = (sectionId: string) => {
+    deleteSection(sectionId, {
+      onSuccess: () => {
+        toast.success("Section permanently deleted");
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "sections"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "archived-sections"],
+        });
+      },
+      onError: () => {
+        toast.error("Failed to delete section");
+      },
+    });
+  };
+
   const handleEditInitiate = () => {
     setIsEditModalOpen(true);
   };
@@ -163,21 +252,6 @@ export default function Sections(): ReactElement {
 
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
-      <AnimatePresence>
-        {showAddButton && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 100, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="rounded-full h-16 w-16 bg-[var(--primary-green)]/90 fixed z-5 right-5 bottom-5 flex items-center justify-center md:hidden"
-            type="button"
-            onClick={handleCreateSection}
-          >
-            <GoPlus className="w-5 h-5 text-white" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
       {/* header */}
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
@@ -193,7 +267,8 @@ export default function Sections(): ReactElement {
           sections={sections}
           onShowForm={handleCreateSection}
           onSectionClick={handleSectionClick}
-          onDeleteSection={handleDeleteInitiate}
+          showArchive={true}
+          hideFab={hideFab}
         />
       </section>
 
@@ -202,6 +277,18 @@ export default function Sections(): ReactElement {
         isOpen={isCreateSectionRoute}
         onClose={handleCloseCreateModal}
       />
+
+      {/* archive modal */}
+      {showArchiveRoute && archivedSections && (
+        <SectionArchiveModal
+          isOpen={showArchiveRoute}
+          onClose={() => navigate("..")}
+          sections={archivedSections}
+          onRestoreSection={handleRestoreSection}
+          onDeleteSection={handlePermanentDelete}
+          context={teacherContext}
+        />
+      )}
 
       {/* section details modal */}
       {selectedSection && (
@@ -213,6 +300,7 @@ export default function Sections(): ReactElement {
           sections={sections}
           onEdit={handleEditInitiate}
           onDelete={() => handleDeleteInitiate(selectedSection)}
+          onArchive={() => handleArchiveInitiate(selectedSection)}
         />
       )}
 
@@ -234,6 +322,16 @@ export default function Sections(): ReactElement {
         onConfirm={handleDeleteConfirm}
         section={sectionToDelete}
         studentCount={getStudentCountForSection(sectionToDelete, students)}
+      />
+
+      {/* archive confirmation modal */}
+      <SectionArchiveConfirmationModal
+        isOpen={isArchiveModalOpen}
+        onClose={handleArchiveCancel}
+        onConfirm={handleArchiveConfirm}
+        section={sectionToArchive}
+        students={students}
+        assessments={assessments}
       />
     </main>
   );

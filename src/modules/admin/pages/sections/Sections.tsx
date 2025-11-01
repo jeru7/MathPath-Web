@@ -206,7 +206,6 @@ export default function Sections(): ReactElement {
           sections={sections}
           onShowForm={handleCreateSection}
           onSectionClick={handleSectionClick}
-          onDeleteSection={handleDeleteInitiate}
         />
       </section>
 

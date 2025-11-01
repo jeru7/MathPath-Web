@@ -70,3 +70,43 @@ export const useTeacherEditSection = (teacherId: string) => {
     },
   });
 };
+
+// teacher get archived student
+export const useTeacherArchivedSections = (teacherId: string) => {
+  return useQuery<Section[]>({
+    queryKey: ["teacher", teacherId, "archived-sections"],
+    queryFn: () =>
+      fetchData<Section[]>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/sections/archive`,
+        "Failed to fetch archived sections",
+      ),
+    enabled: !!teacherId,
+    staleTime: DATA_STALE_TIME,
+  });
+};
+
+// teacher archive section
+export const useTeacherArchiveSection = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (sectionId: string) => {
+      return patchData<Section, null>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/sections/${sectionId}/archive`,
+        null,
+        "Failed to archive section.",
+      );
+    },
+  });
+};
+
+// teacher restore section
+export const useTeacherRestoreSection = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (sectionId: string) => {
+      return patchData<Section, null>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/sections/${sectionId}/restore`,
+        null,
+        "Failed to restore section.",
+      );
+    },
+  });
+};

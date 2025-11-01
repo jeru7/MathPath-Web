@@ -1,3 +1,5 @@
+import { Archive } from "../user.type";
+
 export type SectionSelection = {
   value: string;
   label: string;
@@ -17,6 +19,7 @@ export type Section = {
   teacherIds: string[];
   color: SectionColor;
   banner: SectionBanner;
+  archive: Archive;
   createdAt: string;
   updatedAt: string;
 };
