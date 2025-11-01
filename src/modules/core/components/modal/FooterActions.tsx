@@ -48,7 +48,7 @@ export default function FooterActions({
           >
             <FaEdit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden xs:block">{editLabel}</span>
-            <span className="xs:hidden">Edit</span>
+            <span className="xs:hidden">{editLabel}</span>
           </button>
         )}
 
@@ -59,7 +59,7 @@ export default function FooterActions({
           >
             <FaArchive className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden xs:block">{archiveLabel}</span>
-            <span className="xs:hidden">Archive</span>
+            <span className="xs:hidden">{archiveLabel}</span>
           </button>
         )}
 
@@ -70,7 +70,7 @@ export default function FooterActions({
           >
             <FaTrash className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden xs:block">{deleteLabel}</span>
-            <span className="xs:hidden">Delete</span>
+            <span className="xs:hidden">{deleteLabel}</span>
           </button>
         )}
       </div>
