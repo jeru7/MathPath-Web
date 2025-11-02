@@ -25,7 +25,11 @@ export default function SectionArchiveItem({
           <div
             className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border border-gray-300 dark:border-gray-600`}
           >
-            <img src={getSectionBanner(section.banner)} alt="Section banner" />
+            <img
+              src={getSectionBanner(section.banner)}
+              alt="Section banner"
+              className="object-cover w-full h-full"
+            />
           </div>
         </div>
 
