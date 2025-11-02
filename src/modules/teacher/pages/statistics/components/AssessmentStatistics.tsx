@@ -352,8 +352,8 @@ function PassRateTrend({
             </div>
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <p className="text-sm">No pass rate data available</p>
+          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 rounded-sm">
+            <p className="text-sm">No data available</p>
           </div>
         )}
       </div>
@@ -390,8 +390,8 @@ function AssessmentsList({
             ))}
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <p className="text-sm">No assessments available</p>
+          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 rounded-sm">
+            <p className="text-sm">No data available</p>
           </div>
         )}
       </div>

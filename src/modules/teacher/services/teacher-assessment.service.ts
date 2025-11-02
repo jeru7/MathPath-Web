@@ -125,3 +125,43 @@ export const useDeleteAssessment = (teacherId: string) => {
     },
   });
 };
+
+// teacher get archived assessments
+export const useTeacherArchivedAssessments = (teacherId: string) => {
+  return useQuery<Assessment[]>({
+    queryKey: ["teacher", teacherId, "archived-assessments"],
+    queryFn: () =>
+      fetchData<Assessment[]>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/archive`,
+        "Failed to fetch archived assessments",
+      ),
+    enabled: !!teacherId,
+    staleTime: DATA_STALE_TIME,
+  });
+};
+
+// teacher archive assessment
+export const useTeacherArchiveAssessment = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (assessmentId: string) => {
+      return patchData<Assessment, null>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${assessmentId}/archive`,
+        null,
+        "Failed to archive assessment.",
+      );
+    },
+  });
+};
+
+// teacher restore assessment
+export const useTeacherRestoreAssessment = (teacherId: string) => {
+  return useMutation({
+    mutationFn: (assessmentId: string) => {
+      return patchData<Assessment, null>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/assessments/${assessmentId}/restore`,
+        null,
+        "Failed to restore assessment.",
+      );
+    },
+  });
+};

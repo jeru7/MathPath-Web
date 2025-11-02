@@ -9,6 +9,13 @@ import { toast } from "react-toastify";
 import DeleteAssessmentConfirmationModal from "./components/DeleteAssessmentConfirmationModal";
 import AssessmentDetailsModal from "./components/assessment-details/AssessmentDetailsModal";
 import { useTeacherAssessmentAttempts } from "../../services/teacher-assessment-attempt.service";
+import {
+  useTeacherArchiveAssessment,
+  useTeacherRestoreAssessment,
+  useTeacherArchivedAssessments,
+} from "../../services/teacher-assessment.service";
+import AssessmentArchiveConfirmationModal from "../../../core/components/assessment-archive/AssessmentArchiveConfirmationModal";
+import AssessmentArchiveModal from "../../../core/components/assessment-archive/AssessmentArchiveModal";
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
@@ -18,11 +25,20 @@ export default function Assessments(): ReactElement {
   const queryClient = useQueryClient();
   const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
 
+  const { data: archivedAssessments } =
+    useTeacherArchivedAssessments(teacherId);
+  const { mutate: archiveAssessment } = useTeacherArchiveAssessment(teacherId);
+  const { mutate: restoreAssessment } = useTeacherRestoreAssessment(teacherId);
+
   const [assessmentToDelete, setAssessmentToDelete] =
     useState<Assessment | null>(null);
+  const [assessmentToArchive, setAssessmentToArchive] =
+    useState<Assessment | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [selectedAssessment, setSelectedAssessment] =
     useState<Assessment | null>(null);
+  const [hideFab, setHideFab] = useState<boolean>(false);
 
   // fetch attempts for the selected assessment
   const { data: studentAttempts = [], isLoading: isLoadingAttempts } =
@@ -42,6 +58,19 @@ export default function Assessments(): ReactElement {
       setSelectedAssessment(null);
     }
   }, [assessmentId, assessments]);
+
+  const pathEnd = location.pathname.split("/").pop();
+  const isAssessmentDetailsRoute =
+    selectedAssessment !== null && pathEnd === selectedAssessment.id;
+  const showArchiveRoute = location.pathname.endsWith("/archives");
+
+  useEffect(() => {
+    if (showArchiveRoute) {
+      setHideFab(true);
+    } else {
+      setHideFab(false);
+    }
+  }, [showArchiveRoute]);
 
   const handleDeleteInitiate = (assessment: Assessment) => {
     setAssessmentToDelete(assessment);
@@ -71,6 +100,85 @@ export default function Assessments(): ReactElement {
   const handleDeleteCancel = () => {
     setIsDeleteModalOpen(false);
     setAssessmentToDelete(null);
+  };
+
+  // archive handlers
+  const handleArchiveInitiate = (assessment: Assessment) => {
+    if (assessment?.status === "draft") {
+      toast.error(
+        "Draft assessments cannot be archived. Please publish or delete the draft instead.",
+      );
+      return;
+    }
+
+    setAssessmentToArchive(assessment);
+    setIsArchiveModalOpen(true);
+  };
+
+  const handleArchiveConfirm = () => {
+    if (assessmentToArchive) {
+      archiveAssessment(assessmentToArchive.id, {
+        onSuccess: () => {
+          toast.success("Assessment archived successfully.");
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "assessments"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["teacher", teacherId, "archived-assessments"],
+          });
+          setIsArchiveModalOpen(false);
+          setAssessmentToArchive(null);
+
+          if (selectedAssessment?.id === assessmentToArchive.id) {
+            navigate("..");
+            setSelectedAssessment(null);
+          }
+        },
+        onError: (error: unknown) => {
+          toast.error("Failed to archive assessment.");
+          console.error("Archive assessment error:", error);
+        },
+      });
+    }
+  };
+
+  const handleArchiveCancel = () => {
+    setIsArchiveModalOpen(false);
+    setAssessmentToArchive(null);
+  };
+
+  const handleRestoreAssessment = (assessmentId: string) => {
+    restoreAssessment(assessmentId, {
+      onSuccess: () => {
+        toast.success("Assessment restored successfully");
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "assessments"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "archived-assessments"],
+        });
+      },
+      onError: () => {
+        toast.error("Failed to restore assessment");
+      },
+    });
+  };
+
+  const handlePermanentDelete = (assessmentId: string) => {
+    deleteAssessment(assessmentId, {
+      onSuccess: () => {
+        toast.success("Assessment permanently deleted");
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "assessments"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["teacher", teacherId, "archived-assessments"],
+        });
+      },
+      onError: () => {
+        toast.error("Failed to delete assessment");
+      },
+    });
   };
 
   const handleAssessmentClick = (assessment: Assessment) => {
@@ -109,11 +217,6 @@ export default function Assessments(): ReactElement {
     return (assessment.sections || []).length;
   };
 
-  // check if we're on assessment details route
-  const pathEnd = location.pathname.split("/").pop();
-  const isAssessmentDetailsRoute =
-    selectedAssessment !== null && pathEnd === selectedAssessment.id;
-
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
       {/* header */}
@@ -129,8 +232,24 @@ export default function Assessments(): ReactElement {
           assessments={assessments}
           navigate={navigate}
           onAssessmentClick={handleAssessmentClick}
+          onArchiveAssessment={handleArchiveInitiate}
+          showArchive={true}
+          hideFab={hideFab}
         />
       </section>
+
+      {/* archive modal */}
+      {showArchiveRoute && archivedAssessments && (
+        <AssessmentArchiveModal
+          isOpen={showArchiveRoute}
+          onClose={() => navigate("..")}
+          assessments={archivedAssessments}
+          onRestoreAssessment={handleRestoreAssessment}
+          onDeleteAssessment={handlePermanentDelete}
+          students={students}
+          studentAttempts={studentAttempts}
+        />
+      )}
 
       {/* assessment details modal */}
       {selectedAssessment && (
@@ -141,8 +260,10 @@ export default function Assessments(): ReactElement {
           studentAttempts={studentAttempts}
           students={students}
           isLoadingAttempts={isLoadingAttempts}
+          disableEdit={selectedAssessment.status !== "draft"}
           onEdit={handleEditAssessment}
           onDelete={() => handleDeleteInitiate(selectedAssessment)}
+          onArchive={() => handleArchiveInitiate(selectedAssessment)}
         />
       )}
 
@@ -156,6 +277,15 @@ export default function Assessments(): ReactElement {
           sectionCount={getSectionCountForAssessment(assessmentToDelete)}
         />
       )}
+
+      {/* archive confirmation modal */}
+      <AssessmentArchiveConfirmationModal
+        isOpen={isArchiveModalOpen}
+        onClose={handleArchiveCancel}
+        onConfirm={handleArchiveConfirm}
+        assessment={assessmentToArchive}
+        students={students}
+      />
     </main>
   );
 }

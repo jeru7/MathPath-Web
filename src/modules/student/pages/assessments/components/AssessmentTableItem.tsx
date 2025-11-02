@@ -83,8 +83,8 @@ export default function AssessmentTableItem({
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {assessment.date.end
             ? format(new Date(assessment.date.end), "MMM d 'at' h:mm a", {
-                timeZone: "Asia/Manila",
-              })
+              timeZone: "Asia/Manila",
+            })
             : "N/A"}
         </p>
       </td>

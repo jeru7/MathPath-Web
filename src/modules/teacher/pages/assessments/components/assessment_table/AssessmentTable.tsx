@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useMemo, useRef, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { CiFilter } from "react-icons/ci";
-import { GoPlus } from "react-icons/go";
+import { GoPlus, GoArchive } from "react-icons/go";
 import { NavigateFunction } from "react-router-dom";
 import AssessmentTableItem from "./AssessmentTableItem";
 import {
@@ -11,17 +11,25 @@ import {
 import DraftDecisionModal from "../DraftDecisionModal";
 import { useDeleteAssessment } from "../../../../services/teacher-assessment.service";
 import { useTeacherContext } from "../../../../context/teacher.context";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 
 type AssessmentTableProps = {
   navigate: NavigateFunction;
   assessments: Assessment[] | [];
   onAssessmentClick: (assessment: Assessment) => void;
+  onArchiveAssessment?: (assessment: Assessment) => void;
+  showArchive?: boolean;
+  hideFab?: boolean;
 };
 
 export default function AssessmentTable({
   navigate,
   assessments,
   onAssessmentClick,
+  onArchiveAssessment,
+  showArchive = false,
+  hideFab = false,
 }: AssessmentTableProps): ReactElement {
   const { teacherId } = useTeacherContext();
   const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
@@ -34,8 +42,11 @@ export default function AssessmentTable({
   const [showFilters, setShowFilters] = useState(false);
   const [showDraftDecision, setShowDraftDecision] = useState(false);
   const [existingDraft, setExistingDraft] = useState<Assessment | null>(null);
+  const [showMobileFab, setShowMobileFab] = useState(!hideFab);
+  const [expandFab, setExpandFab] = useState(false);
 
   const filterDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileFabRef = useRef<HTMLDivElement>(null);
 
   const uniqueTopics = useMemo(() => {
     const topics = assessments
@@ -135,6 +146,15 @@ export default function AssessmentTable({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (hideFab) {
+      setShowMobileFab(false);
+      setExpandFab(false);
+    } else {
+      setShowMobileFab(true);
+    }
+  }, [hideFab]);
 
   const hasActiveFilters =
     selectedStatus !== "all" || selectedTopic !== "all" || searchTerm !== "";
@@ -244,14 +264,27 @@ export default function AssessmentTable({
             )}
           </section>
 
-          {/* create button */}
-          <button
-            className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-            onClick={handleCreateAssessment}
-          >
-            <GoPlus className="w-4 h-4" />
-            <p className="text-sm font-semibold">Create assessment</p>
-          </button>
+          {/* archive button and create button */}
+          <div className="hidden md:flex gap-2 items-center">
+            {/* archive button */}
+            {showArchive && (
+              <button
+                className="p-2 rounded-xs border-gray-200 dark:border-gray-600 border text-gray-400 dark:text-gray-500 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 bg-white dark:bg-gray-800"
+                onClick={() => navigate("archives")}
+              >
+                <GoArchive className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* create button */}
+            <button
+              className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
+              onClick={handleCreateAssessment}
+            >
+              <GoPlus className="w-4 h-4" />
+              <p className="text-sm font-semibold">Create assessment</p>
+            </button>
+          </div>
         </section>
 
         {/* results info */}
@@ -300,6 +333,7 @@ export default function AssessmentTable({
                         key={assessment.id}
                         assessment={assessment}
                         onAssessmentClick={onAssessmentClick}
+                        onArchiveAssessment={onArchiveAssessment}
                       />
                     ))}
                   </tbody>
@@ -325,6 +359,69 @@ export default function AssessmentTable({
           </div>
         )}
       </section>
+
+      {/* floating action buttons for mobile */}
+      <AnimatePresence>
+        {!hideFab && showMobileFab && (
+          <div
+            className="md:hidden fixed bottom-6 right-6 z-50"
+            ref={mobileFabRef}
+          >
+            {expandFab && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                className="flex flex-col gap-3 mb-3"
+              >
+                {/* archive button */}
+                {showArchive && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                    onClick={() => {
+                      navigate("archives");
+                      setShowMobileFab(false);
+                    }}
+                    title="Archive"
+                  >
+                    <GoArchive className="w-5 h-5" />
+                  </motion.button>
+                )}
+
+                {/* create assessment button */}
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                  onClick={() => {
+                    handleCreateAssessment();
+                    setShowMobileFab(false);
+                  }}
+                  title="Create Assessment"
+                >
+                  <GoPlus className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
+            )}
+
+            {/* main fab toggle button */}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className={`flex items-center justify-center w-14 h-14 rounded-full shadow-sm bg-[var(--primary-green)] text-white`}
+              onClick={() => setExpandFab(!expandFab)}
+              title={expandFab ? "Close" : "Menu"}
+            >
+              {expandFab ? <FaCaretDown /> : <FaCaretUp />}
+            </motion.button>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* draft decision modal */}
       <DraftDecisionModal

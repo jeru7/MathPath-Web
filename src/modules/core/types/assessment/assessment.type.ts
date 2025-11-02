@@ -1,3 +1,5 @@
+import { Archive } from "../user.type";
+
 export type Assessment = {
   id: string;
   title: string | null;
@@ -14,6 +16,7 @@ export type Assessment = {
   };
   timeLimit: number;
   status: AssessmentStatus;
+  archive: Archive;
   createdAt: string;
   updatedAt: string;
 };

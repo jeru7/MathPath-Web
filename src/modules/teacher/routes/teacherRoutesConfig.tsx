@@ -41,6 +41,7 @@ export const teacherRoutesConfig = [
         children: [
           { index: true, element: <Assessments /> },
           { path: ":assessmentId", element: <Assessments /> },
+          { path: ":assessmentId/archives", element: <Assessments /> },
           { path: "new", element: <AssessmentBuilderWrapper /> },
           {
             path: ":assessmentId/create",

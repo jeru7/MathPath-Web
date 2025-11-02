@@ -71,7 +71,7 @@ export const useTeacherEditSection = (teacherId: string) => {
   });
 };
 
-// teacher get archived student
+// teacher get archived sections
 export const useTeacherArchivedSections = (teacherId: string) => {
   return useQuery<Section[]>({
     queryKey: ["teacher", teacherId, "archived-sections"],
