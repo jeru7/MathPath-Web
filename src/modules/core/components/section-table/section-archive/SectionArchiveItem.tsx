@@ -4,6 +4,7 @@ import { MdCalendarToday } from "react-icons/md";
 import { format } from "date-fns-tz";
 import { Section } from "../../../types/section/section.type";
 import { TIMEZONE } from "../../../constants/date.constant";
+import { getSectionBanner } from "../../../utils/section/section.util";
 
 type SectionArchiveItemProps = {
   section: Section;
@@ -22,17 +23,10 @@ export default function SectionArchiveItem({
         {/* section color indicator */}
         <div className="flex-shrink-0">
           <div
-            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-300 dark:border-gray-600 ${section.color === "primary-green"
-                ? "bg-[var(--primary-green)]"
-                : section.color === "tertiary-green"
-                  ? "bg-[var(--tertiary-green)]"
-                  : section.color === "primary-orange"
-                    ? "bg-[var(--primary-orange)]"
-                    : section.color === "primary-yellow"
-                      ? "bg-[var(--primary-yellow)]"
-                      : "bg-gray-400"
-              }`}
-          />
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border border-gray-300 dark:border-gray-600`}
+          >
+            <img src={getSectionBanner(section.banner)} alt="Section banner" />
+          </div>
         </div>
 
         {/* section details */}
