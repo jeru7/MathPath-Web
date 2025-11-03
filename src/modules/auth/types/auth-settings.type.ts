@@ -55,21 +55,20 @@ export const ChangeAccountSettingsSchema = z.object({
   firstName: z
     .string()
     .min(1, "First name is required")
-    .max(50, "First name is too long"),
+    .max(50, "First name is too long")
+    .regex(/^[A-Za-z\s]+$/, "First name must contain only letters"),
   lastName: z
     .string()
     .min(1, "Last name is required")
-    .max(50, "Last name is too long"),
+    .max(50, "Last name is too long")
+    .regex(/^[A-Za-z\s]+$/, "Last name must contain only letters"),
   middleName: z
     .string()
     .max(50, "Middle name is too long")
+    .regex(/^[A-Za-z\s]*$/, "Middle name must contain only letters")
     .optional()
     .or(z.literal("")),
-  email: z
-    .string()
-    .email("Invalid email address")
-    .min(1, "Email is required")
-    .max(100, "Email is too long"),
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
   profilePicture: z.any().optional(),
 });
 

@@ -63,9 +63,13 @@ export default function DetailsOverview({
             Date Created:
           </span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
-            {format(new Date(student.createdAt.toString()), "MMMM d, yyyy", {
-              timeZone: "Asia/Manila",
-            })}
+            {format(
+              new Date(student.createdAt.toString()),
+              "MMMM d 'at' hh:mm a, yyyy",
+              {
+                timeZone: "Asia/Manila",
+              },
+            )}
           </span>
         </div>
         {student.lastOnline && (
