@@ -19,6 +19,7 @@ import {
 import { usePreview } from "../../../../core/contexts/preview/preview.context";
 import AssessmentPreview from "./preview/AssessmentPreview";
 import { useTeacherContext } from "../../../context/teacher.context";
+import { toast } from "react-toastify";
 
 export type BuilderMode = "create" | "configure" | "publish";
 export type BuilderStep = 1 | 2 | 3;
@@ -229,9 +230,7 @@ export default function AssessmentBuilder(): ReactElement {
 
   const handlePreview = () => {
     if (assessment.pages.length === 0 || !assessment.title) {
-      console.log(
-        "Cannot preview: Assessment needs title and at least one page",
-      );
+      toast.warn("Cannot preview: Assessment needs title.");
       return;
     }
     openPreview(assessment, "preview");
