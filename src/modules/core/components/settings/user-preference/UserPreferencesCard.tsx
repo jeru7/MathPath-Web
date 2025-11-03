@@ -13,7 +13,6 @@ export default function UserPreferencesCard(): ReactElement {
 
     console.log("Theme changed to:", newTheme);
 
-    // TODO: save user theme to user db ???
     // TODO: language pref
     // TODO: sfx pref
   };
@@ -34,11 +33,10 @@ export default function UserPreferencesCard(): ReactElement {
               <button
                 key={themeOption}
                 onClick={() => handleThemeChange(themeOption as Theme)}
-                className={`px-4 py-2 rounded border text-sm capitalize transition-colors duration-200 ${
-                  theme === themeOption
+                className={`px-4 py-2 rounded border text-sm capitalize transition-colors duration-200 ${theme === themeOption
                     ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-500 dark:border-green-400"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600"
-                }`}
+                  }`}
               >
                 {themeOption}
               </button>

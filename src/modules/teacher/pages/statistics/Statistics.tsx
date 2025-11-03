@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
-import StagesStatistics from "./components/StagesStatistics";
-import AssessmentStatistics from "./components/AssessmentStatistics";
-import TopicStatistics from "./components/TopicStatistics";
-import QuestionStatistics from "./components/QuestionStatistics";
+import StagesStatistics from "./components/stage-statistics/StagesStatistics";
+import AssessmentStatistics from "./components/assessment-statistics/AssessmentStatistics";
+import TopicStatistics from "./components/topic-statistics/TopicStatistics";
+import QuestionStatistics from "./components/question-statistics/QuestionStatistics";
 
 export default function Statistics(): ReactElement {
   return (

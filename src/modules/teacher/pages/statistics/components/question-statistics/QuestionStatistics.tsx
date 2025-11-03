@@ -19,10 +19,10 @@ import Select from "react-select";
 import {
   useTeacherOverallQuestionStats,
   useTeacherSectionQuestionStats,
-} from "../../../services/teacher-stats.service";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { CustomAxisTick } from "./CustomAxisTick";
-import { QuestionStat } from "../../../../core/types/chart.type";
+} from "../../../../services/teacher-stats.service";
+import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
+import { CustomAxisTick } from "./../CustomAxisTick";
+import { QuestionStat } from "../../../../../core/types/chart.type";
 
 export default function QuestionStatistics(): ReactElement {
   const { teacherId } = useParams();

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 export default function Download(): ReactElement {
   return (
     <section
-      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]"
+      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-inherit px-8 text-[var(--primary-white)]"
       id="download"
     >
       <div className="flex flex-col items-center gap-4">

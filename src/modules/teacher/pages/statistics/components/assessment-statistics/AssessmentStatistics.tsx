@@ -1,4 +1,5 @@
-import { type ReactElement, useState } from "react";
+// TODO: move the other components to their specific file
+import { type ReactElement, useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -9,12 +10,12 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from "recharts";
-import { useTeacherContext } from "../../../context/teacher.context";
-import { useTeacherAssessmentOverview } from "../../../services/teacher-stats.service";
-import { AssessmentListItem } from "../../../../core/types/assessment/assessment-stats.type";
 import { FaTimes } from "react-icons/fa";
 import { BsChevronRight } from "react-icons/bs";
-import ModalOverlay from "../../../../core/components/modal/ModalOverlay";
+import { useTeacherContext } from "../../../../context/teacher.context";
+import { useTeacherAssessmentOverview } from "../../../../services/teacher-stats.service";
+import { AssessmentListItem } from "../../../../../core/types/assessment/assessment-stats.type";
+import ModalOverlay from "../../../../../core/components/modal/ModalOverlay";
 
 const COLORS = {
   primary: "#3b82f6",
@@ -41,9 +42,27 @@ interface PassRateDataItem {
 
 export default function AssessmentStatistics(): ReactElement {
   const { teacherId } = useTeacherContext();
-  const { data: stats, isLoading } = useTeacherAssessmentOverview(teacherId);
+  const { data: stats, isLoading: assessmentStatsLoading } =
+    useTeacherAssessmentOverview(teacherId);
   const [selectedAssessment, setSelectedAssessment] =
     useState<AssessmentListItem | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // set minimum loading time of 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // also stop loading when data is ready and minimum time has passed
+  useEffect(() => {
+    if (!assessmentStatsLoading && stats && !isLoading) {
+      setIsLoading(false);
+    }
+  }, [assessmentStatsLoading, stats, isLoading]);
 
   const handleAssessmentClick = (assessment: AssessmentListItem) => {
     setSelectedAssessment(assessment);
@@ -53,7 +72,7 @@ export default function AssessmentStatistics(): ReactElement {
     setSelectedAssessment(null);
   };
 
-  // transform assessments data for pass rate trend chart
+  // Transform assessments data for the pass rate trend chart
   const passRateData: PassRateDataItem[] =
     stats?.assessments
       ?.filter((assessment) => assessment.status !== "draft")
@@ -67,18 +86,50 @@ export default function AssessmentStatistics(): ReactElement {
         assessmentId: assessment.id,
       })) || [];
 
+  // Show loading state
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <header className="mb-6">
+          <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+          <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        </header>
+
+        <div className="space-y-6">
+          <MetricsGridSkeleton />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <PassRateTrendSkeleton />
+            <AssessmentsListSkeleton />
+          </div>
+        </div>
+      </article>
+    );
   }
 
+  // Show empty state only after loading is complete and no data exists
   if (!stats) {
-    return <EmptyState />;
+    return (
+      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
+        <div className="text-4xl mb-3">📊</div>
+        <p className="text-gray-500 dark:text-gray-400">
+          No assessment data available
+        </p>
+      </article>
+    );
   }
 
   return (
     <>
       <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <Header />
+        <header className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Assessment Overview
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Performance metrics and assessment analytics
+          </p>
+        </header>
 
         <div className="space-y-6">
           <MetricsGrid overview={stats.overview} />
@@ -109,46 +160,62 @@ export default function AssessmentStatistics(): ReactElement {
   );
 }
 
-// TODO: make this reusable component
-function LoadingState(): ReactElement {
+// Skeleton Components
+function MetricsGridSkeleton(): ReactElement {
   return (
-    <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="animate-pulse space-y-4">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-        <div className="grid grid-cols-3 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-20 bg-gray-200 dark:bg-gray-700 rounded"
-            ></div>
-          ))}
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-center border border-gray-200 dark:border-gray-700"
+        >
+          <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PassRateTrendSkeleton(): ReactElement {
+  return (
+    <div className="rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
+      <div className="h-48 flex items-center justify-center">
+        <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse flex items-center justify-center">
+          <div className="text-gray-400 dark:text-gray-600">
+            Loading chart data...
+          </div>
         </div>
       </div>
-    </article>
+    </div>
   );
 }
 
-function EmptyState(): ReactElement {
+function AssessmentsListSkeleton(): ReactElement {
   return (
-    <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
-      <div className="text-4xl mb-3">📊</div>
-      <p className="text-gray-500 dark:text-gray-400">
-        No assessment data available
-      </p>
-    </article>
-  );
-}
-
-function Header(): ReactElement {
-  return (
-    <header className="mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-        Assessment Overview
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-        Performance metrics and assessment analytics
-      </p>
-    </header>
+    <div className="rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
+      <div className="h-48 space-y-2">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={index}
+            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3 min-w-0 flex-1">
+                <div className="w-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+                <div className="min-w-0 flex-1">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
+                </div>
+              </div>
+              <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -167,29 +234,17 @@ function MetricsGrid({ overview }: MetricsGridProps): ReactElement {
     {
       label: "Total Assessments",
       value: overview.totalAssessments,
-      format: "number" as const,
+      format: "number",
     },
-    {
-      label: "Attempts",
-      value: overview.totalAttempts,
-      format: "number" as const,
-    },
+    { label: "Attempts", value: overview.totalAttempts, format: "number" },
     {
       label: "Completion Rate",
       value: overview.completionRate,
-      format: "percentage" as const,
+      format: "percentage",
     },
-    {
-      label: "Pass Rate",
-      value: overview.passRate,
-      format: "percentage" as const,
-    },
-    {
-      label: "Avg Time",
-      value: overview.averageTimeSpent,
-      format: "time" as const,
-    },
-  ];
+    { label: "Pass Rate", value: overview.passRate, format: "percentage" },
+    { label: "Avg Time", value: overview.averageTimeSpent, format: "time" },
+  ] as const;
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -251,7 +306,6 @@ function PassRateTrend({
 }: PassRateTrendProps): ReactElement {
   const hasData = passRateData.length > 0;
 
-  // custom tooltip with proper ts types
   const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
     active,
     payload,
@@ -262,7 +316,7 @@ function PassRateTrend({
       const assessment = assessments.find((a) => a.id === data.assessmentId);
 
       return (
-        <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 text-xs max-w-[300px] transition-colors duration-200">
+        <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 text-xs max-w-[300px]">
           <p className="font-bold text-sm mb-1 text-gray-900 dark:text-white truncate">
             {assessment?.title || label}
           </p>
@@ -292,9 +346,7 @@ function PassRateTrend({
 
   const handleBarClick = (data: PassRateDataItem) => {
     const assessment = assessments.find((a) => a.id === data.assessmentId);
-    if (assessment) {
-      onAssessmentClick(assessment);
-    }
+    if (assessment) onAssessmentClick(assessment);
   };
 
   return (
@@ -305,38 +357,29 @@ function PassRateTrend({
 
       <div className="h-48">
         {hasData ? (
-          <div className="w-full h-fit overflow-x-auto xl:overflow-x-hidden overflow-y-hidden">
-            <div className="w-full min-w-[600px] xl:min-w-min h-48">
+          <div className="w-full overflow-x-auto xl:overflow-x-hidden">
+            <div className="min-w-[600px] xl:min-w-min h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={passRateData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: -20,
-                  }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: -20 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="#f0f0f0"
                     className="dark:stroke-gray-600"
                   />
                   <XAxis
                     dataKey="name"
                     height={60}
                     interval={0}
-                    tick={{
-                      fontSize: 11,
-                      fill: "currentColor",
-                    }}
+                    tick={{ fontSize: 11, fill: "currentColor" }}
                     className="text-gray-600 dark:text-gray-400"
                   />
                   <YAxis
                     domain={[0, 100]}
-                    className="text-gray-600 dark:text-gray-400"
                     tick={{ fontSize: 11 }}
-                    tickFormatter={(value: number) => `${value}%`}
+                    tickFormatter={(v: number) => `${v}%`}
+                    className="text-gray-600 dark:text-gray-400"
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar
@@ -352,7 +395,7 @@ function PassRateTrend({
             </div>
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 rounded-sm">
+          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
             <p className="text-sm">No data available</p>
           </div>
         )}
@@ -390,7 +433,7 @@ function AssessmentsList({
             ))}
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 rounded-sm">
+          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
             <p className="text-sm">No data available</p>
           </div>
         )}
@@ -436,7 +479,6 @@ function AssessmentItem({
   );
 }
 
-// modal component
 interface AssessmentDetailModalProps {
   assessment: AssessmentListItem;
   onClose: () => void;
@@ -450,10 +492,8 @@ function AssessmentDetailModal({
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return minutes > 0
-      ? `${minutes}m ${remainingSeconds}s`
-      : `${remainingSeconds}s`;
+    const remaining = seconds % 60;
+    return minutes > 0 ? `${minutes}m ${remaining}s` : `${remaining}s`;
   };
 
   const metrics = [
@@ -461,29 +501,18 @@ function AssessmentDetailModal({
       label: "Total Attempts",
       value: assessment.totalAttempts.toLocaleString(),
     },
-    {
-      label: "Completion Rate",
-      value: `${assessment.completionRate}%`,
-    },
-    {
-      label: "Pass Rate",
-      value: `${assessment.passRate}%`,
-    },
-    {
-      label: "Average Time",
-      value: formatTime(assessment.averageTimeSpent),
-    },
+    { label: "Completion Rate", value: `${assessment.completionRate}%` },
+    { label: "Pass Rate", value: `${assessment.passRate}%` },
+    { label: "Average Time", value: formatTime(assessment.averageTimeSpent) },
   ];
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm border border-gray-200 dark:border-gray-700 w-[90dvw] sm:w-[400px]">
       {/* header */}
       <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Assessment Details
-          </h3>
-        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Assessment Details
+        </h3>
         <button
           onClick={onClose}
           className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded"
@@ -493,35 +522,33 @@ function AssessmentDetailModal({
       </div>
 
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-        {/* info */}
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <h4 className="text-xl font-semibold text-gray-900 dark:text-gray-100 sm:pr-4 break-words">
-              {assessment.title}
-            </h4>
-            <div className="flex items-center space-x-2 flex-shrink-0">
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: statusConfig.color }}
-              />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {statusConfig.label}
-              </span>
-            </div>
+        {/* Info */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <h4 className="text-xl font-semibold text-gray-900 dark:text-gray-100 break-words">
+            {assessment.title}
+          </h4>
+          <div className="flex items-center space-x-2">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: statusConfig.color }}
+            />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {statusConfig.label}
+            </span>
           </div>
         </div>
 
         <div className="space-y-3">
-          {metrics.map((metric) => (
+          {metrics.map((m) => (
             <div
-              key={metric.label}
+              key={m.label}
               className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
             >
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {metric.label}
+                {m.label}
               </span>
               <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {metric.value}
+                {m.value}
               </span>
             </div>
           ))}

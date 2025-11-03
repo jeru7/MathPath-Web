@@ -8,6 +8,12 @@ import {
 export type StudentCharacter = Gender;
 export type StudentStatusType = "Online" | "Offline";
 
+export type StudentBadge = {
+  badgeId: string;
+  reqCompleted: number;
+  dateFinished: Date | null;
+};
+
 export type Student = {
   id: string;
   firstName: string;
@@ -23,6 +29,7 @@ export type Student = {
   email: string;
   assessments: StudentAssessment[];
   character: StudentCharacter;
+  badges: StudentBadge[];
   level: number;
   exp: StudentExp;
   hp: number;

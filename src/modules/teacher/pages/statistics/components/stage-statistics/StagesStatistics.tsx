@@ -17,14 +17,14 @@ import Select from "react-select";
 import {
   useTeacherOverallTopicStats,
   useTeacherSectionTopicStats,
-} from "../../../services/teacher-stats.service";
+} from "../../../../services/teacher-stats.service";
 import {
   TopicCorrectness,
   TopicStats,
-} from "../../../../core/types/chart.type";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { CustomAxisTick } from "./CustomAxisTick";
-import { useTeacherContext } from "../../../context/teacher.context";
+} from "../../../../../core/types/chart.type";
+import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
+import { CustomAxisTick } from "./../CustomAxisTick";
+import { useTeacherContext } from "../../../../context/teacher.context";
 
 export default function StagesStatistics(): ReactElement {
   const { teacherId } = useTeacherContext();

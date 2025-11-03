@@ -19,13 +19,13 @@ import Select from "react-select";
 import {
   useTeacherOverallTopicStats,
   useTeacherSectionTopicStats,
-} from "../../../services/teacher-stats.service";
+} from "../../../../services/teacher-stats.service";
 import {
   TopicCorrectness,
   TopicStats,
-} from "../../../../core/types/chart.type";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { CustomAxisTick } from "./CustomAxisTick";
+} from "../../../../../core/types/chart.type";
+import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
+import { CustomAxisTick } from "./../CustomAxisTick";
 
 export default function TopicStatistics(): ReactElement {
   const { teacherId } = useParams();
@@ -285,15 +285,14 @@ const TopicCustomTooltip = ({
               Avg Correct:
             </span>
             <span
-              className={`font-bold ${
-                data.avgCorrectPercentage >= 80
+              className={`font-bold ${data.avgCorrectPercentage >= 80
                   ? "text-green-600 dark:text-green-400"
                   : data.avgCorrectPercentage >= 60
                     ? "text-blue-600 dark:text-blue-400"
                     : data.avgCorrectPercentage >= 40
                       ? "text-amber-600 dark:text-amber-400"
                       : "text-red-600 dark:text-red-400"
-              }`}
+                }`}
             >
               {data.avgCorrectPercentage.toFixed(1)}%
             </span>

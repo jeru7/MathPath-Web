@@ -11,7 +11,7 @@ export default function Landing(): ReactElement {
   return (
     <>
       <LandingNav />
-      <div className="font-gummy flex flex-col gap-16 bg-[var(--primary-black)]">
+      <div className="font-gummy flex flex-col gap-16 bg-gradient-to-br from-gray-900 to-black">
         <Hero />
         <Features />
         <About />

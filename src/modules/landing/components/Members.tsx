@@ -42,7 +42,7 @@ export default function Members(): ReactElement {
 
   return (
     <section
-      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-[var(--primary-black)] px-8 text-[var(--primary-white)]"
+      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-inherit px-8 text-[var(--primary-white)]"
       id="members"
     >
       <div className="flex flex-col gap-8 w-full items-center">

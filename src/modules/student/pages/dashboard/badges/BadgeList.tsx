@@ -6,14 +6,84 @@ import {
   filterOptions,
 } from "../../../../core/types/select.type";
 import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { Student, StudentBadge } from "../../../types/student.type";
+import { useBadges } from "../../../../core/services/badge/badge.service";
+import { Badge } from "../../../../core/types/badge/badge.type";
 
-export default function BadgeList(): ReactElement {
+type BadgeListProps = {
+  student: Student;
+};
+
+export default function BadgeList({ student }: BadgeListProps): ReactElement {
+  const { data: badges } = useBadges();
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
 
+  // Get student's progress for a specific badge
+  const getStudentBadgeProgress = (badgeId: string) => {
+    const studentBadge = student.badges.find(
+      (b: StudentBadge) => b.badgeId === badgeId,
+    );
+    if (!studentBadge) {
+      return {
+        completed: false,
+        progress: 0,
+        reqCompleted: 0,
+        dateFinished: null,
+      };
+    }
+
+    const badge = badges?.find((b) => b.id === badgeId);
+    if (!badge) {
+      return {
+        completed: false,
+        progress: 0,
+        reqCompleted: studentBadge.reqCompleted,
+        dateFinished: studentBadge.dateFinished,
+      };
+    }
+
+    const progress = Math.min(
+      (studentBadge.reqCompleted / badge.req) * 100,
+      100,
+    );
+    const completed = studentBadge.dateFinished !== null;
+
+    return {
+      completed,
+      progress,
+      reqCompleted: studentBadge.reqCompleted,
+      dateFinished: studentBadge.dateFinished,
+    };
+  };
+
+  // Filter badges based on student progress and selected filter
+  const getFilteredBadges = (): Badge[] => {
+    if (!badges) return [];
+
+    const filtered = badges.filter((badge: Badge) => {
+      const progress = getStudentBadgeProgress(badge.id);
+
+      switch (selectedFilter.value) {
+        case "all":
+          return true;
+        case "completed":
+          return progress.completed;
+        case "not-completed":
+          return !progress.completed;
+        default:
+          return true;
+      }
+    });
+
+    return filtered;
+  };
+
+  const filteredBadges = getFilteredBadges();
+
   return (
-    <article className="w-full h-full bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm flex flex-col p-3 overflow-hidden transition-colors duration-200">
-      <div className="flex justify-between items-center mb-3 flex-shrink-0">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <article className="w-full h-full bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-lg sm:rounded-sm shadow-sm flex flex-col p-3 sm:p-4 overflow-hidden transition-colors duration-200">
+      <div className="flex justify-between items-center mb-3 sm:mb-4 flex-shrink-0">
+        <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg sm:text-base transition-colors duration-200">
           Badges
         </h3>
         <Select
@@ -38,16 +108,27 @@ export default function BadgeList(): ReactElement {
               placeholderColor: "#9ca3af",
             },
           })}
-          className="w-32 text-xs"
+          className="w-28 sm:w-32 text-xs"
           isSearchable={false}
           menuPlacement="auto"
         />
       </div>
       <div className="flex-1 overflow-x-auto">
         <div className="flex gap-3 h-full">
-          <div className="flex gap-3 items-start h-full w-full">
-            <BadgeItem />
-            <BadgeItem />
+          <div className="flex gap-3 sm:gap-4 items-start h-full w-full">
+            {filteredBadges.length > 0 ? (
+              filteredBadges.map((badge: Badge) => (
+                <BadgeItem
+                  key={badge.id}
+                  badge={badge}
+                  studentProgress={getStudentBadgeProgress(badge.id)}
+                />
+              ))
+            ) : (
+              <div className="flex items-center justify-center w-full h-32 text-gray-500 dark:text-gray-400 text-sm sm:text-base">
+                No badges found for this filter.
+              </div>
+            )}
           </div>
         </div>
       </div>

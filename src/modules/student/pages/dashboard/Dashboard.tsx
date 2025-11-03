@@ -1,13 +1,13 @@
 import { type ReactElement } from "react";
 import PlayerCard from "./playerCard/PlayerCard.tsx";
 import QuestList from "./quests/QuestList.tsx";
-// import BadgeList from "./badges/BadgeList.tsx";
 import Todo from "./todo/Todo.tsx";
 // import ActivityList from "../../../core/components/activity/ActivityList.tsx";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar.tsx";
 import { useStudentContext } from "../../contexts/student.context.tsx";
 import ProfileCard from "./playerCard/ProfileCard.tsx";
 import { FaClockRotateLeft } from "react-icons/fa6";
+import BadgeList from "./badges/BadgeList.tsx";
 
 export default function Dashboard(): ReactElement {
   const { student } = useStudentContext();
@@ -37,21 +37,7 @@ export default function Dashboard(): ReactElement {
 
           {/* bottom */}
           <section className="flex-1 min-h-0">
-            <div className="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 rounded-sm dark:border-gray-700 w-full h-full flex flex-col items-center justify-center p-8">
-              <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                  <FaClockRotateLeft className="w-4 h-4 text-gray-900 dark:text-gray-300" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Badge Collection
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs">
-                  Our achievement badge system is currently in development and
-                  will be available soon.
-                </p>
-              </div>
-            </div>
-            {/* <BadgeList /> */}
+            <BadgeList student={student} />
           </section>
         </section>
 
