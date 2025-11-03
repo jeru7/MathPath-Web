@@ -98,22 +98,28 @@ export default function Features(): ReactElement {
         ))}
       </div>
 
-      {/* desktop layout */}
+      {/* desktop layout - FIXED SWIPER */}
       <div className="hidden lg:block w-full max-w-7xl">
         <Swiper
           direction="vertical"
           slidesPerView={1}
           spaceBetween={60}
-          mousewheel={{ forceToAxis: true, releaseOnEdges: true }}
-          touchStartPreventDefault={false}
-          touchMoveStopPropagation={true}
-          simulateTouch={true}
+          mousewheel={false} // Disable mousewheel entirely
+          touchRatio={1}
+          resistance={true}
+          resistanceRatio={0.85}
           onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-          className="h-[65vh] w-full overflow-y-hidden overscroll-none"
+          className="h-[65vh] w-full"
           modules={[Mousewheel, Navigation]}
+          allowTouchMove={true}
+          simulateTouch={true}
+          shortSwipes={true}
+          longSwipes={true}
+          followFinger={true}
+          threshold={5}
         >
           {features.map((feature, index) => (
-            <SwiperSlide key={index} className="h-full snap-center">
+            <SwiperSlide key={index} className="h-full">
               <GameFeatureCard
                 className="h-full w-full flex-row gap-12 px-4"
                 imgSrc={feature.img}

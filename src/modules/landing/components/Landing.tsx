@@ -9,9 +9,9 @@ import Footer from "./Footer";
 
 export default function Landing(): ReactElement {
   return (
-    <>
+    <div className="min-h-screen overflow-x-hidden">
       <LandingNav />
-      <div className="font-gummy flex flex-col gap-16 bg-gradient-to-br from-gray-900 to-black">
+      <div className="font-gummy flex flex-col gap-16 bg-gradient-to-br from-gray-900 to-black min-h-screen">
         <Hero />
         <Features />
         <About />
@@ -19,6 +19,6 @@ export default function Landing(): ReactElement {
         <Download />
         <Footer />
       </div>
-    </>
+    </div>
   );
 }

@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
+import { motion } from "framer-motion";
 import kathImage from "../../../assets/images/team-members/kath.png";
 import samImage from "../../../assets/images/team-members/sam.png";
 import emmanImage from "../../../assets/images/team-members/emman.png";
 import laImage from "../../../assets/images/team-members/la.png";
-import { motion } from "framer-motion";
 import MemberCard from "./MemberCard";
 
 export default function Members(): ReactElement {
@@ -42,38 +42,46 @@ export default function Members(): ReactElement {
 
   return (
     <section
-      className="font-jersey flex w-screen flex-col items-center justify-center gap-16 bg-inherit px-8 text-[var(--primary-white)]"
       id="members"
+      className="font-jersey flex flex-col items-center justify-center gap-12 bg-inherit px-4 py-12 text-[var(--primary-white)] sm:px-6 md:px-8"
     >
-      <div className="flex flex-col gap-8 w-full items-center">
-        {/* title */}
-        <div className="flex flex-col items-center">
+      <div className="flex flex-col w-full max-w-screen-xl items-center gap-8">
+        <div className="flex flex-col items-center text-center">
           <motion.h2
-            className="text-lg font-bold md:text-3xl"
+            className="text-base font-bold sm:text-lg md:text-2xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ transition: 1, ease: "easeOut", delay: 0.2 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
             viewport={{ once: true }}
           >
             Meet Our
           </motion.h2>
+
           <motion.h3
-            className="text-4xl font-bold md:text-5xl"
+            className="text-3xl font-bold sm:text-4xl md:text-5xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ transition: 1, ease: "easeOut", delay: 0.2 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
             viewport={{ once: true }}
           >
             Team Members
           </motion.h3>
         </div>
 
-        {/* members content */}
-        <div className="grid grid-cols-2 grid-rows-2 place-items-center w-fit lg:gap-x-8 gap-y-4 items-center xl:w-full xl:flex xl:justify-center">
+        <div
+          className="
+            grid 
+            grid-cols-1 
+            sm:grid-cols-2 
+            lg:grid-cols-4 
+            gap-8 
+            w-full 
+            place-items-center
+          "
+        >
           {members.map((member, index) => (
             <MemberCard
               key={index}
-              className=""
               img={member.img}
               name={member.name}
               role={member.role}
@@ -82,9 +90,8 @@ export default function Members(): ReactElement {
         </div>
       </div>
 
-      {/* divider */}
       <motion.div
-        className="h-[1px] w-full bg-[var(--primary-green)]"
+        className="h-[1px] w-full max-w-screen-xl bg-[var(--primary-green)]"
         initial={{ opacity: 0, scaleX: 0 }}
         whileInView={{ opacity: 0.8, scaleX: 1 }}
         transition={{ duration: 0.7, ease: "easeOut" }}

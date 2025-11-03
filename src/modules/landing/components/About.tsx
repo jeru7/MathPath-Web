@@ -40,7 +40,7 @@ export default function About(): ReactElement {
 
   return (
     <section
-      className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-6 py-16 text-white md:px-8 lg:py-20"
+      className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-4 py-16 text-white sm:px-6 md:px-8 lg:py-20"
       id="about"
     >
       {/* header */}
@@ -59,7 +59,7 @@ export default function About(): ReactElement {
 
       {/* about content */}
       <motion.p
-        className="max-w-4xl text-center text-gray-300 text-sm lg:text-base leading-relaxed mb-24"
+        className="max-w-4xl text-center text-gray-300 text-sm lg:text-base leading-relaxed mb-16 lg:mb-24 px-4"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
@@ -73,7 +73,7 @@ export default function About(): ReactElement {
       </motion.p>
 
       <motion.div
-        className="flex flex-col items-center gap-8 w-full max-w-sm"
+        className="flex flex-col items-center gap-8 w-full max-w-sm px-4"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -89,22 +89,21 @@ export default function About(): ReactElement {
         <div className="relative w-full">
           <button
             onClick={prevEnemy}
-            className="absolute -left-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-gray-800/80 border border-gray-600 flex items-center justify-center hover:bg-gray-700/80 transition-all duration-300 hover:border-[var(--primary-green)] hover:scale-110"
+            className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-800/90 border border-gray-600 flex items-center justify-center hover:bg-gray-700/90 transition-all duration-300 hover:border-[var(--primary-green)] hover:scale-110 active:scale-95"
             aria-label="Previous enemy"
           >
-            <FaChevronLeft className="w-4 h-4" />
+            <FaChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
 
           <button
             onClick={nextEnemy}
-            className="absolute -right-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-gray-800/80 border border-gray-600 flex items-center justify-center hover:bg-gray-700/80 transition-all duration-300 hover:border-[var(--primary-green)] hover:scale-110"
+            className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-800/90 border border-gray-600 flex items-center justify-center hover:bg-gray-700/90 transition-all duration-300 hover:border-[var(--primary-green)] hover:scale-110 active:scale-95"
             aria-label="Next enemy"
           >
-            <FaChevronRight className="w-4 h-4" />
+            <FaChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
 
-          {/* vertical enemy card */}
-          <div className="bg-transparent rounded-2xl p-6">
+          <div className="bg-transparent rounded-2xl p-4 sm:p-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentEnemyIndex}
@@ -112,14 +111,14 @@ export default function About(): ReactElement {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.2 }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="flex flex-col items-center gap-6"
+                className="flex flex-col items-center gap-4 sm:gap-6"
               >
                 <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 blur-xl opacity-50 animate-pulse"></div>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 blur-lg sm:blur-xl opacity-50 animate-pulse"></div>
 
                   <motion.div
                     animate={{
-                      y: [0, -10, 0],
+                      y: [0, -8, 0],
                     }}
                     transition={{
                       duration: 3,
@@ -128,12 +127,12 @@ export default function About(): ReactElement {
                     }}
                     className="relative"
                   >
-                    <div className="relative w-48 h-48 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-2xl">
+                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-xl lg:shadow-2xl">
                       <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden border-2 border-white/10">
                         <img
                           src={enemies[currentEnemyIndex].image}
                           alt={enemies[currentEnemyIndex].name}
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-contain scale-90 sm:scale-100"
                         />
                       </div>
                     </div>
@@ -147,17 +146,16 @@ export default function About(): ReactElement {
                         repeat: Infinity,
                         ease: "linear",
                       }}
-                      className="absolute -inset-4 border-2 border-purple-400/30 rounded-full"
+                      className="absolute -inset-3 sm:-inset-4 border-2 border-purple-400/30 rounded-full"
                     />
                   </motion.div>
                 </div>
 
-                {/* enemy name */}
                 <motion.h5
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
-                  className="font-bold text-2xl lg:text-3xl text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
+                  className="font-bold text-xl sm:text-2xl lg:text-3xl text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
                 >
                   {enemies[currentEnemyIndex].name}
                 </motion.h5>
@@ -166,14 +164,13 @@ export default function About(): ReactElement {
           </div>
         </div>
 
-        {/* progress dots */}
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-2 sm:mt-4">
           {enemies.map((_, index) => (
             <button
               key={index}
               onClick={() => goToEnemy(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentEnemyIndex
-                  ? "bg-[var(--primary-green)] scale-125"
+              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentEnemyIndex
+                  ? "bg-[var(--primary-green)] scale-110 sm:scale-125"
                   : "bg-gray-600 hover:bg-gray-400"
                 }`}
               aria-label={`Go to enemy ${index + 1}`}
@@ -181,39 +178,37 @@ export default function About(): ReactElement {
           ))}
         </div>
 
-        {/* enemy counter */}
-        <div className="text-center text-gray-400 text-sm">
+        <div className="text-center text-gray-400 text-xs sm:text-sm">
           {currentEnemyIndex + 1} / {enemies.length}
         </div>
       </motion.div>
 
-      {/* potions section - unchanged */}
       <motion.div
-        className="flex flex-col items-center gap-4 w-full max-w-4xl mt-24"
+        className="flex flex-col items-center gap-4 w-full max-w-4xl mt-16 lg:mt-24 px-4"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
         viewport={{ once: true }}
       >
         <h4 className="text-2xl font-bold lg:text-3xl">Potions</h4>
-        <p className="text-gray-300 text-sm lg:text-base mb-4">
+        <p className="text-gray-300 text-sm lg:text-base mb-4 text-center">
           Restore your abilities with powerful elixirs
         </p>
-        <div className="grid grid-cols-2 gap-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-md sm:max-w-2xl">
           {potions.map((potion, index) => (
             <motion.div
               key={potion}
-              className="bg-gray-800/50 rounded-lg p-4 border border-gray-600 hover:border-[var(--primary-green)] transition-all duration-300"
+              className="bg-gray-800/50 rounded-lg p-3 sm:p-4 border border-gray-600 hover:border-[var(--primary-green)] transition-all duration-300"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
               viewport={{ once: true }}
             >
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/20">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-white/30 to-transparent" />
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/20">
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-white/30 to-transparent" />
                 </div>
-                <h5 className="font-semibold text-center text-sm lg:text-base">
+                <h5 className="font-semibold text-center text-xs sm:text-sm lg:text-base">
                   {potion}
                 </h5>
               </div>
