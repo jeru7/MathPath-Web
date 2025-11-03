@@ -66,7 +66,7 @@ export default function About(): ReactElement {
         viewport={{ once: true }}
       >
         MathPath is an engaging turn-based mobile game designed specifically for
-        Grade 10 ProbEx students. Master mathematical concepts through strategic
+        Grade 10 Probex students. Master mathematical concepts through strategic
         battles, solve challenging problems to defeat enemies, and progress
         through an immersive learning adventure that makes Grade 10 mathematics
         exciting and interactive.
@@ -114,7 +114,7 @@ export default function About(): ReactElement {
                 className="flex flex-col items-center gap-4 sm:gap-6"
               >
                 <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 blur-lg sm:blur-xl opacity-50 animate-pulse"></div>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-600 via-yellow-500 to-green-500 blur-lg sm:blur-xl opacity-50 animate-pulse"></div>
 
                   <motion.div
                     animate={{
@@ -127,7 +127,7 @@ export default function About(): ReactElement {
                     }}
                     className="relative"
                   >
-                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-xl lg:shadow-2xl">
+                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full bg-gradient-to-br from-yellow-500 to-green-500 p-1 shadow-xl lg:shadow-2xl">
                       <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden border-2 border-white/10">
                         <img
                           src={enemies[currentEnemyIndex].image}

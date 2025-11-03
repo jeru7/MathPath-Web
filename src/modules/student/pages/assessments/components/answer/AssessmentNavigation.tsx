@@ -28,15 +28,13 @@ export default function AssessmentNavigation({
     if (hasPreviousPage) setCurrentPage(currentPage - 1);
   };
 
-  // shared button classes
   const baseButtonClasses =
     "flex items-center justify-center space-x-2 px-4 sm:px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-all duration-200 min-w-[120px] sm:min-w-[140px] h-[44px]";
 
   return (
-    <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">
+    <div className="relative z-10 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-          {/* progress section */}
           <div className="flex flex-row items-center justify-center w-full sm:w-auto gap-2">
             <div className="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
               Page{" "}
@@ -48,8 +46,6 @@ export default function AssessmentNavigation({
                 {totalPages}
               </span>
             </div>
-
-            {/* progress dots */}
             <div className="flex items-center justify-center gap-1 ml-3">
               {Array.from({ length: totalPages }).map((_, index) => (
                 <div
@@ -64,8 +60,6 @@ export default function AssessmentNavigation({
               ))}
             </div>
           </div>
-
-          {/* navigation buttons */}
           <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-normal">
             <button
               onClick={handlePrevious}
@@ -75,7 +69,6 @@ export default function AssessmentNavigation({
               <IoChevronBack className="w-4 h-4" />
               <span className="hidden xs:inline">Previous</span>
             </button>
-
             {isLastPage ? (
               <button
                 onClick={onSubmit}

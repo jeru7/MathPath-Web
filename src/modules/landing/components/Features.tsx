@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel, Navigation } from "swiper/modules";
 import GameFeatureCard from "./GameFeatureCard";
+import "swiper/swiper-bundle.css";
 
 const features = [
   {
@@ -98,38 +99,35 @@ export default function Features(): ReactElement {
         ))}
       </div>
 
-      {/* desktop layout - FIXED SWIPER */}
-      <div className="hidden lg:block w-full max-w-7xl">
-        <Swiper
-          direction="vertical"
-          slidesPerView={1}
-          spaceBetween={60}
-          mousewheel={false} // Disable mousewheel entirely
-          touchRatio={1}
-          resistance={true}
-          resistanceRatio={0.85}
-          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-          className="h-[65vh] w-full"
-          modules={[Mousewheel, Navigation]}
-          allowTouchMove={true}
-          simulateTouch={true}
-          shortSwipes={true}
-          longSwipes={true}
-          followFinger={true}
-          threshold={5}
-        >
-          {features.map((feature, index) => (
-            <SwiperSlide key={index} className="h-full">
-              <GameFeatureCard
-                className="h-full w-full flex-row gap-12 px-4"
-                imgSrc={feature.img}
-                title={feature.title}
-                description={feature.description}
-                animation={desktopAnimationValue}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      {/* desktop layout */}
+      <div className="hidden lg:flex w-full max-w-7xl overflow-hidden">
+        <div className="h-[65vh] w-full">
+          <Swiper
+            direction="vertical"
+            slidesPerView={1}
+            spaceBetween={60}
+            mousewheel={{
+              forceToAxis: true,
+              releaseOnEdges: true,
+              sensitivity: 1,
+            }}
+            modules={[Mousewheel, Navigation]}
+            onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+            className="h-full w-full"
+          >
+            {features.map((feature, index) => (
+              <SwiperSlide key={index}>
+                <GameFeatureCard
+                  className="h-full w-full flex-row gap-12 px-4"
+                  imgSrc={feature.img}
+                  title={feature.title}
+                  description={feature.description}
+                  animation={desktopAnimationValue}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       </div>
 
       {/* feature counter */}

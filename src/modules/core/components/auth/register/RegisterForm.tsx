@@ -184,6 +184,7 @@ export default function RegisterForm(): ReactElement {
                     styles={getCustomSelectColor({
                       height: "54px",
                       padding: "0px 4px",
+                      menuWidth: "100%",
                       backgroundColor: "rgba(243, 244, 246, 0.30)",
                       textColor: "rgb(31, 41, 55)",
                       optionHoverColor: "rgba(50, 50, 50, .30)",
