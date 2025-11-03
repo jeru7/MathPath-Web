@@ -119,7 +119,6 @@ export default function RegisterForm(): ReactElement {
         className="flex flex-1 flex-col gap-4 justify-between"
       >
         <div className="flex flex-col gap-2 md:gap-4">
-          {/* First + Last name */}
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
             <div className="relative w-full">
               <input
@@ -156,7 +155,6 @@ export default function RegisterForm(): ReactElement {
             </div>
           </div>
 
-          {/* Middle name + Gender */}
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
             <div className="relative w-full">
               <input
@@ -214,7 +212,6 @@ export default function RegisterForm(): ReactElement {
             </div>
           </div>
 
-          {/* Email */}
           <div className="relative">
             <input
               type="email"
@@ -230,7 +227,6 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* LRN */}
           <div className="relative">
             <input
               type="text"
@@ -254,7 +250,6 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* Password */}
           <div className="flex flex-col">
             <div className="relative">
               <input
@@ -284,7 +279,6 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* Confirm Password */}
           <div className="flex flex-col">
             <div className="relative">
               <input
@@ -318,7 +312,6 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* Registration Code */}
           <div className="relative">
             <input
               type="text"
@@ -340,7 +333,6 @@ export default function RegisterForm(): ReactElement {
             )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -350,7 +342,6 @@ export default function RegisterForm(): ReactElement {
           </button>
         </div>
 
-        {/* Already registered? */}
         <div className="flex gap-2 self-center">
           <p className="text-white">Already registered?</p>
           <button

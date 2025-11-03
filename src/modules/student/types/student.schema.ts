@@ -3,7 +3,7 @@ import { z } from "zod";
 export const LoginFormSchema = z
   .object({
     accountType: z.enum(["Student", "Teacher"]),
-    identifier: z.string(), // no min(1) here
+    identifier: z.string(),
     password: z
       .string()
       .min(1, "Password is required")
@@ -23,13 +23,6 @@ export const LoginFormSchema = z
         ctx.addIssue({
           path: ["identifier"],
           message: "Learner reference number must be exactly 12 digits",
-          code: z.ZodIssueCode.custom,
-        });
-      } else if (!/^(4875|4066|4870|1368)/.test(identifier)) {
-        ctx.addIssue({
-          path: ["identifier"],
-          message:
-            "Learner reference number must start with 4875, 4066, 4870, or 1368",
           code: z.ZodIssueCode.custom,
         });
       }
@@ -89,14 +82,9 @@ export const AddStudentSchema = z.object({
     })
     .nullable(),
   email: z.string().email("Invalid email address"),
-  referenceNumber: z
-    .string()
-    .refine((val) => val.length === 12, {
-      message: "Reference number must be 12 digits",
-    })
-    .refine((val) => /^(4875|4066|4870|1368)/.test(val), {
-      message: "Reference number must start with 4875, 4066, 4870, or 1368",
-    }),
+  referenceNumber: z.string().refine((val) => val.length === 12, {
+    message: "Reference number must be 12 digits",
+  }),
   password: z
     .string()
     .min(1, "Password is required")
@@ -151,14 +139,9 @@ export const RegisterStudentSchema = z.object({
 
   email: z.string().email("Invalid email address"),
 
-  referenceNumber: z
-    .string()
-    .refine((val) => val.length === 12, {
-      message: "Reference number must be 12 digits",
-    })
-    .refine((val) => /^(4875|4066|4870|1368)/.test(val), {
-      message: "Reference number must start with 4875, 4066, 4870, or 1368",
-    }),
+  referenceNumber: z.string().refine((val) => val.length === 12, {
+    message: "Reference number must be 12 digits",
+  }),
 
   password: z
     .string()

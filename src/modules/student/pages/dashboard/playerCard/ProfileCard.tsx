@@ -34,7 +34,9 @@ export default function ProfileCard({
         <div className="flex-1 min-w-0">
           <h2 className="font-bold text-gray-900 dark:text-gray-100 text-sm truncate transition-colors duration-200">
             {capitalizeWord(student?.firstName.toString())}{" "}
-            {student?.middleName?.charAt(0).toUpperCase()}.{" "}
+            {student?.middleName
+              ? `${student.middleName.charAt(0).toUpperCase()}. `
+              : ""}
             {capitalizeWord(student?.lastName.toString())}
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-xs truncate transition-colors duration-200">
