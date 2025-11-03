@@ -30,7 +30,6 @@ import { FaInfoCircle } from "react-icons/fa";
 type StudentAssessmentProps = {
   assessment: Assessment;
   currentAttempt: AssessmentAttempt | null;
-  onBack?: () => void;
   onSubmitted?: (attempt: AssessmentAttempt) => void;
 };
 
@@ -45,14 +44,10 @@ export default function StudentAssessment({
 
   const initialTimeRemaining = useMemo(() => {
     if (!assessment.timeLimit) return 0;
-
     const totalTime = assessment.timeLimit * 60;
-
     if (currentAttempt?.timeSpent && currentAttempt.timeSpent > 0) {
-      const remaining = Math.max(totalTime - currentAttempt.timeSpent, 0);
-      return remaining;
+      return Math.max(totalTime - currentAttempt.timeSpent, 0);
     }
-
     return totalTime;
   }, [currentAttempt, assessment.timeLimit]);
 
@@ -70,21 +65,16 @@ export default function StudentAssessment({
   const hasAttemptedSubmitRef = useRef<boolean>(hasAttemptedSubmit);
   const handleSubmitAssessmentRef =
     useRef<(answers: StudentAnswers, isAutoSubmit?: boolean) => void>();
-  const sessionStartTimeRef = useRef<number>(Date.now()); // track session start time
+  const sessionStartTimeRef = useRef<number>(Date.now());
 
   const getSessionTimeSpent = useCallback(() => {
-    const sessionTime = Math.floor(
-      (Date.now() - sessionStartTimeRef.current) / 1000,
-    );
-    return sessionTime;
+    return Math.floor((Date.now() - sessionStartTimeRef.current) / 1000);
   }, []);
 
   const getTotalTimeSpent = useCallback(() => {
     const sessionTimeSpent = getSessionTimeSpent();
     const previousTimeSpent = currentAttempt?.timeSpent || 0;
-    const totalTimeSpent = previousTimeSpent + sessionTimeSpent;
-
-    return totalTimeSpent;
+    return previousTimeSpent + sessionTimeSpent;
   }, [currentAttempt?.timeSpent, getSessionTimeSpent]);
 
   useEffect(() => {
@@ -124,16 +114,11 @@ export default function StudentAssessment({
       setIsSubmitting(false);
       resetAnswers();
       closePreview();
-
-      if (onSubmitted) {
-        onSubmitted(savedAttempt);
-      }
-
+      if (onSubmitted) onSubmitted(savedAttempt);
       if (!isAutoSubmit) {
         toast.success("Assessment submitted successfully!", {
           position: "bottom-right",
           autoClose: 3000,
-          hideProgressBar: false,
         });
       }
     },
@@ -141,24 +126,19 @@ export default function StudentAssessment({
       const apiError: APIErrorResponse = handleApiError(error);
       setIsSubmitting(false);
       setHasAttemptedSubmit(false);
-
       toast.error(apiError.message, {
         position: "bottom-right",
         autoClose: 5000,
-        hideProgressBar: false,
       });
     },
     handlePauseSuccess: () => {
       setIsPausing(false);
       resetAnswers();
       closePreview();
-
       toast.success("Assessment paused successfully! You can resume later.", {
         position: "bottom-right",
         autoClose: 3000,
-        hideProgressBar: false,
       });
-
       setTimeout(() => {
         navigate(`/student/${currentAttempt?.studentId}/assessments`);
       }, 100);
@@ -166,89 +146,35 @@ export default function StudentAssessment({
     handlePauseError: (error: unknown) => {
       const apiError: APIErrorResponse = handleApiError(error);
       setIsPausing(false);
-
       toast.error(apiError.message, {
         position: "bottom-right",
         autoClose: 5000,
-        hideProgressBar: false,
       });
     },
   });
 
-  useEffect(() => {
-    submissionHandlersRef.current.handleSubmissionSuccess = (
-      savedAttempt: AssessmentAttempt,
-      isAutoSubmit: boolean = false,
-    ) => {
-      setIsSubmitting(false);
-      resetAnswers();
-      closePreview();
-
-      if (onSubmitted) {
-        onSubmitted(savedAttempt);
-      }
-
-      if (!isAutoSubmit) {
-        toast.success("Assessment submitted successfully!", {
-          position: "bottom-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-        });
-      }
-    };
-
-    submissionHandlersRef.current.handlePauseSuccess = () => {
-      setIsPausing(false);
-      resetAnswers();
-      closePreview();
-
-      toast.success("Assessment paused successfully! You can resume later.", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-      });
-
-      setTimeout(() => {
-        navigate(`/student/${currentAttempt?.studentId}/assessments`);
-      }, 100);
-    };
-  }, [
-    resetAnswers,
-    closePreview,
-    onSubmitted,
-    navigate,
-    currentAttempt?.studentId,
-  ]);
-
   const handleSubmitAssessment = useCallback(
     (answers: StudentAnswers, isAutoSubmit: boolean = false) => {
       if (hasAttemptedSubmitRef.current && !isAutoSubmit) return;
-
       setIsSubmitting(true);
-      if (!isAutoSubmit) {
-        setHasAttemptedSubmit(true);
-      }
-
+      if (!isAutoSubmit) setHasAttemptedSubmit(true);
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
-
       const totalTimeSpent = getTotalTimeSpent();
-
       const completedAttempt: AssessmentAttempt = {
         ...attemptData,
         score: 0,
         timeSpent: totalTimeSpent,
         status: "completed",
-        answers: answers,
+        answers,
         dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
         dateCompleted: new Date().toISOString(),
         dateUpdated: new Date().toISOString(),
         currentPage: 0,
         percentage: 0,
       };
-
       submitAssessment(completedAttempt, {
         onSuccess: (savedAttempt) =>
           submissionHandlersRef.current.handleSubmissionSuccess(
@@ -269,26 +195,22 @@ export default function StudentAssessment({
   const handlePauseAssessment = useCallback(
     (answers: StudentAnswers) => {
       setIsPausing(true);
-
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
-
       const totalTimeSpent = getTotalTimeSpent();
-
       const pausedAttempt: AssessmentAttempt = {
         ...attemptData,
         score: 0,
         timeSpent: totalTimeSpent,
         status: "paused",
-        answers: answers,
+        answers,
         dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
         dateUpdated: new Date().toISOString(),
         currentPage: 0,
         percentage: 0,
       };
-
       savePausedAssessment(pausedAttempt, {
         onSuccess: submissionHandlersRef.current.handlePauseSuccess,
         onError: submissionHandlersRef.current.handlePauseError,
@@ -307,91 +229,77 @@ export default function StudentAssessment({
   }, [handleSubmitAssessment]);
 
   useEffect(() => {
-    if (!assessment.timeLimit || hasAttemptedSubmitRef.current) {
-      return;
-    }
-
+    if (!assessment.timeLimit || hasAttemptedSubmitRef.current) return;
     sessionStartTimeRef.current = Date.now();
-
     timeRemainingRef.current = initialTimeRemaining;
     setTimeRemaining(initialTimeRemaining);
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = window.setInterval(() => {
       timeRemainingRef.current = Math.max(timeRemainingRef.current - 1, 0);
       setTimeRemaining(timeRemainingRef.current);
-
       if (timeRemainingRef.current <= 0) {
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-        }
-        if (handleSubmitAssessmentRef.current) {
-          handleSubmitAssessmentRef.current(
-            (studentAnswersRef.current as StudentAnswers) || {},
-            true,
-          );
-        }
+        clearInterval(timerRef.current!);
+        timerRef.current = null;
+        handleSubmitAssessmentRef.current?.(
+          (studentAnswersRef.current as StudentAnswers) || {},
+          true,
+        );
       }
     }, 1000);
-
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [assessment.timeLimit, initialTimeRemaining]);
 
+  // handle browser back button and navigation
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!hasAttemptedSubmitRef.current) {
-        e.preventDefault();
-        e.returnValue =
+        event.preventDefault();
+        event.returnValue =
           "You have unsaved changes. Are you sure you want to leave?";
-        return "You have unsaved changes. Are you sure you want to leave?";
+        return event.returnValue;
       }
-      return undefined;
+    };
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (!hasAttemptedSubmitRef.current) {
+        event.preventDefault();
+        setShowExitConfirm(true);
+        window.history.pushState(null, "", window.location.href);
+      }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+
+    window.history.pushState(null, "", window.location.href);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, []);
 
-  const handleExitClick = () => {
-    setShowExitConfirm(true);
-  };
-
   const handleConfirmExit = () => {
-    if (handleSubmitAssessmentRef.current) {
-      handleSubmitAssessmentRef.current(
-        (studentAnswersRef.current as StudentAnswers) || {},
-        true,
-      );
-    }
     setShowExitConfirm(false);
-  };
-
-  const handlePauseClick = () => {
-    handlePauseAssessment((studentAnswersRef.current as StudentAnswers) || {});
-    setShowExitConfirm(false);
+    window.history.go(-2);
   };
 
   const handleCancelExit = () => {
     setShowExitConfirm(false);
   };
 
-  const toggleCardVisibility = () => {
-    setIsCardVisible(!isCardVisible);
+  const handleExitClick = () => setShowExitConfirm(true);
+
+  const handlePauseClick = () => {
+    handlePauseAssessment((studentAnswersRef.current as StudentAnswers) || {});
+    setShowExitConfirm(false);
   };
 
-  if (!isOpen || mode !== "assessment") {
-    return <></>;
-  }
+  const toggleCardVisibility = () => setIsCardVisible(!isCardVisible);
+
+  if (!isOpen || mode !== "assessment") return <></>;
 
   return (
     <div className="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col z-50">
@@ -401,15 +309,12 @@ export default function StudentAssessment({
         timeRemaining={timeRemaining}
         totalTime={assessment.timeLimit ? assessment.timeLimit * 60 : 0}
       />
-
       <div className="flex-1 overflow-hidden relative">
         <div className="h-full overflow-y-auto">
           <div className="max-w-4xl mx-auto py-6">
             <AssessmentContent />
           </div>
         </div>
-
-        {/* toggle button for information */}
         {!isCardVisible && (
           <button
             onClick={toggleCardVisibility}
@@ -419,7 +324,6 @@ export default function StudentAssessment({
             <FaInfoCircle className="w-4 h-4" />
           </button>
         )}
-
         {isCardVisible && (
           <FloatingCard
             assessment={assessment}
@@ -427,19 +331,15 @@ export default function StudentAssessment({
           />
         )}
       </div>
-
       <AssessmentNavigation
-        onSubmit={() => {
-          if (handleSubmitAssessmentRef.current) {
-            handleSubmitAssessmentRef.current(
-              (studentAnswersRef.current as StudentAnswers) || {},
-              false,
-            );
-          }
-        }}
+        onSubmit={() =>
+          handleSubmitAssessmentRef.current?.(
+            (studentAnswersRef.current as StudentAnswers) || {},
+            false,
+          )
+        }
         isSubmitting={isSubmitting || isPausing}
       />
-
       <ExitConfirmationModal
         isOpen={showExitConfirm}
         onConfirm={handleConfirmExit}

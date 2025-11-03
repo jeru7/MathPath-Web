@@ -29,6 +29,8 @@ export default function StudentOnlineTrend({
   const { teacherId } = useParams();
   const { data: activityTrend } = useTeacherOnlineTrend(teacherId ?? "", range);
 
+  console.log(activityTrend);
+
   const chartData = activityTrend?.map((d) => {
     if (range === "today") {
       return { ...d, label: formatHour((d as OnlineTrendResultToday).hour) };
@@ -61,11 +63,10 @@ export default function StudentOnlineTrend({
                 <button
                   key={item}
                   onClick={() => setRange(item as OnlineTrendRange)}
-                  className={`px-3 py-1 rounded-md text-xs md:text-sm hover:cursor-pointer transition-colors duration-200 ${
-                    range === item
+                  className={`px-3 py-1 rounded-md text-xs md:text-sm hover:cursor-pointer transition-colors duration-200 ${range === item
                       ? "bg-[var(--secondary-green)]/80 dark:bg-green-600 text-black dark:text-white hover:bg-[var(--secondary-green)] dark:hover:bg-green-500"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
+                    }`}
                 >
                   {capitalizeWord(item)}
                 </button>
@@ -77,11 +78,10 @@ export default function StudentOnlineTrend({
 
       <section className="flex flex-col flex-1 overflow-x-auto">
         <div
-          className={`flex flex-col min-h-[300px] flex-1 ${
-            activityTrend && activityTrend?.length > 0
+          className={`flex flex-col min-h-[300px] flex-1 ${activityTrend && activityTrend?.length > 0
               ? "min-w-[1000px] "
               : "w-full"
-          }`}
+            }`}
         >
           {activityTrend && activityTrend?.length > 0 ? (
             <ResponsiveContainer className={"w-full flex-1"}>

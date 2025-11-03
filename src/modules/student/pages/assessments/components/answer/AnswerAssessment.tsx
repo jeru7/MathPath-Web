@@ -78,7 +78,6 @@ export default function AnswerAssessment(): ReactElement {
             new Date(a.dateCompleted || a.dateUpdated).getTime(),
         )[0];
 
-      // handle resume first if resume param exists and paused attempt available
       if (isResume && pausedAttempt) {
         setCurrentAttempt(pausedAttempt);
         setIsResumingPaused(true);
@@ -86,7 +85,6 @@ export default function AnswerAssessment(): ReactElement {
         return;
       }
 
-      // show result if there's a completed attempt (and not resuming or retaking)
       if (completedAttempt && !isRetakeFromDetails && !isResume) {
         setSubmittedAttempt(completedAttempt);
         setShowResult(true);
@@ -94,7 +92,6 @@ export default function AnswerAssessment(): ReactElement {
         return;
       }
 
-      // redirect if no more attempts allowed
       if (!canTakeNew && !isRetakeFromDetails && !isResume) {
         toast.error(
           "You have reached the maximum number of attempts for this assessment.",
@@ -110,14 +107,12 @@ export default function AnswerAssessment(): ReactElement {
       let newAttempt: AssessmentAttempt;
 
       if (pausedAttempt && !isRetakeFromDetails) {
-        // use the existing paused attempt to preserve timespent and other data
         newAttempt = {
           ...pausedAttempt,
           dateUpdated: new Date().toISOString(),
         };
         setIsResumingPaused(true);
       } else {
-        // create a completely new attempt for retakes or when no paused attempt exists
         newAttempt = {
           studentId: studentId ?? "",
           assessmentId: assessmentId ?? "",
@@ -175,11 +170,6 @@ export default function AnswerAssessment(): ReactElement {
     }
   }, [assessmentId, studentId, refetchAttempts]);
 
-  const handleBackToAssessments = () => {
-    closePreview();
-    navigate(`/student/${studentId}/assessments`);
-  };
-
   const handleAssessmentSubmitted = async (attempt: AssessmentAttempt) => {
     if (attempt.status === "completed" || attempt.status === "failed") {
       setSubmittedAttempt(attempt);
@@ -199,8 +189,6 @@ export default function AnswerAssessment(): ReactElement {
   };
 
   const handleRetakeAssessment = () => {
-    console.log("Retake initiated", { canRetake, assessmentId, studentId });
-
     if (!canRetake) {
       toast.error(
         "You have reached the maximum number of attempts for this assessment.",
@@ -234,13 +222,11 @@ export default function AnswerAssessment(): ReactElement {
 
     refetchAttempts();
     refetchPausedAttempt();
-
-    console.log("Retake completed", newAttempt);
   };
 
   if (assessmentPending) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-green-600 dark:border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
@@ -253,7 +239,7 @@ export default function AnswerAssessment(): ReactElement {
 
   if (!assessment) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center max-w-md p-6">
           <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
             <IoClose className="w-6 h-6 text-red-600 dark:text-red-400" />
@@ -266,7 +252,7 @@ export default function AnswerAssessment(): ReactElement {
           </p>
           <button
             onClick={() => navigate(`/student/${studentId}/assessments`)}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium"
           >
             Return to Assessments
           </button>
@@ -280,7 +266,7 @@ export default function AnswerAssessment(): ReactElement {
       <AssessmentResult
         assessment={assessment}
         attempt={submittedAttempt}
-        onBack={handleBackToAssessments}
+        onBack={() => navigate(`/student/${studentId}/assessments`)}
         onRetake={canRetake ? handleRetakeAssessment : undefined}
         canRetake={canRetake}
         attemptsUsed={completedAttemptsCount}
@@ -300,7 +286,6 @@ export default function AnswerAssessment(): ReactElement {
           <StudentAssessmentComponent
             assessment={assessment}
             currentAttempt={currentAttempt}
-            onBack={handleBackToAssessments}
             onSubmitted={handleAssessmentSubmitted}
           />
         )}
