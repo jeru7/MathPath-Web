@@ -25,12 +25,14 @@ export type BuilderStep = 1 | 2 | 3;
 
 export default function AssessmentBuilder(): ReactElement {
   const { teacherId, assessments } = useTeacherContext();
+  const { state: assessment } = useAssessmentBuilder();
   const { assessmentId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
   const pathSegments = location.pathname.split("/");
-  const isEditMode = pathSegments.includes("edit");
+  const isEditMode =
+    pathSegments.includes("edit") && assessment.status !== "draft";
   const lastSegment =
     pathSegments[pathSegments.length - (isEditMode ? 2 : 1)] ?? "create";
 
@@ -39,7 +41,6 @@ export default function AssessmentBuilder(): ReactElement {
       ? getInitialStep(lastSegment as BuilderMode)
       : 1,
   );
-  const { state: assessment } = useAssessmentBuilder();
   const [isValidated, setIsValidated] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -57,12 +58,13 @@ export default function AssessmentBuilder(): ReactElement {
 
   const prevAssessmentRef = useRef<string>();
   const { openPreview } = usePreview();
+  const navigationLock = useRef(false);
+  const lastStepRef = useRef(step);
 
   const createErrors = useAssessmentValidation(assessment, 1);
   const configureErrors = useAssessmentValidation(assessment, 2);
   const publishErrors = useAssessmentValidation(assessment, 3);
 
-  // track unsaved changes
   useEffect(() => {
     const currentSerialized = JSON.stringify({
       title: assessment.title,
@@ -80,10 +82,8 @@ export default function AssessmentBuilder(): ReactElement {
       ? prevAssessmentRef.current !== currentSerialized
       : false;
 
-    // update state immediately
     setHasUnsavedChanges(hasChanges);
 
-    // calculate changes count
     if (prevAssessmentRef.current) {
       const prev = JSON.parse(prevAssessmentRef.current);
       const current = JSON.parse(currentSerialized);
@@ -97,7 +97,6 @@ export default function AssessmentBuilder(): ReactElement {
       setChangesCount(count);
     }
 
-    // initialize with current state if not set
     if (!prevAssessmentRef.current) {
       prevAssessmentRef.current = currentSerialized;
     }
@@ -106,6 +105,8 @@ export default function AssessmentBuilder(): ReactElement {
   const cancelPendingUpdates = () => { };
 
   useEffect(() => {
+    if (navigationLock.current || hasUnsavedChanges) return;
+
     const modeMap: Record<BuilderStep, BuilderMode> = {
       1: "create",
       2: "configure",
@@ -115,27 +116,46 @@ export default function AssessmentBuilder(): ReactElement {
 
     let targetPath;
     if (isEditMode) {
-      // edit mode urls: /create/edit, /configure/edit, /publish/edit
       targetPath = `/teacher/${teacherId}/assessments/${assessmentId}/${currentMode}/edit`;
     } else {
-      // create mode urls: /create, /configure, /publish
       targetPath =
         assessmentId === "new"
           ? `/teacher/${teacherId}/assessments/new/${currentMode}`
           : `/teacher/${teacherId}/assessments/${assessmentId}/${currentMode}`;
     }
 
-    if (teacherId && location.pathname !== targetPath) {
+    if (
+      teacherId &&
+      location.pathname !== targetPath &&
+      step !== lastStepRef.current
+    ) {
+      navigationLock.current = true;
       navigate(targetPath, { replace: true });
-    }
-  }, [step, navigate, teacherId, assessmentId, location.pathname, isEditMode]);
 
-  // update step when url changes - handle edit mode urls
+      setTimeout(() => {
+        navigationLock.current = false;
+      }, 100);
+    }
+
+    lastStepRef.current = step;
+  }, [
+    step,
+    navigate,
+    teacherId,
+    assessmentId,
+    location.pathname,
+    isEditMode,
+    hasUnsavedChanges,
+  ]);
+
   useEffect(() => {
     if (["create", "configure", "publish"].includes(lastSegment)) {
-      setStep(getInitialStep(lastSegment as BuilderMode));
+      const newStep = getInitialStep(lastSegment as BuilderMode);
+      if (newStep !== step && !navigationLock.current) {
+        setStep(newStep);
+      }
     }
-  }, [lastSegment]);
+  }, [lastSegment, step]);
 
   useEffect(() => {
     if (assessmentId === "new" && teacherId && assessments.length > 0) {
@@ -146,7 +166,6 @@ export default function AssessmentBuilder(): ReactElement {
     }
   }, [assessmentId, teacherId, assessments, deleteDraft, assessment.id]);
 
-  // browser back button and navigation handling
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
@@ -158,12 +177,9 @@ export default function AssessmentBuilder(): ReactElement {
     };
 
     const handlePopState = (event: PopStateEvent) => {
-      // if there are unsaved changes, show confirmation modal and prevent navigation
       if (hasUnsavedChanges) {
         event.preventDefault();
         setShowExitConfirm(true);
-
-        // immediately push state back to maintain current position
         window.history.pushState(null, "", window.location.href);
       }
     };
@@ -238,6 +254,7 @@ export default function AssessmentBuilder(): ReactElement {
   };
 
   const handleStepChange = (newStep: BuilderStep) => {
+    if (navigationLock.current) return;
     setStep(newStep);
   };
 

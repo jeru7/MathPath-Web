@@ -121,14 +121,8 @@ export default function AssessmentDetailsModal({
   };
 
   const handleEdit = () => {
-    console.log("Edit button clicked in AssessmentDetailsModal");
-    console.log("onEdit function:", onEdit);
-
     if (onEdit) {
-      console.log("Calling onEdit function");
       onEdit();
-    } else {
-      console.log("Edit not allowed:", { onEdit });
     }
   };
 
