@@ -270,6 +270,18 @@ export default function AttemptReviewModal({
     return [];
   };
 
+  // Helper function to get choice text by ID
+  const getChoiceTextById = (
+    question: AssessmentQuestion,
+    choiceId: string,
+  ): string => {
+    if (isChoiceQuestion(question)) {
+      const choice = question.choices.find((c) => c.id === choiceId);
+      return choice?.text || choiceId;
+    }
+    return choiceId;
+  };
+
   const renderQuestionReview = (question: AssessmentQuestion) => {
     const questionId = question.id;
     const studentAnswer = getStudentAnswer(questionId);
@@ -299,13 +311,12 @@ export default function AttemptReviewModal({
             </div>
           </div>
           <div
-            className={`flex items-center gap-1 text-sm font-medium ml-4 ${
-              hasAnswer
+            className={`flex items-center gap-1 text-sm font-medium ml-4 ${hasAnswer
                 ? isCorrect
                   ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
                 : "text-gray-500 dark:text-gray-400"
-            }`}
+              }`}
           >
             {hasAnswer ? (
               isCorrect ? (
@@ -324,13 +335,12 @@ export default function AttemptReviewModal({
             Your Answer:
           </p>
           <div
-            className={`p-3 rounded-sm ${
-              hasAnswer
+            className={`p-3 rounded-sm ${hasAnswer
                 ? isCorrect
                   ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
                   : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                 : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
-            }`}
+              }`}
           >
             {hasAnswer ? (
               renderStudentAnswer(question, studentAnswer)
@@ -381,13 +391,13 @@ export default function AttemptReviewModal({
       return (
         <div className="space-y-2">
           {studentAnswers.map((answerId, index) => {
-            const choice = question.choices.find((c) => c.id === answerId);
+            const choiceText = getChoiceTextById(question, answerId);
             return (
               <div
                 key={index}
                 className="text-sm text-gray-900 dark:text-gray-100"
               >
-                {choice?.text || `Selected: ${answerId}`}
+                {choiceText}
               </div>
             );
           })}
@@ -457,13 +467,13 @@ export default function AttemptReviewModal({
       return (
         <div className="space-y-2">
           {correctAnswers.map((answerId: string, index: number) => {
-            const choice = question.choices.find((c) => c.id === answerId);
+            const choiceText = getChoiceTextById(question, answerId);
             return (
               <div
                 key={index}
                 className="text-sm text-green-700 dark:text-green-300"
               >
-                {choice?.text || `Correct: ${answerId}`}
+                {choiceText}
               </div>
             );
           })}
