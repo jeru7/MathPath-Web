@@ -50,7 +50,6 @@ export default function AssessmentDetailsModal({
   onEdit,
   onArchive,
   onDelete,
-  disableEdit = false,
   archiveLabel = "Archive",
 }: AssessmentDetailsModalProps): ReactElement {
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -109,9 +108,6 @@ export default function AssessmentDetailsModal({
     ).length;
   }, [students, assessment.sections]);
 
-  // check if assessment is in-progress and cannot be edited
-  const cannotEdit = disableEdit || assessment.status === "in-progress";
-
   const handleReviewAttempt = (attempt: AttemptWithStudent) => {
     setSelectedAttempt(attempt);
     setSelectedStudent(attempt.student);
@@ -125,8 +121,14 @@ export default function AssessmentDetailsModal({
   };
 
   const handleEdit = () => {
-    if (onEdit && !cannotEdit) {
+    console.log("Edit button clicked in AssessmentDetailsModal");
+    console.log("onEdit function:", onEdit);
+
+    if (onEdit) {
+      console.log("Calling onEdit function");
       onEdit();
+    } else {
+      console.log("Edit not allowed:", { onEdit });
     }
   };
 
@@ -465,7 +467,6 @@ export default function AssessmentDetailsModal({
             onEdit={handleEdit}
             onArchive={handleArchive}
             onDelete={handleDelete}
-            disableEdit={cannotEdit}
             archiveLabel={archiveLabel}
           />
         </div>

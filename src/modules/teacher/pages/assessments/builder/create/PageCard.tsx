@@ -24,6 +24,7 @@ type PageCardProps = {
   onDelete?: (pageId: string) => void;
   isSingle?: boolean;
   hasError?: boolean;
+  isEditMode?: boolean;
 };
 
 export default function PageCard({
@@ -35,6 +36,7 @@ export default function PageCard({
   onDelete,
   isSingle,
   hasError,
+  isEditMode = false,
 }: PageCardProps): ReactElement {
   // reducer
   const { dispatch } = useAssessmentBuilder();
@@ -54,10 +56,27 @@ export default function PageCard({
 
   // handlers
   const handlePageTitleChange = (pageId: string, newTitle: string) => {
+    if (isEditMode) return;
+
     dispatch({
       type: "UPDATE_PAGE_TITLE",
       payload: { pageId, title: newTitle },
     });
+  };
+
+  const handleEditClick = () => {
+    if (isEditMode) return;
+    setIsEdit(!isEdit);
+  };
+
+  const handleDeleteClick = () => {
+    if (isEditMode) return;
+    onDelete?.(page.id);
+  };
+
+  const handleAddContent = (modalType: ModalType) => {
+    if (isEditMode) return;
+    onShowModal(modalType);
   };
 
   const style = {
@@ -67,19 +86,27 @@ export default function PageCard({
     backgroundColor: isDragging ? "var(--secondary-green)" : "",
   };
 
+  // if in edit mode and dragging is attempted, don't apply drag styles
+  const editModeStyle = isEditMode
+    ? {
+      cursor: "default",
+      opacity: 1,
+    }
+    : {};
+
   return (
     <article
-      className={`flex flex-col w-full rounded-t-sm border rounded-b-sm ${hasError ? "border-red-500" : "border-gray-300 dark:border-gray-600"} ${isDragging ? "opacity-50" : ""} transition-colors duration-200`}
+      className={`flex flex-col w-full rounded-t-sm border rounded-b-sm ${hasError ? "border-red-500" : "border-gray-300 dark:border-gray-600"} ${isDragging && !isEditMode ? "opacity-50" : ""} transition-colors duration-200 ${isEditMode ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, ...editModeStyle }}
       {...attributes}
     >
       {/* header */}
       <header
-        className={`flex justify-between items-center p-2 sm:p-4 rounded-t-xs bg-[var(--tertiary-green)] dark:bg-green-600 ${isDragging ? "opacity-0" : ""} transition-colors duration-200`}
+        className={`flex justify-between items-center p-2 sm:p-4 rounded-t-xs bg-[var(--tertiary-green)] dark:bg-green-600 ${isDragging && !isEditMode ? "opacity-0" : ""} transition-colors duration-200 ${isEditMode ? "bg-green-500/70 dark:bg-green-600/70" : ""}`}
       >
         <div>
-          {isEdit ? (
+          {isEdit && !isEditMode ? (
             // title input
             <input
               type="text"
@@ -96,9 +123,9 @@ export default function PageCard({
               placeholder="Enter page title"
             />
           ) : (
-            // title
+            // title display
             <p
-              className={`text-white text-xs sm:text-sm font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"} transition-colors duration-200`}
+              className={`text-white text-xs sm:text-sm font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"} transition-colors duration-200 ${isEditMode ? "opacity-90" : ""}`}
             >
               {page.title && page.title.trim() !== ""
                 ? page.title
@@ -109,30 +136,42 @@ export default function PageCard({
 
         {/* control buttons */}
         <div className="flex items-center gap-2">
-          <button
-            className="text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
-            onClick={() => setIsEdit(!isEdit)}
-          >
-            <TbEdit
-              className={`h-4 w-4 sm:h-6 sm:w-6 ${isEdit ? "text-green-300" : ""} transition-colors duration-200`}
-            />
-          </button>
-          <div
-            className={`text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
-            {...listeners}
-          >
-            <MdDragIndicator className="h-4 w-4 sm:h-6 sm:w-6" />
-          </div>
-          <button
-            className={`text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
-            onClick={() => onDelete?.(page.id)}
-          >
-            <IoClose className="h-4 w-4 sm:h-6 sm:w-6" />
-          </button>
+          {/* edit button */}
+          {!isEditMode && (
+            <button
+              className="text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
+              onClick={handleEditClick}
+            >
+              <TbEdit
+                className={`h-4 w-4 sm:h-6 sm:w-6 ${isEdit ? "text-green-300" : ""} transition-colors duration-200`}
+              />
+            </button>
+          )}
+
+          {/* drag handle */}
+          {!isEditMode && (
+            <div
+              className={`text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
+              {...listeners}
+            >
+              <MdDragIndicator className="h-4 w-4 sm:h-6 sm:w-6" />
+            </div>
+          )}
+
+          {/* delete button */}
+          {!isEditMode && (
+            <button
+              className={`text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
+              onClick={handleDeleteClick}
+            >
+              <IoClose className="h-4 w-4 sm:h-6 sm:w-6" />
+            </button>
+          )}
         </div>
       </header>
+
       <section
-        className={`bg-white dark:bg-gray-800 rounded-b-xs p-4 flex flex-col ${page.contents.length > 0 ? "gap-4" : ""} ${isDragging ? "opacity-0" : ""} transition-colors duration-200`}
+        className={`bg-white dark:bg-gray-800 rounded-b-xs p-4 flex flex-col ${page.contents.length > 0 ? "gap-4" : ""} ${isDragging && !isEditMode ? "opacity-0" : ""} transition-colors duration-200 ${isEditMode ? "bg-gray-50 dark:bg-gray-800/30" : ""}`}
       >
         {/* content list */}
         <PageContent
@@ -140,32 +179,44 @@ export default function PageCard({
           questionNumber={startingQuestionNumber}
           pageId={page.id}
           onEditContent={onEditContent}
+          isEditMode={isEditMode}
         />
 
         {/* add content buttons */}
-        <section className="flex justify-center gap-2 sm:gap-8">
-          <button
-            className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
-            onClick={() => onShowModal("question")}
-          >
-            <BsPatchQuestion className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
-            <p className="text-nowrap text-xs sm:text-base">Add question</p>
-          </button>
-          <button
-            className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
-            onClick={() => onShowModal("image")}
-          >
-            <CiImageOn className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
-            <p className="text-nowrap text-xs sm:text-base">Add image</p>
-          </button>
-          <button
-            className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
-            onClick={() => onShowModal("text")}
-          >
-            <MdOutlineTextSnippet className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
-            <p className="text-nowrap text-xs sm:text-base">Add text</p>
-          </button>
-        </section>
+        {!isEditMode && (
+          <section className="flex justify-center gap-2 sm:gap-8">
+            <button
+              className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
+              onClick={() => handleAddContent("question")}
+            >
+              <BsPatchQuestion className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
+              <p className="text-nowrap text-xs sm:text-base">Add question</p>
+            </button>
+            <button
+              className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
+              onClick={() => handleAddContent("image")}
+            >
+              <CiImageOn className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
+              <p className="text-nowrap text-xs sm:text-base">Add image</p>
+            </button>
+            <button
+              className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
+              onClick={() => handleAddContent("text")}
+            >
+              <MdOutlineTextSnippet className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
+              <p className="text-nowrap text-xs sm:text-base">Add text</p>
+            </button>
+          </section>
+        )}
+
+        {/* edit mode message */}
+        {isEditMode && (
+          <div className="text-center py-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+              Content editing is disabled in edit mode
+            </p>
+          </div>
+        )}
       </section>
     </article>
   );

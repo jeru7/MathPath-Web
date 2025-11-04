@@ -11,7 +11,6 @@ import {
   getScheduleMinTime,
   roundToNext10Minutes,
 } from "../utils/assessment-builder.util";
-import "../../../../../core/styles/customDatePicker.css";
 import DatetimePicker from "./DatetimePicker";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTeacherContext } from "../../../../context/teacher.context";
@@ -20,140 +19,95 @@ type PublishProps = {
   isValidated: boolean;
   errors: { [key: string]: string | number[] };
   onPublishAssessment: () => void;
+  onSaveAndExit: () => void;
   isPublishPending: boolean;
+  isSaving?: boolean;
   publishError?: string | null;
+  isEditMode?: boolean;
 };
 
 export default function Publish({
   isValidated,
   errors,
   onPublishAssessment,
+  onSaveAndExit,
   isPublishPending,
+  isSaving = false,
   publishError,
+  isEditMode = false,
 }: PublishProps): ReactElement {
   const { sections } = useTeacherContext();
-
-  // reducer
   const { state: assessment, dispatch } = useAssessmentBuilder();
 
-  // states
   const [selectedSections, setSelectedSections] = useState<Section[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-
-  // refs
-  const prevStartDateRef = useRef<string | undefined>();
   const hasInitializedDates = useRef(false);
 
-  // handlers
   const handleAddSection = (sections: Section[]) => {
     setSelectedSections([...sections]);
-
-    const sectionIds = sections.map((section) => section.id);
-    dispatch({ type: "UPDATE_SECTION", payload: sectionIds });
+    dispatch({ type: "UPDATE_SECTION", payload: sections.map((s) => s.id) });
   };
-
-  const handleDeleteSection = (selectedSection: Section) => {
-    const newSections = selectedSections.filter(
-      (section) => section.id !== selectedSection.id,
-    );
+  const handleDeleteSection = (section: Section) => {
+    const newSections = selectedSections.filter((s) => s.id !== section.id);
     setSelectedSections(newSections);
-
-    const sectionIds = newSections.map((section) => section.id);
-
-    dispatch({ type: "UPDATE_SECTION", payload: sectionIds });
+    dispatch({ type: "UPDATE_SECTION", payload: newSections.map((s) => s.id) });
   };
 
   const handleStartDateChange = (date: Date | null) => {
     if (!date) return;
-
-    // round to next 10 min interval
-    const roundedDate = roundToNext10Minutes(date);
-    setStartDate(roundedDate);
-    dispatch({ type: "ADD_START_DATE", payload: roundedDate });
-
-    // calculate the minimum allowed deadline
-    const minDeadline = getDeadlineMinTime(roundedDate, assessment.timeLimit);
-
+    const rounded = roundToNext10Minutes(date);
+    setStartDate(rounded);
+    dispatch({ type: "ADD_START_DATE", payload: rounded });
+    const minDeadline = getDeadlineMinTime(rounded, assessment.timeLimit);
     if (!endDate || endDate < minDeadline) {
-      const newEndDate = minDeadline;
-      setEndDate(newEndDate);
-      dispatch({ type: "ADD_END_DATE", payload: newEndDate });
+      setEndDate(minDeadline);
+      dispatch({ type: "ADD_END_DATE", payload: minDeadline });
     }
   };
-
   const handleEndDateChange = (date: Date | null) => {
     if (!date) return;
-
-    // round to next 10 min interval
-    const roundedDate = roundToNext10Minutes(date);
-    setEndDate(roundedDate);
-    dispatch({ type: "ADD_END_DATE", payload: roundedDate });
+    const rounded = roundToNext10Minutes(date);
+    setEndDate(rounded);
+    dispatch({ type: "ADD_END_DATE", payload: rounded });
   };
 
-  // reset end date when start date changes significantly
-  useEffect(() => {
-    const currentStartDate = assessment.date.start ?? undefined;
-    if (prevStartDateRef.current !== currentStartDate) {
-      prevStartDateRef.current = currentStartDate;
-    }
-  }, [assessment.date.start]);
-
-  // initialize dates only once when component mounts
   useEffect(() => {
     if (hasInitializedDates.current) return;
 
-    const now = new Date();
-    let roundedStartDate: Date;
+    if (isEditMode) {
+      if (assessment.date.start) {
+        const existingStart = new Date(assessment.date.start);
+        setStartDate(existingStart);
+      }
 
-    if (assessment.date.start) {
-      const existingStartDate = new Date(assessment.date.start);
-
-      if (existingStartDate < now) {
-        // If start date is in past, update to current time
-        roundedStartDate = roundToNext10Minutes(now);
-        setStartDate(roundedStartDate);
-        dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
-
-        if (!assessment.date.end) {
-          const calculatedEndDate = getDeadlineMinTime(
-            roundedStartDate,
-            assessment.timeLimit,
-          );
-          setEndDate(calculatedEndDate);
-          dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
-        }
-      } else {
-        // if start date is in future, use it as is
-        roundedStartDate = roundToNext10Minutes(existingStartDate);
-        setStartDate(roundedStartDate);
-        dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
-
-        // only set end date if it's not already set
-        if (!assessment.date.end) {
-          const calculatedEndDate = getDeadlineMinTime(
-            roundedStartDate,
-            assessment.timeLimit,
-          );
-          setEndDate(calculatedEndDate);
-          dispatch({ type: "ADD_END_DATE", payload: calculatedEndDate });
-        } else {
-          // use the existing end date
-          const existingEndDate = new Date(assessment.date.end);
-          setEndDate(existingEndDate);
-        }
+      if (assessment.date.end) {
+        const existingEnd = new Date(assessment.date.end);
+        setEndDate(existingEnd);
       }
     } else {
-      roundedStartDate = roundToNext10Minutes(now);
-      setStartDate(roundedStartDate);
-      dispatch({ type: "ADD_START_DATE", payload: roundedStartDate });
+      const now = new Date();
+      let roundedStart: Date;
 
-      const initialEndDate = getDeadlineMinTime(
-        roundedStartDate,
-        assessment.timeLimit,
-      );
-      setEndDate(initialEndDate);
-      dispatch({ type: "ADD_END_DATE", payload: initialEndDate });
+      if (assessment.date.start) {
+        const existingStart = new Date(assessment.date.start);
+        roundedStart =
+          existingStart < now
+            ? roundToNext10Minutes(now)
+            : roundToNext10Minutes(existingStart);
+      } else {
+        roundedStart = roundToNext10Minutes(now);
+      }
+
+      setStartDate(roundedStart);
+      dispatch({ type: "ADD_START_DATE", payload: roundedStart });
+
+      const calculatedEnd = assessment.date.end
+        ? new Date(assessment.date.end)
+        : getDeadlineMinTime(roundedStart, assessment.timeLimit);
+
+      setEndDate(calculatedEnd);
+      dispatch({ type: "ADD_END_DATE", payload: calculatedEnd });
     }
 
     hasInitializedDates.current = true;
@@ -162,29 +116,14 @@ export default function Publish({
     assessment.date.end,
     assessment.timeLimit,
     dispatch,
-    startDate,
+    isEditMode,
   ]);
 
   useEffect(() => {
-    if (assessment.date.start && !startDate) {
-      const existingStartDate = new Date(assessment.date.start);
-      setStartDate(roundToNext10Minutes(existingStartDate));
-    }
-
-    if (assessment.date.end && !endDate) {
-      const existingEndDate = new Date(assessment.date.end);
-      setEndDate(roundToNext10Minutes(existingEndDate));
-    }
-  }, [assessment.date.start, assessment.date.end, startDate, endDate]);
-
-  useEffect(() => {
     if (!sections || !assessment.sections?.length) return;
-
-    const matched = sections.filter((section: Section) =>
-      (assessment.sections as string[]).includes(section.id),
+    setSelectedSections(
+      sections.filter((s) => (assessment.sections as string[]).includes(s.id)),
     );
-
-    setSelectedSections(matched);
   }, [sections, assessment.sections]);
 
   return (
@@ -192,18 +131,15 @@ export default function Publish({
       <AnimatePresence mode="wait">
         <section className="border rounded-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 h-fit w-full sm:w-96 flex flex-col gap-4 p-4 items-center transition-colors duration-200">
           <form className="w-full flex flex-col gap-4">
+            {/* section selector */}
             <div className="flex flex-col gap-2 w-full">
-              {/* section select */}
               <Select<Section, true>
-                id="type"
                 isMulti
                 options={sections ?? []}
                 value={selectedSections}
-                onChange={(selected) => {
-                  handleAddSection([...(selected ?? [])]);
-                }}
-                getOptionLabel={(section) => section.name}
-                getOptionValue={(section) => section.id}
+                onChange={(selected) => handleAddSection([...(selected ?? [])])}
+                getOptionLabel={(s) => s.name}
+                getOptionValue={(s) => s.id}
                 placeholder="Select sections"
                 styles={getCustomSelectColor({
                   borderRadius: "var(--radius-sm)",
@@ -226,7 +162,6 @@ export default function Publish({
                 controlShouldRenderValue={false}
                 isClearable={false}
               />
-              {/* section selected list */}
               <section className="bg-inherit border-gray-300 dark:border-gray-600 border rounded-sm w-full transition-colors duration-200">
                 <ul className="w-full gap-2 h-56 flex flex-col p-2 overflow-y-auto">
                   {selectedSections.map((section) => (
@@ -245,11 +180,7 @@ export default function Publish({
                     key="section-error"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{
-                      opacity: 0,
-                      y: -5,
-                      transition: { duration: 0.1 },
-                    }}
+                    exit={{ opacity: 0, y: -5, transition: { duration: 0.1 } }}
                   >
                     {errors.sections}
                   </motion.p>
@@ -257,10 +188,10 @@ export default function Publish({
               </AnimatePresence>
             </div>
 
+            {/* date pickers */}
             <div className="flex flex-col gap-4 w-full">
-              {/* date schedule */}
               <div className="flex flex-col gap-1">
-                <div className="flex flex-col gap-2 h-18 ">
+                <div className="flex flex-col gap-2 h-18">
                   <label
                     htmlFor="startDate"
                     className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200"
@@ -270,7 +201,7 @@ export default function Publish({
                   <DatePicker
                     id="startDate"
                     selected={startDate}
-                    onChange={(date) => handleStartDateChange(date)}
+                    onChange={handleStartDateChange}
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={10}
@@ -281,34 +212,12 @@ export default function Publish({
                     minDate={new Date()}
                     minTime={getScheduleMinTime(startDate)}
                     maxTime={new Date(0, 0, 0, 23, 50)}
-                    // force the time to be on 10 min intervals
-                    filterTime={(time) => {
-                      const minutes = time.getMinutes();
-                      return minutes % 10 === 0;
-                    }}
+                    filterTime={(time) => time.getMinutes() % 10 === 0}
                   />
                 </div>
-                <AnimatePresence mode="wait">
-                  {isValidated && errors.startDate && (
-                    <motion.p
-                      className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-                      key="start-date-error"
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{
-                        opacity: 0,
-                        y: -5,
-                        transition: { duration: 0.05 },
-                      }}
-                    >
-                      {errors.startDate}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
               </div>
 
-              {/* deadline */}
-              {startDate ? (
+              {startDate && (
                 <motion.div
                   key="end-date-picker"
                   initial={{ opacity: 0, y: 10 }}
@@ -324,7 +233,7 @@ export default function Publish({
                   <DatePicker
                     id="endDate"
                     selected={endDate}
-                    onChange={(date) => handleEndDateChange(date)}
+                    onChange={handleEndDateChange}
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={10}
@@ -335,37 +244,16 @@ export default function Publish({
                     minDate={startDate}
                     minTime={getScheduleMinTime(endDate)}
                     maxTime={new Date(0, 0, 0, 23, 50)}
-                    // force the time to be on 10 min intervals
-                    filterTime={(time) => {
-                      const minutes = time.getMinutes();
-                      return minutes % 10 === 0;
-                    }}
+                    filterTime={(time) => time.getMinutes() % 10 === 0}
                   />
                 </motion.div>
-              ) : null}
-              <AnimatePresence mode="wait">
-                {isValidated && errors.endDate && (
-                  <motion.p
-                    className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-                    key="end-date-error"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{
-                      opacity: 0,
-                      y: -5,
-                      transition: { duration: 0.05 },
-                    }}
-                  >
-                    {errors.endDate}
-                  </motion.p>
-                )}
-              </AnimatePresence>
+              )}
             </div>
           </form>
         </section>
       </AnimatePresence>
 
-      {/* error */}
+      {/* publish error */}
       <AnimatePresence>
         {publishError && (
           <motion.div
@@ -383,17 +271,33 @@ export default function Publish({
         )}
       </AnimatePresence>
 
-      {/* publish button */}
-      <button
-        className="bg-green-600 dark:bg-green-500 px-4 py-3 rounded-sm w-full opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={onPublishAssessment}
-        type="button"
-        disabled={isPublishPending}
-      >
-        <p className="text-sm md:text-base text-white font-semibold">
-          {isPublishPending ? "Publishing..." : "Publish Assessment"}
-        </p>
-      </button>
+      {/* buttons */}
+      <div className="flex flex-col sm:flex-row gap-2 mt-4 w-full sm:w-96">
+        {(!isEditMode || assessment.status === "draft") && (
+          <button
+            className="bg-green-600 dark:bg-green-500 px-4 py-3 rounded-sm w-full sm:flex-1 opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200 disabled:opacity-50"
+            onClick={onPublishAssessment}
+            type="button"
+            disabled={isPublishPending}
+          >
+            <p className="text-sm md:text-base text-white font-semibold">
+              {isPublishPending ? "Publishing..." : "Publish Assessment"}
+            </p>
+          </button>
+        )}
+
+        {/* save & exit button */}
+        <button
+          className={`${isEditMode && assessment.status !== "draft" ? "w-full bg-green-600 dark:bg-green-500" : "w-full sm:flex-1 bg-gray-600 dark:bg-gray-500"} px-4 py-3 rounded-sm opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200 disabled:opacity-50`}
+          onClick={onSaveAndExit}
+          type="button"
+          disabled={isSaving}
+        >
+          <p className="text-sm md:text-base text-white font-semibold">
+            {isSaving ? "Saving..." : "Save & Exit"}
+          </p>
+        </button>
+      </div>
     </div>
   );
 }

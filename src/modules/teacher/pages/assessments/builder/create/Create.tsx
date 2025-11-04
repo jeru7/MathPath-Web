@@ -25,10 +25,13 @@ import { AnimatePresence, motion } from "framer-motion";
 type CreateProps = {
   isValidated: boolean;
   errors: { [key: string]: string | number[] };
+  isEditMode?: boolean;
 };
+
 export default function Create({
   isValidated,
   errors,
+  isEditMode = false,
 }: CreateProps): ReactElement {
   // reducers
   const { state, dispatch } = useAssessmentBuilder();
@@ -37,7 +40,7 @@ export default function Create({
   const [activeModal, setActiveModal] = useState<ModalType | null>(null);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [selectedPageId, setSelectedPageId] = useState<string>(
-    state.pages[0].id,
+    state.pages[0]?.id || "",
   );
   const [contentToEdit, setContentToEdit] = useState<AssessmentContent | null>(
     null,
@@ -45,6 +48,9 @@ export default function Create({
 
   // handlers
   const handleAddPage = (page: AssessmentPage) => {
+    if (isEditMode) {
+      return;
+    }
     dispatch({
       type: "ADD_PAGE",
       payload: page,
@@ -52,6 +58,9 @@ export default function Create({
   };
 
   const handleDeletePage = (pageId: string) => {
+    if (isEditMode) {
+      return;
+    }
     if (state.pages.length === 1) return;
     dispatch({
       type: "DELETE_PAGE",
@@ -60,6 +69,7 @@ export default function Create({
   };
 
   const handleDragStart = (event: DragStartEvent) => {
+    if (isEditMode) return;
     document.body.getBoundingClientRect();
     setActiveId(event.active.id);
   };
@@ -69,6 +79,7 @@ export default function Create({
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (isEditMode) return;
     const { active, over } = event;
     if (active.id === over?.id || !over) return;
 
@@ -82,6 +93,7 @@ export default function Create({
   };
 
   const handleDragOver = (event: DragOverEvent) => {
+    if (isEditMode) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -94,6 +106,27 @@ export default function Create({
         payload: arrayMove(state.pages, oldIndex, newIndex),
       });
     }
+  };
+
+  const handleShowModal = (modalType: ModalType, pageId: string) => {
+    if (isEditMode) {
+      return;
+    }
+    setSelectedPageId(pageId);
+    setActiveModal(modalType);
+  };
+
+  const handleEditContent = (
+    content: AssessmentContent,
+    type: ModalType,
+    pageId: string,
+  ) => {
+    if (isEditMode) {
+      return;
+    }
+    setContentToEdit(content);
+    setSelectedPageId(pageId);
+    setActiveModal(type);
   };
 
   return (
@@ -136,16 +169,13 @@ export default function Create({
                   pageNumber={index + 1}
                   startingQuestionNumber={startingQuestionNumber}
                   onShowModal={(modalType) => {
-                    setSelectedPageId(page.id);
-                    setActiveModal(modalType);
+                    handleShowModal(modalType, page.id);
                   }}
                   onEditContent={(
                     content: AssessmentContent,
                     type: ModalType,
                   ) => {
-                    setContentToEdit(content);
-                    setSelectedPageId(page.id);
-                    setActiveModal(type);
+                    handleEditContent(content, type, page.id);
                   }}
                   onDelete={handleDeletePage}
                   isSingle={state.pages.length === 1}
@@ -154,6 +184,7 @@ export default function Create({
                     Array.isArray(errors.emptyPages) &&
                     errors.emptyPages.includes(index)
                   }
+                  isEditMode={isEditMode}
                 />
               );
 
@@ -165,26 +196,27 @@ export default function Create({
             <DragOverlay>
               {activeId
                 ? (() => {
-                    const activePage = state.pages.find(
-                      (page) => page.id === activeId,
-                    );
-                    if (!activePage) return null;
-                    const startingQuestionNumber = getStartingQuestionNumber(
-                      activePage.id,
-                      state.pages,
-                    );
+                  const activePage = state.pages.find(
+                    (page) => page.id === activeId,
+                  );
+                  if (!activePage) return null;
+                  const startingQuestionNumber = getStartingQuestionNumber(
+                    activePage.id,
+                    state.pages,
+                  );
 
-                    return (
-                      <PageCard
-                        page={activePage}
-                        pageNumber={0}
-                        startingQuestionNumber={startingQuestionNumber}
-                        onShowModal={(modalType) => {
-                          setActiveModal(modalType);
-                        }}
-                      />
-                    );
-                  })()
+                  return (
+                    <PageCard
+                      page={activePage}
+                      pageNumber={0}
+                      startingQuestionNumber={startingQuestionNumber}
+                      onShowModal={(modalType) => {
+                        setActiveModal(modalType);
+                      }}
+                      isEditMode={isEditMode}
+                    />
+                  );
+                })()
                 : null}
             </DragOverlay>,
             document.body,
@@ -207,7 +239,7 @@ export default function Create({
       {/* add page button */}
       <div className="flex justify-center">
         <button
-          className="flex gap-1 items-center justify-center text-gray-300 border-gray-300 border rounded-full w-8 h-8 sm:w-10 sm:h-10 hover:cursor-pointer hover:text-gray-500 hover:border-gray-500 transition-all duration-200"
+          className={`${isEditMode ? "hidden" : "flex"} gap-1 items-center justify-center text-gray-300 border-gray-300 border rounded-full w-8 h-8 sm:w-10 sm:h-10 hover:cursor-pointer hover:text-gray-500 hover:border-gray-500 transition-all duration-200`}
           onClick={() =>
             handleAddPage({
               id: nanoid(),

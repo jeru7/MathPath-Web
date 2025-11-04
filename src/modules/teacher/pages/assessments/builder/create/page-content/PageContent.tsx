@@ -27,6 +27,7 @@ type PageContentProps = {
   questionNumber: number;
   pageId: string;
   onEditContent?: (content: AssessmentContent, type: ModalType) => void;
+  isEditMode?: boolean;
 };
 
 export default function PageContent({
@@ -34,6 +35,7 @@ export default function PageContent({
   questionNumber,
   pageId,
   onEditContent,
+  isEditMode = false,
 }: PageContentProps): ReactElement {
   // reducer
   const { dispatch } = useAssessmentBuilder();
@@ -45,6 +47,8 @@ export default function PageContent({
     pageId: string,
     newContents: AssessmentContent[],
   ) => {
+    if (isEditMode) return;
+
     dispatch({
       type: "UPDATE_PAGE_CONTENT",
       payload: { pageId, contents: newContents },
@@ -52,6 +56,7 @@ export default function PageContent({
   };
 
   const handleDragStart = (event: DragStartEvent) => {
+    if (isEditMode) return;
     document.body.getBoundingClientRect();
     setActiveId(event.active.id);
   };
@@ -61,6 +66,7 @@ export default function PageContent({
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (isEditMode) return;
     const { active, over } = event;
     if (active.id === over?.id || !over) return;
 
@@ -71,15 +77,22 @@ export default function PageContent({
   };
 
   const handleDeleteContent = async (content: AssessmentContent) => {
+    if (isEditMode) return;
+
     if (content.type === "image") {
       try {
         await deleteImage(content.data.publicId);
       } catch {
         toast.error("Failed to delete image.");
-        return; // stop if API failed
+        return;
       }
     }
     dispatch({ type: "DELETE_CONTENT", payload: { pageId, content } });
+  };
+
+  const handleEditContent = (content: AssessmentContent, type: ModalType) => {
+    if (isEditMode) return;
+    onEditContent?.(content, type);
   };
 
   return (
@@ -106,7 +119,8 @@ export default function PageContent({
                   questionNumber={currentQuestionNumber}
                   activeId={activeId}
                   onDeleteContent={handleDeleteContent}
-                  onEdit={() => onEditContent?.(content, content.type)}
+                  onEdit={() => handleEditContent(content, content.type)}
+                  isEditMode={isEditMode}
                 />
               );
             } else if (content.type === "image") {
@@ -115,7 +129,8 @@ export default function PageContent({
                   key={content.id}
                   content={content}
                   onDeleteContent={handleDeleteContent}
-                  onEdit={() => onEditContent?.(content, content.type)}
+                  onEdit={() => handleEditContent(content, content.type)}
+                  isEditMode={isEditMode}
                 />
               );
             } else if (content.type === "text") {
@@ -124,18 +139,20 @@ export default function PageContent({
                   key={content.id}
                   content={content}
                   onDeleteContent={handleDeleteContent}
-                  onEdit={() => onEditContent?.(content, content.type)}
+                  onEdit={() => handleEditContent(content, content.type)}
+                  isEditMode={isEditMode}
                 />
               );
             }
           })}
         </SortableContext>
 
-        {/* dummy for floating draggable */}
-        {createPortal(
-          <DragOverlay>
-            {activeId
-              ? (() => {
+        {/* dummy for floating draggable - only show when not in edit mode */}
+        {!isEditMode &&
+          createPortal(
+            <DragOverlay>
+              {activeId
+                ? (() => {
                   const activeContent = contents.find(
                     (content) => content.id === activeId,
                   );
@@ -150,6 +167,7 @@ export default function PageContent({
                           activeId={activeId}
                           onDeleteContent={handleDeleteContent}
                           onEdit={() => onEditContent}
+                          isEditMode={isEditMode}
                         />
                       </div>
                     );
@@ -160,6 +178,7 @@ export default function PageContent({
                           content={activeContent}
                           onDeleteContent={handleDeleteContent}
                           onEdit={() => onEditContent}
+                          isEditMode={isEditMode}
                         />
                       </div>
                     );
@@ -170,6 +189,7 @@ export default function PageContent({
                           content={activeContent}
                           onDeleteContent={handleDeleteContent}
                           onEdit={() => onEditContent}
+                          isEditMode={isEditMode}
                         />
                       </div>
                     );
@@ -177,10 +197,10 @@ export default function PageContent({
 
                   return null;
                 })()
-              : null}
-          </DragOverlay>,
-          document.body,
-        )}
+                : null}
+            </DragOverlay>,
+            document.body,
+          )}
       </DndContext>
     </section>
   );

@@ -65,11 +65,7 @@ export default function Assessments(): ReactElement {
   const showArchiveRoute = location.pathname.endsWith("/archives");
 
   useEffect(() => {
-    if (showArchiveRoute) {
-      setHideFab(true);
-    } else {
-      setHideFab(false);
-    }
+    setHideFab(showArchiveRoute);
   }, [showArchiveRoute]);
 
   const handleDeleteInitiate = (assessment: Assessment) => {
@@ -102,7 +98,7 @@ export default function Assessments(): ReactElement {
     setAssessmentToDelete(null);
   };
 
-  // archive handlers
+  // Archive handlers
   const handleArchiveInitiate = (assessment: Assessment) => {
     if (assessment?.status === "draft") {
       toast.error(
@@ -110,7 +106,6 @@ export default function Assessments(): ReactElement {
       );
       return;
     }
-
     setAssessmentToArchive(assessment);
     setIsArchiveModalOpen(true);
   };
@@ -128,7 +123,6 @@ export default function Assessments(): ReactElement {
           });
           setIsArchiveModalOpen(false);
           setAssessmentToArchive(null);
-
           if (selectedAssessment?.id === assessmentToArchive.id) {
             navigate("..");
             setSelectedAssessment(null);
@@ -191,20 +185,15 @@ export default function Assessments(): ReactElement {
     setSelectedAssessment(null);
   };
 
-  const handleEditAssessment = () => {
-    if (selectedAssessment) {
-      navigate(`configure`);
-      setSelectedAssessment(null);
-    }
+  const handleEditAssessment = (assessment: Assessment) => {
+    // Navigate to builder with /edit
+    navigate(`/teacher/${teacherId}/assessments/${assessment.id}/edit`);
   };
 
-  // calculate student and section counts for the assessment to delete
   const getStudentCountForAssessment = (
     assessment: Assessment | null,
   ): number => {
     if (!assessment) return 0;
-
-    // get all students in the sections assigned to the assessment
     const sectionIds = assessment.sections || [];
     return students.filter((student) => sectionIds.includes(student.sectionId))
       .length;
@@ -219,14 +208,12 @@ export default function Assessments(): ReactElement {
 
   return (
     <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
-      {/* header */}
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
           Assessments
         </h3>
       </header>
 
-      {/* table section */}
       <section className="bg-white border border-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
         <AssessmentTable
           assessments={assessments}
@@ -238,7 +225,6 @@ export default function Assessments(): ReactElement {
         />
       </section>
 
-      {/* archive modal */}
       {showArchiveRoute && archivedAssessments && (
         <AssessmentArchiveModal
           isOpen={showArchiveRoute}
@@ -251,7 +237,6 @@ export default function Assessments(): ReactElement {
         />
       )}
 
-      {/* assessment details modal */}
       {selectedAssessment && (
         <AssessmentDetailsModal
           isOpen={isAssessmentDetailsRoute}
@@ -261,9 +246,9 @@ export default function Assessments(): ReactElement {
           students={students}
           isLoadingAttempts={isLoadingAttempts}
           disableEdit={selectedAssessment.status !== "draft"}
-          onEdit={handleEditAssessment}
           onDelete={() => handleDeleteInitiate(selectedAssessment)}
           onArchive={() => handleArchiveInitiate(selectedAssessment)}
+          onEdit={() => handleEditAssessment(selectedAssessment)}
         />
       )}
 
@@ -278,7 +263,6 @@ export default function Assessments(): ReactElement {
         />
       )}
 
-      {/* archive confirmation modal */}
       <AssessmentArchiveConfirmationModal
         isOpen={isArchiveModalOpen}
         onClose={handleArchiveCancel}

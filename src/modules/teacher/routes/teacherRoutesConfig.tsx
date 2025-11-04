@@ -43,6 +43,7 @@ export const teacherRoutesConfig = [
           { path: ":assessmentId", element: <Assessments /> },
           { path: ":assessmentId/archives", element: <Assessments /> },
           { path: "new", element: <AssessmentBuilderWrapper /> },
+          { path: ":assessmentId/edit", element: <AssessmentBuilderWrapper /> },
           {
             path: ":assessmentId/create",
             element: <AssessmentBuilderWrapper />,
@@ -53,6 +54,18 @@ export const teacherRoutesConfig = [
           },
           {
             path: ":assessmentId/publish",
+            element: <AssessmentBuilderWrapper />,
+          },
+          {
+            path: ":assessmentId/create/edit",
+            element: <AssessmentBuilderWrapper />,
+          },
+          {
+            path: ":assessmentId/configure/edit",
+            element: <AssessmentBuilderWrapper />,
+          },
+          {
+            path: ":assessmentId/publish/edit",
             element: <AssessmentBuilderWrapper />,
           },
         ],

@@ -9,14 +9,15 @@ type ImageProps = {
   content: AssessmentContent;
   onDeleteContent?: (content: AssessmentContent) => void;
   onEdit: () => void;
+  isEditMode?: boolean;
 };
 
 export default function Image({
   content,
   onDeleteContent,
   onEdit,
+  isEditMode = false,
 }: ImageProps): ReactElement {
-  // dnd methods
   const {
     attributes,
     listeners,
@@ -26,51 +27,43 @@ export default function Image({
     isDragging,
   } = useSortable({ id: content.id });
 
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    border: isDragging ? "2px solid var(--primary-green)" : "",
+    backgroundColor: isDragging ? "var(--secondary-green)" : "",
+  };
+
   const { secureUrl } =
     content.type === "image"
       ? (content.data as { secureUrl: string; publicId: string })
       : { secureUrl: "" };
 
-  const style = {
-    transition,
-    transform: CSS.Translate.toString(transform),
-    border: isDragging ? "2px solid var(--primary-green)" : "",
-    backgroundColor: isDragging ? "var(--secondary-green)" : "",
-  };
-
   return (
     <article
-      className={`flex gap-2 w-full max-w-full bg-white dark:bg-gray-800 relative group items-center justify-center ${isDragging ? "opacity-50 z-10" : ""}`}
       ref={setNodeRef}
       style={style}
+      className={`relative flex items-center justify-center w-full bg-white dark:bg-gray-800 group ${isDragging ? "opacity-50 z-10" : ""
+        }`}
       {...attributes}
     >
-      {/* control buttons */}
-      <div className="absolute flex gap-2 right-0 text-gray-300 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-all duration-200 top-0">
-        <button
-          className="hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
-          type="button"
-          onClick={onEdit}
-        >
-          <FaRegEdit />
-        </button>
-        <div
-          className="flex itemx-center justify-center hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
-          {...listeners}
-        >
-          <MdDragIndicator />
+      {/* controls */}
+      {!isEditMode && (
+        <div className="absolute flex gap-2 top-0 right-0 opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-500 transition-all duration-200">
+          <button onClick={onEdit}>
+            <FaRegEdit />
+          </button>
+          <div {...listeners}>
+            <MdDragIndicator />
+          </div>
+          <button onClick={() => onDeleteContent?.(content)}>
+            <MdDeleteOutline />
+          </button>
         </div>
-        <button
-          className="hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
-          onClick={() => onDeleteContent?.(content)}
-        >
-          <MdDeleteOutline />
-        </button>
-      </div>
+      )}
+
       {/* image */}
-      <figure
-        className={`flex flex-col items-center ${isDragging ? "opacity-0" : ""}`}
-      >
+      <figure className={`${isDragging ? "opacity-0" : ""}`}>
         <img
           src={secureUrl}
           alt="Uploaded content"

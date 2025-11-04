@@ -17,6 +17,7 @@ type QuestionProps = {
   activeId: UniqueIdentifier | null;
   onDeleteContent: (content: AssessmentContent) => void;
   onEdit: () => void;
+  isEditMode?: boolean;
 };
 
 export default function Question({
@@ -24,8 +25,8 @@ export default function Question({
   questionNumber,
   onDeleteContent,
   onEdit,
+  isEditMode = false,
 }: QuestionProps): ReactElement {
-  // dnd methods
   const {
     attributes,
     listeners,
@@ -35,53 +36,46 @@ export default function Question({
     isDragging,
   } = useSortable({ id: content.id });
 
-  // assert data as assessment question
   const data = content.data as AssessmentQuestion;
 
   const style = {
-    transition,
     transform: CSS.Translate.toString(transform),
+    transition,
     border: isDragging ? "2px solid var(--primary-green)" : "",
     backgroundColor: isDragging ? "var(--secondary-green)" : "",
   };
 
   return (
     <article
-      className={`flex gap-2 w-full max-w-full bg-white dark:bg-gray-800 relative group ${isDragging ? "opacity-50 z-10" : ""}`}
       ref={setNodeRef}
       style={style}
+      className={`relative flex gap-2 w-full max-w-full bg-white dark:bg-gray-800 group ${isDragging ? "opacity-50 z-10" : ""
+        }`}
       {...attributes}
     >
-      {/* control buttons */}
-      <div className="absolute flex gap-2 right-0 text-gray-300 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-all duration-200 top-0">
-        <button
-          className="hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
-          type="button"
-          onClick={onEdit}
-        >
-          <FaRegEdit />
-        </button>
-        <div
-          className="flex itemx-center justify-center hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
-          {...listeners}
-        >
-          <MdDragIndicator />
+      {/* controls */}
+      {!isEditMode && (
+        <div className="absolute flex gap-2 top-0 right-0 opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-500 transition-all duration-200">
+          <button onClick={onEdit}>
+            <FaRegEdit />
+          </button>
+          <div {...listeners}>
+            <MdDragIndicator />
+          </div>
+          <button onClick={() => onDeleteContent(content)}>
+            <MdDeleteOutline />
+          </button>
         </div>
-        <button
-          className="hover:text-gray-500 dark:hover:text-gray-300 hover:cursor-pointer transition-colors duration-200"
-          type="button"
-          onClick={() => onDeleteContent(content)}
-        >
-          <MdDeleteOutline />
-        </button>
-      </div>
-      {/* number */}
+      )}
+
+      {/* question number */}
       <p
         className={`font-semibold text-gray-900 dark:text-gray-200 ${questionNumber === 0 || isDragging ? "opacity-0" : ""}`}
       >
         {questionNumber}.
       </p>
-      {/* question */}
+
+      {/* question content */}
       <div
         className={`flex flex-col w-full max-w-full ${data.type === "fill_in_the_blanks" ? "" : "gap-4"} ${isDragging ? "opacity-0" : ""}`}
       >
@@ -93,10 +87,11 @@ export default function Question({
                 ? renderBlanks(data.question)
                 : data.question,
           }}
-        ></div>
+        />
+
         {/* choices */}
         <div>
-          {data.type === "single_choice" ? (
+          {data.type === "single_choice" && (
             <ul className="flex flex-col gap-1 max-w-full w-full">
               {data.choices.map((choice) => (
                 <li key={choice.id} className="flex gap-2 items-start">
@@ -107,7 +102,9 @@ export default function Question({
                 </li>
               ))}
             </ul>
-          ) : data.type === "multiple_choice" ? (
+          )}
+
+          {data.type === "multiple_choice" && (
             <ul className="flex flex-col gap-1">
               {data.choices.map((choice) => (
                 <li key={choice.id} className="flex gap-2 items-center">
@@ -118,11 +115,15 @@ export default function Question({
                 </li>
               ))}
             </ul>
-          ) : data.type === "identification" ? (
+          )}
+
+          {data.type === "identification" && (
             <p className="text-sm text-gray-700 dark:text-gray-300">
               Answer: _____________
             </p>
-          ) : data.type === "true_or_false" ? (
+          )}
+
+          {data.type === "true_or_false" && (
             <div className="flex flex-col gap-1">
               <div className="flex gap-2 items-center">
                 <FaRegCircle className="text-gray-700 dark:text-gray-300" />
@@ -135,7 +136,7 @@ export default function Question({
                 </p>
               </div>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </article>

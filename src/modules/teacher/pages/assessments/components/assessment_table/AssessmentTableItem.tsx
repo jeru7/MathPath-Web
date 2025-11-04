@@ -4,7 +4,6 @@ import { getSectionBanner } from "../../../../../core/utils/section/section.util
 import AssessmentStatus from "./AssessmentStatus";
 import { format } from "date-fns-tz";
 import { useTeacherContext } from "../../../../context/teacher.context";
-import { GoArchive } from "react-icons/go";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
@@ -15,7 +14,6 @@ type AssessmentTableItemProps = {
 export default function AssessmentTableItem({
   assessment,
   onAssessmentClick,
-  onArchiveAssessment,
 }: AssessmentTableItemProps): ReactElement {
   const { sections } = useTeacherContext();
 
@@ -27,13 +25,6 @@ export default function AssessmentTableItem({
     // only call the click handler to open the details modal
     if (onAssessmentClick) {
       onAssessmentClick(assessment);
-    }
-  };
-
-  const handleArchiveClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onArchiveAssessment) {
-      onArchiveAssessment(assessment);
     }
   };
 
@@ -57,15 +48,6 @@ export default function AssessmentTableItem({
                 {assessment.title ? assessment.title : "(No title)"}
               </div>
             </div>
-            {onArchiveAssessment && (
-              <button
-                onClick={handleArchiveClick}
-                className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-all duration-200 flex-shrink-0"
-                title="Archive Assessment"
-              >
-                <GoArchive className="w-4 h-4" />
-              </button>
-            )}
           </div>
         </td>
 
