@@ -131,13 +131,13 @@ export default function AttemptList({
               <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                 Student Attempts
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
                 {isLoading ? (
                   <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-4 w-48 rounded"></div>
                 ) : (
                   `${assignedStudents.length} ${assignedStudents.length > 1 ? "students" : "student"} • ${allAttemptsSorted?.length} total attempts`
                 )}
-              </p>
+              </div>
             </div>
           </div>
         </div>

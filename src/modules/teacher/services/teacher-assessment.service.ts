@@ -115,7 +115,12 @@ export const useDeleteAssessment = (teacherId: string) => {
         "Failed to delete assessment.",
       );
     },
-    onSuccess: () => {
+    onSuccess: (_, assessmentId) => {
+      const currentDraftId = localStorage.getItem("currentAssessmentDraftId");
+      if (currentDraftId === assessmentId) {
+        localStorage.removeItem("currentAssessmentDraftId");
+      }
+
       queryClient.invalidateQueries({
         queryKey: ["teacher", teacherId, "assessments"],
       });

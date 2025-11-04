@@ -27,13 +27,13 @@ export default function StatsCard({
           <p className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide truncate">
             {title}
           </p>
-          <p className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
+          <div className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
             {isLoading ? (
               <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-5 md:h-6 w-12 md:w-16 rounded"></div>
             ) : (
               value
             )}
-          </p>
+          </div>
         </div>
       </div>
     </div>
