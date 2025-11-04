@@ -477,69 +477,65 @@ export default function AssessmentDetailsModal({
                     Attempt History
                   </h3>
                   <div className="space-y-2">
-                    {attempts
-                      .slice()
-                      .reverse()
-                      .map((attempt, index) => (
-                        <div
-                          key={attempt.id}
-                          className="flex justify-between items-start p-3 bg-gray-50 dark:bg-gray-700 rounded-sm"
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                              Attempt {attempts.length - index}
+                    {attempts.slice().map((attempt, index) => (
+                      <div
+                        key={attempt.id}
+                        className="flex justify-between items-start p-3 bg-gray-50 dark:bg-gray-700 rounded-sm"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            Attempt {attempts.length - index}
+                          </p>
+                          <p
+                            className={`text-xs ${getAttemptDisplayColor(attempt.status)}`}
+                          >
+                            {getAttemptDisplayText(attempt.status)}
+                            {attempt.score !== undefined &&
+                              attempt.status !== "paused" &&
+                              ` • Score: ${attempt.score}`}
+                          </p>
+                          {attempt.dateCompleted && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {format(
+                                new Date(attempt.dateCompleted),
+                                "MMM d, yyyy 'at' h:mm a",
+                                { timeZone: "Asia/Manila" },
+                              )}
                             </p>
-                            <p
-                              className={`text-xs ${getAttemptDisplayColor(attempt.status)}`}
-                            >
-                              {getAttemptDisplayText(attempt.status)}
-                              {attempt.score !== undefined &&
-                                attempt.status !== "paused" &&
-                                ` • Score: ${attempt.score}`}
-                            </p>
-                            {attempt.dateCompleted && (
+                          )}
+                          {attempt.status === "paused" &&
+                            attempt.dateUpdated && (
                               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                Last updated:{" "}
                                 {format(
-                                  new Date(attempt.dateCompleted),
+                                  new Date(attempt.dateUpdated),
                                   "MMM d, yyyy 'at' h:mm a",
                                   { timeZone: "Asia/Manila" },
                                 )}
                               </p>
                             )}
-                            {attempt.status === "paused" &&
-                              attempt.dateUpdated && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                  Last updated:{" "}
-                                  {format(
-                                    new Date(attempt.dateUpdated),
-                                    "MMM d, yyyy 'at' h:mm a",
-                                    { timeZone: "Asia/Manila" },
-                                  )}
-                                </p>
-                              )}
-                          </div>
-                          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                            {(attempt.status === "completed" ||
-                              attempt.status === "failed") && (
-                                <div className="text-right">
-                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {attempt.score || 0}/
-                                    {getTotalScore(assessment)}
-                                  </p>
-                                </div>
-                              )}
-                            {/* hide review button for paused attempts */}
-                            {attempt.status !== "paused" && (
-                              <button
-                                onClick={() => handleViewAttempt(attempt)}
-                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0"
-                              >
-                                Review
-                              </button>
-                            )}
-                          </div>
                         </div>
-                      ))}
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                          {(attempt.status === "completed" ||
+                            attempt.status === "failed") && (
+                              <div className="text-right">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                  {attempt.score || 0}/{getTotalScore(assessment)}
+                                </p>
+                              </div>
+                            )}
+                          {/* hide review button for paused attempts */}
+                          {attempt.status !== "paused" && (
+                            <button
+                              onClick={() => handleViewAttempt(attempt)}
+                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0"
+                            >
+                              Review
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : null}
