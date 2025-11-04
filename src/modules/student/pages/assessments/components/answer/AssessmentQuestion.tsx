@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useMemo } from "react";
 import {
   AssessmentContent,
   FillInTheBlankAnswerType,
@@ -21,6 +21,45 @@ export default function AssessmentQuestion({
   questionNumber,
 }: StudentQuestionProps): ReactElement {
   const data = content.data as Question;
+
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const hasRandomizableChoices = (
+    question: Question,
+  ): question is Extract<
+    Question,
+    { type: "single_choice" | "multiple_choice" }
+  > => {
+    return (
+      (question.type === "single_choice" ||
+        question.type === "multiple_choice") &&
+      "choices" in question &&
+      "randomPosition" in question
+    );
+  };
+
+  const randomizedChoices = useMemo(() => {
+    if (hasRandomizableChoices(data) && data.randomPosition) {
+      return shuffleArray(data.choices);
+    }
+
+    if (hasRandomizableChoices(data)) {
+      return data.choices;
+    }
+
+    return [];
+  }, [data]);
+
+  const isRandomized = useMemo(() => {
+    return hasRandomizableChoices(data) && data.randomPosition;
+  }, [data]);
 
   const handleSingleChoiceChange = (choiceId: string): void => {
     onAnswerChange(choiceId);
@@ -67,7 +106,7 @@ export default function AssessmentQuestion({
 
     return (
       <div className="space-y-2 sm:space-y-3">
-        {data.choices.map((choice) => (
+        {randomizedChoices.map((choice) => (
           <label
             key={choice.id}
             className="flex items-start sm:items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-sm border border-white dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
@@ -94,7 +133,7 @@ export default function AssessmentQuestion({
 
     return (
       <div className="space-y-2 sm:space-y-3">
-        {data.choices.map((choice) => (
+        {randomizedChoices.map((choice) => (
           <label
             key={choice.id}
             className="flex items-start sm:items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-sm border border-white dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
@@ -288,6 +327,11 @@ export default function AssessmentQuestion({
           <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-400">
             <IoInformationCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
             <span className="capitalize">{data.type.replace(/_/g, " ")}</span>
+            {isRandomized && (
+              <span className="text-xs text-green-600 dark:text-green-400">
+                (Randomized)
+              </span>
+            )}
           </div>
         </div>
 
