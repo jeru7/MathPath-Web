@@ -261,7 +261,7 @@ export default function SectionTable({
         </div>
       )}
 
-      <div className="flex-1 flex flex-col overflow-auto">
+      <div className="flex-1 flex flex-col max-h-[800px] overflow-auto">
         {!showNoDataAvailable ? (
           <section className="h-full w-full grid items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 grid-rows-[380px] gap-2 overflow-y-auto p-2">
             {filteredSections.map((section) => (

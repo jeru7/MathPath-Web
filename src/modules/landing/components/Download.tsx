@@ -7,7 +7,7 @@ import { IoSparkles } from "react-icons/io5";
 
 export default function Download(): ReactElement {
   const downloadUrl =
-    "https://github.com/jeru7/MathPath-Web/releases/download/MathPath-10_v1.0.0/Math-Path10.zip";
+    "https://github.com/jeru7/MathPath-Web/releases/download/MathPath-10_v1.0.0/Math-Path10.apk";
 
   const features = [
     {

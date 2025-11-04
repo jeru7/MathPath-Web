@@ -515,7 +515,7 @@ export default function StudentTable({
             </table>
 
             {/* student items/list */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 max-h-[770px] overflow-y-auto">
               <table className="font-primary table-auto w-full text-sm xl:text-base">
                 <tbody>
                   {filteredAndSortedStudents.map((student) => (
