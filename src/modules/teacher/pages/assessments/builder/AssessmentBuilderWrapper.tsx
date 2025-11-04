@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import AssessmentBuilderProvider from "./context/AssessmentBuilderProvider";
 import AssessmentBuilder from "./AssessmentBuilder";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   useCreateAssessmentDraft,
   useTeacherAssessment,
@@ -13,64 +13,98 @@ export default function AssessmentBuilderWrapper(): ReactElement {
   const { teacherId } = useTeacherContext();
   const { assessmentId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const hasInitialized = useRef(false);
 
-  // determine initial draftid: from params or localstorage
-  const [draftId, setDraftId] = useState<string | null>(
-    assessmentId && assessmentId !== "new"
-      ? assessmentId
-      : localStorage.getItem("currentAssessmentDraftId"),
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(
+    assessmentId && assessmentId !== "new" ? assessmentId : null,
   );
+
+  const assessmentDataId = editId || draftId;
 
   const { data: assessmentDraft, isFetching } = useTeacherAssessment(
-    teacherId ?? "",
-    draftId ?? "",
+    teacherId,
+    assessmentDataId ?? "",
   );
 
-  const { mutateAsync: createDraft } = useCreateAssessmentDraft(
-    teacherId ?? "",
-  );
+  const { mutateAsync } = useCreateAssessmentDraft(teacherId);
 
   useEffect(() => {
     if (!teacherId || hasInitialized.current) return;
     hasInitialized.current = true;
 
-    const initialize = async () => {
+    const initializeAssessment = async () => {
       try {
-        if (!draftId) {
-          const data = await createDraft();
-          localStorage.setItem("currentAssessmentDraftId", data.id);
-          setDraftId(data.id);
+        if (assessmentId && assessmentId !== "new") {
+          // edit mode
+          setEditId(assessmentId);
+          setDraftId(null);
 
-          if (!window.location.pathname.includes(data.id)) {
+          // ensure we're on a valid edit step
+          const currentPath = location.pathname;
+          if (!currentPath.includes("/edit")) {
+            navigate(
+              `/teacher/${teacherId}/assessments/${assessmentId}/create/edit`,
+              {
+                replace: true,
+              },
+            );
+          }
+        } else {
+          // create mode
+          if (!draftId) {
+            const data = await mutateAsync();
+            localStorage.setItem("currentAssessmentDraftId", data.id);
+            setDraftId(data.id);
+            setEditId(null);
+
+            // navigate to create step
             navigate(`/teacher/${teacherId}/assessments/${data.id}/create`, {
               replace: true,
             });
-          }
-        } else {
-          if (!window.location.pathname.includes(draftId)) {
-            navigate(`/teacher/${teacherId}/assessments/${draftId}/create`, {
-              replace: true,
-            });
+          } else {
+            // ensure we're on create step for draft
+            const currentPath = location.pathname;
+            if (
+              !currentPath.includes("/create") &&
+              !currentPath.includes("/configure") &&
+              !currentPath.includes("/publish")
+            ) {
+              setEditId(null);
+              navigate(`/teacher/${teacherId}/assessments/${draftId}/create`, {
+                replace: true,
+              });
+            }
           }
         }
-      } catch (err) {
-        console.error("Failed to create assessment draft:", err);
+      } catch (error) {
+        console.error("Failed to initialize assessment:", error);
       }
     };
 
-    initialize();
-  }, [teacherId, draftId, createDraft, navigate]);
+    initializeAssessment();
+  }, [
+    teacherId,
+    assessmentId,
+    draftId,
+    mutateAsync,
+    navigate,
+    location.pathname,
+  ]);
 
-  // loading state
+  useEffect(() => {
+    return () => {
+      if (assessmentId === "new" || draftId) {
+        localStorage.removeItem("currentAssessmentDraftId");
+      }
+    };
+  }, [assessmentId, draftId]);
+
+  const isEditMode = Boolean(editId);
+
   if (isFetching || !assessmentDraft) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <p>Loading assessment draft...</p>
-        </div>
-      </div>
-    );
+    return <p>Loading {isEditMode ? "assessment" : "draft"}...</p>;
   }
 
   return (

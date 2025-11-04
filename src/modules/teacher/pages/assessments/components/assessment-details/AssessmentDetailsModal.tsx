@@ -365,7 +365,7 @@ export default function AssessmentDetailsModal({
               <StatsCard
                 icon={<FaCheckCircle />}
                 title="Passing Score"
-                value={`${assessment.passingScore} points`}
+                value={`${assessment.passingScore ? `${assessment.passingScore} points` : "Not set yet"}`}
                 iconBgColor="bg-red-100 dark:bg-red-900/30"
                 iconColor="text-red-600 dark:text-red-400"
               />

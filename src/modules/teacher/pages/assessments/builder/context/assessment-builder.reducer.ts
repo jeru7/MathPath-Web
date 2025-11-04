@@ -121,7 +121,7 @@ export const assessmentBuilderReducer = (
     case "UPDATE_ASSESSMENT_DESCRIPTION":
       return { ...state, description: action.payload };
     case "UPDATE_ASSESSMENT_PASSING_SCORE":
-      return { ...state, passingScore: action.payload };
+      return { ...state, passingScore: action.payload ?? 0 };
     case "UPDATE_ASSESSMENT_ATTEMPT_LIMIT":
       return { ...state, attemptLimit: action.payload };
     case "UPDATE_ASSESSMENT_TIME_LIMIT":
