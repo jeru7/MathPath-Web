@@ -58,10 +58,7 @@ export default function Features(): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section
-      className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-6 py-16 text-white md:px-8 lg:py-20"
-      id="features"
-    >
+    <section className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-6 py-16 text-white md:px-8 lg:py-20">
       {/* header */}
       <motion.div
         className="flex flex-col items-center gap-4 text-center"
@@ -70,7 +67,10 @@ export default function Features(): ReactElement {
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <h3 className="text-3xl font-bold tracking-tight lg:text-4xl">
+        <h3
+          className="text-3xl font-bold tracking-tight lg:text-4xl"
+          id="features"
+        >
           Game Features
         </h3>
         <p className="max-w-md text-gray-300 text-sm lg:text-base">

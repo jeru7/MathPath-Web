@@ -1,6 +1,7 @@
 import { type ReactElement, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+// enemies
 import ghost from "../../../assets/images/enemy/Ghost.png";
 import slime from "../../../assets/images/enemy/Slime.png";
 import jiji from "../../../assets/images/enemy/JiJi.png";
@@ -8,6 +9,11 @@ import blissy from "../../../assets/images/enemy/Blissy.png";
 import noroi from "../../../assets/images/enemy/Noroi.png";
 import grimwhisker from "../../../assets/images/enemy/Grimwhisker.png";
 import srinivasa from "../../../assets/images/enemy/Srinivasa.png";
+// items
+import regenEssence from "../../../assets/images/items/regenEssence.png";
+import healingDew from "../../../assets/images/items/healingDew.png";
+import lifeBloom from "../../../assets/images/items/lifeBloom.png";
+import vitaNectar from "../../../assets/images/items/vitaNectar.png";
 
 const enemies = [
   { name: "Ghost", image: ghost },
@@ -19,7 +25,12 @@ const enemies = [
   { name: "Srinivasa", image: srinivasa },
 ];
 
-const potions = ["Life Bloom", "Healing Dew", "Vita Nectar", "Regen Essence"];
+const potions = [
+  { name: "Life Bloom", image: lifeBloom },
+  { name: "Healing Dew", image: healingDew },
+  { name: "Vita Nectar", image: vitaNectar },
+  { name: "Regen Essence", image: regenEssence },
+];
 
 export default function About(): ReactElement {
   const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);
@@ -39,10 +50,7 @@ export default function About(): ReactElement {
   };
 
   return (
-    <section
-      className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-4 py-16 text-white sm:px-6 md:px-8 lg:py-20"
-      id="about"
-    >
+    <section className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-4 py-16 text-white sm:px-6 md:px-8 lg:py-20">
       {/* header */}
       <motion.div
         className="flex flex-col items-center gap-4 text-center"
@@ -51,26 +59,44 @@ export default function About(): ReactElement {
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <h3 className="text-3xl font-bold tracking-tight lg:text-4xl">About</h3>
+        <h3
+          className="text-3xl font-bold tracking-tight lg:text-4xl"
+          id="about"
+        >
+          About
+        </h3>
         <p className="max-w-md text-gray-300 text-sm lg:text-base">
           Discover the world of MathPath
         </p>
-      </motion.div>
 
-      {/* about content */}
-      <motion.p
-        className="max-w-4xl text-center text-gray-300 text-sm lg:text-base leading-relaxed mb-16 lg:mb-24 px-4"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
-        viewport={{ once: true }}
-      >
-        MathPath is an engaging turn-based mobile game designed specifically for
-        Grade 10 Probex students. Master mathematical concepts through strategic
-        battles, solve challenging problems to defeat enemies, and progress
-        through an immersive learning adventure that makes Grade 10 mathematics
-        exciting and interactive.
-      </motion.p>
+        {/* about content */}
+        <motion.p
+          className="max-w-4xl text-center text-gray-300 text-sm lg:text-base leading-relaxed px-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          MathPath is an educational adventure designed to make learning
+          mathematics both fun and meaningful. Created by a group of passionate
+          college students, MathPath blends the excitement of gaming with the
+          depth of real mathematical learning.
+        </motion.p>
+
+        <motion.p
+          className="max-w-4xl text-center text-gray-300 text-sm lg:text-base leading-relaxed mb-16 lg:mb-24 px-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          MathPath website extends this experience beyond the game. Teachers can
+          monitor student progress, identify their strengths and weaknesses, and
+          even create customized tests. Students can track their in-game
+          achievements, view their rankings, and take tests prepared by their
+          teachers all in one place.
+        </motion.p>
+      </motion.div>
 
       <motion.div
         className="flex flex-col items-center gap-8 w-full max-w-sm px-4"
@@ -197,19 +223,24 @@ export default function About(): ReactElement {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-md sm:max-w-2xl">
           {potions.map((potion, index) => (
             <motion.div
-              key={potion}
+              key={potion.name}
               className="bg-gray-800/50 rounded-lg p-3 sm:p-4 border border-gray-600 hover:border-[var(--primary-green)] transition-all duration-300"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
               viewport={{ once: true }}
+              whileHover={{ scale: 1.05 }}
             >
               <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/20">
-                  <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-white/30 to-transparent" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/20 p-1">
+                  <img
+                    src={potion.image}
+                    alt={potion.name}
+                    className="w-full h-full object-contain rounded-full"
+                  />
                 </div>
                 <h5 className="font-semibold text-center text-xs sm:text-sm lg:text-base">
-                  {potion}
+                  {potion.name}
                 </h5>
               </div>
             </motion.div>
