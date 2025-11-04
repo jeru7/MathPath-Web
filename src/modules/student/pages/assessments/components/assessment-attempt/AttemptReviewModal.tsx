@@ -10,6 +10,7 @@ import { Student } from "../../../../types/student.type";
 import {
   Assessment,
   AssessmentQuestion,
+  AssessmentPage,
 } from "../../../../../core/types/assessment/assessment.type";
 import {
   AssessmentAttempt,
@@ -69,6 +70,18 @@ const isIdentificationQuestion = (
   return question.type === "identification";
 };
 
+type QuestionWithPageInfo = AssessmentQuestion & {
+  pageIndex: number;
+  pageTitle: string;
+};
+
+type QuestionMappingResult = {
+  totalPossiblePoints: number;
+  questions: QuestionWithPageInfo[];
+  questionAnswerMap: Map<string, string>;
+  questionNumberMap: Map<string, number>;
+};
+
 export default function AttemptReviewModal({
   isOpen,
   assessment,
@@ -86,30 +99,61 @@ export default function AttemptReviewModal({
 
   useEffect(() => {
     if (assessment && attempt) {
-      const mapping = new Map<string, string>();
-      const numberMapping = new Map<string, number>();
-      let questionIndex = 0;
-      let questionNumber = 1;
-      const answerKeys = Object.keys(attempt.answers);
+      const {
+        questionAnswerMap: mappedAnswerMap,
+        questionNumberMap: mappedNumberMap,
+      }: QuestionMappingResult = assessment.pages.reduce(
+        (
+          acc: QuestionMappingResult,
+          page: AssessmentPage,
+          pageIndex: number,
+        ) => {
+          page.contents.forEach((content) => {
+            if (content.type === "question") {
+              const question = content.data;
+              acc.totalPossiblePoints += question.points;
 
-      // iterate through all pages and contents
-      assessment.pages.forEach((page) => {
-        page.contents.forEach((content) => {
-          if (content.type === "question") {
-            const question = content.data;
-            if (questionIndex < answerKeys.length) {
-              const answerKey = answerKeys[questionIndex];
-              mapping.set(question.id, answerKey);
-              numberMapping.set(question.id, questionNumber);
-              questionIndex++;
-              questionNumber++;
+              const questionIndex = acc.questions.length;
+
+              let answerKey: string | null = null;
+
+              if (attempt.answers[question.id]) {
+                answerKey = question.id;
+              } else if (attempt.answers[content.id]) {
+                answerKey = content.id;
+              } else {
+                const answerKeys = Object.keys(attempt.answers);
+                if (questionIndex < answerKeys.length) {
+                  answerKey = answerKeys[questionIndex];
+                } else {
+                  answerKey = question.id;
+                }
+              }
+
+              acc.questionAnswerMap.set(question.id, answerKey);
+              acc.questionNumberMap.set(question.id, questionIndex + 1);
+
+              const questionWithPageInfo: QuestionWithPageInfo = {
+                ...question,
+                pageIndex,
+                pageTitle: page.title || `Page ${pageIndex + 1}`,
+              };
+
+              acc.questions.push(questionWithPageInfo);
             }
-          }
-        });
-      });
+          });
+          return acc;
+        },
+        {
+          totalPossiblePoints: 0,
+          questions: [] as QuestionWithPageInfo[],
+          questionAnswerMap: new Map<string, string>(),
+          questionNumberMap: new Map<string, number>(),
+        },
+      );
 
-      setQuestionAnswerMap(mapping);
-      setQuestionNumberMap(numberMapping);
+      setQuestionAnswerMap(mappedAnswerMap);
+      setQuestionNumberMap(mappedNumberMap);
     }
   }, [assessment, attempt]);
 
@@ -167,10 +211,20 @@ export default function AttemptReviewModal({
     return questions;
   };
 
-  // get student answer for a specific question
+  // get student answer for a specific question (same logic as AssessmentResult)
   const getStudentAnswer = (questionId: string): StudentAnswer | null => {
     const answerKey = questionAnswerMap.get(questionId);
-    return answerKey ? attempt.answers[answerKey] : null;
+
+    if (answerKey && attempt.answers[answerKey] !== undefined) {
+      return attempt.answers[answerKey];
+    }
+
+    // Fallback: try direct question ID
+    if (attempt.answers[questionId] !== undefined) {
+      return attempt.answers[questionId];
+    }
+
+    return null;
   };
 
   const hasStudentAnswer = (questionId: string): boolean => {
@@ -267,19 +321,10 @@ export default function AttemptReviewModal({
   const normalizeStudentAnswer = (answer: StudentAnswer): string[] => {
     if (typeof answer === "string") return [answer];
     if (Array.isArray(answer)) return answer;
-    return [];
-  };
-
-  // Helper function to get choice text by ID
-  const getChoiceTextById = (
-    question: AssessmentQuestion,
-    choiceId: string,
-  ): string => {
-    if (isChoiceQuestion(question)) {
-      const choice = question.choices.find((c) => c.id === choiceId);
-      return choice?.text || choiceId;
+    if (typeof answer === "object" && !Array.isArray(answer)) {
+      return Object.values(answer);
     }
-    return choiceId;
+    return [];
   };
 
   const renderQuestionReview = (question: AssessmentQuestion) => {
@@ -391,13 +436,13 @@ export default function AttemptReviewModal({
       return (
         <div className="space-y-2">
           {studentAnswers.map((answerId, index) => {
-            const choiceText = getChoiceTextById(question, answerId);
+            const choice = question.choices.find((c) => c.id === answerId);
             return (
               <div
                 key={index}
                 className="text-sm text-gray-900 dark:text-gray-100"
               >
-                {choiceText}
+                {choice?.text || "Selected answer not available"}
               </div>
             );
           })}
@@ -467,13 +512,13 @@ export default function AttemptReviewModal({
       return (
         <div className="space-y-2">
           {correctAnswers.map((answerId: string, index: number) => {
-            const choiceText = getChoiceTextById(question, answerId);
+            const choice = question.choices.find((c) => c.id === answerId);
             return (
               <div
                 key={index}
                 className="text-sm text-green-700 dark:text-green-300"
               >
-                {choiceText}
+                {choice?.text || "Correct answer not available"}
               </div>
             );
           })}

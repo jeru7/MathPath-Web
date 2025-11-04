@@ -55,7 +55,7 @@ export default function Assessments(): ReactElement {
         />
       </section>
 
-      {/* Assessment details modal moved to parent */}
+      {/* assessment details modal */}
       {selectedAssessment && (
         <AssessmentDetailsModal
           isOpen={showDetailsModal}

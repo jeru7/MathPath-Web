@@ -1,3 +1,4 @@
+// TODO: reuse review modal logic
 import { type ReactElement, useState } from "react";
 import {
   IoCheckmarkCircle,
@@ -111,11 +112,21 @@ export default function AssessmentResult({
           acc.totalPossiblePoints += question.points;
 
           const questionIndex = acc.questions.length;
-          const answerKeys = Object.keys(attempt.answers);
-          const answerKey =
-            questionIndex < answerKeys.length
-              ? answerKeys[questionIndex]
-              : `q${questionIndex + 1}`;
+
+          let answerKey: string | null = null;
+
+          if (attempt.answers[question.id]) {
+            answerKey = question.id;
+          } else if (attempt.answers[content.id]) {
+            answerKey = content.id;
+          } else {
+            const answerKeys = Object.keys(attempt.answers);
+            if (questionIndex < answerKeys.length) {
+              answerKey = answerKeys[questionIndex];
+            } else {
+              answerKey = question.id;
+            }
+          }
 
           acc.questionAnswerMap.set(question.id, answerKey);
           acc.questionNumberMap.set(question.id, questionIndex + 1);
@@ -176,7 +187,15 @@ export default function AssessmentResult({
 
   const getStudentAnswer = (questionId: string): StudentAnswer | null => {
     const answerKey = questionAnswerMap.get(questionId);
-    return answerKey ? attempt.answers[answerKey] : null;
+
+    if (answerKey && attempt.answers[answerKey] !== undefined) {
+      return attempt.answers[answerKey];
+    }
+
+    if (attempt.answers[questionId] !== undefined) {
+      return attempt.answers[questionId];
+    }
+    return null;
   };
 
   const hasStudentAnswer = (questionId: string): boolean => {
@@ -273,6 +292,9 @@ export default function AssessmentResult({
   const normalizeStudentAnswer = (answer: StudentAnswer): string[] => {
     if (typeof answer === "string") return [answer];
     if (Array.isArray(answer)) return answer;
+    if (typeof answer === "object" && !Array.isArray(answer)) {
+      return Object.values(answer);
+    }
     return [];
   };
 
@@ -332,13 +354,12 @@ export default function AssessmentResult({
             </div>
           </div>
           <div
-            className={`flex items-center gap-1 text-sm font-medium ml-4 ${
-              hasAnswer
+            className={`flex items-center gap-1 text-sm font-medium ml-4 ${hasAnswer
                 ? isCorrect
                   ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
                 : "text-gray-500 dark:text-gray-400"
-            }`}
+              }`}
           >
             {hasAnswer ? (
               isCorrect ? (
@@ -357,13 +378,12 @@ export default function AssessmentResult({
             Your Answer:
           </p>
           <div
-            className={`p-3 rounded-lg ${
-              hasAnswer
+            className={`p-3 rounded-lg ${hasAnswer
                 ? isCorrect
                   ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
                   : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                 : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
-            }`}
+              }`}
           >
             {hasAnswer ? (
               renderStudentAnswer(question, studentAnswer)
@@ -420,7 +440,7 @@ export default function AssessmentResult({
                 key={index}
                 className="text-sm text-gray-900 dark:text-gray-100"
               >
-                {choice?.text || `Selected: ${answerId}`}
+                {choice?.text || "Selected answer not available"}
               </div>
             );
           })}
@@ -496,7 +516,7 @@ export default function AssessmentResult({
                 key={index}
                 className="text-sm text-green-700 dark:text-green-300"
               >
-                {choice?.text || `Correct: ${answerId}`}
+                {choice?.text || "Correct answer not available"}
               </div>
             );
           })}
