@@ -3,6 +3,8 @@ import ModalOverlay from "../../modal/ModalOverlay";
 import { ProfilePicture } from "../../../types/user.type";
 import { getProfilePicture } from "../../../utils/profile-picture.util";
 import { FaTimes } from "react-icons/fa";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type ProfilePictureModalProps = {
   isOpen: boolean;
@@ -17,20 +19,25 @@ export default function ProfilePictureModal({
 }: ProfilePictureModalProps): ReactElement {
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col gap-2 items-center bg-white p-3 dark:bg-gray-800 rounded-sm overflow-hidden shadow-2xl max-w-sm mx-4 border border-gray-200 dark:border-gray-700">
-        <button
-          type="button"
-          className="hover:cursor-pointer self-end"
-          onClick={onClose}
-        >
-          <FaTimes className="h-4 w-4 text-gray-900 dark:text-gray-300" />
-        </button>
-        <img
-          src={getProfilePicture((picture as ProfilePicture) ?? "Default")}
-          alt="Profile Preview"
-          className="w-full h-auto object-contain rounded-sm"
-        />
-      </div>
+      <Card className="max-w-sm mx-4">
+        <CardContent className="p-3">
+          <div className="flex flex-col gap-2 items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="self-end hover:cursor-pointer"
+              onClick={onClose}
+            >
+              <FaTimes className="h-4 w-4" />
+            </Button>
+            <img
+              src={getProfilePicture((picture as ProfilePicture) ?? "Default")}
+              alt="Profile Preview"
+              className="w-full h-auto object-contain rounded-sm"
+            />
+          </div>
+        </CardContent>
+      </Card>
     </ModalOverlay>
   );
 }

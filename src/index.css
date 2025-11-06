@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -14,24 +13,18 @@
   /* color palette */
   --primary-white: #f5f7f8;
   --secondary-white: #d9d9d9;
-
   --primary-yellow: #fbc93d;
   --secondary-yellow: #ffe31a;
-
   --primary-green: #347928;
   --secondary-green: #c1f0a0;
   --tertiary-green: #99d58d;
   --fourth-green: #32cd32;
-
   --primary-orange: #f09319;
   --secondary-orange: #fbc93d;
-
   --primary-black: #2c2c2c;
   --secondary-black: #222121;
   --tertiary-black: #303030;
-
   --primary-gray: #9c9a9a;
-
   --primary-red: #ff8383;
 
   /* vignette effect */
@@ -42,17 +35,67 @@
   );
 }
 
+/* Light Mode - Professional Green Theme */
+:root {
+  --radius: 0.625rem;
+  --background: 0 0% 98%; /* Very light gray */
+  --foreground: 240 10% 10%; /* Dark gray for text */
+  --card: 0 0% 100%; /* Pure white cards */
+  --card-foreground: 240 10% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 10%;
+  --primary: 142 76% 28%; /* Your primary green #347928 in HSL */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 142 76% 36%; /* Slightly lighter green */
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 5% 96%; /* Very light gray */
+  --muted-foreground: 240 4% 46%;
+  --accent: 142 76% 28%; /* Primary green as accent */
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 6% 90%; /* Light borders */
+  --input: 240 6% 90%;
+  --ring: 142 76% 28%; /* Green focus ring */
+  --chart-1: 142 76% 36%;
+  --chart-2: 142 76% 28%;
+  --chart-3: 142 60% 45%;
+  --chart-4: 142 70% 35%;
+  --chart-5: 142 65% 40%;
+}
+
+/* Dark Mode - Professional Green Theme */
 .dark {
-  --primary-green-dark: #059669;
-  --primary-orange-dark: #d97706;
-  --secondary-orange-dark: #ea580c;
+  --background: 240 10% 8%; /* Very dark gray */
+  --foreground: 0 0% 95%; /* Almost white text */
+  --card: 240 10% 12%; /* Dark cards */
+  --card-foreground: 0 0% 95%;
+  --popover: 240 10% 12%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 142 70% 45%; /* Brighter green for dark mode */
+  --primary-foreground: 240 10% 8%;
+  --secondary: 142 65% 35%; /* Darker green */
+  --secondary-foreground: 0 0% 95%;
+  --muted: 240 10% 16%; /* Dark muted backgrounds */
+  --muted-foreground: 240 5% 65%;
+  --accent: 142 70% 45%; /* Bright green accent */
+  --accent-foreground: 240 10% 8%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 10% 20%; /* Dark borders */
+  --input: 240 10% 20%;
+  --ring: 142 70% 45%; /* Green focus ring */
+  --chart-1: 142 70% 45%;
+  --chart-2: 142 65% 35%;
+  --chart-3: 142 75% 55%;
+  --chart-4: 142 60% 40%;
+  --chart-5: 142 68% 48%;
 }
 
 @layer utilities {
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
-
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -98,4 +141,40 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
 }

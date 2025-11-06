@@ -1,5 +1,7 @@
 import { type ReactElement, useState } from "react";
 import { User } from "../../types/user.type";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export type SettingsProps = {
   user: User;
@@ -22,7 +24,7 @@ export default function Settings({
 
   if (isLoading || !user) {
     return (
-      <main className="flex flex-col min-h-screen h-fit w-full gap-2 bg-gray-50 dark:bg-gray-900 p-2">
+      <main className="flex flex-col min-h-screen h-fit w-full gap-2 p-2">
         <div>Loading settings...</div>
       </main>
     );
@@ -38,32 +40,34 @@ export default function Settings({
   ];
 
   return (
-    <main className="flex flex-col min-h-screen h-fit w-full gap-2 bg-inherit dark:bg-gray-900 p-2">
+    <main className="flex flex-col min-h-screen h-fit w-full gap-2 p-2">
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-          Settings
-        </h3>
+        <h3 className="text-xl sm:text-2xl font-bold">Settings</h3>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-2">
         <aside className="lg:w-64 flex-shrink-0">
-          <nav className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-4">
-            <ul className="space-y-2">
-              {settingsSections.map((section) => (
-                <li key={section.id}>
-                  <button
-                    onClick={() => setActiveSection(section.id)}
-                    className={`w-full text-left px-3 py-2 rounded text-sm font-medium transition-colors ${activeSection === section.id
-                        ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-l-4 border-green-500 dark:border-green-400"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`}
-                  >
-                    {section.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <Card>
+            <CardContent className="p-4">
+              <nav>
+                <ul className="space-y-2">
+                  {settingsSections.map((section) => (
+                    <li key={section.id}>
+                      <Button
+                        variant={
+                          activeSection === section.id ? "default" : "ghost"
+                        }
+                        onClick={() => setActiveSection(section.id)}
+                        className={`w-full justify-start text-left ${activeSection === section.id ? "bg-primary text-primary-foreground" : ""}`}
+                      >
+                        {section.label}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </CardContent>
+          </Card>
         </aside>
 
         <div className="flex-1">

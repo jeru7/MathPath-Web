@@ -3,6 +3,8 @@ import TeacherActivity from "../../../teacher/pages/dashboard/components/activit
 import { useParams } from "react-router-dom";
 import { useTeacherStudentActivities } from "../../../teacher/services/teacher-student.service";
 import ActivityDetailsModal from "../../../teacher/pages/dashboard/components/activity_list/ActivityDetailsModal";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type ActivityListProps = {
   classes?: string;
@@ -26,60 +28,63 @@ export default function ActivityList({
 
   return (
     <>
-      <article
-        className={`${classes} p-2 flex flex-col h-full rounded-sm bg-white border border-white dark:bg-gray-800 dark:border-gray-700 gap-2 shadow-sm`}
-      >
-        <header className="w-full flex items-center justify-between">
-          <p className="font-semibold text-gray-900 dark:text-gray-200">
-            Recent Activity
-          </p>
-          {studentActivities && studentActivities.length > 0 && (
-            <button
-              onClick={handleViewAll}
-              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium px-2 py-1 rounded transition-colors hover:cursor-pointer"
-            >
-              View All
-            </button>
-          )}
-        </header>
-
-        <div
-          className={`flex-1 overflow-scroll ${studentActivities && studentActivities.length > 0 ? "pr-4" : "pr-0"}`}
-          style={{
-            maxHeight: `${type === "Teacher" ? "550px" : "350px"}`,
-          }}
-        >
-          <div
-            className={`relative flex flex-col w-full ${studentActivities && studentActivities.length > 0 ? "h-fit" : "h-full"}`}
-          >
-            {/* line */}
+      <Card className={`${classes} flex flex-col h-full`}>
+        <CardHeader className="pb-1 px-3 pt-3">
+          <div className="w-full flex items-center justify-between">
+            <CardTitle className="text-sm font-semibold">
+              Recent Activity
+            </CardTitle>
             {studentActivities && studentActivities.length > 0 && (
-              <div
-                className="absolute left-2 top-0 w-1 rounded-full bg-[var(--secondary-green)]"
-                style={{ height: "calc(100% - 2rem)" }}
-              ></div>
-            )}
-
-            {/* list */}
-            {studentActivities && studentActivities.length > 0 ? (
-              <section className="flex-col flex pl-8 h-fit gap-2">
-                {studentActivities.map((activity) => (
-                  <TeacherActivity
-                    key={activity.activityId}
-                    activity={activity}
-                  />
-                ))}
-              </section>
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-gray-900 dark:text-gray-300">
-                  No Activity Available
-                </p>
-              </div>
+              <Button
+                variant="ghost"
+                onClick={handleViewAll}
+                className="text-xs h-6 px-2 py-0 text-primary hover:text-primary/80"
+              >
+                View All
+              </Button>
             )}
           </div>
-        </div>
-      </article>
+        </CardHeader>
+
+        <CardContent className="flex-1 overflow-hidden p-3 pt-0">
+          <div
+            className={`flex-1 overflow-auto ${studentActivities && studentActivities.length > 0 ? "pr-2" : "pr-0"}`}
+            style={{
+              maxHeight: `${type === "Teacher" ? "550px" : "350px"}`,
+            }}
+          >
+            <div
+              className={`relative flex flex-col w-full ${studentActivities && studentActivities.length > 0 ? "h-fit" : "h-full"}`}
+            >
+              {/* Timeline line */}
+              {studentActivities && studentActivities.length > 0 && (
+                <div
+                  className="absolute left-2 top-0 w-0.5 rounded-full bg-primary"
+                  style={{ height: "calc(100% - 1rem)" }}
+                ></div>
+              )}
+
+              {/* Activity list */}
+              {studentActivities && studentActivities.length > 0 ? (
+                <section className="flex-col flex pl-6 h-fit gap-1">
+                  {studentActivities.map((activity) => (
+                    <TeacherActivity
+                      key={activity.activityId}
+                      activity={activity}
+                    />
+                  ))}
+                </section>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-muted-foreground text-sm">
+                    No Activity Available
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <ActivityDetailsModal
         isOpen={showModal}

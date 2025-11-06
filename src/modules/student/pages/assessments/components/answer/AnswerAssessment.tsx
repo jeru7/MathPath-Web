@@ -16,6 +16,8 @@ import {
   canRetakeAssessment,
   getCompletedAttemptsCount,
 } from "../../../../utils/assessments/assessment.util";
+import { Button } from "../../../../../../components/ui/button";
+import { Card, CardContent } from "../../../../../../components/ui/card";
 
 export default function AnswerAssessment(): ReactElement {
   const { studentId, assessmentId } = useParams();
@@ -222,10 +224,10 @@ export default function AnswerAssessment(): ReactElement {
 
   if (assessmentPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-green-600 dark:border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-3 text-muted-foreground font-medium">
             Loading Assessment
           </p>
         </div>
@@ -235,24 +237,24 @@ export default function AnswerAssessment(): ReactElement {
 
   if (!assessment) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center max-w-md p-6">
-          <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <IoClose className="w-6 h-6 text-red-600 dark:text-red-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Assessment Not Found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm">
-            The requested assessment could not be located.
-          </p>
-          <button
-            onClick={() => navigate(`/student/${studentId}/assessments`)}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium"
-          >
-            Return to Assessments
-          </button>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="text-center max-w-md p-6">
+          <CardContent className="p-0">
+            <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <IoClose className="w-6 h-6 text-destructive" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Assessment Not Found</h3>
+            <p className="text-muted-foreground mb-6 text-sm">
+              The requested assessment could not be located.
+            </p>
+            <Button
+              onClick={() => navigate(`/student/${studentId}/assessments`)}
+              className="px-4 py-2 text-sm font-medium"
+            >
+              Return to Assessments
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -271,7 +273,7 @@ export default function AnswerAssessment(): ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div
         className={`transition-opacity duration-200 ${currentAttempt && hasInitialized
             ? "opacity-100"
@@ -290,8 +292,8 @@ export default function AnswerAssessment(): ReactElement {
       {!currentAttempt && (
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-green-600 dark:border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="mt-3 text-muted-foreground font-medium">
               {isResumingPaused
                 ? "Resuming Assessment..."
                 : "Initializing Assessment..."}

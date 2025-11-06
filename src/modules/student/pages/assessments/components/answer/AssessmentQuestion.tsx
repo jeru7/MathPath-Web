@@ -6,6 +6,15 @@ import {
 } from "../../../../../core/types/assessment/assessment.type";
 import { StudentAnswer } from "../../../../../core/types/assessment-attempt/assessment-attempt.type";
 import { IoCheckmarkCircle, IoInformationCircle } from "react-icons/io5";
+import { Card, CardContent } from "../../../../../../components/ui/card";
+import { Badge } from "../../../../../../components/ui/badge";
+import { Input } from "../../../../../../components/ui/input";
+import { Label } from "../../../../../../components/ui/label";
+import { Checkbox } from "../../../../../../components/ui/checkbox";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "../../../../../../components/ui/radio-group";
 
 type StudentQuestionProps = {
   content: AssessmentContent;
@@ -128,26 +137,31 @@ export default function AssessmentQuestion({
     if (data.type !== "single_choice") return <></>;
 
     return (
-      <div className="space-y-2 sm:space-y-3">
+      <RadioGroup
+        value={
+          typeof studentAnswer?.answer === "string" ? studentAnswer.answer : ""
+        }
+        onValueChange={handleSingleChoiceChange}
+        className="space-y-2 sm:space-y-3"
+      >
         {randomizedChoices.map((choice) => (
-          <label
+          <div
             key={choice.id}
-            className="flex items-start sm:items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-sm border border-white dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+            className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors duration-200"
           >
-            <input
-              type="radio"
-              name={`question-${content.id}`}
+            <RadioGroupItem
               value={choice.id}
-              checked={studentAnswer?.answer === choice.id}
-              onChange={(e) => handleSingleChoiceChange(e.target.value)}
-              className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2 mt-1 sm:mt-0 flex-shrink-0"
+              id={`${content.id}-${choice.id}`}
             />
-            <span className="text-gray-700 dark:text-gray-300 font-medium break-words text-sm sm:text-base flex-1 min-w-0">
+            <Label
+              htmlFor={`${content.id}-${choice.id}`}
+              className="font-normal text-sm sm:text-base flex-1 min-w-0 cursor-pointer break-words"
+            >
               {choice.text}
-            </span>
-          </label>
+            </Label>
+          </div>
         ))}
-      </div>
+      </RadioGroup>
     );
   };
 
@@ -157,27 +171,28 @@ export default function AssessmentQuestion({
     return (
       <div className="space-y-2 sm:space-y-3">
         {randomizedChoices.map((choice) => (
-          <label
+          <div
             key={choice.id}
-            className="flex items-start sm:items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-sm border border-white dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+            className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors duration-200"
           >
-            <input
-              type="checkbox"
-              value={choice.id}
+            <Checkbox
+              id={`${content.id}-${choice.id}`}
               checked={
                 Array.isArray(studentAnswer?.answer)
                   ? studentAnswer.answer.includes(choice.id)
                   : false
               }
-              onChange={(e) =>
-                handleMultipleChoiceChange(choice.id, e.target.checked)
+              onCheckedChange={(checked) =>
+                handleMultipleChoiceChange(choice.id, checked as boolean)
               }
-              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2 mt-1 sm:mt-0 flex-shrink-0"
             />
-            <span className="text-gray-700 dark:text-gray-300 font-medium break-words text-sm sm:text-base flex-1 min-w-0">
+            <Label
+              htmlFor={`${content.id}-${choice.id}`}
+              className="font-normal text-sm sm:text-base flex-1 min-w-0 cursor-pointer break-words"
+            >
               {choice.text}
-            </span>
-          </label>
+            </Label>
+          </div>
         ))}
       </div>
     );
@@ -187,26 +202,29 @@ export default function AssessmentQuestion({
     if (data.type !== "true_or_false") return <></>;
 
     return (
-      <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3 max-w-full sm:max-w-xs">
+      <RadioGroup
+        value={studentAnswer?.answer?.toString() || ""}
+        onValueChange={(value) => handleTrueFalseChange(value === "true")}
+        className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3 max-w-full sm:max-w-xs"
+      >
         {[true, false].map((value) => (
-          <label
+          <div
             key={value.toString()}
-            className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-sm border border-white dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+            className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors duration-200"
           >
-            <input
-              type="radio"
-              name={`question-${content.id}`}
+            <RadioGroupItem
               value={value.toString()}
-              checked={studentAnswer?.answer === value}
-              onChange={() => handleTrueFalseChange(value)}
-              className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2 flex-shrink-0"
+              id={`${content.id}-${value}`}
             />
-            <span className="text-gray-700 dark:text-gray-300 font-medium text-sm sm:text-base">
+            <Label
+              htmlFor={`${content.id}-${value}`}
+              className="font-normal text-sm sm:text-base cursor-pointer"
+            >
               {value ? "True" : "False"}
-            </span>
-          </label>
+            </Label>
+          </div>
         ))}
-      </div>
+      </RadioGroup>
     );
   };
 
@@ -215,7 +233,7 @@ export default function AssessmentQuestion({
 
     return (
       <div className="w-full max-w-full sm:max-w-md">
-        <input
+        <Input
           type="text"
           value={
             typeof studentAnswer?.answer === "string"
@@ -223,8 +241,8 @@ export default function AssessmentQuestion({
               : ""
           }
           onChange={(e) => handleIdentificationChange(e.target.value)}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 text-sm sm:text-base"
           placeholder="Enter your answer..."
+          className="text-sm sm:text-base"
         />
       </div>
     );
@@ -233,7 +251,6 @@ export default function AssessmentQuestion({
   const renderFillInTheBlanks = (): ReactElement => {
     if (data.type !== "fill_in_the_blanks") return <></>;
 
-    // parse the question and replace [number] with empty fields
     const questionParts = data.question.split(/(\[\d+\])/);
     const blankAnswers =
       studentAnswer &&
@@ -242,7 +259,6 @@ export default function AssessmentQuestion({
         ? (studentAnswer.answer as Record<string, string>)
         : {};
 
-    // extract all blanks for the answer section
     const blanks = data.answers.map((blank: FillInTheBlankAnswerType) => ({
       ...blank,
       blankNumber: blank.label,
@@ -250,8 +266,7 @@ export default function AssessmentQuestion({
 
     return (
       <div className="space-y-4 sm:space-y-6">
-        {/* question text with empty fields */}
-        <div className="text-gray-900 dark:text-gray-100 prose dark:prose-invert max-w-none text-sm sm:text-base md:text-lg leading-relaxed break-words">
+        <div className="prose dark:prose-invert max-w-none text-sm sm:text-base md:text-lg leading-relaxed break-words">
           {questionParts.map((part, index) => {
             const blankMatch = part.match(/\[(\d+)\]/);
             if (blankMatch) {
@@ -259,7 +274,7 @@ export default function AssessmentQuestion({
               return (
                 <span
                   key={index}
-                  className="inline-flex items-center justify-center min-w-12 sm:min-w-16 mx-1 px-2 sm:px-3 py-1 sm:py-2 border-2 border-dashed border-gray-400 dark:border-gray-500 rounded bg-transparent text-gray-600 dark:text-gray-400 select-none font-medium text-sm sm:text-base"
+                  className="inline-flex items-center justify-center min-w-12 sm:min-w-16 mx-1 px-2 sm:px-3 py-1 sm:py-2 border-2 border-dashed border-muted-foreground/50 rounded bg-transparent text-muted-foreground select-none font-medium text-sm sm:text-base"
                   style={{ height: "2.25rem" }}
                 >
                   {blankNumber}
@@ -272,30 +287,28 @@ export default function AssessmentQuestion({
           })}
         </div>
 
-        {/* answer inputs section */}
-        <div className="border-t border-gray-200 dark:border-gray-600 pt-3 sm:pt-4">
-          <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">
+        <div className="border-t border-border pt-3 sm:pt-4">
+          <h4 className="font-semibold mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">
             Provide answers for the blanks:
           </h4>
           <div className="grid grid-cols-1 gap-3 sm:gap-4">
             {blanks.map((blank) => (
-              <div
-                key={blank.id}
-                className="flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
-              >
-                <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 min-w-4 sm:min-w-6 flex-shrink-0">
-                  {blank.blankNumber}.
-                </span>
-                <input
-                  type="text"
-                  value={blankAnswers[blank.id] || ""}
-                  onChange={(e) =>
-                    handleFillInTheBlanksChange(blank.id, e.target.value)
-                  }
-                  className="flex-1 min-w-0 px-2 sm:px-3 py-1 sm:py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
-                  placeholder={`Answer ${blank.blankNumber}`}
-                />
-              </div>
+              <Card key={blank.id} className="p-3 sm:p-4">
+                <CardContent className="p-0 flex items-center space-x-2 sm:space-x-3">
+                  <span className="text-xs sm:text-sm font-medium text-muted-foreground min-w-4 sm:min-w-6 flex-shrink-0">
+                    {blank.blankNumber}.
+                  </span>
+                  <Input
+                    type="text"
+                    value={blankAnswers[blank.id] || ""}
+                    onChange={(e) =>
+                      handleFillInTheBlanksChange(blank.id, e.target.value)
+                    }
+                    placeholder={`Answer ${blank.blankNumber}`}
+                    className="flex-1 min-w-0 text-sm sm:text-base"
+                  />
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -317,28 +330,32 @@ export default function AssessmentQuestion({
         return renderFillInTheBlanks();
       default:
         return (
-          <div className="text-gray-500 dark:text-gray-400 italic p-3 sm:p-4 bg-yellow-50 dark:bg-yellow-900 rounded-sm text-sm sm:text-base">
-            Unsupported question type
-          </div>
+          <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+            <CardContent className="p-3 sm:p-4">
+              <div className="text-muted-foreground italic text-sm sm:text-base">
+                Unsupported question type
+              </div>
+            </CardContent>
+          </Card>
         );
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-sm border border-white dark:border-gray-700 shadow-sm overflow-hidden">
-      <div className="p-3 sm:p-4 md:p-6">
+    <Card>
+      <CardContent className="p-3 sm:p-4 md:p-6">
         <div className="flex items-start space-x-2 sm:space-x-3 mb-3 sm:mb-4 md:mb-6">
           {questionNumber && (
-            <div className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full font-semibold text-xs sm:text-sm flex-shrink-0 mt-0.5">
+            <Badge className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-primary text-primary-foreground rounded-full font-semibold text-xs sm:text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
               {questionNumber}
-            </div>
+            </Badge>
           )}
           <div className="flex-1 min-w-0">
             {data.type === "fill_in_the_blanks" ? (
               <div>{renderFillInTheBlanks()}</div>
             ) : (
               <div
-                className="text-gray-900 dark:text-gray-100 text-sm sm:text-base md:text-lg leading-relaxed prose dark:prose-invert max-w-none break-words"
+                className="text-sm sm:text-base md:text-lg leading-relaxed prose dark:prose-invert max-w-none break-words"
                 dangerouslySetInnerHTML={{ __html: data.question }}
               />
             )}
@@ -346,14 +363,20 @@ export default function AssessmentQuestion({
         </div>
 
         <div className="flex flex-col xs:flex-row xs:items-center gap-1 sm:gap-2 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm">
-          <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-400">
+          <Badge
+            variant="secondary"
+            className="flex items-center space-x-1 sm:space-x-2 w-fit"
+          >
             <IoCheckmarkCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-            <span className="font-medium">
+            <span>
               {data.points} point{data.points !== 1 ? "s" : ""}
             </span>
-          </div>
+          </Badge>
 
-          <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-400">
+          <Badge
+            variant="outline"
+            className="flex items-center space-x-1 sm:space-x-2 w-fit"
+          >
             <IoInformationCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
             <span className="capitalize">{data.type.replace(/_/g, " ")}</span>
             {isRandomized && (
@@ -361,13 +384,13 @@ export default function AssessmentQuestion({
                 (Randomized)
               </span>
             )}
-          </div>
+          </Badge>
         </div>
 
         {data.type !== "fill_in_the_blanks" && (
           <div className="mt-3 sm:mt-4">{renderQuestionContent()}</div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

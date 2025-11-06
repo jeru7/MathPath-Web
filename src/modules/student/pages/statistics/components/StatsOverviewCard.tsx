@@ -13,6 +13,12 @@ import {
   useStudentPlayerCard,
 } from "../../../services/student-stats.service";
 import { Student } from "../../../types/student.type";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../../../components/ui/card";
 
 type StatsOverviewCardProps = {
   student: Student;
@@ -101,40 +107,37 @@ export default function StatsOverviewCard({
   ];
 
   return (
-    <article className="bg-white dark:bg-gray-800 flex flex-col gap-4 w-full h-full p-3 rounded-sm transition-colors duration-200">
-      <header>
-        <p className="font-semibold text-lg text-gray-800 dark:text-gray-100 transition-colors duration-200">
-          Overview
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 transition-colors duration-200">
+    <Card className="w-full h-full">
+      <CardHeader className="">
+        <CardTitle className="text-lg">Overview</CardTitle>
+        <p className="text-xs text-muted-foreground mt-0.5">
           {student?.characterName
             ? `Player Name: ${student.characterName}`
             : "Player Stats"}
         </p>
-      </header>
-
-      <section className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3">
-        {stats.map((stat, index) => (
-          <div
-            key={index}
-            className={`p-3 rounded-md border ${stat.bgColor} ${stat.borderColor} transition-colors duration-200`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1 transition-colors duration-200">
-                  {stat.title}
-                </p>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 transition-colors duration-200">
-                  {stat.value}
-                </p>
-              </div>
-              <stat.icon
-                className={`text-lg ml-2 flex-shrink-0 ${stat.color} transition-colors duration-200`}
-              />
-            </div>
-          </div>
-        ))}
-      </section>
-    </article>
+      </CardHeader>
+      <CardContent className="">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {stats.map((stat, index) => (
+            <Card
+              key={index}
+              className={`p-3 ${stat.bgColor} ${stat.borderColor}`}
+            >
+              <CardContent className="p-0 flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">
+                    {stat.title}
+                  </p>
+                  <p className="text-sm font-semibold">{stat.value}</p>
+                </div>
+                <stat.icon
+                  className={`text-lg ml-2 flex-shrink-0 ${stat.color}`}
+                />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

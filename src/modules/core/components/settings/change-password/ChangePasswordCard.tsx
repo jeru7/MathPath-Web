@@ -11,6 +11,10 @@ import {
   ChangePasswordDTO,
   ChangePasswordSchema,
 } from "../../../../auth/types/auth-settings.type";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ChangePasswordCard(): ReactElement {
   const { user } = useAuth();
@@ -68,114 +72,117 @@ export default function ChangePasswordCard(): ReactElement {
 
   if (!user) {
     return (
-      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
-        <h4 className="font-semibold text-gray-900 dark:text-white mb-6 text-lg">
-          Change Password
-        </h4>
-        <p className="text-gray-600 dark:text-gray-400">
-          Please log in to change your password.
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Change Password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Please log in to change your password.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
-      <h4 className="font-semibold text-gray-900 dark:text-white mb-6 text-lg">
-        Change Password
-      </h4>
+    <Card>
+      <CardHeader>
+        <CardTitle>Change Password</CardTitle>
+      </CardHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
-        {/* current password */}
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Current Password
-          </label>
-          <div className="relative">
-            <input
-              type={showCurrentPassword ? "text" : "password"}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-10"
-              {...register("currentPassword")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowCurrentPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            >
-              {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
+          {/* current password */}
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Current Password</Label>
+            <div className="relative">
+              <Input
+                id="currentPassword"
+                type={showCurrentPassword ? "text" : "password"}
+                {...register("currentPassword")}
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCurrentPassword((prev) => !prev)}
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              >
+                {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
+            {errors.currentPassword && (
+              <p className="text-xs text-destructive">
+                {errors.currentPassword.message}
+              </p>
+            )}
           </div>
-          {errors.currentPassword && (
-            <p className="text-xs text-red-500 mt-1">
-              {errors.currentPassword.message}
-            </p>
-          )}
-        </div>
 
-        {/* new password */}
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            New Password
-          </label>
-          <div className="relative">
-            <input
-              type={showNewPassword ? "text" : "password"}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-10"
-              {...register("newPassword")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowNewPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            >
-              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+          {/* new password */}
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">New Password</Label>
+            <div className="relative">
+              <Input
+                id="newPassword"
+                type={showNewPassword ? "text" : "password"}
+                {...register("newPassword")}
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNewPassword((prev) => !prev)}
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              >
+                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
+            {errors.newPassword && (
+              <p className="text-xs text-destructive">
+                {errors.newPassword.message}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Must be at least 8 characters long with at least one special
+              character and different from current password
+            </p>
           </div>
-          {errors.newPassword && (
-            <p className="text-xs text-red-500 mt-1">
-              {errors.newPassword.message}
-            </p>
-          )}
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Must be at least 8 characters long with at least one special
-            character and different from current password
-          </p>
-        </div>
 
-        {/* confirm new password */}
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Confirm New Password
-          </label>
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-10"
-              {...register("confirmNewPassword")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+          {/* confirm new password */}
+          <div className="space-y-2">
+            <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
+            <div className="relative">
+              <Input
+                id="confirmNewPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("confirmNewPassword")}
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
+            {errors.confirmNewPassword && (
+              <p className="text-xs text-destructive">
+                {errors.confirmNewPassword.message}
+              </p>
+            )}
           </div>
-          {errors.confirmNewPassword && (
-            <p className="text-xs text-red-500 mt-1">
-              {errors.confirmNewPassword.message}
-            </p>
-          )}
-        </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed w-full"
-        >
-          {isSubmitting ? "Changing Password..." : "Change Password"}
-        </button>
-      </form>
-    </div>
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? "Changing Password..." : "Change Password"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

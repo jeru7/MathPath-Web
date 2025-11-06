@@ -24,6 +24,9 @@ import { AssessmentAttempt } from "../../../../core/types/assessment-attempt/ass
 import AttemptReviewModal from "./assessment-attempt/AttemptReviewModal";
 import { useNavigate } from "react-router-dom";
 import ModalOverlay from "../../../../core/components/modal/ModalOverlay";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 type AssessmentDetailsModalProps = {
   isOpen: boolean;
@@ -128,35 +131,31 @@ export default function AssessmentDetailsModal({
     }
   };
 
-  const getAttemptDisplayColor = (status: string) => {
+  const getAttemptDisplayVariant = (status: string) => {
     switch (status) {
       case "completed":
-        return "text-green-600 dark:text-green-400";
+        return "default";
       case "failed":
-        return "text-red-600 dark:text-red-400";
+        return "destructive";
       case "paused":
-        return "text-yellow-600 dark:text-yellow-400";
+        return "secondary";
       case "abandoned":
-        return "text-orange-600 dark:text-orange-400";
+        return "outline";
       default:
-        return "text-blue-600 dark:text-blue-400";
+        return "default";
     }
   };
 
-  // check if there's a paused attempt
   const hasPausedAttempt =
     pausedAttempt || attempts.some((attempt) => attempt.status === "paused");
 
-  // get the actual paused attempt
   const currentPausedAttempt =
     pausedAttempt || attempts.find((attempt) => attempt.status === "paused");
 
   const handleTakeAssessmentDirect = (assessment: Assessment) => {
-    // if there's a paused attempt, resume it
     if (hasPausedAttempt) {
       navigate(`${assessment.id}/attempt?resume=true`);
     } else {
-      // start a new attempt
       const isRetake = attempts.length > 0;
       const url = isRetake
         ? `${assessment.id}/attempt?retake=true`
@@ -176,43 +175,33 @@ export default function AssessmentDetailsModal({
     return attempts.length > 0 ? "Retake Assessment" : "Take Assessment";
   };
 
-  const getActionButtonIcon = () => {
-    if (hasPausedAttempt) {
-      return <FaPlay className="w-3 h-3 mr-2" />;
-    }
-    return null;
+  const getActionButtonVariant = () => {
+    if (!canTakeAssessment) return "outline";
+    if (hasPausedAttempt) return "default";
+    return "default";
   };
 
-  // if assessment/student is null
   if (!assessment || !student) {
     return (
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100svh] w-[100svw] md:h-[85svh] md:w-[90svw] lg:w-[75svw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
-          <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
-              Assessment Not Found
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer"
-            >
+        <Card className="h-[100dvh] w-[100dvw] rounded-none md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-bold">Assessment Not Found</h2>
+            <Button variant="ghost" size="icon" onClick={onClose}>
               <FaTimes className="w-4 h-4" />
-            </button>
-          </header>
+            </Button>
+          </div>
           <div className="flex-1 p-6 flex items-center justify-center">
-            <p className="text-gray-600 dark:text-gray-400 text-center">
+            <p className="text-muted-foreground text-center">
               Unable to load assessment details. Please try again.
             </p>
           </div>
-          <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-900 border border-gray-900 dark:border-gray-400 dark:text-gray-400 hover:text-gray-800 rounded-sm dark:hover:text-gray-200 transition-colors duration-200 hover:cursor-pointer"
-            >
+          <div className="flex justify-end gap-3 p-4 border-t bg-muted/50">
+            <Button variant="outline" onClick={onClose}>
               Close
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       </ModalOverlay>
     );
   }
@@ -220,55 +209,47 @@ export default function AssessmentDetailsModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm h-[100svh] w-[100svw] md:h-[85svh] md:w-[90svw] lg:w-[75svw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
-          {/* header */}
-          <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <Card className="h-[100dvh] w-[100dvw] rounded-none md:rounded-sm md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200 truncate">
+                <h2 className="text-lg font-bold truncate">
                   {assessment.title || "Untitled Assessment"}
                 </h2>
-                {/* mobile only summary */}
                 <div className="sm:hidden flex items-center gap-2 mt-1">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {totalQuestions} questions
                   </span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     • {totalAttempts}/{assessment.attemptLimit || "∞"} attempts
                   </span>
                   {hasPausedAttempt && (
-                    <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                      • Paused
-                    </span>
+                    <Badge variant="secondary" className="text-xs">
+                      Paused
+                    </Badge>
                   )}
                 </div>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer flex-shrink-0 ml-2"
-            >
+            <Button variant="ghost" size="icon" onClick={onClose}>
               <FaTimes className="w-4 h-4" />
-            </button>
-          </header>
+            </Button>
+          </div>
 
-          {/* mobile stats toggle */}
-          <div className="sm:hidden border-b border-gray-200 dark:border-gray-700">
-            <button
+          <div className="sm:hidden border-b">
+            <Button
+              variant="ghost"
+              className="w-full p-3 flex items-center justify-between"
               onClick={() => setShowMobileStats(!showMobileStats)}
-              className="w-full p-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50"
             >
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Assessment Details
-              </span>
+              <span className="text-sm font-medium">Assessment Details</span>
               {showMobileStats ? (
-                <FaChevronUp className="w-4 h-4 text-gray-500" />
+                <FaChevronUp className="w-4 h-4" />
               ) : (
-                <FaChevronDown className="w-4 h-4 text-gray-500" />
+                <FaChevronDown className="w-4 h-4" />
               )}
-            </button>
+            </Button>
 
-            {/* mobile stats dropdown */}
             <AnimatePresence>
               {showMobileStats && (
                 <motion.div
@@ -277,73 +258,81 @@ export default function AssessmentDetailsModal({
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
+                  <div className="p-3 bg-muted/50 border-t">
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
-                            <FaListAlt className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                      <Card>
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-sm">
+                              <FaListAlt className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Questions
+                              </p>
+                              <p className="text-base font-bold">
+                                {totalQuestions}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Questions
-                            </p>
-                            <p className="text-base font-bold text-gray-900 dark:text-gray-100">
-                              {totalQuestions}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
 
-                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-sm">
-                            <FaClock className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                      <Card>
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-sm">
+                              <FaClock className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Duration
+                              </p>
+                              <p className="text-base font-bold text-orange-600 dark:text-orange-400">
+                                {assessment.timeLimit
+                                  ? `${assessment.timeLimit}m`
+                                  : "No limit"}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Duration
-                            </p>
-                            <p className="text-base font-bold text-orange-600 dark:text-orange-400">
-                              {assessment.timeLimit
-                                ? `${assessment.timeLimit}m`
-                                : "No limit"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
 
-                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-sm">
-                            <FaRedo className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <Card>
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-sm">
+                              <FaRedo className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Attempts
+                              </p>
+                              <p className="text-base font-bold text-purple-600 dark:text-purple-400">
+                                {totalAttempts}/{assessment.attemptLimit || "∞"}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Attempts
-                            </p>
-                            <p className="text-base font-bold text-purple-600 dark:text-purple-400">
-                              {totalAttempts}/{assessment.attemptLimit || "∞"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
 
-                      <div className="bg-white dark:bg-gray-800 rounded-sm p-3 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-sm">
-                            <FaCalendarAlt className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                      <Card>
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-sm">
+                              <FaCalendarAlt className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Time Left
+                              </p>
+                              <p className="font-bold text-green-600 dark:text-green-400 text-xs">
+                                {getTimeRemaining()}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Time Left
-                            </p>
-                            <p className="font-bold text-green-600 dark:text-green-400 text-xs">
-                              {getTimeRemaining()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     </div>
                   </div>
                 </motion.div>
@@ -351,254 +340,255 @@ export default function AssessmentDetailsModal({
             </AnimatePresence>
           </div>
 
-          {/* content */}
           <div className="flex-1 overflow-y-auto">
-            {/* desktop stats grid */}
-            <div className="hidden sm:grid grid-cols-2 gap-3 p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
-                <FaListAlt className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Questions
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {totalQuestions}
-                  </p>
-                </div>
-              </div>
+            <div className="hidden sm:grid grid-cols-2 gap-3 p-4 bg-muted/50 border-b">
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <FaListAlt className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Questions</p>
+                      <p className="text-sm font-medium">{totalQuestions}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
-                <FaClock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Duration
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {assessment.timeLimit
-                      ? `${assessment.timeLimit} minutes`
-                      : "No limit"}
-                  </p>
-                </div>
-              </div>
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <FaClock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Duration</p>
+                      <p className="text-sm font-medium">
+                        {assessment.timeLimit
+                          ? `${assessment.timeLimit} minutes`
+                          : "No limit"}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
-                <FaRedo className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Attempts
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {totalAttempts}/{assessment.attemptLimit || "∞"}
-                    {hasPausedAttempt && (
-                      <span className="block text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                        (1 paused)
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700">
-                <FaCalendarAlt className="w-4 h-4 text-green-600 dark:text-green-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Time Remaining
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {getTimeRemaining()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4">
-              {/* paused assessment banner */}
-              {hasPausedAttempt && currentPausedAttempt && (
-                <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-sm">
-                  <div className="flex items-start gap-3">
-                    <FaPause className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">
-                        Assessment Paused
-                      </h3>
-                      <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
-                        You have an incomplete attempt. You can continue where
-                        you left off.
-                        {currentPausedAttempt.timeSpent > 0 && (
-                          <span className="block text-xs mt-1">
-                            Time spent:{" "}
-                            {Math.floor(currentPausedAttempt.timeSpent / 60)}:
-                            {(currentPausedAttempt.timeSpent % 60)
-                              .toString()
-                              .padStart(2, "0")}
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <FaRedo className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Attempts</p>
+                      <p className="text-sm font-medium">
+                        {totalAttempts}/{assessment.attemptLimit || "∞"}
+                        {hasPausedAttempt && (
+                          <span className="block text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                            (1 paused)
                           </span>
                         )}
                       </p>
                     </div>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <FaCalendarAlt className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Time Remaining
+                      </p>
+                      <p className="text-sm font-medium">
+                        {getTimeRemaining()}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="p-4">
+              {hasPausedAttempt && currentPausedAttempt && (
+                <Card className="mb-4 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
+                  <CardContent className="p-3">
+                    <div className="flex items-start gap-3">
+                      <FaPause className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">
+                          Assessment Paused
+                        </h3>
+                        <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
+                          You have an incomplete attempt. You can continue where
+                          you left off.
+                          {currentPausedAttempt.timeSpent > 0 && (
+                            <span className="block text-xs mt-1">
+                              Time spent:{" "}
+                              {Math.floor(currentPausedAttempt.timeSpent / 60)}:
+                              {(currentPausedAttempt.timeSpent % 60)
+                                .toString()
+                                .padStart(2, "0")}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
-              {/* description */}
               {assessment.description && (
                 <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Description
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                  <h3 className="text-sm font-semibold mb-2">Description</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {assessment.description}
                   </p>
                 </div>
               )}
 
-              {/* topic */}
               {assessment.topic && (
                 <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Topic
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  <h3 className="text-sm font-semibold mb-2">Topic</h3>
+                  <p className="text-sm text-muted-foreground">
                     {assessment.topic}
                   </p>
                 </div>
               )}
 
-              {/* attempt history */}
               {attemptsLoading ? (
                 <div className="mb-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Loading attempts...
                   </p>
                 </div>
               ) : attempts.length > 0 ? (
                 <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                     <FaHistory className="w-4 h-4" />
                     Attempt History
                   </h3>
                   <div className="space-y-2">
                     {attempts.slice().map((attempt, index) => (
-                      <div
-                        key={attempt.id}
-                        className="flex justify-between items-start p-3 bg-gray-50 dark:bg-gray-700 rounded-sm"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                            Attempt {attempts.length - index}
-                          </p>
-                          <p
-                            className={`text-xs ${getAttemptDisplayColor(attempt.status)}`}
-                          >
-                            {getAttemptDisplayText(attempt.status)}
-                            {attempt.score !== undefined &&
-                              attempt.status !== "paused" &&
-                              ` • Score: ${attempt.score}`}
-                          </p>
-                          {attempt.dateCompleted && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {format(
-                                new Date(attempt.dateCompleted),
-                                "MMM d, yyyy 'at' h:mm a",
-                                { timeZone: "Asia/Manila" },
-                              )}
-                            </p>
-                          )}
-                          {attempt.status === "paused" &&
-                            attempt.dateUpdated && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                Last updated:{" "}
-                                {format(
-                                  new Date(attempt.dateUpdated),
-                                  "MMM d, yyyy 'at' h:mm a",
-                                  { timeZone: "Asia/Manila" },
-                                )}
+                      <Card key={attempt.id}>
+                        <CardContent className="p-3">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                Attempt {attempts.length - index}
                               </p>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                          {(attempt.status === "completed" ||
-                            attempt.status === "failed") && (
-                              <div className="text-right">
-                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                  {attempt.score || 0}/{getTotalScore(assessment)}
-                                </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge
+                                  variant={getAttemptDisplayVariant(
+                                    attempt.status,
+                                  )}
+                                >
+                                  {getAttemptDisplayText(attempt.status)}
+                                </Badge>
+                                {attempt.score !== undefined &&
+                                  attempt.status !== "paused" && (
+                                    <span className="text-xs text-muted-foreground">
+                                      Score: {attempt.score}
+                                    </span>
+                                  )}
                               </div>
-                            )}
-                          {/* hide review button for paused attempts */}
-                          {attempt.status !== "paused" && (
-                            <button
-                              onClick={() => handleViewAttempt(attempt)}
-                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0"
-                            >
-                              Review
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                              {attempt.dateCompleted && (
+                                <p className="text-xs text-muted-foreground truncate mt-1">
+                                  {format(
+                                    new Date(attempt.dateCompleted),
+                                    "MMM d, yyyy 'at' h:mm a",
+                                    { timeZone: "Asia/Manila" },
+                                  )}
+                                </p>
+                              )}
+                              {attempt.status === "paused" &&
+                                attempt.dateUpdated && (
+                                  <p className="text-xs text-muted-foreground truncate mt-1">
+                                    Last updated:{" "}
+                                    {format(
+                                      new Date(attempt.dateUpdated),
+                                      "MMM d, yyyy 'at' h:mm a",
+                                      { timeZone: "Asia/Manila" },
+                                    )}
+                                  </p>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                              {(attempt.status === "completed" ||
+                                attempt.status === "failed") && (
+                                  <div className="text-right">
+                                    <p className="text-sm font-medium">
+                                      {attempt.score || 0}/
+                                      {getTotalScore(assessment)}
+                                    </p>
+                                  </div>
+                                )}
+                              {attempt.status !== "paused" && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleViewAttempt(attempt)}
+                                >
+                                  Review
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </div>
               ) : null}
 
-              {/* schedule */}
               <div className="grid grid-cols-1 gap-3 text-sm">
-                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
-                  <p className="text-gray-500 dark:text-gray-400 mb-1">
-                    Starts
-                  </p>
-                  <p className="text-gray-900 dark:text-gray-100">
-                    {assessment.date.start
-                      ? format(
-                        new Date(assessment.date.start),
-                        "MMM d, yyyy 'at' h:mm a",
-                        {
-                          timeZone: "Asia/Manila",
-                        },
-                      )
-                      : "Immediately"}
-                  </p>
-                </div>
-                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-sm">
-                  <p className="text-gray-500 dark:text-gray-400 mb-1">Ends</p>
-                  <p className="text-gray-900 dark:text-gray-100">
-                    {assessment.date.end
-                      ? format(
-                        new Date(assessment.date.end),
-                        "MMM d, yyyy 'at' h:mm a",
-                        {
-                          timeZone: "Asia/Manila",
-                        },
-                      )
-                      : "No deadline"}
-                  </p>
-                </div>
+                <Card>
+                  <CardContent className="p-3">
+                    <p className="text-muted-foreground mb-1">Starts</p>
+                    <p>
+                      {assessment.date.start
+                        ? format(
+                          new Date(assessment.date.start),
+                          "MMM d, yyyy 'at' h:mm a",
+                          {
+                            timeZone: "Asia/Manila",
+                          },
+                        )
+                        : "Immediately"}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-3">
+                    <p className="text-muted-foreground mb-1">Ends</p>
+                    <p>
+                      {assessment.date.end
+                        ? format(
+                          new Date(assessment.date.end),
+                          "MMM d, yyyy 'at' h:mm a",
+                          {
+                            timeZone: "Asia/Manila",
+                          },
+                        )
+                        : "No deadline"}
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
 
-          {/* bottom section */}
-          <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-900 border border-gray-900 dark:border-gray-400 dark:text-gray-400 hover:text-gray-800 rounded-sm dark:hover:text-gray-200 transition-colors duration-200 hover:cursor-pointer"
-            >
+          <div className="flex justify-end gap-3 p-4 border-t bg-muted/50">
+            <Button variant="outline" onClick={onClose}>
               Close
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => handleTakeAssessmentDirect(assessment)}
               disabled={!canTakeAssessment}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-sm transition-all duration-200 flex items-center justify-center min-w-[140px] ${canTakeAssessment
-                  ? hasPausedAttempt
-                    ? "bg-yellow-600 hover:bg-yellow-700 cursor-pointer"
-                    : "bg-[var(--primary-green)] hover:bg-green-600 cursor-pointer"
-                  : "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-                }`}
+              variant={getActionButtonVariant()}
+              className="min-w-[140px]"
             >
-              {getActionButtonIcon()}
+              {hasPausedAttempt && <FaPlay className="w-3 h-3 mr-2" />}
               {getActionButtonText()}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       </ModalOverlay>
 
       <AttemptReviewModal

@@ -1,6 +1,7 @@
-import { ReactNode, useCallback, useEffect, useRef } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useStudent } from "../services/student.service";
 import { StudentContext } from "./student.context";
+import PageLoader from "@/components/ui/page-loader";
 
 export function StudentProvider({
   studentId,
@@ -16,15 +17,11 @@ export function StudentProvider({
   const isMounted = useRef(true);
 
   const { data: student } = useStudent(studentId);
+  const [showLoader, setShowLoader] = useState(true);
 
   const connectWebSocket = useCallback(() => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      return;
-    }
-
-    if (wsRef.current) {
-      wsRef.current.close();
-    }
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) return;
+    if (wsRef.current) wsRef.current.close();
 
     const WSS =
       import.meta.env.MODE === "production"
@@ -39,15 +36,10 @@ export function StudentProvider({
         ws.close();
         return;
       }
-
       console.log("WebSocket connected");
-
       reconnectAttempts.current = 0;
       wsRef.current?.send(
-        JSON.stringify({
-          type: "STUDENT_LOGIN",
-          data: studentId,
-        }),
+        JSON.stringify({ type: "STUDENT_LOGIN", data: studentId }),
       );
     };
 
@@ -59,9 +51,7 @@ export function StudentProvider({
 
     ws.onclose = () => {
       if (!isMounted.current) return;
-
       console.log("WebSocket closed");
-
       if (reconnectAttempts.current < maxReconnectAttempts) {
         reconnectAttempts.current += 1;
         console.log(
@@ -71,9 +61,8 @@ export function StudentProvider({
       }
     };
 
-    wsRef.current.onerror = (error) => {
+    ws.onerror = (error) => {
       if (!isMounted.current) return;
-
       console.error("WebSocket error:", error);
     };
   }, [studentId]);
@@ -81,7 +70,6 @@ export function StudentProvider({
   useEffect(() => {
     isMounted.current = true;
     connectWebSocket();
-
     return () => {
       isMounted.current = false;
       if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -91,13 +79,20 @@ export function StudentProvider({
     };
   }, [connectWebSocket]);
 
-  const value = {
-    student: student || null,
-    studentId: studentId,
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 1000); // delay 1 sec
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const value = { student: student || null, studentId };
+
+  if (showLoader || !student)
+    return <PageLoader items={["Loading student data..."]} />;
+
   return (
-    <StudentContext.Provider value={value}>
-      {student ? children : <div>Loading student data...</div>}
-    </StudentContext.Provider>
+    <StudentContext.Provider value={value}>{children}</StudentContext.Provider>
   );
 }

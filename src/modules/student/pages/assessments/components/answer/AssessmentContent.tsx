@@ -4,6 +4,8 @@ import PreviewImage from "../../../../../teacher/pages/assessments/builder/previ
 import PreviewText from "../../../../../teacher/pages/assessments/builder/preview/PreviewText";
 import AssessmentQuestion from "./AssessmentQuestion";
 import { IoDocumentText, IoFileTray, IoInformation } from "react-icons/io5";
+import { Card, CardContent } from "../../../../../../components/ui/card";
+import { Badge } from "../../../../../../components/ui/badge";
 
 export default function AssessmentContent(): ReactElement {
   const { currentAssessment, currentPage, studentAnswers, setStudentAnswer } =
@@ -12,10 +14,12 @@ export default function AssessmentContent(): ReactElement {
   if (!currentAssessment) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          <IoInformation className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>No assessment loaded</p>
-        </div>
+        <Card className="text-center max-w-sm border-dashed">
+          <CardContent className="p-6">
+            <IoInformation className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+            <p className="text-muted-foreground">No assessment loaded</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -25,10 +29,12 @@ export default function AssessmentContent(): ReactElement {
   if (!currentPageData) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          <IoFileTray className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>Page not found</p>
-        </div>
+        <Card className="text-center max-w-sm border-dashed">
+          <CardContent className="p-6">
+            <IoFileTray className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+            <p className="text-muted-foreground">Page not found</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -40,7 +46,6 @@ export default function AssessmentContent(): ReactElement {
     setStudentAnswer(questionId, answer);
   };
 
-  // helper function to find student answer by questionid
   const findStudentAnswer = (questionId: string) => {
     return studentAnswers.find((answer) => answer.questionId === questionId);
   };
@@ -48,26 +53,31 @@ export default function AssessmentContent(): ReactElement {
   return (
     <div className="max-w-4xl mx-auto w-full p-8">
       {currentPageData.title && (
-        <div className="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700 border">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {currentPageData.title}
-              </h2>
-              <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                <span className="flex items-center space-x-1">
-                  <IoDocumentText className="w-4 h-4" />
-                  <span>
-                    Page {currentPage + 1} of {currentAssessment.pages.length}
-                  </span>
-                </span>
+        <Card className="mb-8 border-l-4 border-l-primary">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">
+                  {currentPageData.title}
+                </h2>
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center space-x-1"
+                  >
+                    <IoDocumentText className="w-3 h-3" />
+                    <span>
+                      Page {currentPage + 1} of {currentAssessment.pages.length}
+                    </span>
+                  </Badge>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {currentPageData.contents.map((content, index) => {
           const studentAnswer = findStudentAnswer(content.id);
 

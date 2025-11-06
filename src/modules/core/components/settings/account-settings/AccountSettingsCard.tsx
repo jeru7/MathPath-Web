@@ -27,6 +27,12 @@ import { Request } from "../../../types/requests/request.type.js";
 import RequestsModal from "./requests/RequestsModal.js";
 import RequestDetailsModal from "./requests/RequestDetailsModal.js";
 import { Admin } from "../../../../admin/types/admin.type.js";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Alert } from "@/components/ui/alert";
 
 type StudentAccountSettingsCardProps = {
   user: Student;
@@ -452,385 +458,390 @@ export default function AccountSettingsCard(
 
   if (isLoadingRequests) {
     return (
-      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
-          <div className="space-y-4">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse">
+            <div className="h-6 bg-muted rounded w-1/3 mb-6"></div>
+            <div className="space-y-4">
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-4 bg-muted rounded w-2/3"></div>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
-      <div className="flex items-center justify-between mb-6">
-        <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
-          Account Information
-        </h4>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle>Account Information</CardTitle>
 
-        <div className="flex items-center gap-3">
-          {/* existing requests button for students */}
-          {isStudent && accountRequests.length > 0 && (
-            <button
-              onClick={handleRequestsClick}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/40 transition-colors group cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <FaHistory className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <span className="text-blue-800 dark:text-blue-300 text-sm font-medium">
-                  View Requests ({accountRequests.length})
-                </span>
-              </div>
-              {hasPendingRequest && (
-                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-              )}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {isStudent && showRequestSubmitted && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-sm">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 mt-0.5">
-              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">✓</span>
-              </div>
-            </div>
-            <div className="flex-1">
-              <h5 className="font-medium text-blue-800 dark:text-blue-300 text-sm">
-                Request Submitted for Approval
-              </h5>
-              <p className="text-blue-700 dark:text-blue-400 text-sm mt-1">
-                Your account change request has been sent to your teacher. The
-                changes will take effect once approved.
-              </p>
-              <p className="text-blue-600 dark:text-blue-500 text-xs mt-2">
-                You can check the status of your request in the Requests
-                section.
-              </p>
-            </div>
-            <button
-              onClick={() => setShowRequestSubmitted(false)}
-              className="flex-shrink-0 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-
-      <form
-        onSubmit={handleSubmit((data) => {
-          if (!isEditing) return;
-          handleSave(data);
-        })}
-        onKeyDown={handleKeyDown}
-        className="space-y-4 max-w-2xl"
-      >
-        {/* profile picture */}
-        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="relative">
-            <div
-              className={`w-20 h-20 rounded-full border-2 overflow-hidden cursor-pointer ${isEditing && !hasPendingRequest
-                  ? "border-green-500 dark:border-green-400 hover:border-green-600 dark:hover:border-green-300 transition-colors"
-                  : "border-gray-300 dark:border-gray-600"
-                } ${hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""}`}
-              onClick={handleProfilePictureClick}
-            >
-              <img
-                src={getProfilePicture(displayProfilePicture ?? "Default")}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            {isEditing && !hasPendingRequest && (
-              <div className="absolute -bottom-1 -right-1 bg-green-500 dark:bg-green-600 text-white rounded-full p-1.5 shadow-sm">
-                <CiCamera className="w-3 h-3" />
-              </div>
-            )}
-          </div>
-          <div>
-            <h5 className="font-medium text-gray-900 dark:text-white">
-              Profile Picture
-            </h5>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {isEditing && !hasPendingRequest
-                ? "Click on the photo to change"
-                : hasPendingRequest &&
-                "Go to edit mode to change profile picture"}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* first name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              First Name
-            </label>
-            {isEditing ? (
-              <>
-                <input
-                  type="text"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
-                      ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
-                      : "border-gray-300 dark:border-gray-600"
-                    }`}
-                  {...register("firstName")}
-                  disabled={hasPendingRequest}
-                />
-                {errors.firstName && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.firstName.message}
-                  </p>
+          <div className="flex items-center gap-3">
+            {/* existing requests button for students */}
+            {isStudent && accountRequests.length > 0 && (
+              <Button
+                onClick={handleRequestsClick}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <FaHistory className="w-4 h-4" />
+                View Requests ({accountRequests.length})
+                {hasPendingRequest && (
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
                 )}
-              </>
-            ) : (
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white">
-                {displayValues.firstName}
-              </div>
-            )}
-          </div>
-
-          {/* last name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Last Name
-            </label>
-            {isEditing ? (
-              <>
-                <input
-                  type="text"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
-                      ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
-                      : "border-gray-300 dark:border-gray-600"
-                    }`}
-                  {...register("lastName")}
-                  disabled={hasPendingRequest}
-                />
-                {errors.lastName && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.lastName.message}
-                  </p>
-                )}
-              </>
-            ) : (
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white">
-                {displayValues.lastName}
-              </div>
+              </Button>
             )}
           </div>
         </div>
+      </CardHeader>
 
-        {/* middle name */}
-        {(user.middleName || isEditing) && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Middle Name
-            </label>
-            {isEditing ? (
-              <>
-                <input
-                  type="text"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
-                      ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
-                      : "border-gray-300 dark:border-gray-600"
-                    }`}
-                  {...register("middleName")}
-                  disabled={hasPendingRequest}
-                />
-                {errors.middleName && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.middleName.message}
-                  </p>
-                )}
-              </>
-            ) : (
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white">
-                {displayValues.middleName || "—"}
+      <CardContent className="space-y-6">
+        {isStudent && showRequestSubmitted && (
+          <Alert>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs">✓</span>
+                </div>
               </div>
-            )}
-          </div>
+              <div className="flex-1">
+                <h5 className="font-medium text-sm">
+                  Request Submitted for Approval
+                </h5>
+                <p className="text-sm mt-1">
+                  Your account change request has been sent to your teacher. The
+                  changes will take effect once approved.
+                </p>
+                <p className="text-xs mt-2">
+                  You can check the status of your request in the Requests
+                  section.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowRequestSubmitted(false)}
+                className="flex-shrink-0 text-muted-foreground hover:text-foreground"
+              >
+                ×
+              </button>
+            </div>
+          </Alert>
         )}
 
-        {/* email */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Email Address
-          </label>
-          {isEditing ? (
-            <>
-              <div className="relative">
-                <input
-                  type="email"
-                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${hasPendingRequest
-                      ? "border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
-                      : "border-gray-300 dark:border-gray-600"
-                    }`}
-                  {...register("email")}
-                  disabled={hasPendingRequest}
+        <form
+          onSubmit={handleSubmit((data) => {
+            if (!isEditing) return;
+            handleSave(data);
+          })}
+          onKeyDown={handleKeyDown}
+          className="space-y-4 max-w-2xl"
+        >
+          {/* profile picture */}
+          <div className="flex items-center gap-4 pb-6 border-b">
+            <div className="relative">
+              <div
+                className={`w-20 h-20 rounded-full border-2 overflow-hidden cursor-pointer ${isEditing && !hasPendingRequest
+                    ? "border-primary hover:border-primary/80 transition-colors"
+                    : "border-border"
+                  } ${hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""}`}
+                onClick={handleProfilePictureClick}
+              >
+                <img
+                  src={getProfilePicture(displayProfilePicture ?? "Default")}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+              </div>
+              {isEditing && !hasPendingRequest && (
+                <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-1.5 shadow-sm">
+                  <CiCamera className="w-3 h-3" />
+                </div>
+              )}
+            </div>
+            <div>
+              <h5 className="font-medium">Profile Picture</h5>
+              <p className="text-sm text-muted-foreground">
+                {isEditing && !hasPendingRequest
+                  ? "Click on the photo to change"
+                  : hasPendingRequest &&
+                  "Go to edit mode to change profile picture"}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* first name */}
+            <div>
+              <Label htmlFor="firstName">First Name</Label>
+              {isEditing ? (
+                <>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    className={
+                      hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""
+                    }
+                    {...register("firstName")}
+                    disabled={hasPendingRequest}
+                  />
+                  {errors.firstName && (
+                    <p className="text-xs text-destructive mt-1">
+                      {errors.firstName.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="p-2 bg-muted rounded border text-sm">
+                  {displayValues.firstName}
+                </div>
+              )}
+            </div>
+
+            {/* last name */}
+            <div>
+              <Label htmlFor="lastName">Last Name</Label>
+              {isEditing ? (
+                <>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    className={
+                      hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""
+                    }
+                    {...register("lastName")}
+                    disabled={hasPendingRequest}
+                  />
+                  {errors.lastName && (
+                    <p className="text-xs text-destructive mt-1">
+                      {errors.lastName.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="p-2 bg-muted rounded border text-sm">
+                  {displayValues.lastName}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* middle name */}
+          {(user.middleName || isEditing) && (
+            <div>
+              <Label htmlFor="middleName">Middle Name</Label>
+              {isEditing ? (
+                <>
+                  <Input
+                    id="middleName"
+                    type="text"
+                    className={
+                      hasPendingRequest ? "opacity-50 cursor-not-allowed" : ""
+                    }
+                    {...register("middleName")}
+                    disabled={hasPendingRequest}
+                  />
+                  {errors.middleName && (
+                    <p className="text-xs text-destructive mt-1">
+                      {errors.middleName.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="p-2 bg-muted rounded border text-sm">
+                  {displayValues.middleName || "—"}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* email */}
+          <div>
+            <Label htmlFor="email">Email Address</Label>
+            {isEditing ? (
+              <>
+                <div className="relative">
+                  <Input
+                    id="email"
+                    type="email"
+                    className={
+                      hasPendingRequest
+                        ? "opacity-50 cursor-not-allowed pr-32"
+                        : "pr-32"
+                    }
+                    {...register("email")}
+                    disabled={hasPendingRequest}
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                    {user.verified.verified ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                      >
+                        <FaCheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="secondary"
+                        className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300"
+                      >
+                        <FaExclamationCircle className="w-3 h-3 mr-1" />
+                        Unverified
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </>
+            ) : (
+              <div className="relative">
+                <div className="p-2 bg-muted rounded border text-sm pr-32">
+                  {displayValues.email}
+                </div>
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
                   {user.verified.verified ? (
-                    <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs">
-                      <FaCheckCircle className="w-3 h-3" />
-                      <span>Verified</span>
-                    </div>
+                    <Badge
+                      variant="secondary"
+                      className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                    >
+                      <FaCheckCircle className="w-3 h-3 mr-1" />
+                      Verified
+                    </Badge>
                   ) : (
-                    <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
-                      <FaExclamationCircle className="w-3 h-3" />
-                      <span>Unverified</span>
-                    </div>
+                    <>
+                      <Badge
+                        variant="secondary"
+                        className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300"
+                      >
+                        <FaExclamationCircle className="w-3 h-3 mr-1" />
+                        Unverified
+                      </Badge>
+                      <Button
+                        type="button"
+                        onClick={handleSendVerificationEmail}
+                        disabled={isSendingVerification}
+                        size="sm"
+                        className="whitespace-nowrap"
+                      >
+                        {isSendingVerification ? "Sending..." : "Verify Email"}
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
-              {errors.email && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </>
-          ) : (
-            <div className="relative">
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white pr-32">
-                {displayValues.email}
-              </div>
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-                {user.verified.verified ? (
-                  <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs">
-                    <FaCheckCircle className="w-3 h-3" />
-                    <span>Verified</span>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
-                      <FaExclamationCircle className="w-3 h-3" />
-                      <span>Unverified</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleSendVerificationEmail}
-                      disabled={isSendingVerification}
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs font-medium disabled:bg-blue-400 disabled:cursor-not-allowed whitespace-nowrap"
-                    >
-                      {isSendingVerification ? "Sending..." : "Verify Email"}
-                    </button>
-                  </>
-                )}
+            )}
+          </div>
+
+          {/* gender */}
+          <div>
+            <Label>Gender</Label>
+            <div className="p-2 bg-muted rounded border text-sm capitalize">
+              {isStudent ? student.gender : teacher.gender}
+            </div>
+          </div>
+
+          {/* student only info */}
+          {isStudent && (
+            <div>
+              <Label>Reference Number</Label>
+              <div className="p-2 bg-muted rounded border text-sm font-mono">
+                {student.referenceNumber}
               </div>
             </div>
           )}
-        </div>
+        </form>
 
-        {/* gender */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Gender
-          </label>
-          <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white capitalize">
-            {isStudent ? student.gender : teacher.gender}
-          </div>
-        </div>
-
-        {/* student only info */}
-        {isStudent && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Reference Number
-            </label>
-            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-sm font-mono text-gray-900 dark:text-white">
-              {student.referenceNumber}
-            </div>
-          </div>
-        )}
-      </form>
-
-      <div className="flex gap-3 pt-4">
-        {isEditing ? (
-          <>
-            <button
-              type="submit"
-              onClick={handleSubmit((data) => handleSave(data))}
-              disabled={
-                isSubmitting || (isStudent && !hasChanges) || hasPendingRequest
-              }
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {isSubmitting
-                ? "Submitting..."
-                : isStudent
-                  ? "Submit Request"
-                  : "Save Changes"}
-            </button>
-            <button
+        <div className="flex gap-3 pt-4">
+          {isEditing ? (
+            <>
+              <Button
+                type="submit"
+                onClick={handleSubmit((data) => handleSave(data))}
+                disabled={
+                  isSubmitting ||
+                  (isStudent && !hasChanges) ||
+                  hasPendingRequest
+                }
+              >
+                {isSubmitting
+                  ? "Submitting..."
+                  : isStudent
+                    ? "Submit Request"
+                    : "Save Changes"}
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <Button
               type="button"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              onClick={handleEditClick}
+              disabled={hasPendingRequest}
             >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            onClick={handleEditClick}
-            disabled={hasPendingRequest}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {hasPendingRequest ? "Request Pending" : "Edit Information"}
-          </button>
-        )}
-      </div>
-
-      {/* student: help text */}
-      {isStudent && isEditing && !hasPendingRequest && (
-        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-sm">
-          <p className="text-yellow-800 dark:text-yellow-300 text-sm">
-            <strong>Note:</strong> As a student, your changes require teacher
-            approval. After submitting, your teacher will review and approve the
-            request before changes take effect.
-          </p>
+              {hasPendingRequest ? "Request Pending" : "Edit Information"}
+            </Button>
+          )}
         </div>
-      )}
 
-      {/* profile picture modal */}
-      {showProfilePictureModal && (
-        <ChangeProfilePictureModal
-          onClose={() => setShowProfilePictureModal(false)}
-          currentProfilePicture={profilePicture}
-          onSelectProfilePicture={handleProfilePictureSelect}
-          onSave={() => setShowProfilePictureModal(false)}
+        {/* student: help text */}
+        {isStudent && isEditing && !hasPendingRequest && (
+          <Alert>
+            <p className="text-sm">
+              <strong>Note:</strong> As a student, your changes require teacher
+              approval. After submitting, your teacher will review and approve
+              the request before changes take effect.
+            </p>
+          </Alert>
+        )}
+
+        {/* profile picture modal */}
+        {showProfilePictureModal && (
+          <ChangeProfilePictureModal
+            onClose={() => setShowProfilePictureModal(false)}
+            currentProfilePicture={profilePicture}
+            onSelectProfilePicture={handleProfilePictureSelect}
+            onSave={() => setShowProfilePictureModal(false)}
+          />
+        )}
+
+        <ProfilePictureModal
+          isOpen={showViewProfilePictureModal}
+          onClose={() => setShowViewProfilePictureModal(false)}
+          picture={displayProfilePicture}
         />
-      )}
 
-      <ProfilePictureModal
-        isOpen={showViewProfilePictureModal}
-        onClose={() => setShowViewProfilePictureModal(false)}
-        picture={displayProfilePicture}
-      />
+        {/* requests list modal */}
+        <RequestsModal
+          showRequestsModal={showRequestsModal}
+          onClose={handleCloseRequestsModal}
+          accountRequests={accountRequests}
+          isLoadingRequests={isLoadingRequests}
+          onRequestClick={handleRequestClick}
+        />
 
-      {/* requests list modal */}
-      <RequestsModal
-        showRequestsModal={showRequestsModal}
-        onClose={handleCloseRequestsModal}
-        accountRequests={accountRequests}
-        isLoadingRequests={isLoadingRequests}
-        onRequestClick={handleRequestClick}
-      />
-
-      {/* request details modal */}
-      <RequestDetailsModal
-        showRequestDetailsModal={showRequestDetailsModal}
-        selectedRequest={selectedRequest}
-        onClose={handleCloseRequestDetails}
-        user={user}
-      />
-    </div>
+        {/* request details modal */}
+        <RequestDetailsModal
+          showRequestDetailsModal={showRequestDetailsModal}
+          selectedRequest={selectedRequest}
+          onClose={handleCloseRequestDetails}
+          user={user}
+        />
+      </CardContent>
+    </Card>
   );
 }

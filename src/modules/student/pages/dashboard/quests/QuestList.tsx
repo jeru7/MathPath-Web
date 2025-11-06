@@ -1,76 +1,68 @@
 import { useState, type ReactElement } from "react";
-import Select, { SingleValue } from "react-select";
 import QuestItem from "./QuestItem";
-import {
-  FilterOption,
-  filterOptions,
-} from "../../../../core/types/select.type";
+import { filterOptions } from "../../../../core/types/select.type";
 import { QuestListItem } from "../../../../core/types/quest/quest.type";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
 import { useStudentContext } from "../../../contexts/student.context";
 import { useStudentQuestListTracker } from "../../../services/student-tracker.service";
 import QuestChests from "./QuestChests";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function QuestList(): ReactElement {
   const { student } = useStudentContext();
   const { data: questList } = useStudentQuestListTracker(
     student ? student?.id : "",
   );
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
+  const [selectedFilter, setSelectedFilter] = useState("all");
 
   const filteredQuestList = questList?.quests.filter((quest: QuestListItem) => {
-    if (selectedFilter.value === "all") return true;
+    if (selectedFilter === "all") return true;
     const isCompleted = quest.req === quest.reqCompleted;
 
-    if (selectedFilter.value === "completed") return isCompleted;
-    if (selectedFilter.value === "ongoing") return !isCompleted;
+    if (selectedFilter === "completed") return isCompleted;
+    if (selectedFilter === "ongoing") return !isCompleted;
 
     return true;
   });
 
   return (
-    <section className="flex-2 h-full bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-3 flex flex-col transition-colors duration-200">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          Quests
-        </h3>
-        <Select
-          options={filterOptions}
-          value={selectedFilter}
-          onChange={(option: SingleValue<FilterOption>) => {
-            if (option) setSelectedFilter(option);
-          }}
-          styles={getCustomSelectColor<FilterOption>({
-            borderRadius: "0.5rem",
-            minHeight: "12px",
-            menuWidth: "100%",
-            menuBackgroundColor: "white",
-            dark: {
-              backgroundColor: "#374151",
-              textColor: "#f9fafb",
-              borderColor: "#4b5563",
-              borderFocusColor: "#10b981",
-              optionHoverColor: "#374151",
-              optionSelectedColor: "#059669",
-              menuBackgroundColor: "#1f2937",
-              placeholderColor: "#9ca3af",
-            },
-          })}
-          isMulti={false}
-          className="w-32 text-xs"
-          isSearchable={false}
-          menuPlacement="auto"
-        />
-      </div>
+    <Card className="flex-2 h-full flex flex-col">
+      <CardHeader className="pb-1 px-3 pt-3">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-sm font-semibold">Quests</CardTitle>
+          <Select value={selectedFilter} onValueChange={setSelectedFilter}>
+            <SelectTrigger className="w-24 h-8 text-xs">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              {filterOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="text-xs"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
 
-      <div className="flex flex-col gap-2 flex-1 overflow-hidden">
+      <CardContent className="flex flex-col gap-1 flex-1 overflow-hidden p-3 pt-0">
         <QuestChests quest={questList} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-full overflow-y-auto no-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 h-full overflow-y-auto no-scrollbar">
           {filteredQuestList?.map((quest, index) => (
             <QuestItem key={index} quest={quest} />
           ))}
         </div>
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

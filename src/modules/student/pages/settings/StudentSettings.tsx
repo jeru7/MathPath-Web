@@ -10,15 +10,15 @@ export default function StudentSettings(): ReactElement {
 
   const user = student
     ? {
-        id: student.id,
-        role: "student" as const,
-        firstName: student.firstName,
-        lastName: student.lastName,
-        middleName: student.middleName,
-        email: student.email,
-        verified: student.verified,
-        profilePicture: student.profilePicture,
-      }
+      id: student.id,
+      role: "student" as const,
+      firstName: student.firstName,
+      lastName: student.lastName,
+      middleName: student.middleName,
+      email: student.email,
+      verified: student.verified,
+      profilePicture: student.profilePicture,
+    }
     : null;
 
   if (!user) return <div>Loading...</div>;

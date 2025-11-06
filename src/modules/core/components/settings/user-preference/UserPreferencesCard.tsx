@@ -1,5 +1,16 @@
 import { type ReactElement, useState } from "react";
 import { Theme, useThemeContext } from "../../../contexts/theme/theme.context";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 export default function UserPreferencesCard(): ReactElement {
   const { theme, setTheme } = useThemeContext();
@@ -18,73 +29,64 @@ export default function UserPreferencesCard(): ReactElement {
   };
 
   return (
-    <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm p-6 transition-colors duration-200">
-      <h4 className="font-semibold text-gray-900 dark:text-white mb-6 text-lg">
-        User Preferences
-      </h4>
+    <Card>
+      <CardHeader>
+        <CardTitle>User Preferences</CardTitle>
+      </CardHeader>
 
-      <div className="space-y-6 max-w-2xl">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Theme
-          </label>
+      <CardContent className="space-y-6 max-w-2xl">
+        <div className="space-y-2">
+          <Label>Theme</Label>
           <div className="flex gap-2">
             {["light", "dark", "auto"].map((themeOption) => (
-              <button
+              <Button
                 key={themeOption}
                 onClick={() => handleThemeChange(themeOption as Theme)}
-                className={`px-4 py-2 rounded border text-sm capitalize transition-colors duration-200 ${theme === themeOption
-                    ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-500 dark:border-green-400"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
+                variant={theme === themeOption ? "default" : "outline"}
+                className="capitalize"
               >
                 {themeOption}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Language
-          </label>
-          <select
+        <div className="space-y-2">
+          <Label htmlFor="language">Language</Label>
+          <Select
             value={preferences.language}
-            onChange={(e) =>
-              setPreferences({ ...preferences, language: e.target.value })
+            onValueChange={(value) =>
+              setPreferences({ ...preferences, language: value })
             }
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500 max-w-xs bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
-            <option value="english">English</option>
-            <option value="tagalog">Tagalog</option>
-          </select>
+            <SelectTrigger className="max-w-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="english">English</SelectItem>
+              <SelectItem value="tagalog">Tagalog</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800">
-          <div>
-            <p className="font-medium text-sm text-gray-900 dark:text-white">
-              Sound Effects
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="space-y-0.5">
+            <Label className="text-base">Sound Effects</Label>
+            <p className="text-sm text-muted-foreground">
               Enable sound effects on website
             </p>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.soundEffects}
-              onChange={() =>
-                setPreferences({
-                  ...preferences,
-                  soundEffects: !preferences.soundEffects,
-                })
-              }
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 dark:peer-checked:bg-green-700 dark:bg-gray-700"></div>
-          </label>
+          <Switch
+            checked={preferences.soundEffects}
+            onCheckedChange={(checked) =>
+              setPreferences({
+                ...preferences,
+                soundEffects: checked,
+              })
+            }
+          />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

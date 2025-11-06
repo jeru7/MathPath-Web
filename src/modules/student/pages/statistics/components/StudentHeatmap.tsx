@@ -10,6 +10,12 @@ import {
 } from "../../../services/student.service";
 import { ProgressLog } from "../../../../core/types/progress-log/progress-log.type";
 import { StageAttempt } from "../../../../core/types/stage-attempt/stage-attempt.type";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../../../components/ui/card";
 import "../../../../core/styles/customHeatmap.css";
 
 type StudentHeatmapProps = {
@@ -62,46 +68,45 @@ export default function StudentHeatmap({
   };
 
   return (
-    <div className="flex flex-col justify-between bg-white dark:bg-gray-800 p-3 w-full h-full transition-colors duration-200">
-      <header className="mb-4">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          Activity Map
-        </h3>
-      </header>
-
-      <div className="flex max-w-full overflow-x-auto overflow-y-clip">
-        <div className="w-full -mb-8 min-w-[1200px]">
-          <CalendarHeatmap
-            startDate={startDate}
-            endDate={endDate}
-            values={chartData}
-            showWeekdayLabels={true}
-            showMonthLabels={true}
-            weekdayLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
-            classForValue={handleColorClass}
-            tooltipDataAttrs={handleTooltip}
-            gutterSize={2}
-            horizontal={true}
-          />
+    <Card className="w-full h-full">
+      <CardHeader>
+        <CardTitle className="text-lg">Activity Map</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="flex max-w-full overflow-x-auto overflow-y-clip">
+          <div className="w-full min-w-[800px]">
+            <CalendarHeatmap
+              startDate={startDate}
+              endDate={endDate}
+              values={chartData}
+              showWeekdayLabels={true}
+              showMonthLabels={true}
+              weekdayLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
+              classForValue={handleColorClass}
+              tooltipDataAttrs={handleTooltip}
+              gutterSize={2}
+              horizontal={true}
+            />
+          </div>
         </div>
-      </div>
-      <Tooltip
-        id="heatmap-tooltip"
-        className="z-50 dark:bg-gray-700 dark:text-gray-100"
-      />
+        <Tooltip
+          id="heatmap-tooltip"
+          className="z-50 bg-popover text-popover-foreground border rounded-md shadow-md"
+        />
 
-      <div className="flex self-end items-center justify-end mt-4 text-sm text-gray-600 dark:text-gray-400 gap-2 transition-colors duration-200">
-        <span className="text-xs">Less</span>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 color-empty rounded-sm"></div>
-          <div className="w-3 h-3 color-gitlab-1 rounded-sm"></div>
-          <div className="w-3 h-3 color-gitlab-2 rounded-sm"></div>
-          <div className="w-3 h-3 color-gitlab-3 rounded-sm"></div>
-          <div className="w-3 h-3 color-gitlab-4 rounded-sm"></div>
+        <div className="flex self-end items-center justify-end text-sm text-muted-foreground gap-2">
+          <span className="text-xs">Less</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 color-empty rounded-sm"></div>
+            <div className="w-3 h-3 color-gitlab-1 rounded-sm"></div>
+            <div className="w-3 h-3 color-gitlab-2 rounded-sm"></div>
+            <div className="w-3 h-3 color-gitlab-3 rounded-sm"></div>
+            <div className="w-3 h-3 color-gitlab-4 rounded-sm"></div>
+          </div>
+          <span className="text-xs">More</span>
         </div>
-        <span className="text-xs">More</span>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 

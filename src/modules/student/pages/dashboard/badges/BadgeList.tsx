@@ -1,14 +1,17 @@
 import { useState, type ReactElement } from "react";
-import Select, { SingleValue } from "react-select";
 import BadgeItem from "./BadgeItem";
-import {
-  FilterOption,
-  filterOptions,
-} from "../../../../core/types/select.type";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
+import { filterOptions } from "../../../../core/types/select.type";
 import { Student, StudentBadge } from "../../../types/student.type";
 import { useBadges } from "../../../../core/services/badge/badge.service";
 import { Badge } from "../../../../core/types/badge/badge.type";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type BadgeListProps = {
   student: Student;
@@ -16,9 +19,8 @@ type BadgeListProps = {
 
 export default function BadgeList({ student }: BadgeListProps): ReactElement {
   const { data: badges } = useBadges();
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
+  const [selectedFilter, setSelectedFilter] = useState("all");
 
-  // Get student's progress for a specific badge
   const getStudentBadgeProgress = (badgeId: string) => {
     const studentBadge = student.badges.find(
       (b: StudentBadge) => b.badgeId === badgeId,
@@ -33,39 +35,23 @@ export default function BadgeList({ student }: BadgeListProps): ReactElement {
     }
 
     const badge = badges?.find((b) => b.id === badgeId);
-    if (!badge) {
-      return {
-        completed: false,
-        progress: 0,
-        reqCompleted: studentBadge.reqCompleted,
-        dateFinished: studentBadge.dateFinished,
-      };
-    }
-
-    const progress = Math.min(
-      (studentBadge.reqCompleted / badge.req) * 100,
-      100,
-    );
-    const completed = studentBadge.dateFinished !== null;
+    const progress = badge
+      ? Math.min((studentBadge.reqCompleted / badge.req) * 100, 100)
+      : 0;
 
     return {
-      completed,
+      completed: studentBadge.dateFinished !== null,
       progress,
       reqCompleted: studentBadge.reqCompleted,
       dateFinished: studentBadge.dateFinished,
     };
   };
 
-  // Filter badges based on student progress and selected filter
   const getFilteredBadges = (): Badge[] => {
     if (!badges) return [];
-
-    const filtered = badges.filter((badge: Badge) => {
+    return badges.filter((badge) => {
       const progress = getStudentBadgeProgress(badge.id);
-
-      switch (selectedFilter.value) {
-        case "all":
-          return true;
+      switch (selectedFilter) {
         case "completed":
           return progress.completed;
         case "not-completed":
@@ -74,48 +60,37 @@ export default function BadgeList({ student }: BadgeListProps): ReactElement {
           return true;
       }
     });
-
-    return filtered;
   };
 
   const filteredBadges = getFilteredBadges();
 
   return (
-    <article className="w-full h-full bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-lg sm:rounded-sm shadow-sm flex flex-col p-3 sm:p-4 overflow-hidden transition-colors duration-200">
-      <div className="flex justify-between items-center mb-3 sm:mb-4 flex-shrink-0">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg sm:text-base transition-colors duration-200">
-          Badges
-        </h3>
-        <Select
-          options={filterOptions}
-          value={selectedFilter}
-          onChange={(option: SingleValue<FilterOption>) => {
-            if (option) setSelectedFilter(option);
-          }}
-          isMulti={false}
-          styles={getCustomSelectColor<FilterOption>({
-            borderRadius: "0.5rem",
-            minHeight: "12px",
-            menuWidth: "100%",
-            dark: {
-              backgroundColor: "#374151",
-              textColor: "#f9fafb",
-              borderColor: "#4b5563",
-              borderFocusColor: "#10b981",
-              optionHoverColor: "#374151",
-              optionSelectedColor: "#059669",
-              menuBackgroundColor: "#1f2937",
-              placeholderColor: "#9ca3af",
-            },
-          })}
-          className="w-28 sm:w-32 text-xs"
-          isSearchable={false}
-          menuPlacement="auto"
-        />
-      </div>
-      <div className="flex-1 overflow-x-auto">
-        <div className="flex gap-3 h-full">
-          <div className="flex gap-3 sm:gap-4 items-start h-full w-full">
+    <Card className="w-full h-full flex flex-col">
+      <CardHeader className="pb-1 px-3 pt-3">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-sm font-semibold">Badges</CardTitle>
+          <Select value={selectedFilter} onValueChange={setSelectedFilter}>
+            <SelectTrigger className="w-24 h-6 text-xs">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              {filterOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="text-xs"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
+
+      <CardContent className="flex-1 p-0">
+        <div className="overflow-x-auto flex h-full items-start">
+          <div className="flex gap-2 h-full py-1 px-2">
             {filteredBadges.length > 0 ? (
               filteredBadges.map((badge: Badge) => (
                 <BadgeItem
@@ -125,13 +100,13 @@ export default function BadgeList({ student }: BadgeListProps): ReactElement {
                 />
               ))
             ) : (
-              <div className="flex items-center justify-center w-full h-32 text-gray-500 dark:text-gray-400 text-sm sm:text-base">
+              <div className="flex items-center justify-center w-full h-24 text-muted-foreground text-sm">
                 No badges found for this filter.
               </div>
             )}
           </div>
         </div>
-      </div>
-    </article>
+      </CardContent>
+    </Card>
   );
 }

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useStudentAssessments } from "../../services/student-assessment.service";
 import { Assessment } from "../../../core/types/assessment/assessment.type";
 import AssessmentDetailsModal from "./components/AssessmentDetailsModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Assessments(): ReactElement {
   const { studentId, student } = useStudentContext();
@@ -31,31 +32,40 @@ export default function Assessments(): ReactElement {
     handleCloseModal();
   };
 
-  if (assessmentPending)
+  if (assessmentPending) {
     return (
-      <div className="text-gray-900 dark:text-gray-100">
-        Loading assessment...
+      <div className="min-h-screen h-fit w-full p-2 flex flex-col gap-2">
+        {/* header skeleton */}
+        <Skeleton className="h-8 w-64 rounded" />
+
+        {/* table skeleton */}
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full rounded" />
+          ))}
+        </div>
       </div>
     );
+  }
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2 transition-colors duration-200">
-      <header className="flex w-full items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          Assessment
-        </h3>
+    <div className="min-h-screen h-fit w-full p-2 flex flex-col gap-2">
+      {/* header */}
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Assessments</h1>
+        </div>
       </header>
 
-      <section className="bg-white dark:bg-gray-800 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+      <div className="flex-1 min-h-0">
         <AssessmentTable
-          assessments={assessments}
+          assessments={assessments || []}
           navigate={navigate}
           student={student}
           onAssessmentClick={handleAssessmentClick}
         />
-      </section>
+      </div>
 
-      {/* assessment details modal */}
       {selectedAssessment && (
         <AssessmentDetailsModal
           isOpen={showDetailsModal}
@@ -65,6 +75,6 @@ export default function Assessments(): ReactElement {
           onTakeAssessment={handleTakeAssessment}
         />
       )}
-    </main>
+    </div>
   );
 }

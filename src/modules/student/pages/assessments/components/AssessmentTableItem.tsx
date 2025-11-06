@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-import "../../../../core/styles/customTable.css";
 import { format } from "date-fns-tz";
 import { Student } from "../../../types/student.type";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
@@ -8,17 +7,22 @@ import {
   getAssessmentStatus,
   getTotalAttemptsCount,
 } from "../../../utils/assessments/assessment.util";
+import { TableRow, TableCell } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type AssessmentTableItemProps = {
   assessment: Assessment;
   student: Student | null | undefined;
   onAssessmentClick: (assessment: Assessment) => void;
+  isLastItem?: boolean;
 };
 
 export default function AssessmentTableItem({
   assessment,
   student,
   onAssessmentClick,
+  isLastItem,
 }: AssessmentTableItemProps): ReactElement {
   const totalQuestions = assessment.pages.reduce((total, page) => {
     const questionCount = page.contents.filter(
@@ -39,13 +43,13 @@ export default function AssessmentTableItem({
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "available":
-        return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200";
+        return "default";
       case "expired":
-        return "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200";
+        return "destructive";
       case "not-available":
-        return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
+        return "secondary";
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
+        return "secondary";
     }
   };
 
@@ -63,53 +67,68 @@ export default function AssessmentTableItem({
   };
 
   return (
-    <tr
-      className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+    <TableRow
+      className={cn(
+        "cursor-pointer transition-colors hover:bg-muted/50 h-17",
+        isLastItem && "border-b-0",
+      )}
       onClick={() => onAssessmentClick(assessment)}
     >
-      <td className="w-[20%]">
-        <div>
-          <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+      <TableCell className="py-4 align-middle">
+        {" "}
+        {/* Added align-middle */}
+        <div className="flex items-center">
+          <p className="font-medium text-sm line-clamp-2">
+            {" "}
+            {/* Added line-clamp */}
             {assessment.title || "Untitled Assessment"}
           </p>
         </div>
-      </td>
-      <td className="w-[20%]">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {assessment.topic || "No topic"}
-        </p>
-      </td>
-      <td className="w-[10%] text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {assessment.date.end
-            ? format(new Date(assessment.date.end), "MMM d 'at' h:mm a", {
-              timeZone: "Asia/Manila",
-            })
-            : "N/A"}
-        </p>
-      </td>
-      <td className="w-[10%] text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {assessment.timeLimit ? `${assessment.timeLimit} mins` : "No limit"}
-        </p>
-      </td>
-      <td className="w-[10%] text-center">
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusVariant(studentStatus)}`}
-        >
-          {getStatusText(studentStatus)}
-        </span>
-      </td>
-      <td className="w-[10%] text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {totalQuestions}
-        </p>
-      </td>
-      <td className="w-[10%] text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {totalAttempts}/{assessment.attemptLimit || "∞"}
-        </p>
-      </td>
-    </tr>
+      </TableCell>
+      <TableCell className="py-4 align-middle">
+        <div className="flex items-center">
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {assessment.topic || "No topic"}
+          </p>
+        </div>
+      </TableCell>
+      <TableCell className="py-4 text-center align-middle">
+        <div className="flex items-center justify-center">
+          <p className="text-sm text-muted-foreground">
+            {assessment.date.end
+              ? format(new Date(assessment.date.end), "MMM d 'at' h:mm a", {
+                timeZone: "Asia/Manila",
+              })
+              : "N/A"}
+          </p>
+        </div>
+      </TableCell>
+      <TableCell className="py-4 text-center align-middle">
+        <div className="flex items-center justify-center">
+          <p className="text-sm text-muted-foreground">
+            {assessment.timeLimit ? `${assessment.timeLimit} mins` : "No limit"}
+          </p>
+        </div>
+      </TableCell>
+      <TableCell className="py-4 text-center align-middle">
+        <div className="flex items-center justify-center">
+          <Badge variant={getStatusVariant(studentStatus)}>
+            {getStatusText(studentStatus)}
+          </Badge>
+        </div>
+      </TableCell>
+      <TableCell className="py-4 text-center align-middle">
+        <div className="flex items-center justify-center">
+          <p className="text-sm text-muted-foreground">{totalQuestions}</p>
+        </div>
+      </TableCell>
+      <TableCell className="py-4 text-center align-middle">
+        <div className="flex items-center justify-center">
+          <p className="text-sm text-muted-foreground">
+            {totalAttempts}/{assessment.attemptLimit || "∞"}
+          </p>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }

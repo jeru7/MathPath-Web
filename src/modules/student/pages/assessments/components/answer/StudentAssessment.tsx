@@ -26,6 +26,7 @@ import {
 import { APIErrorResponse } from "../../../../../core/types/api/api.type";
 import { handleApiError } from "../../../../../core/utils/api/error.util";
 import { FaInfoCircle } from "react-icons/fa";
+import { Button } from "../../../../../../components/ui/button";
 
 type StudentAssessmentProps = {
   assessment: Assessment;
@@ -247,7 +248,6 @@ export default function StudentAssessment({
     };
   }, [assessment.timeLimit, initialTimeRemaining]);
 
-  // handle browser back button and navigation
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!hasAttemptedSubmitRef.current) {
@@ -298,7 +298,7 @@ export default function StudentAssessment({
   if (!isOpen || mode !== "assessment") return <></>;
 
   return (
-    <div className="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col z-50">
+    <div className="fixed inset-0 bg-background flex flex-col z-50">
       <AssessmentHeader
         assessment={assessment}
         onClose={handleExitClick}
@@ -312,13 +312,15 @@ export default function StudentAssessment({
           </div>
         </div>
         {!isCardVisible && (
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={toggleCardVisibility}
-            className="flex absolute top-6 right-6 w-10 h-10 bg-white dark:bg-gray-800 rounded-sm shadow-sm border border-gray-200 dark:border-gray-700 items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors z-10"
+            className="absolute top-6 right-6 w-10 h-10 shadow-sm z-10"
             title="Show assessment details"
           >
             <FaInfoCircle className="w-4 h-4" />
-          </button>
+          </Button>
         )}
         {isCardVisible && (
           <FloatingCard
