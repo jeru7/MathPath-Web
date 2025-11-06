@@ -27,7 +27,7 @@ export default function StatsOverviewCard({
   const formatPlaytime = (seconds?: number): string => {
     if (!seconds || isNaN(seconds)) return "0mins";
 
-    const minutes = Math.floor(seconds / 60);
+    const minutes = Math.round(seconds / 60);
     const hours = seconds / 3600;
 
     if (minutes < 60) {
