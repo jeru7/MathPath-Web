@@ -1,5 +1,4 @@
 import { ReactElement, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   FaTimes,
   FaCheck,
@@ -16,6 +15,7 @@ import {
   AssessmentAttempt,
   StudentAnswer,
 } from "../../../../../core/types/assessment-attempt/assessment-attempt.type";
+import ModalOverlay from "../../../../../core/components/modal/ModalOverlay";
 
 type AttemptReviewModalProps = {
   isOpen: boolean;
@@ -73,13 +73,53 @@ const isIdentificationQuestion = (
 type QuestionWithPageInfo = AssessmentQuestion & {
   pageIndex: number;
   pageTitle: string;
+  contentId: string;
 };
 
-type QuestionMappingResult = {
-  totalPossiblePoints: number;
-  questions: QuestionWithPageInfo[];
-  questionAnswerMap: Map<string, string>;
-  questionNumberMap: Map<string, number>;
+// helper to detect old data format
+const isOldDataFormat = (attempt: AssessmentAttempt): boolean => {
+  if (!attempt.answers || attempt.answers.length === 0) return false;
+
+  const firstAnswer = attempt.answers[0];
+  // old format has question ids as direct properties of the answer object
+  // and doesn't have the standard questionId/answer structure
+  const hasQuestionId = "questionId" in firstAnswer;
+  const hasAnswer = "answer" in firstAnswer;
+
+  // check if there are properties that look like question ids (not metadata)
+  const nonMetadataKeys = Object.keys(firstAnswer).filter(
+    (key) => key !== "_id" && key !== "id",
+  );
+
+  return !hasQuestionId && !hasAnswer && nonMetadataKeys.length > 0;
+};
+
+// helper to convert old data format to new format
+const convertOldDataToNewFormat = (
+  attempt: AssessmentAttempt,
+): AssessmentAttempt => {
+  if (!isOldDataFormat(attempt)) return attempt;
+
+  const convertedAnswers: StudentAnswer[] = [];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  attempt.answers.forEach((oldAnswer: any) => {
+    Object.keys(oldAnswer).forEach((key) => {
+      // skip metadata fields
+      if (key === "_id" || key === "id") return;
+
+      const answerValue = oldAnswer[key];
+      convertedAnswers.push({
+        questionId: key,
+        answer: answerValue,
+      });
+    });
+  });
+
+  return {
+    ...attempt,
+    answers: convertedAnswers,
+  };
 };
 
 export default function AttemptReviewModal({
@@ -90,100 +130,48 @@ export default function AttemptReviewModal({
   onClose,
 }: AttemptReviewModalProps): ReactElement {
   const [currentPage, setCurrentPage] = useState(0);
-  const [questionAnswerMap, setQuestionAnswerMap] = useState<
-    Map<string, string>
-  >(new Map());
-  const [questionNumberMap, setQuestionNumberMap] = useState<
-    Map<string, number>
-  >(new Map());
+  const [questions, setQuestions] = useState<QuestionWithPageInfo[]>([]);
+  const [normalizedAttempt, setNormalizedAttempt] =
+    useState<AssessmentAttempt | null>(null);
 
   useEffect(() => {
     if (assessment && attempt) {
-      const {
-        questionAnswerMap: mappedAnswerMap,
-        questionNumberMap: mappedNumberMap,
-      }: QuestionMappingResult = assessment.pages.reduce(
-        (
-          acc: QuestionMappingResult,
-          page: AssessmentPage,
-          pageIndex: number,
-        ) => {
-          page.contents.forEach((content) => {
-            if (content.type === "question") {
-              const question = content.data;
-              acc.totalPossiblePoints += question.points;
+      // normalize attempt data to handle both old and new formats
+      const normalized = convertOldDataToNewFormat(attempt);
+      setNormalizedAttempt(normalized);
 
-              const questionIndex = acc.questions.length;
+      const allQuestions: QuestionWithPageInfo[] = [];
 
-              let answerKey: string | null = null;
+      assessment.pages.forEach((page: AssessmentPage, pageIndex: number) => {
+        page.contents.forEach((content) => {
+          if (content.type === "question") {
+            const question = content.data;
+            const questionWithPageInfo: QuestionWithPageInfo = {
+              ...question,
+              pageIndex,
+              pageTitle: page.title || `Page ${pageIndex + 1}`,
+              contentId: content.id,
+            };
+            allQuestions.push(questionWithPageInfo);
+          }
+        });
+      });
 
-              if (attempt.answers[question.id]) {
-                answerKey = question.id;
-              } else if (attempt.answers[content.id]) {
-                answerKey = content.id;
-              } else {
-                const answerKeys = Object.keys(attempt.answers);
-                if (questionIndex < answerKeys.length) {
-                  answerKey = answerKeys[questionIndex];
-                } else {
-                  answerKey = question.id;
-                }
-              }
-
-              acc.questionAnswerMap.set(question.id, answerKey);
-              acc.questionNumberMap.set(question.id, questionIndex + 1);
-
-              const questionWithPageInfo: QuestionWithPageInfo = {
-                ...question,
-                pageIndex,
-                pageTitle: page.title || `Page ${pageIndex + 1}`,
-              };
-
-              acc.questions.push(questionWithPageInfo);
-            }
-          });
-          return acc;
-        },
-        {
-          totalPossiblePoints: 0,
-          questions: [] as QuestionWithPageInfo[],
-          questionAnswerMap: new Map<string, string>(),
-          questionNumberMap: new Map<string, number>(),
-        },
-      );
-
-      setQuestionAnswerMap(mappedAnswerMap);
-      setQuestionNumberMap(mappedNumberMap);
+      setQuestions(allQuestions);
     }
   }, [assessment, attempt]);
 
-  if (!assessment || !attempt || !student) {
+  if (!assessment || !attempt || !student || !normalizedAttempt) {
     return (
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          >
-            <motion.div
-              className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-4xl max-h-[90vh] overflow-hidden"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6 text-center">
-                <p className="text-gray-600 dark:text-gray-400">
-                  Unable to load attempt details.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ModalOverlay isOpen={isOpen} onClose={onClose}>
+        <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-4xl max-h-[90vh] overflow-hidden">
+          <div className="p-6 text-center">
+            <p className="text-gray-600 dark:text-gray-400">
+              Unable to load attempt details.
+            </p>
+          </div>
+        </div>
+      </ModalOverlay>
     );
   }
 
@@ -197,45 +185,40 @@ export default function AttemptReviewModal({
     setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
   };
 
-  // get all questions from current page
-  const getCurrentPageQuestions = (): AssessmentQuestion[] => {
-    const currentPageData = assessment.pages[currentPage];
-    const questions: AssessmentQuestion[] = [];
+  const getStudentAnswer = (
+    questionId: string,
+    contentId: string,
+  ): StudentAnswer | null => {
+    const directAnswer = normalizedAttempt.answers.find(
+      (answer) => answer.questionId === questionId,
+    );
 
-    currentPageData.contents.forEach((content) => {
-      if (content.type === "question") {
-        questions.push(content.data);
-      }
-    });
-
-    return questions;
-  };
-
-  // get student answer for a specific question (same logic as AssessmentResult)
-  const getStudentAnswer = (questionId: string): StudentAnswer | null => {
-    const answerKey = questionAnswerMap.get(questionId);
-
-    if (answerKey && attempt.answers[answerKey] !== undefined) {
-      return attempt.answers[answerKey];
+    if (directAnswer) {
+      return directAnswer;
     }
 
-    // Fallback: try direct question ID
-    if (attempt.answers[questionId] !== undefined) {
-      return attempt.answers[questionId];
-    }
+    const contentIdAnswer = normalizedAttempt.answers.find(
+      (answer) => answer.questionId === contentId,
+    );
 
-    return null;
+    return contentIdAnswer || null;
   };
 
-  const hasStudentAnswer = (questionId: string): boolean => {
-    const answer = getStudentAnswer(questionId);
+  const hasStudentAnswer = (questionId: string, contentId: string): boolean => {
+    const answer = getStudentAnswer(questionId, contentId);
     if (!answer) return false;
 
-    if (typeof answer === "string") return answer.trim() !== "";
-    if (Array.isArray(answer))
-      return answer.length > 0 && answer.some((a) => a && a.trim() !== "");
-    if (typeof answer === "object" && !Array.isArray(answer))
-      return Object.values(answer).some((val) => val && val.trim() !== "");
+    if (typeof answer.answer === "string") return answer.answer.trim() !== "";
+    if (Array.isArray(answer.answer))
+      return (
+        answer.answer.length > 0 &&
+        answer.answer.some((a) => a && a.trim() !== "")
+      );
+    if (typeof answer.answer === "object" && !Array.isArray(answer.answer))
+      return Object.values(answer.answer).some(
+        (val) => val && val.trim() !== "",
+      );
+    if (typeof answer.answer === "boolean") return true;
 
     return false;
   };
@@ -243,20 +226,24 @@ export default function AttemptReviewModal({
   const isAnswerCorrect = (
     question: AssessmentQuestion,
     questionId: string,
+    contentId: string,
   ): boolean => {
-    const studentAnswer = getStudentAnswer(questionId);
-    if (!studentAnswer || !hasStudentAnswer(questionId)) return false;
+    const studentAnswer = getStudentAnswer(questionId, contentId);
+    if (!studentAnswer || !hasStudentAnswer(questionId, contentId))
+      return false;
 
     const correctAnswers = getCorrectAnswers(question);
 
     if (isFillInTheBlanksQuestion(question)) {
-      // handle fill in the blanks
-      if (typeof studentAnswer === "object" && !Array.isArray(studentAnswer)) {
+      if (
+        typeof studentAnswer.answer === "object" &&
+        !Array.isArray(studentAnswer.answer)
+      ) {
         let allCorrect = true;
         question.answers.forEach((blank) => {
-          const studentBlankAnswer = (studentAnswer as Record<string, string>)[
-            blank.id
-          ];
+          const studentBlankAnswer = (
+            studentAnswer.answer as Record<string, string>
+          )[blank.id];
           const isBlankCorrect =
             studentBlankAnswer?.toLowerCase().trim() ===
             blank.value.toLowerCase().trim();
@@ -266,7 +253,7 @@ export default function AttemptReviewModal({
         });
         return allCorrect;
       } else {
-        const studentAnswers = normalizeStudentAnswer(studentAnswer);
+        const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
         if (studentAnswers.length !== correctAnswers.length) return false;
         return studentAnswers.every(
           (answer, index) =>
@@ -275,7 +262,7 @@ export default function AttemptReviewModal({
         );
       }
     } else {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
 
       switch (question.type) {
         case "single_choice":
@@ -318,22 +305,28 @@ export default function AttemptReviewModal({
     return [];
   };
 
-  const normalizeStudentAnswer = (answer: StudentAnswer): string[] => {
+  const normalizeStudentAnswer = (
+    answer: string | string[] | Record<string, string> | boolean,
+  ): string[] => {
     if (typeof answer === "string") return [answer];
     if (Array.isArray(answer)) return answer;
     if (typeof answer === "object" && !Array.isArray(answer)) {
       return Object.values(answer);
     }
+    if (typeof answer === "boolean") return [answer.toString()];
     return [];
   };
 
-  const renderQuestionReview = (question: AssessmentQuestion) => {
+  const renderQuestionReview = (question: QuestionWithPageInfo) => {
     const questionId = question.id;
-    const studentAnswer = getStudentAnswer(questionId);
-    const hasAnswer = hasStudentAnswer(questionId);
-    const isCorrect = hasAnswer ? isAnswerCorrect(question, questionId) : false;
+    const contentId = question.contentId;
+    const studentAnswer = getStudentAnswer(questionId, contentId);
+    const hasAnswer = hasStudentAnswer(questionId, contentId);
+    const isCorrect = hasAnswer
+      ? isAnswerCorrect(question, questionId, contentId)
+      : false;
     const correctAnswers = getCorrectAnswers(question);
-    const questionNumber = questionNumberMap.get(questionId);
+    const questionNumber = questions.findIndex((q) => q.id === questionId) + 1;
 
     return (
       <div
@@ -425,7 +418,7 @@ export default function AttemptReviewModal({
     }
 
     if (isChoiceQuestion(question)) {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
       if (studentAnswers.length === 0) {
         return (
           <div className="text-sm text-gray-600 dark:text-gray-400 italic">
@@ -442,28 +435,37 @@ export default function AttemptReviewModal({
                 key={index}
                 className="text-sm text-gray-900 dark:text-gray-100"
               >
-                {choice?.text || "Selected answer not available"}
+                {choice?.text || `Selected: ${answerId}`}
               </div>
             );
           })}
         </div>
       );
     } else if (isTrueOrFalseQuestion(question)) {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
-      return (
-        <div className="text-sm text-gray-900 dark:text-gray-100">
-          {studentAnswers[0] === "true" ? "True" : "False"}
-        </div>
-      );
+      if (typeof studentAnswer.answer === "boolean") {
+        return (
+          <div className="text-sm text-gray-900 dark:text-gray-100">
+            {studentAnswer.answer ? "True" : "False"}
+          </div>
+        );
+      } else {
+        const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
+        return (
+          <div className="text-sm text-gray-900 dark:text-gray-100">
+            {studentAnswers[0] === "true" ? "True" : "False"}
+          </div>
+        );
+      }
     } else if (isIdentificationQuestion(question)) {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
       return (
         <div className="text-sm text-gray-900 dark:text-gray-100">
           {studentAnswers[0] || "No answer"}
         </div>
       );
     } else if (isFillInTheBlanksQuestion(question)) {
-      if (Array.isArray(studentAnswer)) {
+      if (Array.isArray(studentAnswer.answer)) {
+        const answerArray = studentAnswer.answer;
         return (
           <div className="space-y-2">
             {question.answers.map((blank, index: number) => (
@@ -472,14 +474,14 @@ export default function AttemptReviewModal({
                   {blank.label}:
                 </span>
                 <span className="text-sm text-gray-900 dark:text-gray-100">
-                  {studentAnswer[index] || "Empty"}
+                  {answerArray[index] || "Empty"}
                 </span>
               </div>
             ))}
           </div>
         );
       } else {
-        const answerObj = studentAnswer as Record<string, string>;
+        const answerObj = studentAnswer.answer as Record<string, string>;
         return (
           <div className="space-y-2">
             {question.answers.map((blank) => (
@@ -518,7 +520,7 @@ export default function AttemptReviewModal({
                 key={index}
                 className="text-sm text-green-700 dark:text-green-300"
               >
-                {choice?.text || "Correct answer not available"}
+                {choice?.text || `Correct: ${answerId}`}
               </div>
             );
           })}
@@ -561,149 +563,142 @@ export default function AttemptReviewModal({
   };
 
   const currentPageData = assessment.pages[currentPage];
-  const currentPageQuestions = getCurrentPageQuestions();
+  const currentPageQuestions = questions.filter(
+    (q) => q.pageIndex === currentPage,
+  );
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
+    <ModalOverlay isOpen={isOpen} onClose={onClose}>
+      <div className="bg-white border border-white dark:border-gray-700 dark:bg-gray-800 rounded-sm shadow-sm w-[100dvw] h-[100dvh] md:w-[80dvw] md:h-[90dvh] overflow-hidden flex flex-col">
+        {/* header */}
+        <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
+              {assessment.title || "Untitled Assessment"} - Review
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Attempt on{" "}
+              {new Date(
+                normalizedAttempt.dateCompleted ||
+                normalizedAttempt.dateUpdated,
+              ).toLocaleDateString()}{" "}
+              • Score: {normalizedAttempt.score}
+              {normalizedAttempt.score >= assessment.passingScore
+                ? " • Passed"
+                : " • Failed"}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="self-start text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer"
           >
-            {/* header */}
-            <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-200">
-                  {assessment.title || "Untitled Assessment"} - Review
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Attempt on{" "}
-                  {new Date(
-                    attempt.dateCompleted || attempt.dateUpdated,
-                  ).toLocaleDateString()}{" "}
-                  • Score: {attempt.score}
-                  {attempt.score >= assessment.passingScore
-                    ? " • Passed"
-                    : " • Failed"}
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="self-start text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hover:cursor-pointer"
-              >
-                <FaTimes className="w-4 h-4" />
-              </button>
-            </header>
+            <FaTimes className="w-4 h-4" />
+          </button>
+        </header>
 
-            {/* page navigation */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 0}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 rounded-sm transition-colors"
-              >
-                <FaChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
+        {/* page navigation */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0}
+            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 rounded-sm transition-colors"
+          >
+            <FaChevronLeft className="w-4 h-4" />
+            Previous
+          </button>
 
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Page {currentPage + 1} of {totalPages}
-                {currentPageData.title && ` - ${currentPageData.title}`}
-              </div>
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Page {currentPage + 1} of {totalPages}
+            {currentPageData.title && ` - ${currentPageData.title}`}
+          </div>
 
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages - 1}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 rounded-sm transition-colors"
-              >
-                Next
-                <FaChevronRight className="w-4 h-4" />
-              </button>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages - 1}
+            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 rounded-sm transition-colors"
+          >
+            Next
+            <FaChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* page contents */}
+          <div className="space-y-6">
+            {currentPageData.contents.map((content) => {
+              if (content.type === "text") {
+                return (
+                  <div
+                    key={content.id}
+                    className="prose dark:prose-invert max-w-none"
+                  >
+                    <div className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap rich-text-content">
+                      {renderRichText(content.data)}
+                    </div>
+                  </div>
+                );
+              }
+
+              if (content.type === "image") {
+                return (
+                  <div key={content.id} className="flex justify-center">
+                    <img
+                      src={content.data.secureUrl}
+                      alt="Assessment visual"
+                      className="max-w-full h-auto rounded-sm"
+                    />
+                  </div>
+                );
+              }
+
+              if (content.type === "question") {
+                const questionData = content.data;
+                const fullQuestion = questions.find(
+                  (q) => q.id === questionData.id && q.contentId === content.id,
+                );
+                if (fullQuestion) {
+                  return renderQuestionReview(fullQuestion);
+                }
+                return null;
+              }
+
+              return null;
+            })}
+          </div>
+
+          {currentPageQuestions.length === 0 && (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              This page doesn't contain any questions.
             </div>
+          )}
+        </div>
 
-            {/* content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              {/* page contents */}
-              <div className="space-y-6">
-                {currentPageData.contents.map((content) => {
-                  if (content.type === "text") {
-                    return (
-                      <div
-                        key={content.id}
-                        className="prose dark:prose-invert max-w-none"
-                      >
-                        <div className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap rich-text-content">
-                          {renderRichText(content.data)}
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  if (content.type === "image") {
-                    return (
-                      <div key={content.id} className="flex justify-center">
-                        <img
-                          src={content.data.secureUrl}
-                          alt="Assessment visual"
-                          className="max-w-full h-auto rounded-sm"
-                        />
-                      </div>
-                    );
-                  }
-
-                  if (content.type === "question") {
-                    const questionData = content.data;
-                    return renderQuestionReview(questionData);
-                  }
-
-                  return null;
-                })}
-              </div>
-
-              {currentPageQuestions.length === 0 && (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  This page doesn't contain any questions.
-                </div>
-              )}
+        {/* footer */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+          <div className="flex justify-between items-center text-sm">
+            <div className="text-gray-600 dark:text-gray-400">
+              Status:{" "}
+              <span className="font-medium capitalize">
+                {normalizedAttempt.status}
+              </span>
             </div>
-
-            {/* footer */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
-              <div className="flex justify-between items-center text-sm">
-                <div className="text-gray-600 dark:text-gray-400">
-                  Status:{" "}
-                  <span className="font-medium capitalize">
-                    {attempt.status}
-                  </span>
-                </div>
-                <div className="text-gray-600 dark:text-gray-400">
-                  Time Spent:{" "}
-                  <span className="font-medium">
-                    {Math.floor(attempt.timeSpent / 60)}m{" "}
-                    {attempt.timeSpent % 60}s
-                  </span>
-                </div>
-                <div className="text-gray-600 dark:text-gray-400">
-                  Passing Score:{" "}
-                  <span className="font-medium">
-                    {assessment.passingScore} points
-                  </span>
-                </div>
-              </div>
+            <div className="text-gray-600 dark:text-gray-400">
+              Time Spent:{" "}
+              <span className="font-medium">
+                {Math.floor(normalizedAttempt.timeSpent / 60)}m{" "}
+                {normalizedAttempt.timeSpent % 60}s
+              </span>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+            <div className="text-gray-600 dark:text-gray-400">
+              Passing Score:{" "}
+              <span className="font-medium">
+                {assessment.passingScore} points
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ModalOverlay>
   );
 }

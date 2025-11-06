@@ -62,28 +62,46 @@ export default function AssessmentQuestion({
   }, [data]);
 
   const handleSingleChoiceChange = (choiceId: string): void => {
-    onAnswerChange(choiceId);
+    onAnswerChange({
+      questionId: content.id,
+      answer: choiceId,
+    });
   };
 
   const handleMultipleChoiceChange = (
     choiceId: string,
     isChecked: boolean,
   ): void => {
-    const currentAnswers = Array.isArray(studentAnswer) ? studentAnswer : [];
+    const currentAnswers =
+      studentAnswer && Array.isArray(studentAnswer.answer)
+        ? studentAnswer.answer
+        : [];
 
     if (isChecked) {
-      onAnswerChange([...currentAnswers, choiceId]);
+      onAnswerChange({
+        questionId: content.id,
+        answer: [...currentAnswers, choiceId],
+      });
     } else {
-      onAnswerChange(currentAnswers.filter((id) => id !== choiceId));
+      onAnswerChange({
+        questionId: content.id,
+        answer: currentAnswers.filter((id) => id !== choiceId),
+      });
     }
   };
 
   const handleTrueFalseChange = (value: boolean): void => {
-    onAnswerChange(value.toString());
+    onAnswerChange({
+      questionId: content.id,
+      answer: value,
+    });
   };
 
   const handleIdentificationChange = (value: string): void => {
-    onAnswerChange(value);
+    onAnswerChange({
+      questionId: content.id,
+      answer: value,
+    });
   };
 
   const handleFillInTheBlanksChange = (
@@ -91,13 +109,18 @@ export default function AssessmentQuestion({
     value: string,
   ): void => {
     const currentAnswers =
-      typeof studentAnswer === "object" && !Array.isArray(studentAnswer)
-        ? studentAnswer
+      studentAnswer &&
+        typeof studentAnswer.answer === "object" &&
+        !Array.isArray(studentAnswer.answer)
+        ? (studentAnswer.answer as Record<string, string>)
         : {};
 
     onAnswerChange({
-      ...currentAnswers,
-      [blankId]: value,
+      questionId: content.id,
+      answer: {
+        ...currentAnswers,
+        [blankId]: value,
+      },
     });
   };
 
@@ -115,7 +138,7 @@ export default function AssessmentQuestion({
               type="radio"
               name={`question-${content.id}`}
               value={choice.id}
-              checked={studentAnswer === choice.id}
+              checked={studentAnswer?.answer === choice.id}
               onChange={(e) => handleSingleChoiceChange(e.target.value)}
               className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2 mt-1 sm:mt-0 flex-shrink-0"
             />
@@ -142,8 +165,8 @@ export default function AssessmentQuestion({
               type="checkbox"
               value={choice.id}
               checked={
-                Array.isArray(studentAnswer)
-                  ? studentAnswer.includes(choice.id)
+                Array.isArray(studentAnswer?.answer)
+                  ? studentAnswer.answer.includes(choice.id)
                   : false
               }
               onChange={(e) =>
@@ -174,7 +197,7 @@ export default function AssessmentQuestion({
               type="radio"
               name={`question-${content.id}`}
               value={value.toString()}
-              checked={studentAnswer === value.toString()}
+              checked={studentAnswer?.answer === value}
               onChange={() => handleTrueFalseChange(value)}
               className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2 flex-shrink-0"
             />
@@ -194,7 +217,11 @@ export default function AssessmentQuestion({
       <div className="w-full max-w-full sm:max-w-md">
         <input
           type="text"
-          value={typeof studentAnswer === "string" ? studentAnswer : ""}
+          value={
+            typeof studentAnswer?.answer === "string"
+              ? studentAnswer.answer
+              : ""
+          }
           onChange={(e) => handleIdentificationChange(e.target.value)}
           className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 text-sm sm:text-base"
           placeholder="Enter your answer..."
@@ -209,8 +236,10 @@ export default function AssessmentQuestion({
     // parse the question and replace [number] with empty fields
     const questionParts = data.question.split(/(\[\d+\])/);
     const blankAnswers =
-      typeof studentAnswer === "object" && !Array.isArray(studentAnswer)
-        ? studentAnswer
+      studentAnswer &&
+        typeof studentAnswer.answer === "object" &&
+        !Array.isArray(studentAnswer.answer)
+        ? (studentAnswer.answer as Record<string, string>)
         : {};
 
     // extract all blanks for the answer section

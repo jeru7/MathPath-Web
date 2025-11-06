@@ -119,11 +119,9 @@ export default function AnswerAssessment(): ReactElement {
           score: 0,
           timeSpent: 0,
           status: "paused",
-          answers: {},
+          answers: [],
           dateStarted: new Date().toISOString(),
           dateUpdated: new Date().toISOString(),
-          currentPage: 0,
-          percentage: 0,
         };
         setIsResumingPaused(false);
       }
@@ -210,11 +208,9 @@ export default function AnswerAssessment(): ReactElement {
       score: 0,
       timeSpent: 0,
       status: "paused",
-      answers: {},
+      answers: [],
       dateStarted: new Date().toISOString(),
       dateUpdated: new Date().toISOString(),
-      currentPage: 0,
-      percentage: 0,
     };
 
     setCurrentAttempt(newAttempt);

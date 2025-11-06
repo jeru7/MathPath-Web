@@ -4,7 +4,6 @@ import PreviewImage from "../../../../../teacher/pages/assessments/builder/previ
 import PreviewText from "../../../../../teacher/pages/assessments/builder/preview/PreviewText";
 import AssessmentQuestion from "./AssessmentQuestion";
 import { IoDocumentText, IoFileTray, IoInformation } from "react-icons/io5";
-import { StudentAnswer } from "../../../../../core/types/assessment-attempt/assessment-attempt.type";
 
 export default function AssessmentContent(): ReactElement {
   const { currentAssessment, currentPage, studentAnswers, setStudentAnswer } =
@@ -36,9 +35,14 @@ export default function AssessmentContent(): ReactElement {
 
   const handleAnswerChange = (
     questionId: string,
-    answer: StudentAnswer,
+    answer: string | string[] | Record<string, string> | boolean,
   ): void => {
     setStudentAnswer(questionId, answer);
+  };
+
+  // helper function to find student answer by questionid
+  const findStudentAnswer = (questionId: string) => {
+    return studentAnswers.find((answer) => answer.questionId === questionId);
   };
 
   return (
@@ -65,15 +69,17 @@ export default function AssessmentContent(): ReactElement {
 
       <div className="space-y-4">
         {currentPageData.contents.map((content, index) => {
+          const studentAnswer = findStudentAnswer(content.id);
+
           switch (content.type) {
             case "question":
               return (
                 <AssessmentQuestion
                   key={content.id}
                   content={content}
-                  studentAnswer={studentAnswers[content.id]}
-                  onAnswerChange={(answer: StudentAnswer) =>
-                    handleAnswerChange(content.id, answer)
+                  studentAnswer={studentAnswer}
+                  onAnswerChange={(answer) =>
+                    handleAnswerChange(content.id, answer.answer)
                   }
                   questionNumber={index + 1}
                 />

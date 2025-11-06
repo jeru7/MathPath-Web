@@ -1,9 +1,6 @@
 import { createContext, useContext } from "react";
 import { Assessment } from "../../types/assessment/assessment.type";
-import {
-  StudentAnswer,
-  StudentAnswers,
-} from "../../types/assessment-attempt/assessment-attempt.type";
+import { StudentAnswers } from "../../types/assessment-attempt/assessment-attempt.type";
 
 export type PreviewMode = "preview" | "assessment";
 
@@ -16,7 +13,10 @@ type PreviewContextType = {
   currentPage: number;
   setCurrentPage: (page: number) => void;
   studentAnswers: StudentAnswers;
-  setStudentAnswer: (questionId: string, answer: StudentAnswer) => void;
+  setStudentAnswer: (
+    questionId: string,
+    answer: string | string[] | Record<string, string> | boolean,
+  ) => void;
   resetAnswers: () => void;
   onSubmitAssessment?: (answers: StudentAnswers) => void;
   setOnSubmitAssessment: (handler: (answers: StudentAnswers) => void) => void;

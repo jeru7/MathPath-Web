@@ -172,8 +172,6 @@ export default function StudentAssessment({
         dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
         dateCompleted: new Date().toISOString(),
         dateUpdated: new Date().toISOString(),
-        currentPage: 0,
-        percentage: 0,
       };
       submitAssessment(completedAttempt, {
         onSuccess: (savedAttempt) =>
@@ -208,8 +206,6 @@ export default function StudentAssessment({
         answers,
         dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
         dateUpdated: new Date().toISOString(),
-        currentPage: 0,
-        percentage: 0,
       };
       savePausedAssessment(pausedAttempt, {
         onSuccess: submissionHandlersRef.current.handlePauseSuccess,

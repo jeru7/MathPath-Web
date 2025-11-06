@@ -31,23 +31,18 @@ export default function AttemptItem({
   onToggle,
   onReview,
 }: AttemptItemProps): ReactElement {
-  const getScoreColor = (score: number) => {
-    const percentage = (score / passingScore) * 100;
-    if (percentage >= 80) return "text-green-600 dark:text-green-400";
-    if (percentage >= 60) return "text-yellow-600 dark:text-yellow-400";
+  const isPassed = attempt.score >= passingScore;
+
+  const getScoreColor = () => {
+    if (isPassed) return "text-green-600 dark:text-green-400";
     return "text-red-600 dark:text-red-400";
   };
 
-  const getStatusVariant = (score: number) => {
-    const percentage = (score / passingScore) * 100;
-    if (percentage >= 80)
+  const getStatusVariant = () => {
+    if (isPassed)
       return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800";
-    if (percentage >= 60)
-      return "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800";
     return "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800";
   };
-
-  const isPassed = (attempt.score || 0) >= passingScore;
 
   return (
     <div className="border border-gray-200 dark:border-gray-600 rounded-sm overflow-hidden">
@@ -81,7 +76,7 @@ export default function AttemptItem({
               {attempt.student.firstName} {attempt.student.lastName}
             </h4>
             <span
-              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusVariant(attempt.score || 0)}`}
+              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusVariant()}`}
             >
               {isPassed ? "Passed" : "Failed"}
             </span>
@@ -169,9 +164,7 @@ export default function AttemptItem({
                     <span className="text-gray-600 dark:text-gray-400">
                       Score:
                     </span>
-                    <span
-                      className={`font-bold ${getScoreColor(attempt.score || 0)}`}
-                    >
+                    <span className={`font-bold ${getScoreColor()}`}>
                       {attempt.score || 0} points
                     </span>
                   </div>

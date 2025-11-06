@@ -40,9 +40,13 @@ export default function Assessments(): ReactElement {
     useState<Assessment | null>(null);
   const [hideFab, setHideFab] = useState<boolean>(false);
 
+  // TODO: handle loading attempts
+  // pasa sa details modal
   // fetch attempts for the selected assessment
-  const { data: studentAttempts = [], isLoading: isLoadingAttempts } =
-    useTeacherAssessmentAttempts(teacherId, selectedAssessment?.id || "");
+  const { data: studentAttempts = [] } = useTeacherAssessmentAttempts(
+    teacherId,
+    selectedAssessment?.id || "",
+  );
 
   useEffect(() => {
     queryClient.invalidateQueries({
@@ -244,7 +248,6 @@ export default function Assessments(): ReactElement {
           onClose={handleCloseDetailsModal}
           studentAttempts={studentAttempts}
           students={students}
-          isLoadingAttempts={isLoadingAttempts}
           disableEdit={selectedAssessment.status !== "draft"}
           onDelete={() => handleDeleteInitiate(selectedAssessment)}
           onArchive={() => handleArchiveInitiate(selectedAssessment)}

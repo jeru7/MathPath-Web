@@ -115,14 +115,23 @@ export default function AssessmentResult({
 
           let answerKey: string | null = null;
 
-          if (attempt.answers[question.id]) {
+          // find the answer by questionid in the array
+          const answerObj = attempt.answers.find(
+            (answer) => answer.questionId === question.id,
+          );
+          if (answerObj) {
             answerKey = question.id;
-          } else if (attempt.answers[content.id]) {
-            answerKey = content.id;
           } else {
-            const answerKeys = Object.keys(attempt.answers);
-            if (questionIndex < answerKeys.length) {
-              answerKey = answerKeys[questionIndex];
+            // fallback: try to find by content id
+            const answerByContentId = attempt.answers.find(
+              (answer) => answer.questionId === content.id,
+            );
+            if (answerByContentId) {
+              answerKey = content.id;
+            } else if (questionIndex < attempt.answers.length) {
+              // fallback: use index-based lookup
+              answerKey =
+                attempt.answers[questionIndex]?.questionId || question.id;
             } else {
               answerKey = question.id;
             }
@@ -188,25 +197,34 @@ export default function AssessmentResult({
   const getStudentAnswer = (questionId: string): StudentAnswer | null => {
     const answerKey = questionAnswerMap.get(questionId);
 
-    if (answerKey && attempt.answers[answerKey] !== undefined) {
-      return attempt.answers[answerKey];
+    if (answerKey) {
+      const answerObj = attempt.answers.find(
+        (answer) => answer.questionId === answerKey,
+      );
+      return answerObj || null;
     }
 
-    if (attempt.answers[questionId] !== undefined) {
-      return attempt.answers[questionId];
-    }
-    return null;
+    const answerByQuestionId = attempt.answers.find(
+      (answer) => answer.questionId === questionId,
+    );
+    return answerByQuestionId || null;
   };
 
   const hasStudentAnswer = (questionId: string): boolean => {
     const answer = getStudentAnswer(questionId);
     if (!answer) return false;
 
-    if (typeof answer === "string") return answer.trim() !== "";
-    if (Array.isArray(answer))
-      return answer.length > 0 && answer.some((a) => a && a.trim() !== "");
-    if (typeof answer === "object" && !Array.isArray(answer))
-      return Object.values(answer).some((val) => val && val.trim() !== "");
+    if (typeof answer.answer === "string") return answer.answer.trim() !== "";
+    if (Array.isArray(answer.answer))
+      return (
+        answer.answer.length > 0 &&
+        answer.answer.some((a) => a && a.trim() !== "")
+      );
+    if (typeof answer.answer === "object" && !Array.isArray(answer.answer))
+      return Object.values(answer.answer).some(
+        (val) => val && val.trim() !== "",
+      );
+    if (typeof answer.answer === "boolean") return true;
 
     return false;
   };
@@ -222,12 +240,15 @@ export default function AssessmentResult({
 
     if (isFillInTheBlanksQuestion(question)) {
       // handle fill in the blanks
-      if (typeof studentAnswer === "object" && !Array.isArray(studentAnswer)) {
+      if (
+        typeof studentAnswer.answer === "object" &&
+        !Array.isArray(studentAnswer.answer)
+      ) {
         let allCorrect = true;
         question.answers.forEach((blank) => {
-          const studentBlankAnswer = (studentAnswer as Record<string, string>)[
-            blank.id
-          ];
+          const studentBlankAnswer = (
+            studentAnswer.answer as Record<string, string>
+          )[blank.id];
           const isBlankCorrect =
             studentBlankAnswer?.toLowerCase().trim() ===
             blank.value.toLowerCase().trim();
@@ -237,7 +258,7 @@ export default function AssessmentResult({
         });
         return allCorrect;
       } else {
-        const studentAnswers = normalizeStudentAnswer(studentAnswer);
+        const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
         if (studentAnswers.length !== correctAnswers.length) return false;
         return studentAnswers.every(
           (answer, index) =>
@@ -246,7 +267,7 @@ export default function AssessmentResult({
         );
       }
     } else {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
 
       switch (question.type) {
         case "single_choice":
@@ -289,12 +310,15 @@ export default function AssessmentResult({
     return [];
   };
 
-  const normalizeStudentAnswer = (answer: StudentAnswer): string[] => {
+  const normalizeStudentAnswer = (
+    answer: string | string[] | Record<string, string> | boolean,
+  ): string[] => {
     if (typeof answer === "string") return [answer];
     if (Array.isArray(answer)) return answer;
     if (typeof answer === "object" && !Array.isArray(answer)) {
       return Object.values(answer);
     }
+    if (typeof answer === "boolean") return [answer.toString()];
     return [];
   };
 
@@ -423,7 +447,7 @@ export default function AssessmentResult({
     }
 
     if (isChoiceQuestion(question)) {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
       if (studentAnswers.length === 0) {
         return (
           <div className="text-sm text-gray-600 dark:text-gray-400 italic">
@@ -447,21 +471,33 @@ export default function AssessmentResult({
         </div>
       );
     } else if (isTrueOrFalseQuestion(question)) {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
-      return (
-        <div className="text-sm text-gray-900 dark:text-gray-100">
-          {studentAnswers[0] === "true" ? "True" : "False"}
-        </div>
-      );
+      // handle boolean values directly
+      if (typeof studentAnswer.answer === "boolean") {
+        return (
+          <div className="text-sm text-gray-900 dark:text-gray-100">
+            {studentAnswer.answer ? "True" : "False"}
+          </div>
+        );
+      } else {
+        // fallback for string values
+        const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
+        return (
+          <div className="text-sm text-gray-900 dark:text-gray-100">
+            {studentAnswers[0] === "true" ? "True" : "False"}
+          </div>
+        );
+      }
     } else if (isIdentificationQuestion(question)) {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer);
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
       return (
         <div className="text-sm text-gray-900 dark:text-gray-100">
           {studentAnswers[0] || "No answer"}
         </div>
       );
     } else if (isFillInTheBlanksQuestion(question)) {
-      if (Array.isArray(studentAnswer)) {
+      // proper type narrowing for array access
+      if (Array.isArray(studentAnswer.answer)) {
+        const answerArray = studentAnswer.answer;
         return (
           <div className="space-y-2">
             {question.answers.map((blank, index: number) => (
@@ -470,14 +506,14 @@ export default function AssessmentResult({
                   {blank.label}:
                 </span>
                 <span className="text-sm text-gray-900 dark:text-gray-100">
-                  {studentAnswer[index] || "Empty"}
+                  {answerArray[index] || "Empty"}
                 </span>
               </div>
             ))}
           </div>
         );
       } else {
-        const answerObj = studentAnswer as Record<string, string>;
+        const answerObj = studentAnswer.answer as Record<string, string>;
         return (
           <div className="space-y-2">
             {question.answers.map((blank) => (

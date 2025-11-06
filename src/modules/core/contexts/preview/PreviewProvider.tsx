@@ -1,10 +1,7 @@
 import { useState, ReactNode } from "react";
 import { Assessment } from "../../types/assessment/assessment.type";
 import { PreviewContext, PreviewMode } from "./preview.context";
-import {
-  StudentAnswer,
-  StudentAnswers,
-} from "../../types/assessment-attempt/assessment-attempt.type";
+import { StudentAnswers } from "../../types/assessment-attempt/assessment-attempt.type";
 
 export function PreviewProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +10,7 @@ export function PreviewProvider({ children }: { children: ReactNode }) {
     null,
   );
   const [currentPage, setCurrentPage] = useState(0);
-  const [studentAnswers, setStudentAnswers] = useState<StudentAnswers>({});
+  const [studentAnswers, setStudentAnswers] = useState<StudentAnswers>([]);
   const [onSubmitAssessment, setOnSubmitAssessment] =
     useState<(answers: StudentAnswers) => void>();
 
@@ -39,15 +36,36 @@ export function PreviewProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const setStudentAnswer = (questionId: string, answer: StudentAnswer) => {
-    setStudentAnswers((prev) => ({
-      ...prev,
-      [questionId]: answer,
-    }));
+  const setStudentAnswer = (
+    questionId: string,
+    answer: string | string[] | Record<string, string> | boolean,
+  ) => {
+    setStudentAnswers((prev) => {
+      const existingAnswerIndex = prev.findIndex(
+        (item) => item.questionId === questionId,
+      );
+
+      if (existingAnswerIndex >= 0) {
+        const updatedAnswers = [...prev];
+        updatedAnswers[existingAnswerIndex] = {
+          questionId,
+          answer,
+        };
+        return updatedAnswers;
+      } else {
+        return [
+          ...prev,
+          {
+            questionId,
+            answer,
+          },
+        ];
+      }
+    });
   };
 
   const resetAnswers = () => {
-    setStudentAnswers({});
+    setStudentAnswers([]);
   };
 
   const handleSetOnSubmitAssessment = (
