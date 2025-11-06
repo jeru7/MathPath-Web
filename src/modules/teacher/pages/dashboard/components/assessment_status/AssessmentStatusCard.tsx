@@ -22,8 +22,11 @@ export default function AssessmentStatusCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [selectedAssessmentId, setSelectedAssessmentId] = useState<string>("");
-  const { data: studentAttempts = [], isLoading: isLoadingAttempts } =
-    useTeacherAssessmentAttempts(teacherId, selectedAssessmentId);
+  // TODO: use isLoading for loaders
+  const { data: studentAttempts = [] } = useTeacherAssessmentAttempts(
+    teacherId,
+    selectedAssessmentId,
+  );
 
   const handleAssessmentClick = (assessmentStatus: AssessmentStatus) => {
     const assessment = assessments.find((a) => a.id === assessmentStatus.id);
@@ -79,7 +82,6 @@ export default function AssessmentStatusCard({
           onClose={handleCloseModal}
           studentAttempts={studentAttempts}
           students={students}
-          isLoadingAttempts={isLoadingAttempts}
         />
       )}
     </>
