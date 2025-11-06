@@ -118,14 +118,12 @@ const getHeatmapData = (
   progressLogs: ProgressLog[] = [],
   stageAttempts: StageAttempt[] = [],
 ): HeatmapData[] => {
-  //  map of seconds played by date from stage attempts
   const secondsPlayedByDate: Record<string, number> = {};
 
   stageAttempts.forEach((attempt) => {
     const date = format(new Date(attempt.date), "yyyy-MM-dd", {
       timeZone: "Asia/Manila",
     });
-
     secondsPlayedByDate[date] =
       (secondsPlayedByDate[date] || 0) + (attempt.secondsPlayed || 0);
   });
@@ -135,9 +133,9 @@ const getHeatmapData = (
       timeZone: "Asia/Manila",
     });
 
-    // get seconds from stage attempts for this date, default to 0 if no attempts
     const secondsFromAttempts = secondsPlayedByDate[date] || 0;
-    const minutesPlayed = Math.floor(secondsFromAttempts / 60);
+
+    const minutesPlayed = Math.round(secondsFromAttempts / 60);
 
     return {
       date,
