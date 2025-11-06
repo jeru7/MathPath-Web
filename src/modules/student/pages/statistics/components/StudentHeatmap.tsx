@@ -4,8 +4,12 @@ import CalendarHeatmap, {
 } from "react-calendar-heatmap";
 import { Tooltip } from "react-tooltip";
 import { format } from "date-fns-tz";
-import { useStudentProgressLog } from "../../../services/student.service";
+import {
+  useStudentAttempts,
+  useStudentProgressLog,
+} from "../../../services/student.service";
 import { ProgressLog } from "../../../../core/types/progress-log/progress-log.type";
+import { StageAttempt } from "../../../../core/types/stage-attempt/stage-attempt.type";
 import "../../../../core/styles/customHeatmap.css";
 
 type StudentHeatmapProps = {
@@ -16,11 +20,12 @@ export default function StudentHeatmap({
   studentId,
 }: StudentHeatmapProps): ReactElement {
   const { data: studentProgressLog } = useStudentProgressLog(studentId || "");
+  const { data: studentStageAttempts } = useStudentAttempts(studentId);
 
   const { startDate, endDate } = useMemo(getCurrentYearRange, []);
   const chartData = useMemo(
-    () => getHeatmapData(studentProgressLog),
-    [studentProgressLog],
+    () => getHeatmapData(studentProgressLog || [], studentStageAttempts || []),
+    [studentProgressLog, studentStageAttempts],
   );
 
   const handleColorClass = (
@@ -109,17 +114,40 @@ interface HeatmapData extends ReactCalendarHeatmapValue<string> {
   completedQuest: string[];
 }
 
-const getHeatmapData = (data: ProgressLog[] = []): HeatmapData[] => {
-  return data.map((log) => ({
-    date: format(new Date(log.date), "yyyy-MM-dd", {
+const getHeatmapData = (
+  progressLogs: ProgressLog[] = [],
+  stageAttempts: StageAttempt[] = [],
+): HeatmapData[] => {
+  //  map of seconds played by date from stage attempts
+  const secondsPlayedByDate: Record<string, number> = {};
+
+  stageAttempts.forEach((attempt) => {
+    const date = format(new Date(attempt.date), "yyyy-MM-dd", {
       timeZone: "Asia/Manila",
-    }),
-    count: log.stagesPlayed + log.totalStageWins + log.completedQuest.length,
-    minutesPlayed: Math.floor(log.secondsPlayed / 60),
-    stagesPlayed: log.stagesPlayed,
-    totalWins: log.totalStageWins,
-    completedQuest: log.completedQuest,
-  }));
+    });
+
+    secondsPlayedByDate[date] =
+      (secondsPlayedByDate[date] || 0) + (attempt.secondsPlayed || 0);
+  });
+
+  return progressLogs.map((log) => {
+    const date = format(new Date(log.date), "yyyy-MM-dd", {
+      timeZone: "Asia/Manila",
+    });
+
+    // get seconds from stage attempts for this date, default to 0 if no attempts
+    const secondsFromAttempts = secondsPlayedByDate[date] || 0;
+    const minutesPlayed = Math.floor(secondsFromAttempts / 60);
+
+    return {
+      date,
+      count: log.stagesPlayed + log.totalStageWins + log.completedQuest.length,
+      minutesPlayed,
+      stagesPlayed: log.stagesPlayed,
+      totalWins: log.totalStageWins,
+      completedQuest: log.completedQuest,
+    };
+  });
 };
 
 const getColorIntensity = (count: number): string => {
