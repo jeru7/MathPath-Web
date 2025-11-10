@@ -9,6 +9,7 @@ import {
 import { useTeacherSections } from "../services/teacher-section.service";
 import { useTeacherAssessments } from "../services/teacher-assessment.service";
 import { useTeacherRequests } from "../services/teacher-request.service";
+import PageLoader from "@/components/ui/page-loader";
 
 export function TeacherProvider({
   teacherId,
@@ -32,6 +33,14 @@ export function TeacherProvider({
     useTeacherStudentActivities(teacherId);
 
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!teacherId) return;
@@ -86,6 +95,19 @@ export function TeacherProvider({
     isLoadingActivities,
     isCriticalDataLoaded: !!teacher,
   };
+
+  if (
+    showLoader ||
+    isLoadingTeacher ||
+    isLoadingStudents ||
+    isLoadingSections ||
+    isLoadingAssessments ||
+    isLoadingRequests ||
+    isLoadingActivities ||
+    !teacher
+  ) {
+    return <PageLoader items={["Loading teacher data..."]} />;
+  }
 
   return (
     <TeacherContext.Provider value={value}>{children}</TeacherContext.Provider>

@@ -1,11 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../auth/contexts/auth.context";
+import PageLoader from "@/components/ui/page-loader";
 
 export default function PrivateRoute() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <PageLoader items={["Authenticating"]} />;
   }
 
   if (user === null) {

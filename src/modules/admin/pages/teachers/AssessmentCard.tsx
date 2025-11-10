@@ -10,6 +10,8 @@ import {
 import { Assessment } from "../../../core/types/assessment/assessment.type";
 import { TIMEZONE } from "../../../core/constants/date.constant";
 import AssessmentStatus from "../../../teacher/pages/assessments/components/assessment_table/AssessmentStatus";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type AssessmentCardProps = {
   assessment: Assessment;
@@ -39,46 +41,46 @@ export default function AssessmentCard({
   };
 
   return (
-    <div className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm px-4 sm:px-6 py-4 sm:py-5">
+    <Card className="p-6">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
         <div className="flex-1 min-w-0">
           {/* header */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-3 sm:mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-3">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base leading-6 sm:leading-7 line-clamp-2 mb-1 sm:mb-1">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-base leading-7 line-clamp-2 mb-1">
                 {assessment.title || "Untitled Assessment"}
               </h3>
               {assessment.topic && (
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
                   {assessment.topic}
                 </p>
               )}
             </div>
-            <div className="flex flex-row sm:flex-col items-start sm:items-end justify-between sm:justify-start gap-2 sm:gap-2 flex-shrink-0">
+            <div className="flex flex-row sm:flex-col items-start sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0">
               <AssessmentStatus status={assessment.status} />
-              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                <FaCalendar className="w-3 h-3 sm:w-3 sm:h-3 opacity-70" />
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <FaCalendar className="w-3 h-3 opacity-70" />
                 <span className="text-xs">
                   {format(new Date(assessment.createdAt), "MMM d, yyyy", {
                     timeZone: TIMEZONE,
                   })}
                 </span>
-              </div>
+              </Badge>
             </div>
           </div>
 
           {/* description */}
           {assessment.description && (
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-5 sm:leading-6 line-clamp-2 mb-4 sm:mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-6 line-clamp-2 mb-4">
               {assessment.description}
             </p>
           )}
 
           {/* stats grid */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FaFileAlt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-400" />
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FaFileAlt className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">
@@ -90,9 +92,9 @@ export default function AssessmentCard({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FaClock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-600 dark:text-purple-400" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FaClock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">
@@ -104,9 +106,9 @@ export default function AssessmentCard({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FaUsers className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600 dark:text-green-400" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FaUsers className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">
@@ -118,9 +120,9 @@ export default function AssessmentCard({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FaCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600 dark:text-orange-400" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FaCheck className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">
@@ -137,9 +139,9 @@ export default function AssessmentCard({
 
       {/* date footer */}
       {assessment.date.start && (
-        <div className="mt-4 sm:mt-4 pt-4 sm:pt-4 border-t border-gray-100 dark:border-gray-700">
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               {format(new Date(assessment.date.start), "MMM d, yyyy")}
               {assessment.date.end &&
                 ` - ${format(new Date(assessment.date.end), "MMM d, yyyy")}`}
@@ -147,6 +149,6 @@ export default function AssessmentCard({
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

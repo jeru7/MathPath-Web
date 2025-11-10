@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAdminAssessments } from "../services/admin-assessment.service";
 import { useAdminStudents } from "../services/admin-student.service";
 import { useAdminActivities } from "../services/admin-activity.service";
+import PageLoader from "@/components/ui/page-loader";
 
 export default function AdminProvider({
   adminId,
@@ -36,6 +37,15 @@ export default function AdminProvider({
   const { data: sections } = useAdminSections(adminId);
   const { data: assessments } = useAdminAssessments(adminId);
   const { data: activities } = useAdminActivities(adminId);
+
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 1000); // delay 1 sec
+    return () => clearTimeout(timer);
+  }, []);
 
   // students
   const rawStudents = students?.filter((s) => !s.archive.isArchive);
@@ -66,7 +76,6 @@ export default function AdminProvider({
     }
 
     wsRef.current = new WebSocket(WSS);
-    // console.log(WSS);
     const ws = wsRef.current;
 
     ws.onopen = () => {
@@ -75,15 +84,12 @@ export default function AdminProvider({
         return;
       }
 
-      // console.log("WebSocket connected");
-
       reconnectAttempts.current = 0;
     };
 
     ws.onmessage = (e) => {
       if (!isMounted.current) return;
       const { type, data } = JSON.parse(e.data);
-      // console.log("Received message: ", type, data);
 
       if (type === "TEACHER_INITIAL_DATA") {
         setOnlineStudentIds(data.onlineStudents);
@@ -123,21 +129,14 @@ export default function AdminProvider({
     ws.onclose = () => {
       if (!isMounted.current) return;
 
-      // console.log("WebSocket closed");
-
       if (reconnectAttempts.current < maxReconnectAttempts) {
         reconnectAttempts.current += 1;
-        // console.log(
-        //   `Attempting to reconnect (${reconnectAttempts.current}/${maxReconnectAttempts})...`,
-        // );
         setTimeout(connectWebSocket, reconnectInterval);
       }
     };
 
     wsRef.current.onerror = () => {
       if (!isMounted.current) return;
-
-      // console.error("WebSocket error:", error);
     };
   }, [adminId, queryClient]);
 
@@ -171,9 +170,11 @@ export default function AdminProvider({
     onlineStudents: onlineStudents || [],
   };
 
+  if (showLoader || !teachers) {
+    return <PageLoader items={["Loading admin data..."]} />;
+  }
+
   return (
-    <AdminContext.Provider value={value}>
-      {teachers ? children : <div>Loading admin data...</div>}
-    </AdminContext.Provider>
+    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
   );
 }
