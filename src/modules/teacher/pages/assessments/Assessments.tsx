@@ -7,7 +7,6 @@ import { Assessment } from "../../../core/types/assessment/assessment.type";
 import { useDeleteAssessment } from "../../services/teacher-assessment.service";
 import { toast } from "react-toastify";
 import DeleteAssessmentConfirmationModal from "./components/DeleteAssessmentConfirmationModal";
-import AssessmentDetailsModal from "./components/assessment-details/AssessmentDetailsModal";
 import { useTeacherAssessmentAttempts } from "../../services/teacher-assessment-attempt.service";
 import {
   useTeacherArchiveAssessment,
@@ -16,12 +15,13 @@ import {
 } from "../../services/teacher-assessment.service";
 import AssessmentArchiveConfirmationModal from "../../../core/components/assessment-archive/AssessmentArchiveConfirmationModal";
 import AssessmentArchiveModal from "../../../core/components/assessment-archive/AssessmentArchiveModal";
+import AssessmentDetailsModal from "@/modules/core/components/assessment-details/AssessesmentDetailsModal";
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const { assessmentId } = useParams();
-  const { teacherId, students, assessments } = useTeacherContext();
+  const { teacherId, rawStudents, rawAssessments } = useTeacherContext();
   const queryClient = useQueryClient();
   const { mutate: deleteAssessment } = useDeleteAssessment(teacherId ?? "");
 
@@ -56,12 +56,12 @@ export default function Assessments(): ReactElement {
 
   useEffect(() => {
     if (assessmentId) {
-      const assessment = assessments.find((a) => a.id === assessmentId);
+      const assessment = rawAssessments.find((a) => a.id === assessmentId);
       setSelectedAssessment(assessment || null);
     } else {
       setSelectedAssessment(null);
     }
-  }, [assessmentId, assessments]);
+  }, [assessmentId, rawAssessments]);
 
   const pathEnd = location.pathname.split("/").pop();
   const isAssessmentDetailsRoute =
@@ -199,8 +199,9 @@ export default function Assessments(): ReactElement {
   ): number => {
     if (!assessment) return 0;
     const sectionIds = assessment.sections || [];
-    return students.filter((student) => sectionIds.includes(student.sectionId))
-      .length;
+    return rawStudents.filter((student) =>
+      sectionIds.includes(student.sectionId),
+    ).length;
   };
 
   const getSectionCountForAssessment = (
@@ -211,16 +212,16 @@ export default function Assessments(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen w-full gap-2 bg-inherit p-2 mt-4 md:mt-0">
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
           Assessments
         </h3>
       </header>
 
-      <section className="bg-white border border-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
+      <section className="rounded-sm overflow-y-hidden w-full flex-1 flex flex-col">
         <AssessmentTable
-          assessments={assessments}
+          assessments={rawAssessments}
           navigate={navigate}
           onAssessmentClick={handleAssessmentClick}
           onArchiveAssessment={handleArchiveInitiate}
@@ -231,24 +232,27 @@ export default function Assessments(): ReactElement {
 
       {showArchiveRoute && archivedAssessments && (
         <AssessmentArchiveModal
+          userType="teacher"
+          userId={teacherId}
           isOpen={showArchiveRoute}
           onClose={() => navigate("..")}
           assessments={archivedAssessments}
           onRestoreAssessment={handleRestoreAssessment}
           onDeleteAssessment={handlePermanentDelete}
-          students={students}
+          students={rawStudents}
           studentAttempts={studentAttempts}
         />
       )}
 
       {selectedAssessment && (
         <AssessmentDetailsModal
+          userType="teacher"
+          userId={teacherId}
           isOpen={isAssessmentDetailsRoute}
           assessment={selectedAssessment}
           onClose={handleCloseDetailsModal}
           studentAttempts={studentAttempts}
-          students={students}
-          disableEdit={selectedAssessment.status !== "draft"}
+          students={rawStudents}
           onDelete={() => handleDeleteInitiate(selectedAssessment)}
           onArchive={() => handleArchiveInitiate(selectedAssessment)}
           onEdit={() => handleEditAssessment(selectedAssessment)}
@@ -271,7 +275,7 @@ export default function Assessments(): ReactElement {
         onClose={handleArchiveCancel}
         onConfirm={handleArchiveConfirm}
         assessment={assessmentToArchive}
-        students={students}
+        students={rawStudents}
       />
     </main>
   );

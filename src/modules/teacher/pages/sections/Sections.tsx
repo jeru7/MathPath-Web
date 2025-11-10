@@ -10,31 +10,36 @@ import {
   useTeacherEditSection,
   useTeacherArchiveSection,
   useTeacherRestoreSection,
-  useTeacherArchivedSections,
 } from "../../services/teacher-section.service";
-import SectionTable from "../../../core/components/section-table/SectionTable";
-import SectionDetailsModal from "../../../core/components/section-table/SectionDetailsModal";
+import SectionTable from "../../../core/components/tables/section-table/SectionTable";
+import SectionDetailsModal from "../../../core/components/tables/section-table/SectionDetailsModal";
 import { getStudentCountForSection } from "../../../core/utils/section/section.util";
-import DeleteSectionConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
-import EditSectionModal from "../../../core/components/section-table/EditSectionModal";
+import DeleteSectionConfirmationModal from "../../../core/components/tables/section-table/DeleteSectionConfirmationModal";
+import EditSectionModal from "../../../core/components/tables/section-table/EditSectionModal";
 import { EditSectionDTO } from "../../../core/types/section/section.schema";
 import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
-import SectionArchiveModal from "../../../core/components/section-table/section-archive/SectionArchiveModal";
-import SectionArchiveConfirmationModal from "../../../core/components/section-table/SectionArchiveConfirmationModal";
+import SectionArchiveModal from "../../../core/components/tables/section-table/section-archive/SectionArchiveModal";
+import SectionArchiveConfirmationModal from "../../../core/components/tables/section-table/SectionArchiveConfirmationModal";
 
 export default function Sections(): ReactElement {
   const teacherContext = useTeacherContext();
   const navigate = useNavigate();
   const location = useLocation();
   const { sectionId } = useParams();
-  const { sections, students, teacherId, assessments } = teacherContext;
+  const {
+    rawSections,
+    archivedSections,
+    allStudents,
+    archivedStudents,
+    teacherId,
+    rawAssessments,
+  } = teacherContext;
   const { mutate: deleteSection } = useTeacherDeleteSection(teacherId);
   const { mutate: editSection, isPending: isEditPending } =
     useTeacherEditSection(teacherId);
   const queryClient = useQueryClient();
 
-  const { data: archivedSections } = useTeacherArchivedSections(teacherId);
   const { mutate: archiveSection } = useTeacherArchiveSection(teacherId);
   const { mutate: restoreSection } = useTeacherRestoreSection(teacherId);
 
@@ -56,12 +61,12 @@ export default function Sections(): ReactElement {
 
   useEffect(() => {
     if (sectionId) {
-      const section = sections.find((s) => s.id === sectionId);
+      const section = rawSections.find((s) => s.id === sectionId);
       setSelectedSection(section || null);
     } else {
       setSelectedSection(null);
     }
-  }, [sectionId, sections]);
+  }, [sectionId, rawSections]);
 
   useEffect(() => {
     if (isCreateSectionRoute || showArchiveRoute) {
@@ -251,7 +256,7 @@ export default function Sections(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen w-full gap-2 bg-inherit p-2 mt-4 md:mt-0">
       {/* header */}
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
@@ -260,11 +265,11 @@ export default function Sections(): ReactElement {
       </header>
 
       {/* section grid list */}
-      <section className="flex-1 flex bg-white border border-white dark:bg-gray-800 dark:border-gray-700 rounded-sm shadow-sm">
+      <section className="flex-1 flex bg-inherit">
         <SectionTable
           userType="teacher"
           context={teacherContext}
-          sections={sections}
+          sections={rawSections}
           onShowForm={handleCreateSection}
           onSectionClick={handleSectionClick}
           showArchive={true}
@@ -297,7 +302,7 @@ export default function Sections(): ReactElement {
           section={selectedSection}
           isOpen={isSectionDetailsRoute}
           onClose={handleCloseDetailsModal}
-          sections={sections}
+          sections={rawSections}
           onEdit={handleEditInitiate}
           onDelete={() => handleDeleteInitiate(selectedSection)}
           onArchive={() => handleArchiveInitiate(selectedSection)}
@@ -321,7 +326,7 @@ export default function Sections(): ReactElement {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         section={sectionToDelete}
-        studentCount={getStudentCountForSection(sectionToDelete, students)}
+        studentCount={getStudentCountForSection(sectionToDelete, allStudents)}
       />
 
       {/* archive confirmation modal */}
@@ -330,8 +335,8 @@ export default function Sections(): ReactElement {
         onClose={handleArchiveCancel}
         onConfirm={handleArchiveConfirm}
         section={sectionToArchive}
-        students={students}
-        assessments={assessments}
+        students={archivedStudents}
+        assessments={rawAssessments}
       />
     </main>
   );

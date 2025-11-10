@@ -21,7 +21,7 @@ export default function Requests(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen w-full gap-2 bg-inherit p-2 mt-4 md:mt-0">
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
           Requests

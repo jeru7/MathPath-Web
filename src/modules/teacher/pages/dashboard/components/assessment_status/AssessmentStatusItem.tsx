@@ -1,7 +1,6 @@
 import { type ReactElement } from "react";
-import { FaRegCircle } from "react-icons/fa6";
-import { FaCircle } from "react-icons/fa";
-import { IoCalendarClear } from "react-icons/io5";
+import { FaCircle, FaRegCircle } from "react-icons/fa";
+import { IoCalendarOutline } from "react-icons/io5";
 import { format } from "date-fns";
 import {
   AssessmentStatus,
@@ -11,103 +10,102 @@ import { getSectionBanner } from "../../../../../core/utils/section/section.util
 import { AssessmentStatus as Status } from "../../../../../core/types/assessment/assessment.type";
 
 type AssessmentStatusItemProps = {
-  classes: string;
+  classes?: string;
   assessmentData: AssessmentStatus;
   onItemClick: (assessmentData: AssessmentStatus) => void;
 };
 
 export default function AssessmentStatusItem({
-  classes,
   assessmentData,
   onItemClick,
 }: AssessmentStatusItemProps): ReactElement {
-  const completed =
-    assessmentData?.status === "finished" ||
-    assessmentData?.status === "published";
-
   const formatDateRange = (date: { start: string; end: string }): string => {
-    const startFormatted = format(new Date(date.start), "dd MMM").toUpperCase();
-    const endFormatted = format(new Date(date.end), "dd MMM").toUpperCase();
-
+    const startFormatted = format(new Date(date.start), "dd MMM");
+    const endFormatted = format(new Date(date.end), "dd MMM");
     return `${startFormatted} - ${endFormatted}`;
   };
 
-  const getStatus = (status: Status) => {
+  const getStatusConfig = (status: Status) => {
     switch (status) {
       case "finished":
-        return (
-          <div className="flex items-center gap-1">
-            <FaCircle className="text-green-600 dark:text-green-400" />
-            <p className="text-xs text-green-600 dark:text-green-400">
-              {assessmentData?.status}
-            </p>
-          </div>
-        );
-      case "in-progress":
+        return {
+          icon: FaCircle,
+          color: "text-primary",
+          bgColor: "bg-primary/10",
+          label: "Completed",
+        };
       case "published":
-        return (
-          <div className="flex items-center gap-1">
-            <FaRegCircle className="text-green-500 dark:text-green-300" />
-            <p className="text-xs text-green-500 dark:text-green-300">
-              {assessmentData?.status}
-            </p>
-          </div>
-        );
+        return {
+          icon: FaCircle,
+          color: "text-chart-2",
+          bgColor: "bg-chart-2/10",
+          label: "Published",
+        };
+      case "in-progress":
+        return {
+          icon: FaRegCircle,
+          color: "text-amber-500",
+          bgColor: "bg-amber-500/10",
+          label: "In Progress",
+        };
       case "draft":
-        return (
-          <div className="flex items-center gap-1">
-            <FaRegCircle className="text-yellow-500 dark:text-yellow-400" />
-            <p className="text-xs text-yellow-500 dark:text-yellow-400">
-              {assessmentData?.status}
-            </p>
-          </div>
-        );
+        return {
+          icon: FaRegCircle,
+          color: "text-muted-foreground",
+          bgColor: "bg-muted",
+          label: "Draft",
+        };
+      default:
+        return {
+          icon: FaRegCircle,
+          color: "text-muted-foreground",
+          bgColor: "bg-muted",
+          label: status,
+        };
     }
   };
 
-  const handleItemClick = () => {
-    onItemClick(assessmentData);
-  };
+  const statusConfig = getStatusConfig(assessmentData.status);
+  const StatusIcon = statusConfig.icon;
 
   return (
-    <article
-      className={`${classes} flex justify-between border-l-4 pl-2 rounded-md border border-gray-200 dark:border-gray-600 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer transition-colors duration-200`}
-      style={{
-        borderLeftColor: `${completed ? "#16a34a" : "#eab308"}`,
-      }}
-      onClick={handleItemClick}
+    <div
+      className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent/5 cursor-pointer transition-colors group"
+      onClick={() => onItemClick(assessmentData)}
     >
-      {/* title and status */}
-      <div className="flex flex-col gap-1">
-        <p className="text-md font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          {assessmentData.name ? assessmentData.name : "N/A"}
-        </p>
-        {getStatus(assessmentData.status)}
+      <div className={`p-1.5 rounded-full ${statusConfig.bgColor}`}>
+        <StatusIcon className={`w-2.5 h-2.5 ${statusConfig.color}`} />
       </div>
 
-      <div className="flex flex-col justify-between items-end">
-        {/* date: start - end */}
-        <div className="flex gap-1 text-gray-400 dark:text-gray-500">
-          <p className="text-[10px] font-semibold">
-            {formatDateRange(assessmentData?.date)}
-          </p>
-          <IoCalendarClear className="" />
-        </div>
-
-        {/* sections */}
-        <div className="flex gap-1">
-          {assessmentData?.sections.map(
-            (section: AssessmentStatusSection, index) => (
-              <img
-                src={getSectionBanner(section.banner)}
-                alt="Section Banner"
-                key={index}
-                className="w-6 h-4 rounded-md"
-              />
-            ),
-          )}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sm font-medium text-foreground truncate">
+          {assessmentData.name || "Untitled Assessment"}
+        </h3>
+        <div className="flex items-center gap-3 mt-1">
+          <span className={`text-xs font-medium ${statusConfig.color}`}>
+            {statusConfig.label}
+          </span>
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <IoCalendarOutline className="w-3 h-3" />
+            <span className="text-xs">
+              {formatDateRange(assessmentData?.date)}
+            </span>
+          </div>
         </div>
       </div>
-    </article>
+
+      <div className="flex gap-1 flex-shrink-0">
+        {assessmentData.sections.map(
+          (section: AssessmentStatusSection, index) => (
+            <img
+              src={getSectionBanner(section.banner)}
+              alt=""
+              key={index}
+              className="w-5 h-5 rounded border"
+            />
+          ),
+        )}
+      </div>
+    </div>
   );
 }

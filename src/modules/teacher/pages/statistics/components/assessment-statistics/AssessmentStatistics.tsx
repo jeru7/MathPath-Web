@@ -1,33 +1,38 @@
-// TODO: move the other components to their specific file
-import { type ReactElement, useState, useEffect } from "react";
+import { type ReactElement, useState } from "react";
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   TooltipProps,
+  AreaChart,
+  Area,
 } from "recharts";
-import { FaTimes } from "react-icons/fa";
-import { BsChevronRight } from "react-icons/bs";
-import { useTeacherContext } from "../../../../context/teacher.context";
 import { useTeacherAssessmentOverview } from "../../../../services/teacher-stats.service";
+import { useAdminAssessmentOverview } from "@/modules/admin/services/admin-stats.service";
 import { AssessmentListItem } from "../../../../../core/types/assessment/assessment-stats.type";
-import ModalOverlay from "../../../../../core/components/modal/ModalOverlay";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ChevronRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const COLORS = {
-  primary: "#3b82f6",
-  secondary: "#8b5cf6",
-  success: "#10b981",
-  warning: "#f59e0b",
-  error: "#ef4444",
-  gray: "#6b7280",
+  primary: "hsl(var(--primary))",
+  secondary: "hsl(var(--secondary))",
+  success: "hsl(var(--success))",
+  warning: "hsl(var(--warning))",
+  error: "hsl(var(--destructive))",
+  muted: "hsl(var(--muted-foreground))",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  draft: { label: "Draft", color: COLORS.gray },
+  draft: { label: "Draft", color: COLORS.muted },
   published: { label: "Published", color: COLORS.primary },
   "in-progress": { label: "In Progress", color: COLORS.warning },
   finished: { label: "Finished", color: COLORS.success },
@@ -40,185 +45,6 @@ interface PassRateDataItem {
   assessmentId: string;
 }
 
-export default function AssessmentStatistics(): ReactElement {
-  const { teacherId } = useTeacherContext();
-  const { data: stats, isLoading: assessmentStatsLoading } =
-    useTeacherAssessmentOverview(teacherId);
-  const [selectedAssessment, setSelectedAssessment] =
-    useState<AssessmentListItem | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // set minimum loading time of 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // also stop loading when data is ready and minimum time has passed
-  useEffect(() => {
-    if (!assessmentStatsLoading && stats && !isLoading) {
-      setIsLoading(false);
-    }
-  }, [assessmentStatsLoading, stats, isLoading]);
-
-  const handleAssessmentClick = (assessment: AssessmentListItem) => {
-    setSelectedAssessment(assessment);
-  };
-
-  const closeModal = () => {
-    setSelectedAssessment(null);
-  };
-
-  // Transform assessments data for the pass rate trend chart
-  const passRateData: PassRateDataItem[] =
-    stats?.assessments
-      ?.filter((assessment) => assessment.status !== "draft")
-      ?.map((assessment) => ({
-        name:
-          assessment.title.length > 20
-            ? assessment.title.substring(0, 20) + "..."
-            : assessment.title,
-        passRate: assessment.passRate,
-        attempts: assessment.totalAttempts,
-        assessmentId: assessment.id,
-      })) || [];
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <header className="mb-6">
-          <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
-          <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-        </header>
-
-        <div className="space-y-6">
-          <MetricsGridSkeleton />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PassRateTrendSkeleton />
-            <AssessmentsListSkeleton />
-          </div>
-        </div>
-      </article>
-    );
-  }
-
-  // Show empty state only after loading is complete and no data exists
-  if (!stats) {
-    return (
-      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
-        <div className="text-4xl mb-3">📊</div>
-        <p className="text-gray-500 dark:text-gray-400">
-          No assessment data available
-        </p>
-      </article>
-    );
-  }
-
-  return (
-    <>
-      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <header className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Assessment Overview
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Performance metrics and assessment analytics
-          </p>
-        </header>
-
-        <div className="space-y-6">
-          <MetricsGrid overview={stats.overview} />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PassRateTrend
-              passRateData={passRateData}
-              onAssessmentClick={handleAssessmentClick}
-              assessments={stats.assessments}
-            />
-            <AssessmentsList
-              assessments={stats.assessments}
-              onAssessmentClick={handleAssessmentClick}
-            />
-          </div>
-        </div>
-      </article>
-
-      <ModalOverlay isOpen={!!selectedAssessment} onClose={closeModal}>
-        {selectedAssessment && (
-          <AssessmentDetailModal
-            assessment={selectedAssessment}
-            onClose={closeModal}
-          />
-        )}
-      </ModalOverlay>
-    </>
-  );
-}
-
-// Skeleton Components
-function MetricsGridSkeleton(): ReactElement {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <div
-          key={index}
-          className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-center border border-gray-200 dark:border-gray-700"
-        >
-          <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function PassRateTrendSkeleton(): ReactElement {
-  return (
-    <div className="rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
-      <div className="h-48 flex items-center justify-center">
-        <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse flex items-center justify-center">
-          <div className="text-gray-400 dark:text-gray-600">
-            Loading chart data...
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AssessmentsListSkeleton(): ReactElement {
-  return (
-    <div className="rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
-      <div className="h-48 space-y-2">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 min-w-0 flex-1">
-                <div className="w-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
-                <div className="min-w-0 flex-1">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
-                </div>
-              </div>
-              <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 interface MetricsGridProps {
   overview: {
     totalAssessments: number;
@@ -229,22 +55,121 @@ interface MetricsGridProps {
   };
 }
 
+interface MetricCardProps {
+  label: string;
+  value: number;
+  format: "number" | "percentage" | "time";
+}
+
+interface PassRateTrendProps {
+  passRateData: PassRateDataItem[];
+  assessments: AssessmentListItem[];
+  onAssessmentClick: (assessment: AssessmentListItem) => void;
+}
+
+interface AssessmentsListProps {
+  assessments: AssessmentListItem[];
+  onAssessmentClick: (assessment: AssessmentListItem) => void;
+}
+
+interface AssessmentItemProps {
+  assessment: AssessmentListItem;
+  onClick: (assessment: AssessmentListItem) => void;
+}
+
+interface AssessmentDetailModalProps {
+  assessment: AssessmentListItem;
+}
+
+function AssessmentStatisticsSkeleton(): ReactElement {
+  return (
+    <Card className="w-full">
+      <CardHeader className="pb-4">
+        <Skeleton className="h-6 w-48 mb-2" />
+        <Skeleton className="h-4 w-64" />
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Card key={index} className="p-4 text-center">
+                <CardContent className="p-0">
+                  <Skeleton className="h-7 mb-1" />
+                  <Skeleton className="h-4" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="p-4">
+              <CardHeader className="p-0 pb-4">
+                <Skeleton className="h-5 w-40" />
+              </CardHeader>
+              <CardContent className="p-0">
+                <Skeleton className="h-48" />
+              </CardContent>
+            </Card>
+            <Card className="p-4">
+              <CardHeader className="p-0 pb-4">
+                <Skeleton className="h-5 w-40" />
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="h-48 space-y-2">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Card key={index} className="p-3">
+                      <CardContent className="p-0">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3 min-w-0 flex-1">
+                            <Skeleton className="w-2 h-2 rounded-full" />
+                            <div className="min-w-0 flex-1">
+                              <Skeleton className="h-4 mb-1" />
+                              <Skeleton className="h-3 w-3/4" />
+                            </div>
+                          </div>
+                          <Skeleton className="w-4 h-4" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Simple components - no memo
 function MetricsGrid({ overview }: MetricsGridProps): ReactElement {
   const metrics = [
     {
       label: "Total Assessments",
       value: overview.totalAssessments,
-      format: "number",
+      format: "number" as const,
     },
-    { label: "Attempts", value: overview.totalAttempts, format: "number" },
+    {
+      label: "Attempts",
+      value: overview.totalAttempts,
+      format: "number" as const,
+    },
     {
       label: "Completion Rate",
       value: overview.completionRate,
-      format: "percentage",
+      format: "percentage" as const,
     },
-    { label: "Pass Rate", value: overview.passRate, format: "percentage" },
-    { label: "Avg Time", value: overview.averageTimeSpent, format: "time" },
-  ] as const;
+    {
+      label: "Pass Rate",
+      value: overview.passRate,
+      format: "percentage" as const,
+    },
+    {
+      label: "Avg Time",
+      value: overview.averageTimeSpent,
+      format: "time" as const,
+    },
+  ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -258,12 +183,6 @@ function MetricsGrid({ overview }: MetricsGridProps): ReactElement {
       ))}
     </div>
   );
-}
-
-interface MetricCardProps {
-  label: string;
-  value: number;
-  format: "number" | "percentage" | "time";
 }
 
 function MetricCard({ label, value, format }: MetricCardProps): ReactElement {
@@ -282,21 +201,15 @@ function MetricCard({ label, value, format }: MetricCardProps): ReactElement {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-center border border-gray-200 dark:border-gray-700">
-      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-        {formatValue()}
-      </div>
-      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">
-        {label}
-      </div>
-    </div>
+    <Card className="p-4 text-center">
+      <CardContent className="p-0">
+        <div className="text-2xl font-bold">{formatValue()}</div>
+        <div className="text-xs text-muted-foreground mt-1 font-medium">
+          {label}
+        </div>
+      </CardContent>
+    </Card>
   );
-}
-
-interface PassRateTrendProps {
-  passRateData: PassRateDataItem[];
-  assessments: AssessmentListItem[];
-  onAssessmentClick: (assessment: AssessmentListItem) => void;
 }
 
 function PassRateTrend({
@@ -306,36 +219,28 @@ function PassRateTrend({
 }: PassRateTrendProps): ReactElement {
   const hasData = passRateData.length > 0;
 
-  const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
+  const CustomTooltip = ({
     active,
     payload,
     label,
-  }) => {
+  }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload as PassRateDataItem;
       const assessment = assessments.find((a) => a.id === data.assessmentId);
 
       return (
-        <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 text-xs max-w-[300px]">
-          <p className="font-bold text-sm mb-1 text-gray-900 dark:text-white truncate">
+        <div className="bg-background border rounded-lg shadow-lg p-3 text-xs max-w-[300px]">
+          <p className="font-bold text-sm mb-1 truncate">
             {assessment?.title || label}
           </p>
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300">
-                Pass Rate:
-              </span>
-              <span className="font-bold text-green-600 dark:text-green-400">
-                {data.passRate}%
-              </span>
+              <span className="text-muted-foreground">Pass Rate:</span>
+              <span className="font-bold text-green-600">{data.passRate}%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300">
-                Attempts:
-              </span>
-              <span className="font-semibold text-gray-900 dark:text-gray-300">
-                {data.attempts}
-              </span>
+              <span className="text-muted-foreground">Attempts:</span>
+              <span className="font-semibold">{data.attempts}</span>
             </div>
           </div>
         </div>
@@ -344,69 +249,99 @@ function PassRateTrend({
     return null;
   };
 
-  const handleBarClick = (data: PassRateDataItem) => {
-    const assessment = assessments.find((a) => a.id === data.assessmentId);
-    if (assessment) onAssessmentClick(assessment);
+  const handleChartClick = (data: {
+    activePayload?: { payload: PassRateDataItem }[];
+  }) => {
+    if (data?.activePayload?.[0]?.payload) {
+      const clickedData = data.activePayload[0].payload;
+      const assessment = assessments.find(
+        (a) => a.id === clickedData.assessmentId,
+      );
+      if (assessment) onAssessmentClick(assessment);
+    }
   };
 
-  return (
-    <div className="rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
-        Passing Rate Trend
-      </h4>
+  if (!hasData) {
+    return (
+      <Card className="p-4">
+        <CardHeader className="p-0 pb-4">
+          <CardTitle className="text-sm font-semibold">
+            Passing Rate Trend
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="h-48 flex items-center justify-center text-muted-foreground">
+            <p className="text-sm">No data available</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
-      <div className="h-48">
-        {hasData ? (
+  return (
+    <Card className="p-4">
+      <CardHeader className="p-0 pb-4">
+        <CardTitle className="text-sm font-semibold">
+          Passing Rate Trend
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="h-48">
           <div className="w-full overflow-x-auto xl:overflow-x-hidden">
             <div className="min-w-[600px] xl:min-w-min h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
+                <AreaChart
                   data={passRateData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: -20 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  onClick={handleChartClick}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    className="dark:stroke-gray-600"
+                    className="stroke-muted"
                   />
                   <XAxis
                     dataKey="name"
-                    height={60}
-                    interval={0}
-                    tick={{ fontSize: 11, fill: "currentColor" }}
-                    className="text-gray-600 dark:text-gray-400"
+                    tick={false}
+                    axisLine={false}
+                    height={10}
                   />
                   <YAxis
                     domain={[0, 100]}
                     tick={{ fontSize: 11 }}
                     tickFormatter={(v: number) => `${v}%`}
-                    className="text-gray-600 dark:text-gray-400"
+                    className="fill-muted-foreground"
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar
+                  <Area
+                    type="monotone"
                     dataKey="passRate"
                     name="Pass Rate (%)"
-                    radius={[4, 4, 0, 0]}
-                    fill="#10b981"
-                    onClick={handleBarClick}
+                    stroke="hsl(var(--chart-1))"
+                    fill="hsl(var(--chart-1))"
+                    fillOpacity={0.3}
+                    strokeWidth={2}
                     cursor="pointer"
+                    dot={{
+                      fill: "hsl(var(--chart-1))",
+                      strokeWidth: 4,
+                      r: 2,
+                      stroke: "hsl(var(--chart-1))",
+                    }}
+                    activeDot={{
+                      fill: "white",
+                      stroke: "hsl(var(--chart-1))",
+                      strokeWidth: 2,
+                      r: 5,
+                    }}
                   />
-                </BarChart>
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
-        ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-            <p className="text-sm">No data available</p>
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
-}
-
-interface AssessmentsListProps {
-  assessments: AssessmentListItem[];
-  onAssessmentClick: (assessment: AssessmentListItem) => void;
 }
 
 function AssessmentsList({
@@ -416,35 +351,33 @@ function AssessmentsList({
   const hasAssessments = assessments && assessments.length > 0;
 
   return (
-    <div className="rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
-        Recent Assessments
-      </h4>
-
-      <div className="h-48 overflow-y-auto">
-        {hasAssessments ? (
-          <div className="space-y-2">
-            {assessments.map((assessment) => (
-              <AssessmentItem
-                key={assessment.id}
-                assessment={assessment}
-                onClick={onAssessmentClick}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-            <p className="text-sm">No data available</p>
-          </div>
-        )}
-      </div>
-    </div>
+    <Card className="p-4">
+      <CardHeader className="p-0 pb-4">
+        <CardTitle className="text-sm font-semibold">
+          Recent Assessments
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="h-48 overflow-y-auto">
+          {hasAssessments ? (
+            <div className="space-y-2">
+              {assessments.map((assessment) => (
+                <AssessmentItem
+                  key={assessment.id}
+                  assessment={assessment}
+                  onClick={onAssessmentClick}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground">
+              <p className="text-sm">No data available</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
-}
-
-interface AssessmentItemProps {
-  assessment: AssessmentListItem;
-  onClick: (assessment: AssessmentListItem) => void;
 }
 
 function AssessmentItem({
@@ -453,40 +386,38 @@ function AssessmentItem({
 }: AssessmentItemProps): ReactElement {
   const statusConfig = STATUS_CONFIG[assessment.status] || STATUS_CONFIG.draft;
 
-  return (
-    <div
-      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:shadow-sm transition-shadow cursor-pointer"
-      onClick={() => onClick(assessment)}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3 min-w-0 flex-1">
-          <div
-            className="w-2 h-2 rounded-full flex-shrink-0"
-            style={{ backgroundColor: statusConfig.color }}
-          />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-              {assessment.title}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              {statusConfig.label} • {assessment.totalAttempts} attempts
-            </p>
-          </div>
-        </div>
-        <BsChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
-      </div>
-    </div>
-  );
-}
+  const handleClick = () => {
+    onClick(assessment);
+  };
 
-interface AssessmentDetailModalProps {
-  assessment: AssessmentListItem;
-  onClose: () => void;
+  return (
+    <Card
+      className="p-3 hover:shadow-sm transition-shadow cursor-pointer"
+      onClick={handleClick}
+    >
+      <CardContent className="p-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 min-w-0 flex-1">
+            <div
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: statusConfig.color }}
+            />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium truncate">{assessment.title}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {statusConfig.label} • {assessment.totalAttempts} attempts
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function AssessmentDetailModal({
   assessment,
-  onClose,
 }: AssessmentDetailModalProps): ReactElement {
   const statusConfig = STATUS_CONFIG[assessment.status] || STATUS_CONFIG.draft;
 
@@ -507,53 +438,138 @@ function AssessmentDetailModal({
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm border border-gray-200 dark:border-gray-700 w-[90dvw] sm:w-[400px]">
-      {/* header */}
-      <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Assessment Details
-        </h3>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded"
-        >
-          <FaTimes className="w-5 h-5" />
-        </button>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <h4 className="text-xl font-semibold break-words">
+          {assessment.title}
+        </h4>
+        <div className="flex items-center space-x-2">
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: statusConfig.color }}
+          />
+          <span className="text-sm text-muted-foreground">
+            {statusConfig.label}
+          </span>
+        </div>
       </div>
 
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-        {/* Info */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <h4 className="text-xl font-semibold text-gray-900 dark:text-gray-100 break-words">
-            {assessment.title}
-          </h4>
-          <div className="flex items-center space-x-2">
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: statusConfig.color }}
-            />
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {statusConfig.label}
+      <div className="space-y-3">
+        {metrics.map((m) => (
+          <div
+            key={m.label}
+            className="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+          >
+            <span className="text-sm font-medium text-muted-foreground">
+              {m.label}
+            </span>
+            <span className="text-base sm:text-lg font-semibold">
+              {m.value}
             </span>
           </div>
-        </div>
-
-        <div className="space-y-3">
-          {metrics.map((m) => (
-            <div
-              key={m.label}
-              className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
-            >
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {m.label}
-              </span>
-              <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {m.value}
-              </span>
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
     </div>
+  );
+}
+
+type AssessmentStatisticsProps = {
+  userType: "admin" | "teacher";
+  userId: string;
+};
+
+export default function AssessmentStatistics({
+  userType,
+  userId,
+}: AssessmentStatisticsProps): ReactElement {
+  const useAssessmentOverview =
+    userType === "teacher"
+      ? useTeacherAssessmentOverview
+      : useAdminAssessmentOverview;
+
+  const { data: stats, isLoading: assessmentStatsLoading } =
+    useAssessmentOverview(userId);
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<AssessmentListItem | null>(null);
+
+  const isLoading = assessmentStatsLoading;
+
+  const passRateData =
+    stats?.assessments
+      ?.filter((assessment) => assessment.status !== "draft")
+      ?.map((assessment) => ({
+        name:
+          assessment.title.length > 20
+            ? assessment.title.substring(0, 20) + "..."
+            : assessment.title,
+        passRate: assessment.passRate,
+        attempts: assessment.totalAttempts,
+        assessmentId: assessment.id,
+      })) || [];
+
+  const handleAssessmentClick = (assessment: AssessmentListItem) => {
+    setSelectedAssessment(assessment);
+  };
+
+  const closeModal = () => {
+    setSelectedAssessment(null);
+  };
+
+  if (isLoading) {
+    return <AssessmentStatisticsSkeleton />;
+  }
+
+  if (!stats) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex h-48 items-center justify-center p-6">
+          <div className="text-center">
+            <p className="text-muted-foreground">
+              No assessment data available
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Assessment Overview
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Performance metrics and assessment analytics
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <MetricsGrid overview={stats.overview} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <PassRateTrend
+              passRateData={passRateData}
+              onAssessmentClick={handleAssessmentClick}
+              assessments={stats.assessments}
+            />
+            <AssessmentsList
+              assessments={stats.assessments}
+              onAssessmentClick={handleAssessmentClick}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={!!selectedAssessment} onOpenChange={closeModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Assessment Details</DialogTitle>
+          </DialogHeader>
+          {selectedAssessment && (
+            <AssessmentDetailModal assessment={selectedAssessment} />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -4,6 +4,11 @@ import { MdOutlineDragIndicator } from "react-icons/md";
 import { useSortable } from "@dnd-kit/sortable";
 import { AssessmentQuestionChoice } from "../../../../../../../../core/types/assessment/assessment.type";
 import { CSS } from "@dnd-kit/utilities";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type ChoiceProps = {
   choice: AssessmentQuestionChoice;
@@ -28,7 +33,6 @@ export default function Choice({
   isLastTwo,
   isEmpty,
 }: ChoiceProps): ReactElement {
-  // dnd methods
   const {
     attributes,
     listeners,
@@ -45,58 +49,88 @@ export default function Choice({
     transform: CSS.Transform.toString(transform),
   };
 
+  const handleRadioChange = (value: string) => {
+    onCorrectChange(choice.id, value === choice.id);
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    onCorrectChange(choice.id, checked);
+  };
+
   return (
-    <article
-      className={`w-full bg-white dark:bg-gray-700 rounded-xs flex gap-2 font-primary border border-gray-200 dark:border-gray-600 p-2 ${isDragging ? "opacity-50" : ""} transition-colors duration-200`}
+    <div
+      className={cn(
+        "w-full bg-card rounded-lg border p-3 flex items-center gap-3",
+        isEmpty && "border-destructive",
+        isDragging && "opacity-50",
+      )}
       ref={setNodeRef}
       {...attributes}
       style={style}
     >
-      {/* drag indicator */}
       <div
-        className="hover:cursor-grab active:cursor-grabbing flex items-center justify-center text-gray-600 dark:text-gray-400"
+        className="flex items-center justify-center text-muted-foreground cursor-grab active:cursor-grabbing"
         {...(!dragOverlay ? listeners : {})}
       >
-        <MdOutlineDragIndicator />
+        <MdOutlineDragIndicator className="w-4 h-4" />
       </div>
-      {/* text input */}
-      <div
-        className={`bg-white dark:bg-gray-600 border rounded-xs p-2 w-full ${isEmpty ? "border-red-500" : "border-gray-300 dark:border-gray-500"} transition-colors duration-200`}
-      >
-        <input
-          type="text"
-          placeholder="Type option here..."
-          className="text-sm focus:outline-none w-full bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-          value={choice.text}
-          onChange={(e) => onTextChange(choice.id, e.target.value)}
-        />
-      </div>
-      {/* checkbox or radio button */}
-      <div className="flex gap-2">
-        <section className="flex gap-1 items-center">
-          <input
-            type={type === "single_choice" ? "radio" : "checkbox"}
-            name="choices"
-            className="hover:cursor-pointer"
-            checked={isChecked}
-            onChange={(e) => onCorrectChange(choice.id, e.target.checked)}
-          />
-          <label
-            htmlFor="choices"
-            className="text-xs text-gray-700 dark:text-gray-300 transition-colors duration-200"
+
+      <Input
+        type="text"
+        placeholder="Type option here..."
+        className={cn(
+          "flex-1",
+          isEmpty && "border-destructive focus-visible:ring-destructive",
+        )}
+        value={choice.text}
+        onChange={(e) => onTextChange(choice.id, e.target.value)}
+      />
+
+      <div className="flex items-center gap-3">
+        {type === "single_choice" ? (
+          <RadioGroup
+            value={isChecked ? choice.id : ""}
+            onValueChange={handleRadioChange}
           >
-            Correct
-          </label>
-        </section>
-        {/* delete button */}
-        <button
-          className={`text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white ${isLastTwo ? "opacity-0" : "hover:cursor-pointer"} transition-colors duration-200`}
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={choice.id} id={choice.id} />
+              <label
+                htmlFor={choice.id}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Correct
+              </label>
+            </div>
+          </RadioGroup>
+        ) : (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={choice.id}
+              checked={isChecked}
+              onCheckedChange={handleCheckboxChange}
+            />
+            <label
+              htmlFor={choice.id}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Correct
+            </label>
+          </div>
+        )}
+
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-8 w-8 text-muted-foreground hover:text-destructive",
+            isLastTwo && "opacity-0 pointer-events-none",
+          )}
           onClick={() => onDeleteChoice(choice.id)}
         >
-          <IoClose />
-        </button>
+          <IoClose className="w-4 h-4" />
+        </Button>
       </div>
-    </article>
+    </div>
   );
 }

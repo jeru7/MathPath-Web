@@ -1,54 +1,42 @@
-import { useState, type ReactElement } from "react";
+import { type ReactElement } from "react";
 import { QuestionType } from "../../../../../../../../core/types/assessment/assessment.type";
-import { getCustomSelectColor } from "../../../../../../../../core/styles/selectStyles";
-import Select from "react-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type QuestionTypeSelectProps = {
   onTypeChange: (newType: QuestionType) => void;
-  classes: string;
+  defaultValue?: QuestionType;
+  className?: string;
 };
 
 export default function QuestionTypeSelect({
   onTypeChange,
-  classes,
+  defaultValue = "single_choice",
+  className,
 }: QuestionTypeSelectProps): ReactElement {
-  const [selectedType, setSelectedType] = useState<QuestionTypeOption | null>({
-    value: "single_choice",
-    label: "Single Choice",
-  });
+  const getTypeLabel = (type: QuestionType): string => {
+    const option = questionTypeOptions.find((opt) => opt.value === type);
+    return option?.label || "Select type";
+  };
 
   return (
-    <Select<QuestionTypeOption>
-      id="type"
-      options={questionTypeOptions}
-      value={selectedType}
-      onChange={(e) => {
-        if (e) {
-          setSelectedType(e);
-          onTypeChange(e.value);
-        }
-      }}
-      placeholder="Select type"
-      styles={getCustomSelectColor({
-        borderRadius: "var(--radius-sm)",
-        backgroundColor: "white",
-        textColor: "#1f2937",
-        menuBackgroundColor: "white",
-        menuMinWidth: "100%",
-        dark: {
-          backgroundColor: "#374151",
-          textColor: "#f9fafb",
-          borderColor: "#4b5563",
-          borderFocusColor: "#10b981",
-          optionHoverColor: "#1f2937",
-          optionSelectedColor: "#059669",
-          menuBackgroundColor: "#374151",
-          placeholderColor: "#9ca3af",
-        },
-      })}
-      isSearchable={false}
-      className={classes}
-    />
+    <Select defaultValue={defaultValue} onValueChange={onTypeChange}>
+      <SelectTrigger className={className}>
+        <SelectValue>{getTypeLabel(defaultValue)}</SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {questionTypeOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -57,7 +45,7 @@ type QuestionTypeOption = {
   label: string;
 };
 
-const questionTypeOptions: { value: QuestionType; label: string }[] = [
+const questionTypeOptions: QuestionTypeOption[] = [
   { value: "single_choice", label: "Single Choice" },
   { value: "multiple_choice", label: "Multiple Choice" },
   { value: "identification", label: "Identification" },

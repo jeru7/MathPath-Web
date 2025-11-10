@@ -14,6 +14,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ModalType } from "./modals/Modals";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type PageCardProps = {
   page: AssessmentPage;
@@ -82,8 +86,8 @@ export default function PageCard({
   const style = {
     transition,
     transform: CSS.Translate.toString(transform),
-    border: isDragging ? "2px solid var(--primary-green)" : "",
-    backgroundColor: isDragging ? "var(--secondary-green)" : "",
+    border: isDragging ? "2px solid hsl(var(--primary))" : "",
+    backgroundColor: isDragging ? "hsl(var(--muted))" : "",
   };
 
   // if in edit mode and dragging is attempted, don't apply drag styles
@@ -95,83 +99,108 @@ export default function PageCard({
     : {};
 
   return (
-    <article
-      className={`flex flex-col w-full rounded-t-sm border rounded-b-sm ${hasError ? "border-red-500" : "border-gray-300 dark:border-gray-600"} ${isDragging && !isEditMode ? "opacity-50" : ""} transition-colors duration-200 ${isEditMode ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}
+    <Card
+      className={cn(
+        "w-full max-w-[800px] transition-colors duration-200",
+        hasError && "border-destructive",
+        isDragging && !isEditMode && "opacity-50",
+        isEditMode && "bg-muted/50",
+      )}
       ref={setNodeRef}
       style={{ ...style, ...editModeStyle }}
       {...attributes}
     >
       {/* header */}
-      <header
-        className={`flex justify-between items-center p-2 sm:p-4 rounded-t-xs bg-[var(--tertiary-green)] dark:bg-green-600 ${isDragging && !isEditMode ? "opacity-0" : ""} transition-colors duration-200 ${isEditMode ? "bg-green-500/70 dark:bg-green-600/70" : ""}`}
+      <CardHeader
+        className={cn(
+          "p-3 sm:p-4 bg-primary text-primary-foreground rounded-t-sm",
+          isDragging && !isEditMode && "opacity-0",
+          isEditMode && "bg-primary/70",
+        )}
       >
-        <div>
-          {isEdit && !isEditMode ? (
-            // title input
-            <input
-              type="text"
-              name="title"
-              value={page.title ?? `Page ${pageNumber}`}
-              className="bg-green-400 dark:bg-green-500 outline-none text-xs sm:text-sm px-2 py-1 text-white placeholder-green-200 rounded transition-colors duration-200"
-              onChange={(e) => handlePageTitleChange(page.id, e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setIsEdit(false);
-                }
-              }}
-              onBlur={() => setIsEdit(false)}
-              placeholder="Enter page title"
-            />
-          ) : (
-            // title display
-            <p
-              className={`text-white text-xs sm:text-sm font-semibold ${pageNumber === 0 ? "opacity-0" : "opacity-100"} transition-colors duration-200 ${isEditMode ? "opacity-90" : ""}`}
-            >
-              {page.title && page.title.trim() !== ""
-                ? page.title
-                : `Page ${pageNumber}`}
-            </p>
-          )}
-        </div>
-
-        {/* control buttons */}
-        <div className="flex items-center gap-2">
-          {/* edit button */}
-          {!isEditMode && (
-            <button
-              className="text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200"
-              onClick={handleEditClick}
-            >
-              <TbEdit
-                className={`h-4 w-4 sm:h-6 sm:w-6 ${isEdit ? "text-green-300" : ""} transition-colors duration-200`}
+        <div className="flex justify-between items-center">
+          <div className="flex-1">
+            {isEdit && !isEditMode ? (
+              // title input
+              <Input
+                type="text"
+                value={page.title ?? `Page ${pageNumber}`}
+                className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30 placeholder:text-primary-foreground/60"
+                onChange={(e) => handlePageTitleChange(page.id, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setIsEdit(false);
+                  }
+                }}
+                onBlur={() => setIsEdit(false)}
+                placeholder="Enter page title"
               />
-            </button>
-          )}
+            ) : (
+              // title display
+              <p
+                className={cn(
+                  "text-sm sm:text-base font-semibold",
+                  pageNumber === 0 && "opacity-0",
+                  isEditMode && "opacity-90",
+                )}
+              >
+                {page.title && page.title.trim() !== ""
+                  ? page.title
+                  : `Page ${pageNumber}`}
+              </p>
+            )}
+          </div>
 
-          {/* drag handle */}
-          {!isEditMode && (
-            <div
-              className={`text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
-              {...listeners}
-            >
-              <MdDragIndicator className="h-4 w-4 sm:h-6 sm:w-6" />
-            </div>
-          )}
+          {/* control buttons */}
+          <div className="flex items-center gap-2">
+            {/* edit button */}
+            {!isEditMode && (
+              <Button
+                size="sm"
+                onClick={handleEditClick}
+                className="h-8 w-8 p-0 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20"
+              >
+                <TbEdit className="h-4 w-4" />
+              </Button>
+            )}
 
-          {/* delete button */}
-          {!isEditMode && (
-            <button
-              className={`text-green-100 hover:cursor-pointer hover:text-white transition-colors duration-200 ${isSingle ? "hidden" : ""}`}
-              onClick={handleDeleteClick}
-            >
-              <IoClose className="h-4 w-4 sm:h-6 sm:w-6" />
-            </button>
-          )}
+            {/* drag handle */}
+            {!isEditMode && (
+              <div
+                className={cn(
+                  "h-8 w-8 p-0 flex items-center justify-center text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20 rounded-md cursor-grab",
+                  isSingle && "hidden",
+                )}
+                {...listeners}
+              >
+                <MdDragIndicator className="h-4 w-4" />
+              </div>
+            )}
+
+            {/* delete button */}
+            {!isEditMode && (
+              <Button
+                size="sm"
+                onClick={handleDeleteClick}
+                className={cn(
+                  "h-8 w-8 p-0 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20",
+                  isSingle && "hidden",
+                )}
+              >
+                <IoClose className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
-      </header>
+      </CardHeader>
 
-      <section
-        className={`bg-white dark:bg-gray-800 rounded-b-xs p-4 flex flex-col ${page.contents.length > 0 ? "gap-4" : ""} ${isDragging && !isEditMode ? "opacity-0" : ""} transition-colors duration-200 ${isEditMode ? "bg-gray-50 dark:bg-gray-800/30" : ""}`}
+      <CardContent
+        className={cn(
+          "p-2 sm:p-4 flex flex-col rounded-b-lg",
+          page.contents.length > 0 && "gap-4",
+          isDragging && !isEditMode && "opacity-0",
+          isEditMode && "bg-muted/30",
+        )}
       >
         {/* content list */}
         <PageContent
@@ -184,40 +213,44 @@ export default function PageCard({
 
         {/* add content buttons */}
         {!isEditMode && (
-          <section className="flex justify-center gap-2 sm:gap-8">
-            <button
-              className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
+          <section className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handleAddContent("question")}
+              className="flex gap-2 items-center"
             >
-              <BsPatchQuestion className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
-              <p className="text-nowrap text-xs sm:text-base">Add question</p>
-            </button>
-            <button
-              className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
+              <BsPatchQuestion className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Add question</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handleAddContent("image")}
+              className="flex gap-2 items-center"
             >
-              <CiImageOn className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
-              <p className="text-nowrap text-xs sm:text-base">Add image</p>
-            </button>
-            <button
-              className="text-gray-400 dark:text-gray-500 border border-gray-400 dark:border-gray-600 flex gap-1 items-center rounded-sm py-1 px-2 sm:py-2 sm:px-5 hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-600 dark:hover:border-gray-400 transition-colors duration-200 bg-white dark:bg-gray-700"
+              <CiImageOn className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Add image</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handleAddContent("text")}
+              className="flex gap-2 items-center"
             >
-              <MdOutlineTextSnippet className="hidden sm:block h-3 w-3 sm:h-6 sm:w-6" />
-              <p className="text-nowrap text-xs sm:text-base">Add text</p>
-            </button>
+              <MdOutlineTextSnippet className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Add text</span>
+            </Button>
           </section>
         )}
 
         {/* edit mode message */}
         {isEditMode && (
-          <div className="text-center py-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-              Content editing is disabled in edit mode
-            </p>
-          </div>
+          <p className="text-center py-4 italic text-xs text-muted-foreground">
+            Content editing is disabled in edit mode
+          </p>
         )}
-      </section>
-    </article>
+      </CardContent>
+    </Card>
   );
 }

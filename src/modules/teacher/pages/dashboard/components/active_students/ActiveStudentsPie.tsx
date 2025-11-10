@@ -16,12 +16,25 @@ export default function ActiveStudentsPie({
   totalPercentage,
   sectionColors,
 }: IActiveStudentsPieProps): ReactElement {
+  const validChartData =
+    chartData && chartData.length > 0
+      ? chartData
+      : [{ name: "No Data", percentage: 100 }];
+  const validSectionColors =
+    sectionColors && sectionColors.length > 0 ? sectionColors : ["#a9a9a9"];
+
+  const totalPercent = validChartData.reduce(
+    (sum, item) => sum + (item.percentage || 0),
+    0,
+  );
+  const normalizedData = totalPercent !== 100 ? validChartData : validChartData;
+
   return (
-    <section className={`${classes} flex items-center justify-center`}>
+    <section className={`${classes} flex items-center justify-center relative`}>
       <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie
-            data={chartData}
+            data={normalizedData}
             dataKey="percentage"
             nameKey="name"
             cx="50%"
@@ -33,22 +46,23 @@ export default function ActiveStudentsPie({
             paddingAngle={1}
             label={customLabel}
             labelLine={false}
+            isAnimationActive={true}
           >
-            {chartData.map((_entry, index) => (
+            {normalizedData.map((_entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={sectionColors[index % sectionColors.length]}
+                fill={validSectionColors[index % validSectionColors.length]}
+                stroke="hsl(var(--background))"
+                strokeWidth={2}
               />
             ))}
           </Pie>
         </PieChart>
       </ResponsiveContainer>
 
-      <div className="absolute text-center">
-        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {totalPercentage}%
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
+      <div className="absolute text-center pointer-events-none">
+        <p className="text-2xl font-bold text-foreground">{totalPercentage}%</p>
+        <p className="text-xs text-muted-foreground">Active</p>
       </div>
     </section>
   );

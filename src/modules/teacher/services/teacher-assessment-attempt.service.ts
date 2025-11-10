@@ -3,6 +3,7 @@ import { AssessmentAttempt } from "../../core/types/assessment-attempt/assessmen
 import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { fetchData } from "../../core/utils/api/api.util";
 
+// get all assessment attempts ng single assessment
 export const useTeacherAssessmentAttempts = (
   teacherId: string,
   assessmentId: string,

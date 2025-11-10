@@ -21,6 +21,10 @@ import {
 import { nanoid } from "nanoid";
 import { createPortal } from "react-dom";
 import Choice from "./Choice";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 type ChoicesProps = {
   isValidated: boolean;
@@ -39,7 +43,6 @@ export default function Choices({
   onToggleRandom,
   errors,
 }: ChoicesProps): ReactElement {
-  // states
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   const isSingleOrMulti =
@@ -47,7 +50,6 @@ export default function Choices({
   const choices = isSingleOrMulti ? question.choices : [];
   const answers = isSingleOrMulti ? question.answers : [];
 
-  // handlers
   const handleChoiceTextChange = (id: string, value: string) => {
     onChoicesChange(
       choices.map((choice: AssessmentQuestionChoice) =>
@@ -106,154 +108,151 @@ export default function Choices({
     return question.choices.findIndex((choice) => id === choice.id);
   };
 
+  const handleToggleRandomChange = (checked: boolean) => {
+    onToggleRandom(checked);
+  };
+
   return (
-    <section className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
-      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200">
-        Options
-      </label>
-      <div className="flex flex-col gap-1 w-full">
-        <section className="border border-gray-300 dark:border-gray-600 rounded-sm bg-white dark:bg-gray-800 w-full h-fit flex flex-col transition-colors duration-200">
-          <div className="w-full flex justify-end items-center p-1 bg-gray-100 dark:bg-gray-700 border-b border-b-gray-300 dark:border-b-gray-600 h-[40px] px-2 transition-colors duration-200">
-            {/* random position checkbox */}
-            <div className="flex gap-1 items-center">
-              <input
-                type="checkbox"
-                className="hover:cursor-pointer"
+    <div className="flex flex-col gap-4">
+      <Label className="text-sm font-medium">Options</Label>
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <Label className="text-sm font-medium">Choices</Label>
+            <div className="flex items-center gap-2">
+              <Checkbox
                 checked={isSingleOrMulti && question.randomPosition}
-                onChange={(e) => onToggleRandom(e.target.checked)}
+                onCheckedChange={handleToggleRandomChange}
               />
-              <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
-                Randomize position
-              </p>
+              <Label className="text-sm font-normal">Randomize position</Label>
             </div>
           </div>
-
-          <motion.section
-            className="flex flex-col p-2 gap-2 relative overflow-y-auto"
-            style={{ maxHeight: "300px" }}
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <DndContext
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            collisionDetection={closestCorners}
           >
-            <DndContext
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              collisionDetection={closestCorners}
+            <SortableContext
+              items={choices.map((choice) => choice.id)}
+              strategy={verticalListSortingStrategy}
             >
-              <SortableContext
-                items={choices.map((choice) => choice.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <AnimatePresence>
-                  {choices.map((choice, index) => (
-                    <motion.div
-                      key={choice.id}
-                      layout
-                      initial={{ opacity: 0, scale: 1 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.25 }}
-                    >
+              <AnimatePresence>
+                {choices.map((choice, index) => (
+                  <motion.div
+                    key={choice.id}
+                    layout
+                    initial={{ opacity: 0, scale: 1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Choice
+                      choice={choice}
+                      onTextChange={handleChoiceTextChange}
+                      onCorrectChange={handleCorrectChange}
+                      type={
+                        (question.type as "single_choice") || "multiple_choice"
+                      }
+                      isChecked={answers.includes(choice.id)}
+                      onDeleteChoice={handleDeleteChoice}
+                      isLastTwo={choices.length === 2}
+                      isEmpty={
+                        isValidated &&
+                        (errors.choices as number[])?.includes(index)
+                      }
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </SortableContext>
+
+            {createPortal(
+              <DragOverlay>
+                {activeId
+                  ? (() => {
+                    const activeChoice = choices.find(
+                      (c) => c.id === activeId,
+                    );
+                    if (!activeChoice) return null;
+                    return (
                       <Choice
-                        choice={choice}
+                        choice={activeChoice}
                         onTextChange={handleChoiceTextChange}
                         onCorrectChange={handleCorrectChange}
+                        dragOverlay
                         type={
                           (question.type as "single_choice") ||
                           "multiple_choice"
                         }
-                        isChecked={answers.includes(choice.id)}
+                        isChecked={answers.includes(activeChoice.id)}
                         onDeleteChoice={handleDeleteChoice}
                         isLastTwo={choices.length === 2}
-                        isEmpty={
-                          isValidated &&
-                          (errors.choices as number[])?.includes(index)
-                        }
+                        isEmpty={false}
                       />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </SortableContext>
-
-              {createPortal(
-                <DragOverlay>
-                  {activeId
-                    ? (() => {
-                        const activeChoice = choices.find(
-                          (c) => c.id === activeId,
-                        );
-                        if (!activeChoice) return null;
-                        return (
-                          <Choice
-                            choice={activeChoice}
-                            onTextChange={handleChoiceTextChange}
-                            onCorrectChange={handleCorrectChange}
-                            dragOverlay
-                            type={
-                              (question.type as "single_choice") ||
-                              "multiple_choice"
-                            }
-                            isChecked={answers.includes(activeChoice.id)}
-                            onDeleteChoice={handleDeleteChoice}
-                            isLastTwo={choices.length === 2}
-                            isEmpty={false}
-                          />
-                        );
-                      })()
-                    : null}
-                </DragOverlay>,
-                document.body,
-              )}
-            </DndContext>
-            {choices.length !== 4 ? (
-              <div className="flex w-full justify-center">
-                <button
-                  type="button"
-                  onClick={() => handleAddChoice({ id: nanoid(), text: "" })}
-                  className="rounded-full h-8 w-8 flex items-center justify-center border-gray-400 dark:border-gray-500 border hover:cursor-pointer hover:text-black dark:hover:text-white text-green-600 dark:text-green-400 hover:border-green-600 dark:hover:border-green-400 transition-colors duration-200"
-                >
-                  <FaPlus className="w-2 h-2" />
-                </button>
-              </div>
-            ) : null}
-          </motion.section>
-        </section>
-        <AnimatePresence mode="wait">
-          {isValidated && errors.answer && (
-            <motion.p
-              key="error-answer"
-              className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
-            >
-              {errors.answer}
-            </motion.p>
-          )}
-          {isValidated && errors.multiChoiceAnswer && (
-            <motion.p
-              key="error-multiChoice"
-              className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
-            >
-              {errors.multiChoiceAnswer}
-            </motion.p>
-          )}
-          {isValidated &&
-            !errors.answer &&
-            !errors.multiChoiceAnswer &&
-            errors.duplicateChoices && (
-              <motion.p
-                key="error-duplicateChoices"
-                className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
-              >
-                {errors.duplicateChoices}
-              </motion.p>
+                    );
+                  })()
+                  : null}
+              </DragOverlay>,
+              document.body,
             )}
-        </AnimatePresence>
-      </div>
-    </section>
+          </DndContext>
+
+          {choices.length < 4 && (
+            <div className="flex justify-center pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddChoice({ id: nanoid(), text: "" })}
+                className="h-8 w-8 p-0 rounded-full"
+              >
+                <FaPlus className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <AnimatePresence mode="wait">
+        {isValidated && errors.answer && (
+          <motion.p
+            key="error-answer"
+            className="text-xs text-destructive"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+          >
+            {errors.answer}
+          </motion.p>
+        )}
+        {isValidated && errors.multiChoiceAnswer && (
+          <motion.p
+            key="error-multiChoice"
+            className="text-xs text-destructive"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+          >
+            {errors.multiChoiceAnswer}
+          </motion.p>
+        )}
+        {isValidated &&
+          !errors.answer &&
+          !errors.multiChoiceAnswer &&
+          errors.duplicateChoices && (
+            <motion.p
+              key="error-duplicateChoices"
+              className="text-sm text-destructive"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5, transition: { duration: 0.1 } }}
+            >
+              {errors.duplicateChoices}
+            </motion.p>
+          )}
+      </AnimatePresence>
+    </div>
   );
 }

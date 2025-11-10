@@ -3,8 +3,9 @@ import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { fetchData } from "../../core/utils/api/api.util";
 import {
   StudentData,
-  AssessmentData,
   StageData,
+  AssessmentData,
+  AssessmentAttemptData,
 } from "../types/teacher-data-report";
 
 // get student overview data for reports
@@ -27,8 +28,8 @@ export const useTeacherStudentData = (
   });
 };
 
-// get assessment data for reports
-export const useTeacherAssessmentData = (
+// get assessment overview data for reports
+export const useTeacherAssessmentOverview = (
   teacherId: string,
   sectionId?: string,
   assessmentId?: string,
@@ -37,30 +38,95 @@ export const useTeacherAssessmentData = (
     queryKey: [
       "teacher",
       teacherId,
-      "assessment-data",
+      "assessment-overview",
       sectionId,
       assessmentId,
     ],
     queryFn: () => {
-      let url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-results`;
-
       const params = new URLSearchParams();
-      if (sectionId && sectionId !== "all") {
+      if (sectionId && sectionId !== "all")
         params.append("sectionId", sectionId);
-      }
-      if (assessmentId) {
+      if (assessmentId && assessmentId !== "all")
         params.append("assessmentId", assessmentId);
-      }
 
-      const queryString = params.toString();
-      if (queryString) {
-        url += `?${queryString}`;
-      }
+      const url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-overview?${params}`;
 
       return fetchData<AssessmentData[]>(
         url,
-        "Failed to fetch assessment data.",
+        "Failed to fetch assessment overview data.",
       );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get assessment attempts data for reports
+export const useTeacherAssessmentAttempts = (
+  teacherId: string,
+  sectionId?: string,
+  assessmentId?: string,
+) => {
+  return useQuery<AssessmentAttemptData[]>({
+    queryKey: [
+      "teacher",
+      teacherId,
+      "assessment-attempts",
+      sectionId,
+      assessmentId,
+    ],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (sectionId && sectionId !== "all")
+        params.append("sectionId", sectionId);
+      if (assessmentId && assessmentId !== "all")
+        params.append("assessmentId", assessmentId);
+
+      const url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-attempts?${params}`;
+
+      return fetchData<AssessmentAttemptData[]>(
+        url,
+        "Failed to fetch assessment attempts data.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get combined assessment data (overview + attempts) for reports
+export const useTeacherAssessmentCombined = (
+  teacherId: string,
+  sectionId?: string,
+  assessmentId?: string,
+  includeAttempts: boolean = false,
+) => {
+  return useQuery<{
+    overview: AssessmentData[];
+    attempts: AssessmentAttemptData[];
+  }>({
+    queryKey: [
+      "teacher",
+      teacherId,
+      "assessment-combined",
+      sectionId,
+      assessmentId,
+      includeAttempts,
+    ],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (sectionId && sectionId !== "all")
+        params.append("sectionId", sectionId);
+      if (assessmentId && assessmentId !== "all")
+        params.append("assessmentId", assessmentId);
+      if (includeAttempts) params.append("includeAttempts", "true");
+
+      const url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-combined?${params}`;
+
+      return fetchData<{
+        overview: AssessmentData[];
+        attempts: AssessmentAttemptData[];
+      }>(url, "Failed to fetch combined assessment data.");
     },
     staleTime: DATA_STALE_TIME,
     enabled: !!teacherId,

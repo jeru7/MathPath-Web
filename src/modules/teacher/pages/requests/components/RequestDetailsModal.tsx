@@ -1,6 +1,5 @@
 import { type ReactElement } from "react";
 import { Request } from "../../../../core/types/requests/request.type";
-import { FaTimes } from "react-icons/fa";
 import { useTeacherContext } from "../../../context/teacher.context";
 import { useUpdateRequestStatus } from "../../../services/teacher-request.service";
 import { toast } from "react-toastify";
@@ -9,7 +8,12 @@ import { handleApiError } from "../../../../core/utils/api/error.util";
 import { getProfilePicture } from "../../../../core/utils/profile-picture.util.js";
 import { ProfilePicture } from "../../../../core/types/user.type.js";
 import { format } from "date-fns-tz";
-import ModalOverlay from "../../../../core/components/modal/ModalOverlay.js";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Card,
   CardContent,
@@ -41,7 +45,7 @@ export default function RequestDetailsModal({
   onClose,
   teacherId,
 }: RequestDetailsModalProps): ReactElement {
-  const { students } = useTeacherContext();
+  const { allStudents } = useTeacherContext();
 
   const updateRequestStatusMutation = useUpdateRequestStatus(
     teacherId,
@@ -98,7 +102,7 @@ export default function RequestDetailsModal({
   };
 
   const getCurrentStudentData = (studentId: string): CurrentStudentData => {
-    const student = students.find((s) => s.id === studentId);
+    const student = allStudents.find((s) => s.id === studentId);
     return {
       firstName: student?.firstName || "Current First Name",
       lastName: student?.lastName || "Current Last Name",
@@ -159,27 +163,18 @@ export default function RequestDetailsModal({
   const isProcessing = updateRequestStatusMutation.isPending;
 
   return (
-    <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-background rounded-lg h-[100dvh] w-[100dvw] md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
-        {/* header */}
-        <CardHeader className="flex-row items-center justify-between p-6 border-b flex-shrink-0">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="w-[100dvw] h-[100dvh] max-w-none flex flex-col p-0 bg-background rounded-lg md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden">
+        <DialogHeader className="flex-row items-center justify-between p-6 border-b flex-shrink-0">
           <div>
-            <CardTitle className="text-2xl text-gray-700 dark:text-gray-300">
+            <DialogTitle className="text-2xl text-gray-700 dark:text-gray-300">
               Account Change Request
-            </CardTitle>
+            </DialogTitle>
             <p className="text-sm text-muted-foreground mt-1">
               Review student account modification request
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            disabled={isProcessing}
-          >
-            <FaTimes className="w-5 h-5" />
-          </Button>
-        </CardHeader>
+        </DialogHeader>
 
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* main content - scrollable part */}
@@ -509,13 +504,7 @@ export default function RequestDetailsModal({
             </Button>
           </CardFooter>
         )}
-
-        {request.status !== "pending" && (
-          <CardFooter className="flex justify-end p-6 border-t flex-shrink-0">
-            <Button onClick={onClose}>Close</Button>
-          </CardFooter>
-        )}
-      </div>
-    </ModalOverlay>
+      </DialogContent>
+    </Dialog>
   );
 }

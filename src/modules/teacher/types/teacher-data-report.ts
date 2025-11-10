@@ -2,21 +2,33 @@ export type StudentData = {
   lrn: string;
   fullName: string;
   sectionName: string;
-  totalAssessmentsTaken: number;
-  totalStageAttempts: number;
-  currentStage: number;
-  overallAverageCorrectness: number;
-  overallAssessmentScorePercentage: number;
-  dateCreated: string;
+  assessmentsTaken: number;
+  assessmentsPassed: number;
+  assessmentsPassingRate: number;
+  stageAttempts: number;
+  currentStage: string;
+  averageAnswerCorrectness: number;
+  winRate: number;
   areaOfDifficulty: string;
 };
 
 export type AssessmentData = {
-  title: string;
+  assessmentTitle: string;
   topic: string;
-  averageScorePercentage: number;
+  score: number;
+  averageScore: number;
   averageTimeTaken: number;
-  totalAttemptsTaken: number;
+  passingRate: number;
+  totalAttempts: number;
+};
+
+export type AssessmentAttemptData = {
+  studentName: string;
+  assessmentTitle: string;
+  score: number;
+  timeTaken: number;
+  dateCompleted: string;
+  result: string;
 };
 
 export type StageData = {
@@ -30,3 +42,9 @@ export type StageData = {
   medium: number;
   hard: number;
 };
+
+export type PreviewDataItem =
+  | StudentData
+  | AssessmentData
+  | AssessmentAttemptData
+  | StageData;

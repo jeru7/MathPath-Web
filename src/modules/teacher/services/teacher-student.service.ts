@@ -7,7 +7,7 @@ import {
   postData,
 } from "../../core/utils/api/api.util";
 import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
-import { TeacherStudentActivity } from "../../core/types/activity/activity.type";
+import { AdminTeacherStudentActivity } from "../../core/types/activity/activity.type";
 import {
   AddStudentDTO,
   EditStudentDTO,
@@ -55,10 +55,10 @@ export const useTeacherDeleteStudent = (teacherId: string) => {
 
 // teacher get student activities
 export const useTeacherStudentActivities = (teacherId: string) => {
-  return useQuery<TeacherStudentActivity[]>({
+  return useQuery<AdminTeacherStudentActivity[]>({
     queryKey: ["teacher", teacherId, "student-activities"],
     queryFn: () =>
-      fetchData<TeacherStudentActivity[]>(
+      fetchData<AdminTeacherStudentActivity[]>(
         `${BASE_URI}/api/web/teachers/${teacherId}/student-activities`,
         "Failed to fetch student activities.",
       ),
@@ -87,18 +87,18 @@ export const useTeacherEditStudent = (teacherId: string) => {
 };
 
 // teacher get archived student
-export const useTeacherArchivedStudent = (teacherId: string) => {
-  return useQuery<Student[]>({
-    queryKey: ["teacher", teacherId, "archived-students"],
-    queryFn: () =>
-      fetchData<Student[]>(
-        `${BASE_URI}/api/web/teachers/${teacherId}/students/archive`,
-        "Failed to fetch archived students",
-      ),
-    enabled: !!teacherId,
-    staleTime: DATA_STALE_TIME,
-  });
-};
+// export const useTeacherArchivedStudent = (teacherId: string) => {
+//   return useQuery<Student[]>({
+//     queryKey: ["teacher", teacherId, "archived-students"],
+//     queryFn: () =>
+//       fetchData<Student[]>(
+//         `${BASE_URI}/api/web/teachers/${teacherId}/students/archive`,
+//         "Failed to fetch archived students",
+//       ),
+//     enabled: !!teacherId,
+//     staleTime: DATA_STALE_TIME,
+//   });
+// };
 
 // teacher archive student
 export const useTeacherArchiveStudent = (teacherId: string) => {

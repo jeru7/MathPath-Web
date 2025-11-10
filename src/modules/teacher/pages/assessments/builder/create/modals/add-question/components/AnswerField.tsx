@@ -1,4 +1,8 @@
 import { type ReactElement } from "react";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 type AnswerFieldProps = {
   label?: string;
@@ -10,6 +14,7 @@ type AnswerFieldProps = {
   radioLabel?: "True" | "False";
   isEmpty?: boolean;
 };
+
 export default function AnswerField({
   label,
   type,
@@ -17,55 +22,76 @@ export default function AnswerField({
   name,
   onChange,
   checked,
-  radioLabel,
   isEmpty,
 }: AnswerFieldProps): ReactElement {
-  return (
-    <article
-      className={`flex items-center gap-2 rounded-sm ${
-        type === "radio"
-          ? ""
-          : `border p-2 ${isEmpty ? "border-red-500" : "border-gray-300 dark:border-gray-500"} bg-white dark:bg-gray-700`
-      } transition-colors duration-200`}
-    >
-      {label && (
-        <div className="p-2 border-r border-gray-300 dark:border-gray-600 text-green-600 dark:text-green-400 font-bold text-sm transition-colors duration-200">
-          {label}
-        </div>
-      )}
+  const handleRadioChange = (newValue: string) => {
+    if (newValue === "true") {
+      onChange(true);
+    } else if (newValue === "false") {
+      onChange(false);
+    }
+  };
 
-      {type === "text" ? (
-        <input
+  if (type === "text") {
+    return (
+      <div className="flex items-center gap-2">
+        {label && (
+          <div className="px-3 py-2 bg-primary text-primary-foreground rounded-md font-medium text-sm min-w-12 text-center">
+            {label}
+          </div>
+        )}
+        <Input
           type="text"
           value={value as string}
           onChange={(e) => onChange(e.target.value)}
-          className="outline-none w-full text-sm bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-          placeholder="Type here..."
+          className={cn(
+            "flex-1",
+            isEmpty && "border-destructive focus-visible:ring-destructive",
+          )}
+          placeholder="Type answer here..."
         />
-      ) : (
-        <label className="relative flex items-center gap-2">
-          <input
-            type="radio"
-            name={name}
-            checked={checked}
-            onChange={() => onChange(value)}
-            className="sr-only"
-          />
-          <span
-            className={`border border-gray-300 dark:border-gray-500 rounded-xs py-2 px-5 hover:cursor-pointer transition-colors duration-200 text-sm font-semibold ${
-              checked
-                ? value === true
-                  ? "bg-green-600 dark:bg-green-500 text-white"
-                  : "bg-red-500 dark:bg-red-400 text-white"
-                : value === true
-                  ? "hover:bg-green-600 dark:hover:bg-green-500 hover:text-white text-gray-700 dark:text-gray-300"
-                  : "hover:bg-red-500 dark:hover:bg-red-400 hover:text-white text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            {radioLabel}
-          </span>
-        </label>
-      )}
-    </article>
+      </div>
+    );
+  }
+
+  return (
+    <RadioGroup
+      value={checked ? (value === true ? "true" : "false") : ""}
+      onValueChange={handleRadioChange}
+      className="flex gap-4"
+    >
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem value="true" id={`${name}-true`} className="sr-only" />
+        <Label
+          htmlFor={`${name}-true`}
+          className={cn(
+            "px-4 py-2 border rounded-md cursor-pointer transition-colors select-none",
+            value === true
+              ? "bg-green-600 text-white border-green-600"
+              : "border-input hover:bg-green-600/50 hover:text-accent-foreground",
+          )}
+        >
+          True
+        </Label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem
+          value="false"
+          id={`${name}-false`}
+          className="sr-only"
+        />
+        <Label
+          htmlFor={`${name}-false`}
+          className={cn(
+            "px-4 py-2 border rounded-md cursor-pointer transition-colors select-none",
+            value === false
+              ? "bg-red-600 text-white border-red-600"
+              : "border-input hover:bg-red-600/50 hover:text-accent-foreground",
+          )}
+        >
+          False
+        </Label>
+      </div>
+    </RadioGroup>
   );
 }

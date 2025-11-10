@@ -21,18 +21,21 @@ export default function PreviewContent({
   if (!currentPageData) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500 dark:text-gray-400">No content available</p>
+        <p className="text-muted-foreground">No content available</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto w-full">
+    <div className="max-w-4xl mx-auto w-full space-y-6">
       {/* title */}
       {currentPageData.title && (
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
-          {currentPageData.title}
-        </h3>
+        <div className="space-y-2">
+          <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+            {currentPageData.title}
+          </h3>
+          <div className="h-px bg-border" />
+        </div>
       )}
 
       {/* contents */}

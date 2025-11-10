@@ -1,11 +1,9 @@
 import { useEffect, useState, type ReactElement, useRef } from "react";
-import Select from "react-select";
-import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
 import { Section } from "../../../../../core/types/section/section.type";
 import SectionItem from "./SectionItem";
 import { useAssessmentBuilder } from "../context/assessment-builder.context";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import "@/modules/core/styles/customDatePicker.css";
 import {
   getDeadlineMinTime,
   getScheduleMinTime,
@@ -14,6 +12,17 @@ import {
 import DatetimePicker from "./DatetimePicker";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTeacherContext } from "../../../../context/teacher.context";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type PublishProps = {
   isValidated: boolean;
@@ -36,7 +45,7 @@ export default function Publish({
   publishError,
   isEditMode = false,
 }: PublishProps): ReactElement {
-  const { sections } = useTeacherContext();
+  const { rawSections } = useTeacherContext();
   const { state: assessment, dispatch } = useAssessmentBuilder();
 
   const [selectedSections, setSelectedSections] = useState<Section[]>([]);
@@ -44,10 +53,15 @@ export default function Publish({
   const [endDate, setEndDate] = useState<Date | null>(null);
   const hasInitializedDates = useRef(false);
 
-  const handleAddSection = (sections: Section[]) => {
-    setSelectedSections([...sections]);
-    dispatch({ type: "UPDATE_SECTION", payload: sections.map((s) => s.id) });
+  const handleAddSection = (sectionId: string) => {
+    const section = rawSections?.find((s) => s.id === sectionId);
+    if (!section) return;
+
+    const newSections = [...selectedSections, section];
+    setSelectedSections(newSections);
+    dispatch({ type: "UPDATE_SECTION", payload: newSections.map((s) => s.id) });
   };
+
   const handleDeleteSection = (section: Section) => {
     const newSections = selectedSections.filter((s) => s.id !== section.id);
     setSelectedSections(newSections);
@@ -65,6 +79,7 @@ export default function Publish({
       dispatch({ type: "ADD_END_DATE", payload: minDeadline });
     }
   };
+
   const handleEndDateChange = (date: Date | null) => {
     if (!date) return;
     const rounded = roundToNext10Minutes(date);
@@ -120,84 +135,88 @@ export default function Publish({
   ]);
 
   useEffect(() => {
-    if (!sections || !assessment.sections?.length) return;
+    if (!rawSections || !assessment.sections?.length) return;
     setSelectedSections(
-      sections.filter((s) => (assessment.sections as string[]).includes(s.id)),
+      rawSections.filter((s) =>
+        (assessment.sections as string[]).includes(s.id),
+      ),
     );
-  }, [sections, assessment.sections]);
+  }, [rawSections, assessment.sections]);
 
   return (
     <div className="flex flex-col w-full sm:w-fit h-full items-center justify-center gap-2 md:gap-4">
       <AnimatePresence mode="wait">
-        <section className="border rounded-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 h-fit w-full sm:w-96 flex flex-col gap-4 p-4 items-center transition-colors duration-200">
-          <form className="w-full flex flex-col gap-4">
-            {/* section selector */}
-            <div className="flex flex-col gap-2 w-full">
-              <Select<Section, true>
-                isMulti
-                options={sections ?? []}
-                value={selectedSections}
-                onChange={(selected) => handleAddSection([...(selected ?? [])])}
-                getOptionLabel={(s) => s.name}
-                getOptionValue={(s) => s.id}
-                placeholder="Select sections"
-                styles={getCustomSelectColor({
-                  borderRadius: "var(--radius-sm)",
-                  backgroundColor: "white",
-                  textColor: "#1f2937",
-                  menuWidth: "100%",
-                  dark: {
-                    backgroundColor: "#374151",
-                    textColor: "#f9fafb",
-                    borderColor: "#4b5563",
-                    borderFocusColor: "#10b981",
-                    optionHoverColor: "#1f2937",
-                    optionSelectedColor: "#059669",
-                    menuBackgroundColor: "#374151",
-                    placeholderColor: "#9ca3af",
-                  },
-                })}
-                isSearchable={false}
-                className="w-full text-sm sm:text-base"
-                controlShouldRenderValue={false}
-                isClearable={false}
-              />
-              <section className="bg-inherit border-gray-300 dark:border-gray-600 border rounded-sm w-full transition-colors duration-200">
-                <ul className="w-full gap-2 h-56 flex flex-col p-2 overflow-y-auto">
-                  {selectedSections.map((section) => (
-                    <SectionItem
-                      key={section.id}
-                      data={section}
-                      onDelete={handleDeleteSection}
-                    />
-                  ))}
-                </ul>
-              </section>
-              <AnimatePresence>
-                {isValidated && errors.sections && (
-                  <motion.p
-                    className="text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-                    key="section-error"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5, transition: { duration: 0.1 } }}
+        <Card className="w-full sm:w-96 border-0 sm:border-1">
+          <CardContent className="p-6">
+            <form className="w-full flex flex-col gap-6">
+              {/* section selector */}
+              <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col gap-2">
+                  <Label
+                    htmlFor="section-select"
+                    className="text-sm font-medium"
                   >
-                    {errors.sections}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
+                    Select Sections
+                  </Label>
+                  <Select onValueChange={handleAddSection}>
+                    <SelectTrigger id="section-select">
+                      <SelectValue placeholder="Choose a section to add" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {rawSections?.map((section) => (
+                        <SelectItem key={section.id} value={section.id}>
+                          {section.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* date pickers */}
-            <div className="flex flex-col gap-4 w-full">
-              <div className="flex flex-col gap-1">
-                <div className="flex flex-col gap-2 h-18">
-                  <label
-                    htmlFor="startDate"
-                    className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                  >
+                <div className="border border-border rounded-sm w-full">
+                  <div className="w-full gap-2 h-56 flex flex-col p-2 overflow-y-auto">
+                    {selectedSections.map((section) => (
+                      <SectionItem
+                        key={section.id}
+                        data={section}
+                        onDelete={handleDeleteSection}
+                      />
+                    ))}
+                    {selectedSections.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        No sections selected
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <AnimatePresence>
+                  {isValidated && errors.sections && (
+                    <motion.div
+                      key="section-error"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{
+                        opacity: 0,
+                        y: -5,
+                        transition: { duration: 0.1 },
+                      }}
+                    >
+                      <Alert variant="destructive" className="py-2">
+                        <AlertDescription className="text-sm">
+                          {errors.sections}
+                        </AlertDescription>
+                      </Alert>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* date pickers */}
+              <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="startDate" className="text-sm font-medium">
                     Scheduled At
-                  </label>
+                  </Label>
                   <DatePicker
                     id="startDate"
                     selected={startDate}
@@ -213,44 +232,43 @@ export default function Publish({
                     minTime={getScheduleMinTime(startDate)}
                     maxTime={new Date(0, 0, 0, 23, 50)}
                     filterTime={(time) => time.getMinutes() % 10 === 0}
+                    portalId="root-portal"
                   />
                 </div>
-              </div>
 
-              {startDate && (
-                <motion.div
-                  key="end-date-picker"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-col gap-2 h-18"
-                >
-                  <label
-                    htmlFor="endDate"
-                    className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200"
+                {startDate && (
+                  <motion.div
+                    key="end-date-picker"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col gap-2"
                   >
-                    Deadline At
-                  </label>
-                  <DatePicker
-                    id="endDate"
-                    selected={endDate}
-                    onChange={handleEndDateChange}
-                    showTimeSelect
-                    timeFormat="HH:mm"
-                    timeIntervals={10}
-                    dateFormat="yyyy-MM-dd HH:mm"
-                    customInput={
-                      <DatetimePicker value={endDate} label="Deadline at" />
-                    }
-                    minDate={startDate}
-                    minTime={getScheduleMinTime(endDate)}
-                    maxTime={new Date(0, 0, 0, 23, 50)}
-                    filterTime={(time) => time.getMinutes() % 10 === 0}
-                  />
-                </motion.div>
-              )}
-            </div>
-          </form>
-        </section>
+                    <Label htmlFor="endDate" className="text-sm font-medium">
+                      Deadline At
+                    </Label>
+                    <DatePicker
+                      id="endDate"
+                      selected={endDate}
+                      onChange={handleEndDateChange}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={10}
+                      dateFormat="yyyy-MM-dd HH:mm"
+                      customInput={
+                        <DatetimePicker value={endDate} label="Deadline at" />
+                      }
+                      minDate={startDate}
+                      minTime={getScheduleMinTime(endDate)}
+                      maxTime={new Date(0, 0, 0, 23, 50)}
+                      filterTime={(time) => time.getMinutes() % 10 === 0}
+                      portalId="root-portal"
+                    />
+                  </motion.div>
+                )}
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </AnimatePresence>
 
       {/* publish error */}
@@ -262,11 +280,11 @@ export default function Publish({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
           >
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-sm p-3">
-              <p className="text-sm text-red-800 dark:text-red-200 text-center">
+            <Alert variant="destructive">
+              <AlertDescription className="text-sm text-center">
                 {publishError}
-              </p>
-            </div>
+              </AlertDescription>
+            </Alert>
           </motion.div>
         )}
       </AnimatePresence>
@@ -274,29 +292,26 @@ export default function Publish({
       {/* buttons */}
       <div className="flex flex-col sm:flex-row gap-2 mt-4 w-full sm:w-96">
         {(!isEditMode || assessment.status === "draft") && (
-          <button
-            className="bg-green-600 dark:bg-green-500 px-4 py-3 rounded-sm w-full sm:flex-1 opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200 disabled:opacity-50"
+          <Button
+            className="w-full sm:flex-1"
             onClick={onPublishAssessment}
-            type="button"
             disabled={isPublishPending}
           >
-            <p className="text-sm md:text-base text-white font-semibold">
-              {isPublishPending ? "Publishing..." : "Publish Assessment"}
-            </p>
-          </button>
+            {isPublishPending ? "Publishing..." : "Publish Assessment"}
+          </Button>
         )}
 
         {/* save & exit button */}
-        <button
-          className={`${isEditMode && assessment.status !== "draft" ? "w-full bg-green-600 dark:bg-green-500" : "w-full sm:flex-1 bg-gray-600 dark:bg-gray-500"} px-4 py-3 rounded-sm opacity-80 hover:cursor-pointer hover:opacity-100 transition-all duration-200 disabled:opacity-50`}
+        <Button
+          variant={
+            isEditMode && assessment.status !== "draft" ? "default" : "outline"
+          }
+          className="w-full sm:flex-1"
           onClick={onSaveAndExit}
-          type="button"
           disabled={isSaving}
         >
-          <p className="text-sm md:text-base text-white font-semibold">
-            {isSaving ? "Saving..." : "Save & Exit"}
-          </p>
-        </button>
+          {isSaving ? "Saving..." : "Save and Exit"}
+        </Button>
       </div>
     </div>
   );

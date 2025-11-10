@@ -1,87 +1,106 @@
 import { type ReactElement, useState } from "react";
 import AssessmentStatusItem from "./AssessmentStatusItem";
 import { useTeacherAssessmentStatus } from "../../../../services/teacher-stats.service";
+import { useTeacherAssessmentAttempts } from "../../../../services/teacher-assessment-attempt.service";
+import { useTeacherContext } from "../../../../context/teacher.context";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import { AssessmentStatus } from "../../../../types/assessment-status.type";
-import { useTeacherContext } from "../../../../context/teacher.context";
-import AssessmentDetailsModal from "../../../assessments/components/assessment-details/AssessmentDetailsModal";
-import { useTeacherAssessmentAttempts } from "../../../../services/teacher-assessment-attempt.service";
+import AssessmentDetailsModal from "@/modules/core/components/assessment-details/AssessesmentDetailsModal";
+
+export function AssessmentStatusCardSkeleton(): ReactElement {
+  return (
+    <Card className="p-2">
+      <CardHeader className="p-0 pb-3">
+        <Skeleton className="h-4 w-24" />
+      </CardHeader>
+
+      <CardContent className="p-0">
+        <div className="space-y-2 max-h-[280px] overflow-y-auto">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-10 w-full rounded-md" />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function AssessmentStatusCard({
   classes,
 }: {
-  classes: string;
+  classes?: string;
 }): ReactElement {
-  const { assessments, teacherId, students } = useTeacherContext();
-  const { data: assessmentStatus } = useTeacherAssessmentStatus(
+  const { rawAssessments, teacherId, rawStudents } = useTeacherContext();
+  const { data: assessmentStatus, isLoading } = useTeacherAssessmentStatus(
     teacherId ?? "",
   );
 
   const [selectedAssessment, setSelectedAssessment] =
     useState<Assessment | null>(null);
+  const [selectedAssessmentId, setSelectedAssessmentId] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedAssessmentId, setSelectedAssessmentId] = useState<string>("");
-  // TODO: use isLoading for loaders
   const { data: studentAttempts = [] } = useTeacherAssessmentAttempts(
-    teacherId,
+    teacherId ?? "",
     selectedAssessmentId,
   );
 
-  const handleAssessmentClick = (assessmentStatus: AssessmentStatus) => {
-    const assessment = assessments.find((a) => a.id === assessmentStatus.id);
+  const handleAssessmentClick = (assessmentStatusItem: AssessmentStatus) => {
+    const assessment = rawAssessments.find(
+      (a) => a.id === assessmentStatusItem.id,
+    );
     setSelectedAssessment(assessment ?? null);
-    setSelectedAssessmentId(assessmentStatus.id);
+    setSelectedAssessmentId(assessmentStatusItem.id);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
     setSelectedAssessment(null);
     setSelectedAssessmentId("");
+    setIsModalOpen(false);
   };
+
+  if (isLoading) return <AssessmentStatusCardSkeleton />;
 
   return (
     <>
-      <article
-        className={`${classes} bg-white dark:bg-gray-800 shadow-sm min-h-[300px] lg:h-auto lg:min-h-0 rounded-sm p-2 flex flex-col gap-1 border border-gray-200 dark:border-gray-700 transition-colors duration-200`}
-      >
-        <header className="">
-          <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
-            Assessment Status
-          </p>
-        </header>
+      <Card className={`${classes ?? ""} p-2`}>
+        <CardHeader className="p-0 pb-3">
+          <CardTitle className="text-sm">Assessments</CardTitle>
+        </CardHeader>
 
-        {assessmentStatus && assessmentStatus?.length > 0 ? (
-          <div className="h-[200px] overflow-y-auto">
-            <section className="flex flex-col gap-1">
-              {assessmentStatus?.map((assessment, index) => (
+        <CardContent className="p-0 overflow-hidden">
+          {assessmentStatus && assessmentStatus.length > 0 ? (
+            <div className="space-y-2 max-h-[225px] overflow-y-auto">
+              {assessmentStatus.map((assessment, index) => (
                 <AssessmentStatusItem
-                  classes=""
-                  assessmentData={assessment}
                   key={index}
+                  assessmentData={assessment}
                   onItemClick={() => handleAssessmentClick(assessment)}
                 />
               ))}
-            </section>
-          </div>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-gray-300 dark:text-gray-500 italic">
-              No data available
-            </p>
-          </div>
-        )}
-      </article>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground text-sm">No assessments</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* assessment details modal */}
       {selectedAssessment && (
         <AssessmentDetailsModal
+          userType="teacher"
+          userId={teacherId}
           assessment={selectedAssessment}
           isOpen={isModalOpen}
+          disableEdit={true}
           onClose={handleCloseModal}
           studentAttempts={studentAttempts}
-          students={students}
+          students={rawStudents}
+          showFooter={false}
         />
       )}
     </>

@@ -35,61 +35,65 @@
   );
 }
 
-/* Light Mode - Professional Green Theme */
+/* light mode */
 :root {
-  --radius: 0.625rem;
-  --background: 0 0% 98%; /* Very light gray */
-  --foreground: 240 10% 10%; /* Dark gray for text */
-  --card: 0 0% 100%; /* Pure white cards */
-  --card-foreground: 240 10% 10%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 10%;
-  --primary: 142 76% 28%; /* Your primary green #347928 in HSL */
-  --primary-foreground: 0 0% 98%;
-  --secondary: 142 76% 36%; /* Slightly lighter green */
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 5% 96%; /* Very light gray */
-  --muted-foreground: 240 4% 46%;
-  --accent: 142 76% 28%; /* Primary green as accent */
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 6% 90%; /* Light borders */
-  --input: 240 6% 90%;
-  --ring: 142 76% 28%; /* Green focus ring */
-  --chart-1: 142 76% 36%;
-  --chart-2: 142 76% 28%;
-  --chart-3: 142 60% 45%;
-  --chart-4: 142 70% 35%;
-  --chart-5: 142 65% 40%;
+  --radius: 0.75rem;
+  --background: 0 0% 98%; /* #fafafa - softer off-white */
+  --foreground: 240 10% 12%; /* #1c1c21 - deeper dark gray for better readability */
+  --card: 0 0% 100%; /* #ffffff - pure white cards */
+  --card-foreground: 240 10% 12%; /* #1c1c21 */
+  --popover: 0 0% 100%; /* #ffffff */
+  --popover-foreground: 240 10% 12%; /* #1c1c21 */
+  --primary: 111.11, 50.31%, 31.57%; /* #347928 - vibrant modern green */
+  --primary-foreground: 0 0% 100%; /* #ffffff - white text on green */
+  --secondary: 142 30% 96%; /* #f6fbf7 - very light green tint */
+  --secondary-foreground: 111.11, 50.31%, 31.57%; /* #347928 - green text */
+  --muted: 240 5% 96%; /* #f5f5f5 - light gray */
+  --muted-foreground: 240 4% 46%; /* #737373 - medium gray text */
+  --accent: 111.11, 50.31%, 31.57%; /* #347928 - green accent */
+  --accent-foreground: 0 0% 100%; /* #ffffff - white text */
+  --outline: 111.11, 50.31%, 31.57%; /* #347928 - green outline */
+  --outline-foreground: 0 0% 100%; /* #ffffff - white text */
+  --destructive: 0 84% 60%; /* #dc2626 - red for destructive actions */
+  --destructive-foreground: 0 0% 100%; /* #ffffff - white text */
+  --border: 240 6% 90%; /* #e4e4e7 - light borders */
+  --input: 240 6% 90%; /* #e4e4e7 - light input backgrounds */
+  --ring: 111.11, 50.31%, 31.57%; /* #347928 - green focus ring */
+  --chart-1: 111.11, 50.31%, 31.57%; /* #347928 - primary green */
+  --chart-2: 142 60% 45%; /* #2da851 - lighter green */
+  --chart-3: 142 80% 28%; /* #1e7a34 - darker green */
+  --chart-4: 142 50% 52%; /* #45c266 - bright green */
+  --chart-5: 142 65% 40%; /* #27a047 - medium green */
 }
 
-/* Dark Mode - Professional Green Theme */
+/* dark mode */
 .dark {
-  --background: 240 10% 8%; /* Very dark gray */
-  --foreground: 0 0% 95%; /* Almost white text */
-  --card: 240 10% 12%; /* Dark cards */
-  --card-foreground: 0 0% 95%;
-  --popover: 240 10% 12%;
-  --popover-foreground: 0 0% 95%;
-  --primary: 142 70% 45%; /* Brighter green for dark mode */
-  --primary-foreground: 240 10% 8%;
-  --secondary: 142 65% 35%; /* Darker green */
-  --secondary-foreground: 0 0% 95%;
-  --muted: 240 10% 16%; /* Dark muted backgrounds */
-  --muted-foreground: 240 5% 65%;
-  --accent: 142 70% 45%; /* Bright green accent */
-  --accent-foreground: 240 10% 8%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 10% 20%; /* Dark borders */
-  --input: 240 10% 20%;
-  --ring: 142 70% 45%; /* Green focus ring */
-  --chart-1: 142 70% 45%;
-  --chart-2: 142 65% 35%;
-  --chart-3: 142 75% 55%;
-  --chart-4: 142 60% 40%;
-  --chart-5: 142 68% 48%;
+  --background: 240 10% 6%; /* #0f0f11 - deeper dark background */
+  --foreground: 0 0% 98%; /* #fafafa - light text */
+  --card: 240 10% 10%; /* #19191c - dark cards */
+  --card-foreground: 0 0% 98%; /* #fafafa */
+  --popover: 240 10% 10%; /* #19191c */
+  --popover-foreground: 0 0% 98%; /* #fafafa */
+  --primary: 142 70% 50%; /* #22c55e - brighter vibrant green */
+  --primary-foreground: 240 10% 6%; /* #0f0f11 - dark text on green */
+  --secondary: 142 20% 15%; /* #1a241d - dark green tint */
+  --secondary-foreground: 142 70% 50%; /* #22c55e - green text */
+  --muted: 240 10% 14%; /* #1f1f23 - dark muted backgrounds */
+  --muted-foreground: 240 5% 65%; /* #a1a1aa - light gray text */
+  --accent: 142 70% 50%; /* #22c55e - bright green accent */
+  --accent-foreground: 240 10% 6%; /* #0f0f11 - dark text */
+  --outline: 142 70% 50%; /* #22c55e - green outline */
+  --outline-foreground: 240 10% 6%; /* #0f0f11 - dark text */
+  --destructive: 0 63% 31%; /* #991b1b - dark red */
+  --destructive-foreground: 0 0% 98%; /* #fafafa - light text */
+  --border: 240 10% 18%; /* #2a2a30 - dark borders */
+  --input: 240 10% 18%; /* #2a2a30 - dark input backgrounds */
+  --ring: 142 70% 50%; /* #22c55e - green focus ring */
+  --chart-1: 142 70% 50%; /* #22c55e - primary green */
+  --chart-2: 142 65% 45%; /* #1fb954 - slightly darker green */
+  --chart-3: 142 75% 55%; /* #2ed468 - brighter green */
+  --chart-4: 142 60% 40%; /* #1da548 - medium green */
+  --chart-5: 142 68% 48%; /* #25c259 - vibrant green */
 }
 
 @layer utilities {

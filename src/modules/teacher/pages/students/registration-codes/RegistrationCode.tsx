@@ -1,6 +1,5 @@
 import { useState, type ReactElement } from "react";
-import { IoClose } from "react-icons/io5";
-import { NavigateFunction } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import RegistrationCodeItem from "./RegistrationCodeItem";
 import GeneratedCode from "../components/add-student/GeneratedCode";
 import { RegistrationCode as RegistrationCodeModel } from "../../../../core/types/registration-code/registration-code.type";
@@ -11,14 +10,17 @@ import {
   useTeacherDeleteRegistrationCode,
   useTeacherRegistrationCodes,
 } from "../../../services/teacher-registration-code.service";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
 
-type RegistrationCodeType = {
-  navigate: NavigateFunction;
-};
-
-export default function RegistrationCode({
-  navigate,
-}: RegistrationCodeType): ReactElement {
+export default function RegistrationCode(): ReactElement {
+  const navigate = useNavigate();
   const { teacherId } = useTeacherContext();
   const { data: registrationCodes, refetch } =
     useTeacherRegistrationCodes(teacherId);
@@ -47,48 +49,53 @@ export default function RegistrationCode({
   };
 
   return (
-    <div className="bg-[var(--primary-black)]/20 fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center overflow-hidden">
-      <article className="relative flex flex-col gap-4 rounded-sm border border-gray-300 bg-[var(--primary-white)] dark:bg-gray-800 dark:border-gray-700 p-4 w-[80%] md:w-96">
-        <button
-          className="absolute right-4 top-4 hover:scale-105 hover:cursor-pointer"
-          onClick={() => navigate("..")}
-        >
-          <IoClose className="text-gray-900 dark:text-gray-200" />
-        </button>
-        <header className="border-b border-b-[var(--primary-gray)] pb-2">
-          <h3 className="text-gray-900 dark:text-gray-200">
-            Registration Codes
-          </h3>
-        </header>
+    <>
+      <Dialog open={true} onOpenChange={() => navigate("..")}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Registration Codes</DialogTitle>
+          </DialogHeader>
 
-        <section className="flex flex-1 min-h-[400px] max-h-[400px] overflow-y-auto .no-scrollbar">
-          {registrationCodes && registrationCodes.length > 0 ? (
-            <ul className="flex flex-col gap-2 w-full pr-2">
-              {registrationCodes.map((code) => (
-                <RegistrationCodeItem
-                  key={code.id}
-                  code={code}
-                  onClick={() => setSelectedCode(code)}
-                />
-              ))}
-            </ul>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-gray-300 italic">No data available</p>
-            </div>
-          )}
-        </section>
-      </article>
+          <Card>
+            <CardContent className="p-0">
+              <ScrollArea className="h-[400px] p-4">
+                {registrationCodes && registrationCodes.length > 0 ? (
+                  <div className="space-y-3">
+                    {registrationCodes.map((code) => (
+                      <RegistrationCodeItem
+                        key={code.id}
+                        code={code}
+                        onClick={() => setSelectedCode(code)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex h-full min-h-[300px] items-center justify-center">
+                    <p className="text-muted-foreground italic">
+                      No registration codes available
+                    </p>
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
 
       {selectedCode && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <GeneratedCode
-            code={selectedCode}
-            handleBack={() => setSelectedCode(null)}
-            handleDelete={handleDelete}
-          />
-        </div>
+        <Dialog
+          open={!!selectedCode}
+          onOpenChange={() => setSelectedCode(null)}
+        >
+          <DialogContent className="max-w-md">
+            <GeneratedCode
+              code={selectedCode}
+              handleBack={() => setSelectedCode(null)}
+              handleDelete={handleDelete}
+            />
+          </DialogContent>
+        </Dialog>
       )}
-    </div>
+    </>
   );
 }

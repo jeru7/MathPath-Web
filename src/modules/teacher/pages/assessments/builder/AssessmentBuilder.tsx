@@ -19,12 +19,16 @@ import AssessmentPreview from "./preview/AssessmentPreview";
 import { useTeacherContext } from "../../../context/teacher.context";
 import { toast } from "react-toastify";
 import ExitBuilderConfirmationModal from "./components/ExitBuilderConfirmationModal";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export type BuilderMode = "create" | "configure" | "publish";
 export type BuilderStep = 1 | 2 | 3;
 
 export default function AssessmentBuilder(): ReactElement {
-  const { teacherId, assessments } = useTeacherContext();
+  const { teacherId, rawAssessments } = useTeacherContext();
   const { state: assessment } = useAssessmentBuilder();
   const { assessmentId } = useParams();
   const navigate = useNavigate();
@@ -139,13 +143,13 @@ export default function AssessmentBuilder(): ReactElement {
   }, [lastSegment]);
 
   useEffect(() => {
-    if (assessmentId === "new" && teacherId && assessments.length > 0) {
-      const otherDrafts = assessments.filter(
+    if (assessmentId === "new" && teacherId && rawAssessments.length > 0) {
+      const otherDrafts = rawAssessments.filter(
         (item) => item.status === "draft" && item.id !== assessment.id,
       );
       otherDrafts.forEach((draft) => draft.id && deleteDraft(draft.id));
     }
-  }, [assessmentId, teacherId, assessments, deleteDraft, assessment.id]);
+  }, [assessmentId, teacherId, rawAssessments, deleteDraft, assessment.id]);
 
   // browser back button and navigation handling
   useEffect(() => {
@@ -245,33 +249,37 @@ export default function AssessmentBuilder(): ReactElement {
   useEffect(() => () => cancelPendingUpdates(), []);
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-2 bg-inherit p-2 h-fit transition-colors duration-200 relative">
+    <main className="flex min-h-screen w-full flex-col gap-4 bg-background p-4 h-fit mt-8 md:mt-0">
       {showSaveToast && (
         <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-200 dark:border-gray-700 min-w-64">
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-3 h-3 rounded-full ${isSaving ? "bg-yellow-500 animate-pulse" : "bg-green-500"
-                  }`}
-              ></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {isSaving ? "Saving changes..." : "All changes saved"}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {isSaving
-                    ? "Auto-saving your progress"
-                    : "Your work has been saved"}
-                </p>
+          <Card className="min-w-64 border-border">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-3 h-3 rounded-full ${isSaving ? "bg-yellow-500 animate-pulse" : "bg-green-500"
+                    }`}
+                ></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {isSaving ? "Saving changes..." : "All changes saved"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {isSaving
+                      ? "Auto-saving your progress"
+                      : "Your work has been saved"}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSaveToast(false)}
+                  className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                >
+                  ×
+                </Button>
               </div>
-              <button
-                onClick={() => setShowSaveToast(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              >
-                ×
-              </button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
@@ -285,79 +293,102 @@ export default function AssessmentBuilder(): ReactElement {
       />
 
       <AssessmentPreview />
-      <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          {isEditMode ? "Edit Assessment" : "Create Assessment"}
-        </h3>
-        <div className="flex items-center gap-2">
-          {hasUnsavedChanges && !isSaving && (
-            <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
-              <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-              <span>Unsaved changes</span>
-            </div>
-          )}
-          {isSaving && (
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-              <span>Saving...</span>
-            </div>
-          )}
-        </div>
-      </header>
 
-      <div className="flex min-h-full h-fit flex-col flex-1">
-        <header className="flex flex-col sm:flex-row gap-2 items-center justify-center relative">
-          <button
-            className="w-fit self-start sm:absolute py-1 px-4 border border-gray-300 dark:border-gray-600 rounded-sm sm:left-0 top-1/2 sm:-translate-y-1/2 opacity-80 hover:cursor-pointer hover:opacity-100 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200"
-            onClick={handleBackClick}
-          >
-            <p>Back</p>
-          </button>
-          <div className="relative w-full sm:w-fit flex justify-center">
-            <Stepper
-              currentStep={step}
-              onChangeStep={handleStepChange}
-              isValidated={isValidated}
-              createErrors={
-                Array.isArray(createErrors.emptyPages)
-                  ? createErrors.emptyPages.length
-                  : 0
-              }
-              configureErrors={Object.keys(configureErrors).length}
-              publishErrors={Object.keys(publishErrors).length}
-            />
-            <button
-              onClick={handlePreview}
-              className="absolute flex gap-2 items-center text-gray-400 dark:text-gray-500 px-4 right-0 -top-8 sm:-right-30 sm:top-1/2 sm:-translate-y-1/2 hover:cursor-pointer hover:text-gray-500 dark:hover:text-gray-400 transition-all duration-200"
-            >
-              <FaEye />
-              <p className="text-xs sm:text-sm">Preview</p>
-            </button>
+      <Card className="border-border">
+        <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <CardTitle className="text-2xl font-bold">
+            {isEditMode ? "Edit Assessment" : "Create Assessment"}
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            {hasUnsavedChanges && !isSaving && (
+              <Badge
+                variant="outline"
+                className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800"
+              >
+                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse mr-0 sm:mr-2"></div>
+                <p className="hidden sm:block">Unsaved changes</p>
+              </Badge>
+            )}
+            {isSaving && (
+              <Badge
+                variant="outline"
+                className="bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800"
+              >
+                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse mr-0 sm:mr-2"></div>
+                <p className="hidden sm:block">Saving</p>
+              </Badge>
+            )}
           </div>
-        </header>
-        <section className="bg-white dark:bg-gray-800 shadow-sm rounded-b-sm sm:rounded-sm p-4 h-fit min-h-full flex-1 flex justify-center border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-          {step === 1 ? (
-            <Create
-              isValidated={isValidated}
-              errors={createErrors}
-              isEditMode={isEditMode}
-            />
-          ) : step === 2 ? (
-            <Configure isValidated={isValidated} errors={configureErrors} />
-          ) : step === 3 ? (
-            <Publish
-              isValidated={isValidated}
-              errors={publishErrors}
-              onPublishAssessment={handlePublishAssessment}
-              onSaveAndExit={handleSaveAndExit}
-              isPublishPending={isPublishPending}
-              isSaving={isSaving}
-              publishError={publishError}
-              isEditMode={isEditMode}
-            />
-          ) : null}
-        </section>
-      </div>
+        </CardHeader>
+
+        <CardContent className="space-y-0">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center relative">
+            <Button
+              variant="outline"
+              className="w-fit self-start sm:absolute left-0 top-1/2 sm:-translate-y-1/2"
+              onClick={handleBackClick}
+            >
+              Back
+            </Button>
+
+            <div className="relative w-full sm:w-fit flex justify-center">
+              <Stepper
+                currentStep={step}
+                onChangeStep={handleStepChange}
+                isValidated={isValidated}
+                createErrors={
+                  Array.isArray(createErrors.emptyPages)
+                    ? createErrors.emptyPages.length
+                    : 0
+                }
+                configureErrors={Object.keys(configureErrors).length}
+                publishErrors={Object.keys(publishErrors).length}
+              />
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handlePreview}
+                className="absolute flex gap-2 items-center right-0 -top-12 sm:-right-32 sm:top-1/2 sm:-translate-y-1/2"
+              >
+                <FaEye className="w-4 h-4" />
+                <span className="text-sm">Preview</span>
+              </Button>
+            </div>
+          </div>
+
+          {publishError && (
+            <Alert variant="destructive">
+              <AlertDescription>{publishError}</AlertDescription>
+            </Alert>
+          )}
+
+          <Card className="border">
+            <CardContent className="p-2 sm:p-4 md:p-6 flex justify-center">
+              {step === 1 ? (
+                <Create
+                  isValidated={isValidated}
+                  errors={createErrors}
+                  isEditMode={isEditMode}
+                />
+              ) : step === 2 ? (
+                <Configure isValidated={isValidated} errors={configureErrors} />
+              ) : step === 3 ? (
+                <Publish
+                  isValidated={isValidated}
+                  errors={publishErrors}
+                  onPublishAssessment={handlePublishAssessment}
+                  onSaveAndExit={handleSaveAndExit}
+                  isPublishPending={isPublishPending}
+                  isSaving={isSaving}
+                  publishError={publishError}
+                  isEditMode={isEditMode}
+                />
+              ) : null}
+            </CardContent>
+          </Card>
+        </CardContent>
+      </Card>
     </main>
   );
 }

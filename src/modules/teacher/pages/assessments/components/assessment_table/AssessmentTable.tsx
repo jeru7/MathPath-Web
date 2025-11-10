@@ -1,6 +1,5 @@
 import { type ReactElement, useState, useMemo, useRef, useEffect } from "react";
-import { CiSearch } from "react-icons/ci";
-import { CiFilter } from "react-icons/ci";
+import { CiSearch, CiFilter } from "react-icons/ci";
 import { GoPlus, GoArchive } from "react-icons/go";
 import { NavigateFunction } from "react-router-dom";
 import AssessmentTableItem from "./AssessmentTableItem";
@@ -12,7 +11,41 @@ import DraftDecisionModal from "../DraftDecisionModal";
 import { useDeleteAssessment } from "../../../../services/teacher-assessment.service";
 import { useTeacherContext } from "../../../../context/teacher.context";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCaretUp, FaCaretDown } from "react-icons/fa";
+import { IoChevronUp, IoChevronDown } from "react-icons/io5";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import AssessmentStatusBadge from "@/modules/teacher/pages/assessments/components/assessment_table/AssessmentStatus";
 
 type AssessmentTableProps = {
   navigate: NavigateFunction;
@@ -39,13 +72,13 @@ export default function AssessmentTable({
     AssessmentStatus | "all"
   >("all");
   const [selectedTopic, setSelectedTopic] = useState<string>("all");
-  const [showFilters, setShowFilters] = useState(false);
   const [showDraftDecision, setShowDraftDecision] = useState(false);
   const [existingDraft, setExistingDraft] = useState<Assessment | null>(null);
   const [showMobileFab, setShowMobileFab] = useState(!hideFab);
   const [expandFab, setExpandFab] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
-  const filterDropdownRef = useRef<HTMLDivElement>(null);
   const mobileFabRef = useRef<HTMLDivElement>(null);
 
   const uniqueTopics = useMemo(() => {
@@ -74,6 +107,15 @@ export default function AssessmentTable({
       return matchesSearch && matchesStatus && matchesTopic;
     });
   }, [assessments, searchTerm, selectedStatus, selectedTopic]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAssessments.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredAssessments.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
 
   const handleCreateAssessment = () => {
     const draftAssessments = assessments.filter(
@@ -119,33 +161,51 @@ export default function AssessmentTable({
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleClearSearch = () => {
     setSearchTerm("");
+    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
     setSelectedStatus("all");
     setSelectedTopic("all");
     setSearchTerm("");
+    setCurrentPage(1);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterDropdownRef.current &&
-        !filterDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowFilters(false);
-      }
-    };
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+      const startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxVisiblePages / 2),
+      );
+      const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  };
 
   useEffect(() => {
     if (hideFab) {
@@ -159,212 +219,395 @@ export default function AssessmentTable({
   const hasActiveFilters =
     selectedStatus !== "all" || selectedTopic !== "all" || searchTerm !== "";
 
-  const showNoDataAvailable =
-    assessments.length === 0 || filteredAssessments.length === 0;
+  const EmptyState = () => (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+          <CiSearch className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">No assessments available</h3>
+          <p className="text-muted-foreground mt-1">
+            There are no assessments to display at the moment.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const NoResultsState = () => (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+          <CiFilter className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">No matches found</h3>
+          <p className="text-muted-foreground mt-1">
+            No assessments match your search criteria.
+          </p>
+        </div>
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClearFilters}
+            className="mt-4"
+          >
+            Clear all filters
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+  const MobileAssessmentCard = ({ assessment }: { assessment: Assessment }) => {
+    return (
+      <Card
+        className="cursor-pointer transition-all hover:shadow-md mb-3 shadow-sm"
+        onClick={() => onAssessmentClick(assessment)}
+      >
+        <CardContent className="p-4">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1 mr-2">
+              <h3 className="font-semibold text-base mb-1 line-clamp-1">
+                {assessment.title}
+              </h3>
+              {assessment.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                  {assessment.description}
+                </p>
+              )}
+            </div>
+            <AssessmentStatusBadge status={assessment.status} />
+          </div>
+
+          <div className="space-y-2 text-sm">
+            {assessment.topic && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground min-w-[60px]">
+                  Topic:
+                </span>
+                <span className="font-medium text-foreground">
+                  {assessment.topic}
+                </span>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground min-w-[60px]">
+                Sections:
+              </span>
+              <span className="font-medium text-foreground">
+                {assessment.sections?.length || 0}
+              </span>
+            </div>
+
+            {assessment.date.end && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground min-w-[60px]">
+                  Deadline:
+                </span>
+                <span className="font-medium text-foreground">
+                  {new Date(assessment.date.end).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <>
-      <section className="flex flex-col flex-1">
-        <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
-          {/* search and filters */}
-          <section className="relative flex gap-2 items-center w-full md:w-fit">
-            <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
-              <div className="p-2">
-                <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-              </div>
-              <input
-                placeholder="Search assessment"
-                className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-              {searchTerm && (
-                <button
-                  onClick={handleClearSearch}
-                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-
-            {/* filter dropdown */}
-            <button
-              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <CiFilter className="w-4 h-4" />
-            </button>
-
-            {showFilters && (
-              <div
-                className="absolute w-full top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200"
-                ref={filterDropdownRef}
-              >
-                {hasActiveFilters && (
-                  <div className="flex justify-end mb-3">
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                    >
-                      Clear all
-                    </button>
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) =>
-                      setSelectedStatus(
-                        e.target.value as AssessmentStatus | "all",
-                      )
-                    }
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
+      <Card className="flex flex-col rounded-sm shadow-none w-full h-full flex-1">
+        <CardHeader className="pb-4 shadow-none">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <div className="relative w-full sm:w-80 shadow-none">
+                <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search assessments"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="pl-9 pr-8 h-9"
+                />
+                {searchTerm && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-transparent"
                   >
-                    <option value="all">All Status</option>
-                    <option value="draft">Draft</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="published">Published</option>
-                    <option value="finished">Finished</option>
-                  </select>
-                </div>
-
-                {uniqueTopics.length > 0 && (
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Topic
-                    </label>
-                    <select
-                      value={selectedTopic}
-                      onChange={(e) => setSelectedTopic(e.target.value)}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
-                    >
-                      <option value="all">All Topics</option>
-                      {uniqueTopics.map((topic) => (
-                        <option key={topic} value={topic}>
-                          {topic}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    ×
+                  </Button>
                 )}
+              </div>
 
-                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                  Showing {filteredAssessments.length} of {assessments.length}{" "}
-                  assessments
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  className={`h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-inherit hover:bg-accent hover:text-accent-foreground ${hasActiveFilters ? "bg-primary text-primary-foreground" : ""
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <CiFilter className="h-4 w-4" />
+                    Filter
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    <CiFilter className="h-4 w-4" />
+                    Filter Assessments
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <div className="p-3 space-y-3">
+                    <div>
+                      <label className="text-sm font-medium">Status</label>
+                      <Select
+                        value={selectedStatus}
+                        onValueChange={(value: AssessmentStatus | "all") =>
+                          setSelectedStatus(value)
+                        }
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-y-auto">
+                          <SelectItem value="all">All Status</SelectItem>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="in-progress">
+                            In Progress
+                          </SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                          <SelectItem value="finished">Finished</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {uniqueTopics.length > 0 && (
+                      <div>
+                        <label className="text-sm font-medium">Topic</label>
+                        <Select
+                          value={selectedTopic}
+                          onValueChange={setSelectedTopic}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select topic" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 overflow-y-auto">
+                            <SelectItem value="all">All Topics</SelectItem>
+                            {uniqueTopics.map((topic) => (
+                              <SelectItem key={topic} value={topic}>
+                                {topic}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    <DropdownMenuSeparator className="my-3" />
+
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>
+                        {filteredAssessments.length} of {assessments.length}{" "}
+                        assessments
+                      </span>
+                      {hasActiveFilters && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleClearFilters}
+                          className="h-auto p-2 text-primary hover:bg-transparent text-xs"
+                        >
+                          Clear all
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            <div className="hidden sm:flex gap-2 items-center">
+              {showArchive && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("archives")}
+                  className="flex items-center gap-2"
+                >
+                  <GoArchive className="h-4 w-4" />
+                  Archive
+                </Button>
+              )}
+              <Button
+                size="sm"
+                onClick={handleCreateAssessment}
+                className="flex items-center gap-2"
+              >
+                <GoPlus className="h-4 w-4" />
+                Create Assessment
+              </Button>
+            </div>
+          </div>
+
+          {hasActiveFilters && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950/20 dark:border-blue-800">
+              <div className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
+                <CiFilter className="h-4 w-4" />
+                <span className="text-sm">
+                  <Badge variant="secondary" className="mr-2">
+                    {filteredAssessments.length}
+                  </Badge>
+                  assessment{filteredAssessments.length !== 1 ? "s" : ""} found
+                  {searchTerm && ` for "${searchTerm}"`}
+                  {selectedStatus !== "all" &&
+                    ` with status: ${selectedStatus}`}
+                  {selectedTopic !== "all" && ` with topic: ${selectedTopic}`}
+                </span>
+              </div>
+            </div>
+          )}
+        </CardHeader>
+
+        <CardContent className="p-0 shadow-none flex flex-1 flex-col">
+          {assessments.length === 0 ? (
+            <div className="flex-1 min-h-[400px]">
+              <EmptyState />
+            </div>
+          ) : filteredAssessments.length === 0 ? (
+            <div className="flex-1 min-h-[400px]">
+              <NoResultsState />
+            </div>
+          ) : (
+            <div className="flex flex-col flex-1 h-full w-full">
+              {/* Desktop Table View */}
+              <div className="hidden lg:flex flex-col flex-1">
+                <div className="flex-1 overflow-auto">
+                  <Table>
+                    <TableHeader className="bg-muted/50 h-14">
+                      <TableRow>
+                        <TableHead className="font-medium w-[25%]">
+                          Title
+                        </TableHead>
+                        <TableHead className="font-medium w-[20%]">
+                          Topic
+                        </TableHead>
+                        <TableHead className="font-medium w-[15%] text-center">
+                          Sections
+                        </TableHead>
+                        <TableHead className="font-medium w-[15%] text-center">
+                          Status
+                        </TableHead>
+                        <TableHead className="font-medium w-[15%] text-center">
+                          Deadline
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentItems.map((assessment) => (
+                        <AssessmentTableItem
+                          key={assessment.id}
+                          assessment={assessment}
+                          onAssessmentClick={onAssessmentClick}
+                          onArchiveAssessment={onArchiveAssessment}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
-            )}
-          </section>
 
-          {/* archive button and create button */}
-          <div className="hidden md:flex gap-2 items-center">
-            {/* archive button */}
-            {showArchive && (
-              <button
-                className="p-2 rounded-xs border-gray-200 dark:border-gray-600 border text-gray-400 dark:text-gray-500 h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 bg-white dark:bg-gray-800"
-                onClick={() => navigate("archives")}
-              >
-                <GoArchive className="w-4 h-4" />
-              </button>
-            )}
-
-            {/* create button */}
-            <button
-              className="hidden md:flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-              onClick={handleCreateAssessment}
-            >
-              <GoPlus className="w-4 h-4" />
-              <p className="text-sm font-semibold">Create assessment</p>
-            </button>
-          </div>
-        </section>
-
-        {/* results info */}
-        {hasActiveFilters && (
-          <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {filteredAssessments.length} assessment
-              {filteredAssessments.length !== 1 ? "s" : ""} found
-              {searchTerm && ` for "${searchTerm}"`}
-              {(selectedStatus !== "all" || selectedTopic !== "all") &&
-                " with filters applied"}
-            </div>
-          </div>
-        )}
-
-        {!showNoDataAvailable ? (
-          <div className="flex-1 flex flex-col overflow-auto">
-            <div className="min-h-full flex flex-col flex-1 min-w-[1000px]">
-              <div className={`max-h-[780px] overflow-y-auto pb-4 flex-1`}>
-                {/* headers */}
-                <table className="font-primary table-auto w-full">
-                  <thead className="text-gray-400 dark:text-gray-500 text-sm xl:text-base transition-colors duration-200">
-                    <tr className="text-left">
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[15%] xl:w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Title
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[15%] xl:w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Topic
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[15%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
-                        Sections
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
-                        Status
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[10%] py-3 border-b border-gray-200 dark:border-gray-700 text-center">
-                        Deadline
-                      </th>
-                    </tr>
-                  </thead>
-                </table>
-                <table className="font-primary table-auto w-full">
-                  <tbody>
-                    {filteredAssessments.map((assessment) => (
-                      <AssessmentTableItem
-                        key={assessment.id}
-                        assessment={assessment}
-                        onAssessmentClick={onAssessmentClick}
-                        onArchiveAssessment={onArchiveAssessment}
-                      />
-                    ))}
-                  </tbody>
-                </table>
+              {/* Mobile Card View */}
+              <div className="block lg:hidden p-4 min-h-[480px] flex-1">
+                {currentItems.map((assessment) => (
+                  <MobileAssessmentCard
+                    key={assessment.id}
+                    assessment={assessment}
+                  />
+                ))}
               </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-1 w-full items-center justify-center">
-            <div className="text-center">
-              <p className="text-gray-300 dark:text-gray-600 italic mb-2">
-                No data available
-              </p>
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearFilters}
-                  className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                >
-                  Clear filters
-                </button>
+
+              {/* Pagination */}
+              {filteredAssessments.length > 0 && (
+                <div className="border-t rounded-b-sm bg-background p-2">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <div className="text-sm text-muted-foreground text-nowrap">
+                      Showing{" "}
+                      <span className="font-medium">
+                        {indexOfFirstItem + 1}-
+                        {Math.min(indexOfLastItem, filteredAssessments.length)}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-medium">
+                        {filteredAssessments.length}
+                      </span>{" "}
+                      assessments
+                    </div>
+
+                    {totalPages > 1 && (
+                      <div>
+                        <Pagination>
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious
+                                size="sm"
+                                onClick={handlePrevPage}
+                                className={
+                                  currentPage === 1
+                                    ? "pointer-events-none opacity-50"
+                                    : "cursor-pointer"
+                                }
+                              />
+                            </PaginationItem>
+
+                            {getPageNumbers().map((pageNumber) => (
+                              <PaginationItem key={pageNumber}>
+                                <PaginationLink
+                                  size="sm"
+                                  onClick={() => handlePageClick(pageNumber)}
+                                  isActive={currentPage === pageNumber}
+                                  className="cursor-pointer"
+                                >
+                                  {pageNumber}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+
+                            <PaginationItem>
+                              <PaginationNext
+                                size="sm"
+                                onClick={handleNextPage}
+                                className={
+                                  currentPage === totalPages
+                                    ? "pointer-events-none opacity-50"
+                                    : "cursor-pointer"
+                                }
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        )}
-      </section>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* floating action buttons for mobile */}
+      {/* Floating Action Buttons for Mobile */}
       <AnimatePresence>
         {!hideFab && showMobileFab && (
           <div
-            className="md:hidden fixed bottom-6 right-6 z-50"
+            className="md:hidden fixed bottom-30 right-6 z-50"
             ref={mobileFabRef}
           >
             {expandFab && (
@@ -374,13 +617,12 @@ export default function AssessmentTable({
                 exit={{ opacity: 0, scale: 0.8, y: 20 }}
                 className="flex flex-col gap-3 mb-3"
               >
-                {/* archive button */}
                 {showArchive && (
                   <motion.button
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                    className="flex items-center justify-center w-14 h-14 bg-background rounded-full border border-border text-foreground hover:bg-muted shadow-sm"
                     onClick={() => {
                       navigate("archives");
                       setShowMobileFab(false);
@@ -391,12 +633,11 @@ export default function AssessmentTable({
                   </motion.button>
                 )}
 
-                {/* create assessment button */}
                 <motion.button
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center justify-center w-14 h-14 bg-inherit dark:bg-gray-800 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm"
+                  className="flex items-center justify-center w-14 h-14 bg-background rounded-full border border-border text-foreground hover:bg-muted shadow-sm"
                   onClick={() => {
                     handleCreateAssessment();
                     setShowMobileFab(false);
@@ -407,23 +648,25 @@ export default function AssessmentTable({
                 </motion.button>
               </motion.div>
             )}
-
-            {/* main fab toggle button */}
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className={`flex items-center justify-center w-14 h-14 rounded-full shadow-sm bg-[var(--primary-green)] text-white`}
+              className={`flex items-center justify-center w-14 h-14 rounded-full shadow-sm bg-primary text-white`}
               onClick={() => setExpandFab(!expandFab)}
               title={expandFab ? "Close" : "Menu"}
             >
-              {expandFab ? <FaCaretDown /> : <FaCaretUp />}
+              {expandFab ? (
+                <IoChevronDown className="h-5 w-5" />
+              ) : (
+                <IoChevronUp className="h-5 w-5" />
+              )}
             </motion.button>
           </div>
         )}
       </AnimatePresence>
 
-      {/* draft decision modal */}
+      {/* Draft Decision Modal */}
       <DraftDecisionModal
         isOpen={showDraftDecision}
         draft={existingDraft}

@@ -2,23 +2,33 @@ import { useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import Select from "react-select";
+import { Eye, EyeOff } from "lucide-react";
 import { useTeacherContext } from "../../../../context/teacher.context";
 import {
   AddStudentDTO,
   AddStudentSchema,
 } from "../../../../../student/types/student.schema";
-import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
-import { Section } from "../../../../../core/types/section/section.type";
-import FormButtons from "../../../../../core/components/buttons/FormButtons";
-import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { APIErrorResponse } from "../../../../../core/types/api/api.type";
 import { handleApiError } from "../../../../../core/utils/api/error.util";
-import { Gender } from "../../../../../core/types/user.type";
 import { useTeacherAddStudent } from "../../../../services/teacher-student.service";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type AddStudentFormProps = {
   handleBack: () => void;
@@ -30,7 +40,7 @@ export default function AddStudentForm({
   const { teacherId } = useTeacherContext();
   const { mutate: addStudent, isPending: isSubmitting } =
     useTeacherAddStudent(teacherId);
-  const { sections } = useTeacherContext();
+  const { rawSections } = useTeacherContext();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [referenceNumber, setReferenceNumber] = useState("");
@@ -54,11 +64,6 @@ export default function AddStudentForm({
       sectionId: undefined,
     },
   });
-
-  const handleClose = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate("..");
-  };
 
   const onSubmit = async (data: AddStudentDTO) => {
     addStudent(data, {
@@ -105,323 +110,218 @@ export default function AddStudentForm({
   };
 
   return (
-    <article className="relative h-[100vh] w-[100vw] max-w-[1000px] p-4 shadow-sm md:h-fit md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] overflow-y-auto rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <header className="flex items-center justify-between border-b border-b-gray-200 dark:border-b-gray-700 pb-4 transition-colors duration-200">
-          <h3 className="text-gray-900 dark:text-gray-100 font-semibold text-lg">
-            Add Student - Manual
-          </h3>
-          <button
-            className="hover:scale-105 hover:cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
-            type="button"
-            onClick={handleClose}
-          >
-            <IoClose size={24} />
-          </button>
-        </header>
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2 md:flex-row">
+    <Dialog open={true} onOpenChange={handleBack}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add Student - Manual</DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* first name */}
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="firstName"
-                  className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  First Name
-                </label>
+            <div className="space-y-2">
+              <Label htmlFor="firstName">
+                First Name
                 {errors.firstName && (
-                  <p className="text-xs text-red-500 dark:text-red-400">
-                    {errors?.firstName?.message}
-                  </p>
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.firstName.message}
+                  </span>
                 )}
-              </div>
-              <input
-                type="text"
+              </Label>
+              <Input
+                id="firstName"
                 {...register("firstName")}
-                name="firstName"
-                placeholder="Enter first name"
-                className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                placeholder="enter first name"
               />
             </div>
+
             {/* last name */}
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="lastName"
-                  className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  Last Name{" "}
-                </label>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">
+                Last Name
                 {errors.lastName && (
-                  <p className="text-xs text-red-500 dark:text-red-400">
-                    {errors?.lastName?.message}
-                  </p>
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.lastName.message}
+                  </span>
                 )}
-              </div>
-              <input
-                type="text"
+              </Label>
+              <Input
+                id="lastName"
                 {...register("lastName")}
-                name="lastName"
-                placeholder="Enter last name"
-                className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                placeholder="enter last name"
               />
             </div>
-          </div>
-          <div className="flex flex-col gap-2 md:flex-row">
+
             {/* middle name */}
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="middleName"
-                  className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  Middle Name
-                  <span className="ml-1 inline-flex items-center gap-1">
-                    <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
-                      (Optional)
-                    </span>
-                    {errors.middleName && (
-                      <span className="text-xs font-normal text-red-500 dark:text-red-400">
-                        {errors?.middleName?.message}
-                      </span>
-                    )}
-                  </span>
-                </label>
-              </div>
-              <input
-                type="text"
-                {...register("middleName")}
-                name="middleName"
-                placeholder="Enter middle name"
-                className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
-              />
-            </div>
-            {/* gender */}
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="gender"
-                  className="text-md font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  Gender
-                </label>
-                {errors.gender && (
-                  <span className="text-xs text-red-500 dark:text-red-400">
-                    {errors?.gender?.message}
+            <div className="space-y-2">
+              <Label htmlFor="middleName">
+                Middle Name
+                <span className="text-muted-foreground text-xs ml-1">
+                  (optional)
+                </span>
+                {errors.middleName && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.middleName.message}
                   </span>
                 )}
-              </div>
+              </Label>
+              <Input
+                id="middleName"
+                {...register("middleName")}
+                placeholder="enter middle name"
+              />
+            </div>
+
+            {/* gender */}
+            <div className="space-y-2">
+              <Label htmlFor="gender">
+                Gender
+                {errors.gender && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.gender.message}
+                  </span>
+                )}
+              </Label>
               <Controller
                 name="gender"
                 control={control}
                 render={({ field }) => (
-                  <Select<{ value: Gender; label: string }>
-                    {...field}
-                    id="gender"
-                    name="gender"
-                    options={[
-                      { value: "Male", label: "Male" },
-                      { value: "Female", label: "Female" },
-                    ]}
-                    getOptionLabel={(option) => option.label}
-                    getOptionValue={(option) => option.value}
-                    styles={getCustomSelectColor<{
-                      value: Gender;
-                      label: string;
-                    }>({
-                      minHeight: "42px",
-                      padding: "0px 4px",
-                      menuWidth: "100%",
-                      menuBackgroundColor: "white",
-                      backgroundColor: "white",
-                      textColor: "#1f2937",
-                      dark: {
-                        backgroundColor: "#374151",
-                        textColor: "#f9fafb",
-                        borderColor: "#4b5563",
-                        borderFocusColor: "#10b981",
-                        optionHoverColor: "#1f2937",
-                        optionSelectedColor: "#059669",
-                        menuBackgroundColor: "#374151",
-                        placeholderColor: "#9ca3af",
-                      },
-                    })}
-                    className="basic-select"
-                    classNamePrefix="select"
-                    placeholder="Select gender..."
-                    onChange={(selected) => field.onChange(selected?.value)}
-                    value={
-                      field.value
-                        ? {
-                          value: field.value,
-                          label: field.value === "Male" ? "Male" : "Female",
-                        }
-                        : null
-                    }
-                  />
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || ""}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="select gender..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
               />
             </div>
-          </div>
-          {/* email */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="email"
-                className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-              >
+
+            {/* email */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="email">
                 Email
-              </label>
-              {errors.email && (
-                <p className="text-xs text-red-500 dark:text-red-400">
-                  {errors?.email?.message}
-                </p>
-              )}
-            </div>
-            <input
-              type="email"
-              {...register("email")}
-              name="email"
-              placeholder="Enter email"
-              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
-            />
-          </div>
-          {/* LRN */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="referenceNumber"
-                className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-              >
-                LRN
-                <span className="font-medium text-gray-700 dark:text-gray-300">
-                  {" "}
-                  (Learner Reference Number)
-                </span>
-              </label>
-              {errors.referenceNumber && (
-                <p className="text-xs text-red-500 dark:text-red-400">
-                  {errors?.referenceNumber?.message}
-                </p>
-              )}
-            </div>
-            <input
-              type="text"
-              {...register("referenceNumber")}
-              name="referenceNumber"
-              placeholder="Enter reference number"
-              value={referenceNumber}
-              onChange={(e) => {
-                // remove non numeric characters
-                let val = e.target.value.replace(/\D/g, "");
-                // limit to 12 digits
-                if (val.length > 12) val = val.slice(0, 12);
-                setReferenceNumber(val);
-              }}
-              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 [appearance:textfield] focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
-            />
-          </div>
-          {/* password */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="password"
-                className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-              >
-                Password
-              </label>
-              {errors.password && (
-                <p className="text-xs text-red-500 dark:text-red-400">
-                  {errors?.password?.message}
-                </p>
-              )}
-            </div>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                {...register("password")}
-                maxLength={32}
-                name="password"
-                placeholder="Enter password"
-                className="border border-gray-300 dark:border-gray-600 w-full rounded-lg p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 hover:cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <FaRegEye size={20} />
-                ) : (
-                  <FaRegEyeSlash size={20} />
+                {errors.email && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.email.message}
+                  </span>
                 )}
-              </button>
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                {...register("email")}
+                placeholder="enter email"
+              />
             </div>
-          </div>
-          {/* section */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="section"
-                className="text-md font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200"
-              >
-                Section
-              </label>
-              {errors.sectionId && (
-                <p className="text-xs text-red-500 dark:text-red-400">
-                  {errors?.sectionId?.message}
-                </p>
-              )}
+
+            {/* LRN */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="referenceNumber">
+                LRN (Learner Reference Number)
+                {errors.referenceNumber && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.referenceNumber.message}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="referenceNumber"
+                {...register("referenceNumber")}
+                placeholder="enter reference number"
+                value={referenceNumber}
+                onChange={(e) => {
+                  let val = e.target.value.replace(/\D/g, "");
+                  if (val.length > 12) val = val.slice(0, 12);
+                  setReferenceNumber(val);
+                }}
+              />
             </div>
-            <Controller
-              name="sectionId"
-              control={control}
-              render={({ field }) => (
-                <Select<Section>
-                  {...field}
-                  id="section"
-                  name="section"
-                  options={sections}
-                  getOptionLabel={(option: Section) => option.name}
-                  getOptionValue={(option: Section) => option.id}
-                  styles={getCustomSelectColor<Section>({
-                    minHeight: "42px",
-                    padding: "0px 4px",
-                    menuWidth: "100%",
-                    menuBackgroundColor: "white",
-                    backgroundColor: "white",
-                    textColor: "#1f2937",
-                    dark: {
-                      backgroundColor: "#374151",
-                      textColor: "#f9fafb",
-                      borderColor: "#4b5563",
-                      borderFocusColor: "#10b981",
-                      optionHoverColor: "#1f2937",
-                      optionSelectedColor: "#059669",
-                      menuBackgroundColor: "#374151",
-                      placeholderColor: "#9ca3af",
-                    },
-                  })}
-                  className="basic-select"
-                  classNamePrefix="select"
-                  placeholder="Select a section..."
-                  onChange={(selected) => field.onChange(selected?.id)}
-                  value={
-                    sections.find((section) => section.id === field.value) ||
-                    null
-                  }
+
+            {/* password */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="password">
+                Password
+                {errors.password && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.password.message}
+                  </span>
+                )}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  maxLength={32}
+                  placeholder="enter password"
+                  className="pr-10"
                 />
-              )}
-            />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* section */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="section">
+                Section
+                {errors.sectionId && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.sectionId.message}
+                  </span>
+                )}
+              </Label>
+              <Controller
+                name="sectionId"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || ""}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="select a section..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {rawSections.map((section) => (
+                        <SelectItem key={section.id} value={section.id}>
+                          {section.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
           </div>
-        </div>
-        <FormButtons
-          handleBack={handleBack}
-          text={isSubmitting ? "Creating..." : "Complete"}
-          disabled={isSubmitting}
-        />
-      </form>
-    </article>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={handleBack}>
+              Back
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Complete"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

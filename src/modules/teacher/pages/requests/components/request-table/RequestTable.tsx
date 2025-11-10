@@ -1,10 +1,43 @@
-import { type ReactElement, useMemo, useState, useEffect, useRef } from "react";
+import { type ReactElement, useMemo, useState } from "react";
 import { CiSearch, CiFilter } from "react-icons/ci";
 import {
   Request,
   RequestType,
 } from "../../../../../core/types/requests/request.type";
 import RequestTableItem from "./RequestTableItem";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type RequestTableProps = {
   requests: Request[];
@@ -18,8 +51,8 @@ export default function RequestTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<RequestType | "all">("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [showFilters, setShowFilters] = useState(false);
-  const filterDropdownRef = useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const filteredRequests = useMemo(() => {
     if (!searchTerm && selectedType === "all" && selectedStatus === "all") {
@@ -45,11 +78,9 @@ export default function RequestTable({
           searchTerm.toLowerCase(),
         );
 
-      // type filter
       const matchesType =
         selectedType === "all" || request.type === selectedType;
 
-      // status filter
       const matchesStatus =
         selectedStatus === "all" || request.status === selectedStatus;
 
@@ -57,27 +88,61 @@ export default function RequestTable({
     });
   }, [requests, searchTerm, selectedType, selectedStatus]);
 
-  const handleClearFilters = () => {
-    setSelectedType("all");
-    setSelectedStatus("all");
-    setSearchTerm("");
-    setShowFilters(false);
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredRequests.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleClearSearch = () => {
     setSearchTerm("");
+    setCurrentPage(1);
   };
 
-  const handleTypeChange = (type: RequestType | "all") => {
-    setSelectedType(type);
+  const handleClearFilters = () => {
+    setSelectedType("all");
+    setSelectedStatus("all");
+    setSearchTerm("");
+    setCurrentPage(1);
   };
 
-  const handleStatusChange = (status: string) => {
-    setSelectedStatus(status);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+      const startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxVisiblePages / 2),
+      );
+      const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+    }
+
+    return pageNumbers;
   };
 
   const getStatusColor = (status: string): string => {
@@ -116,194 +181,276 @@ export default function RequestTable({
   const hasActiveFilters =
     selectedType !== "all" || selectedStatus !== "all" || searchTerm !== "";
 
-  const showNoDataAvailable =
-    requests.length === 0 || filteredRequests.length === 0;
+  const EmptyState = () => (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+          <CiSearch className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">No requests available</h3>
+          <p className="text-muted-foreground mt-1">
+            There are no requests to display at the moment.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterDropdownRef.current &&
-        !filterDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowFilters(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const NoResultsState = () => (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+          <CiFilter className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">No matches found</h3>
+          <p className="text-muted-foreground mt-1">
+            No requests match your search criteria.
+          </p>
+        </div>
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClearFilters}
+            className="mt-4"
+          >
+            Clear all filters
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <section className="bg-white border border-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
-      <div className="flex flex-col flex-1">
-        <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
-          <section className="relative flex gap-2 items-center w-full md:w-fit">
-            <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
-              <div className="p-2">
-                <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-              </div>
-              <input
+    <Card className="flex flex-col rounded-sm shadow-none w-full h-full flex-1">
+      <CardHeader className="pb-4 shadow-none">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80 shadow-none">
+              <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
                 placeholder="Search requests"
-                className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchChange}
+                className="pl-9 pr-8 h-9"
               />
               {searchTerm && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={handleClearSearch}
-                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-transparent"
                 >
                   ×
-                </button>
+                </Button>
               )}
             </div>
 
-            <button
-              className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                  ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                  : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-                }`}
-              onClick={toggleFilters}
-            >
-              <CiFilter className="w-4 h-4" />
-            </button>
-
-            {showFilters && (
-              <div
-                className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200"
-                ref={filterDropdownRef}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={`h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-inherit hover:bg-accent hover:text-accent-foreground ${hasActiveFilters ? "bg-primary text-primary-foreground" : ""}`}
               >
-                {hasActiveFilters && (
-                  <div className="flex justify-end mb-3">
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
+                <div className="flex items-center gap-2">
+                  <CiFilter className="h-4 w-4" />
+                  Filter
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel className="flex items-center gap-2">
+                  <CiFilter className="h-4 w-4" />
+                  Filter Requests
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="p-3 space-y-3">
+                  <div>
+                    <label className="text-sm font-medium">Request Type</label>
+                    <Select
+                      value={selectedType}
+                      onValueChange={(value: RequestType | "all") =>
+                        setSelectedType(value)
+                      }
                     >
-                      Clear all
-                    </button>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60 overflow-y-auto">
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value="account-information">
+                          Account Information
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
 
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Request Type
-                  </label>
-                  <select
-                    value={selectedType}
-                    onChange={(e) =>
-                      handleTypeChange(e.target.value as RequestType | "all")
-                    }
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="account-information">
-                      Account Information
-                    </option>
-                  </select>
-                </div>
+                  <div>
+                    <label className="text-sm font-medium">Status</label>
+                    <Select
+                      value={selectedStatus}
+                      onValueChange={setSelectedStatus}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60 overflow-y-auto">
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-green)] dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </div>
+                  <DropdownMenuSeparator className="my-3" />
 
-                <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                  Showing {filteredRequests.length} of {requests.length}{" "}
-                  requests
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>
+                      {filteredRequests.length} of {requests.length} requests
+                    </span>
+                    {hasActiveFilters && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearFilters}
+                        className="h-auto p-2 text-primary hover:bg-transparent text-xs"
+                      >
+                        Clear all
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </section>
-        </section>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
 
         {hasActiveFilters && (
-          <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {filteredRequests.length} request
-              {filteredRequests.length !== 1 ? "s" : ""} found
-              {searchTerm && ` for "${searchTerm}"`}
-              {(selectedType !== "all" || selectedStatus !== "all") &&
-                " with filters applied"}
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950/20 dark:border-blue-800">
+            <div className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
+              <CiFilter className="h-4 w-4" />
+              <span className="text-sm">
+                <Badge variant="secondary" className="mr-2">
+                  {filteredRequests.length}
+                </Badge>
+                request{filteredRequests.length !== 1 ? "s" : ""} found
+                {searchTerm && ` for "${searchTerm}"`}
+                {selectedType !== "all" && ` with type: ${selectedType}`}
+                {selectedStatus !== "all" && ` with status: ${selectedStatus}`}
+              </span>
             </div>
           </div>
         )}
+      </CardHeader>
 
-        <div className="flex-1 flex flex-col overflow-auto">
-          {!showNoDataAvailable ? (
-            <div className="min-h-full flex flex-col flex-1 min-w-[1000px]">
-              <div className={`max-h-[780px] overflow-y-auto pb-4 flex-1`}>
-                {/* headers */}
-                <table className="font-primary table-auto w-full">
-                  <thead className="text-gray-400 dark:text-gray-500 text-sm xl:text-base transition-colors duration-200">
-                    <tr className="text-left">
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Name
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Type
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Email
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Status
-                      </th>
-                      <th className="bg-white dark:bg-gray-800 sticky top-0 z-20 w-[20%] py-3 border-b border-gray-200 dark:border-gray-700">
-                        Date
-                      </th>
-                    </tr>
-                  </thead>
-                </table>
+      <CardContent className="p-0 shadow-none flex flex-1 flex-col">
+        {requests.length === 0 ? (
+          <div className="flex-1 min-h-[400px]">
+            <EmptyState />
+          </div>
+        ) : filteredRequests.length === 0 ? (
+          <div className="flex-1 min-h-[400px]">
+            <NoResultsState />
+          </div>
+        ) : (
+          <div className="flex flex-col flex-1 h-full w-full">
+            <div className="flex-1 overflow-auto">
+              <Table>
+                <TableHeader className="bg-muted/50 h-14">
+                  <TableRow>
+                    <TableHead className="font-medium w-[20%]">Name</TableHead>
+                    <TableHead className="font-medium w-[20%]">Type</TableHead>
+                    <TableHead className="font-medium w-[20%]">Email</TableHead>
+                    <TableHead className="font-medium w-[20%] text-center">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-medium w-[20%] text-center">
+                      Date
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentItems.map((request) => (
+                    <RequestTableItem
+                      key={request.id}
+                      request={request}
+                      getStatusColor={getStatusColor}
+                      getTypeLabel={getTypeLabel}
+                      formatDate={formatDate}
+                      onRequestClick={onRequestClick}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-                {/* request lists */}
-                <table className="font-primary table-auto w-full">
-                  <tbody>
-                    {filteredRequests.map((request) => (
-                      <RequestTableItem
-                        key={request.id}
-                        request={request}
-                        getStatusColor={getStatusColor}
-                        getTypeLabel={getTypeLabel}
-                        formatDate={formatDate}
-                        onRequestClick={onRequestClick}
-                      />
-                    ))}
-                  </tbody>
-                </table>
+            {/* Pagination */}
+            {filteredRequests.length > 0 && (
+              <div className="border-t rounded-b-sm bg-background p-2">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <div className="text-sm text-muted-foreground text-nowrap">
+                    Showing{" "}
+                    <span className="font-medium">
+                      {indexOfFirstItem + 1}-
+                      {Math.min(indexOfLastItem, filteredRequests.length)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-medium">
+                      {filteredRequests.length}
+                    </span>{" "}
+                    requests
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div>
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              size="sm"
+                              onClick={handlePrevPage}
+                              className={
+                                currentPage === 1
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            />
+                          </PaginationItem>
+
+                          {getPageNumbers().map((pageNumber) => (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationLink
+                                size="sm"
+                                onClick={() => handlePageClick(pageNumber)}
+                                isActive={currentPage === pageNumber}
+                                className="cursor-pointer"
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+
+                          <PaginationItem>
+                            <PaginationNext
+                              size="sm"
+                              onClick={handleNextPage}
+                              className={
+                                currentPage === totalPages
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex w-full items-center justify-center">
-              <div className="text-center">
-                <p className="text-gray-300 dark:text-gray-600 italic mb-2">
-                  No data available
-                </p>
-                {hasActiveFilters && (
-                  <button
-                    onClick={handleClearFilters}
-                    className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                  >
-                    Clear filters
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -4,6 +4,9 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline, MdDragIndicator } from "react-icons/md";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type TextProps = {
   content: AssessmentContent;
@@ -30,40 +33,58 @@ export default function Text({
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
-    border: isDragging ? "2px solid var(--primary-green)" : "",
-    backgroundColor: isDragging ? "var(--secondary-green)" : "",
   };
 
   const data = content.data as string;
 
   return (
-    <article
+    <Card
       ref={setNodeRef}
       style={style}
-      className={`relative flex flex-col w-full gap-4 bg-white dark:bg-gray-800 group ${isDragging ? "opacity-50 z-10" : ""
-        }`}
+      className={cn(
+        "relative group transition-all duration-200",
+        isDragging && "border-primary shadow-lg scale-105",
+        isEditMode && "bg-muted/50",
+      )}
       {...attributes}
     >
-      {/* controls */}
-      {!isEditMode && (
-        <div className="absolute flex gap-2 top-0 right-0 opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-500 transition-all duration-200">
-          <button onClick={onEdit}>
-            <FaRegEdit />
-          </button>
-          <div {...listeners}>
-            <MdDragIndicator />
+      <CardContent className="p-4">
+        {/* controls */}
+        {!isEditMode && (
+          <div className="absolute flex gap-1 top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-8 w-8"
+            >
+              <FaRegEdit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              {...listeners}
+              className="h-8 w-8 cursor-grab"
+            >
+              <MdDragIndicator className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onDeleteContent(content)}
+              className="h-8 w-8 text-destructive hover:text-destructive"
+            >
+              <MdDeleteOutline className="h-4 w-4" />
+            </Button>
           </div>
-          <button onClick={() => onDeleteContent(content)}>
-            <MdDeleteOutline />
-          </button>
-        </div>
-      )}
+        )}
 
-      {/* text content */}
-      <div
-        className="break-words whitespace-normal w-full max-w-full pr-8 text-gray-900 dark:text-gray-200"
-        dangerouslySetInnerHTML={{ __html: data }}
-      />
-    </article>
+        {/* text content */}
+        <div
+          className="break-words whitespace-normal w-full pr-10 text-foreground"
+          dangerouslySetInnerHTML={{ __html: data }}
+        />
+      </CardContent>
+    </Card>
   );
 }

@@ -130,12 +130,12 @@ export default function Create({
   };
 
   return (
-    <div className="flex flex-col w-[800px] min-w-[300px] h-fit gap-4">
-      <section className="flex flex-col gap-4 h-fit min-h-full items-center">
+    <div className="flex flex-col h-fit gap-4 w-full max-w-[800px]">
+      <section className="flex flex-col gap-3 sm:gap-4 h-fit min-h-full items-center">
         <AnimatePresence mode="wait">
           {isValidated && errors.pages && (
             <motion.p
-              className="text-sm text-red-500 self-center"
+              className="text-sm text-red-500 self-center text-center px-2"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{

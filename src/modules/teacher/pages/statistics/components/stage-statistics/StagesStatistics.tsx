@@ -13,183 +13,20 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import Select from "react-select";
-import {
-  useTeacherOverallTopicStats,
-  useTeacherSectionTopicStats,
-} from "../../../../services/teacher-stats.service";
-import {
-  TopicCorrectness,
-  TopicStats,
-} from "../../../../../core/types/chart.type";
-import { getCustomSelectColor } from "../../../../../core/styles/selectStyles";
+import { TopicCorrectness } from "../../../../../core/types/chart.type";
 import { CustomAxisTick } from "./../CustomAxisTick";
-import { useTeacherContext } from "../../../../context/teacher.context";
-
-export default function StagesStatistics(): ReactElement {
-  const { teacherId } = useTeacherContext();
-  const [selectedSection, setSelectedSection] = useState<string>("all");
-
-  const { data: overallTopicStats, isLoading: isLoadingOverall } =
-    useTeacherOverallTopicStats(teacherId);
-  const { data: sectionTopicStats, isLoading: isLoadingSections } =
-    useTeacherSectionTopicStats(teacherId);
-
-  const isLoading = isLoadingOverall || isLoadingSections;
-
-  const sectionOptions: Section[] = [
-    { id: "all", name: "Overall" },
-    ...(sectionTopicStats?.map((sectionStat) => ({
-      id: sectionStat.sectionId,
-      name: sectionStat.sectionName,
-    })) || []),
-  ];
-
-  const getFilteredData = (): TopicStats[] => {
-    if (selectedSection === "all") {
-      return overallTopicStats || [];
-    } else {
-      const sectionData = sectionTopicStats?.find(
-        (section) => section.sectionId === selectedSection,
-      );
-      return sectionData?.topicStats || [];
-    }
-  };
-
-  const filteredData = getFilteredData();
-  const chartData = getTopicStats(filteredData);
-
-  if (isLoading) {
-    return (
-      <article className="bg-white dark:bg-gray-800 shadow-sm p-6 rounded-sm flex-1 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-        <div className="flex items-center justify-center h-48">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 dark:border-primary-400 mx-auto mb-2"></div>
-            <p className="text-gray-600 dark:text-gray-400">
-              Loading stage statistics...
-            </p>
-          </div>
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <article className="bg-white dark:bg-gray-800 shadow-sm p-2 rounded-sm h-fit flex flex-col gap-4 border border-gray-200 dark:border-gray-700 overflow-x-hidden transition-colors duration-200">
-      <header className="text-gray-900 dark:text-gray-100">
-        <div className="flex flex-col gap-2 lg:flex-row lg:justify-between lg:items-center">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-              Stages
-            </h3>
-            <p className="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Student completion rates across stages
-            </p>
-          </div>
-
-          <Select<Section>
-            id="section"
-            name="section"
-            options={sectionOptions}
-            getOptionLabel={(option: Section) => option.name}
-            getOptionValue={(option: Section) => option.id}
-            styles={getCustomSelectColor<Section>({
-              minHeight: "38px",
-              padding: "0px 8px",
-              menuWidth: "200px",
-              menuBackgroundColor: "white",
-              dark: {
-                menuBackgroundColor: "#374151",
-                backgroundColor: "#374151",
-                textColor: "#f9fafb",
-                borderColor: "#4b5563",
-                borderFocusColor: "#10b981",
-                optionHoverColor: "#1f2937",
-                optionSelectedColor: "#059669",
-                placeholderColor: "#9ca3af",
-              },
-            })}
-            className="basic-select min-w-[200px]"
-            classNamePrefix="select"
-            placeholder="Select section..."
-            onChange={(selected) => setSelectedSection(selected?.id || "all")}
-            value={
-              sectionOptions.find(
-                (section) => section.id === selectedSection,
-              ) || null
-            }
-          />
-        </div>
-      </header>
-
-      {chartData.length === 0 ? (
-        <div className="flex h-48 items-center justify-center border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-          <div className="text-center text-gray-500 dark:text-gray-400">
-            <div className="text-4xl mb-2">📊</div>
-            <p className="italic">No stage data available</p>
-          </div>
-        </div>
-      ) : (
-        // parent: must have static width
-        <div className="w-full h-fit overflow-x-auto xl:overflow-x-hidden overflow-y-hidden">
-          <div className="w-full min-w-[1200px] xl:min-w-min h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: -20,
-                }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#f0f0f0"
-                  className="dark:stroke-gray-600"
-                />
-                <XAxis
-                  dataKey="stage"
-                  height={60}
-                  interval={0}
-                  tick={<CustomAxisTick />}
-                  className="dark:text-gray-300"
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  className="dark:text-gray-300"
-                  label={{
-                    value: "Completion Rate (%)",
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: -10,
-                    style: {
-                      textAnchor: "middle",
-                      fontSize: 12,
-                      fill: "#6b7280", // gray-500 for light mode
-                    },
-                  }}
-                />
-                <Tooltip content={<StageCustomTooltip />} />
-                <Bar
-                  dataKey="completionRate"
-                  name="Completion Rate (%)"
-                  radius={[4, 4, 0, 0]}
-                  fill="#3b82f6"
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-    </article>
-  );
-}
-
-interface Section {
-  id: string;
-  name: string;
-}
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTeacherTopicStats } from "@/modules/teacher/services/teacher-stats.service";
+import { useAdminTopicStats } from "@/modules/admin/services/admin-stats.service";
 
 interface ChartDataItem {
   topicName: string;
@@ -201,8 +38,175 @@ interface ChartDataItem {
   correctness: TopicCorrectness;
 }
 
-const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
-  return topics.map((topic) => ({
+function StagesStatisticsSkeleton(): ReactElement {
+  return (
+    <Card className="flex-1 flex flex-col overflow-hidden">
+      <CardHeader className="p-3">
+        <div className="flex flex-col gap-2 lg:flex-row lg:justify-between lg:items-center">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <Skeleton className="h-10 w-[200px]" />
+        </div>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        <Skeleton className="h-48 w-full" />
+      </CardContent>
+    </Card>
+  );
+}
+
+function StageCustomTooltip({
+  active,
+  payload,
+}: TooltipProps<ValueType, NameType>) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  const formatDuration = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.round(seconds % 60);
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
+  const data = payload[0].payload as ChartDataItem;
+
+  return (
+    <div className="bg-background border rounded-lg shadow-lg p-4 text-sm max-w-[300px]">
+      <div className="mb-3">
+        <p className="font-bold text-base mb-1">Stage {data.stage}</p>
+        <p className="text-muted-foreground truncate text-xs">
+          {data.topicName}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Completion Rate:</span>
+          <Badge
+            variant="secondary"
+            className="font-semibold bg-transparent text-blue-600 border-blue-600 text-nowrap"
+          >
+            {data.completionRate}%
+          </Badge>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Total Attempts:</span>
+          <span className="font-semibold">
+            {data.totalAttempts.toLocaleString()}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Average Time:</span>
+          <span className="font-semibold text-purple-600">
+            {formatDuration(data.avgSecondsPlayed)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StagesChart({ chartData }: { chartData: ChartDataItem[] }) {
+  // Calculate the maximum completion rate for Y-axis domain
+  const maxCompletionRate = Math.max(
+    ...chartData.map((item) => item.completionRate),
+  );
+  const yAxisDomain = [
+    0,
+    Math.max(100, Math.ceil(maxCompletionRate / 10) * 10),
+  ];
+
+  return (
+    <div className="w-full h-fit overflow-x-auto xl:overflow-x-hidden overflow-y-hidden">
+      <div className="w-full min-w-[1200px] xl:min-w-min h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: -20 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis
+              dataKey="stage"
+              height={60}
+              interval={0}
+              tick={<CustomAxisTick />}
+              className="fill-muted-foreground"
+            />
+            <YAxis
+              domain={yAxisDomain}
+              className="fill-muted-foreground"
+              label={{
+                value: "Completion Rate (%)",
+                angle: -90,
+                position: "insideLeft",
+                offset: -10,
+                style: {
+                  textAnchor: "middle",
+                  fontSize: 12,
+                  fill: "hsl(var(--muted-foreground))",
+                },
+              }}
+            />
+            <Tooltip content={<StageCustomTooltip />} />
+            <Bar
+              dataKey="completionRate"
+              name="Completion Rate (%)"
+              radius={[4, 4, 0, 0]}
+              fill="hsl(var(--primary))"
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex h-48 items-center justify-center border border-dashed rounded-lg">
+      <div className="text-center text-muted-foreground">
+        <p className="italic">No stage data available</p>
+      </div>
+    </div>
+  );
+}
+
+type StagesStatisticsProps = {
+  userType: "admin" | "teacher";
+  userId: string;
+};
+
+export default function StagesStatistics({
+  userType,
+  userId,
+}: StagesStatisticsProps): ReactElement {
+  const useTopicStats =
+    userType === "teacher" ? useTeacherTopicStats : useAdminTopicStats;
+  const { data: topicStats, isLoading } = useTopicStats(userId);
+
+  const [selectedSection, setSelectedSection] = useState<string>("all");
+
+  const sectionTopicStats = topicStats?.sections;
+  const overallTopicStats = topicStats?.overall;
+
+  const sectionOptions = [
+    { id: "all", name: "Overall" },
+    ...(sectionTopicStats?.map((sectionStat) => ({
+      id: sectionStat.sectionId,
+      name: sectionStat.sectionName,
+    })) || []),
+  ];
+
+  const filteredData =
+    selectedSection === "all"
+      ? overallTopicStats || []
+      : sectionTopicStats?.find((s) => s.sectionId === selectedSection)
+        ?.topicStats || [];
+
+  const chartData = filteredData.map((topic) => ({
     topicName: topic.topic.trim(),
     totalAttempts: topic.totalAttempts,
     stage: topic.stage,
@@ -211,72 +215,40 @@ const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
     completionRate: topic.completionRate,
     correctness: topic.correctness,
   }));
-};
 
-const formatDuration = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.round(seconds % 60);
-  return `${minutes}m ${remainingSeconds}s`;
-};
+  if (isLoading) return <StagesStatisticsSkeleton />;
 
-const StageCustomTooltip = ({
-  active,
-  payload,
-}: TooltipProps<ValueType, NameType>) => {
-  if (active && payload && payload.length > 0) {
-    const data = payload[0].payload as ChartDataItem;
-
-    return (
-      <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 text-xs max-w-[400px] transition-colors duration-200">
-        <p className="font-bold text-sm mb-1 text-gray-900 dark:text-white truncate">
-          Stage {data.stage}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300 mb-2 truncate text-[11px]">
-          {data.topicName}
-        </p>
-
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-gray-700 dark:text-gray-300 text-nowrap">
-                Completion:
-              </span>
-              <span className="font-bold text-blue-600 dark:text-blue-400 text-nowrap">
-                {data.completionRate}%
-              </span>
-            </div>
-            <div className="flex gap-2 justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300 text-nowrap">
-                Total Attempts:
-              </span>
-              <span className="font-semibold dark:text-gray-300">
-                {data.totalAttempts}
-              </span>
-            </div>
+  return (
+    <Card className="flex-1 flex flex-col overflow-hidden">
+      <CardHeader className="p-3">
+        <div className="flex flex-col gap-2 lg:flex-row lg:justify-between lg:items-center">
+          <div>
+            <CardTitle className="text-xl font-semibold">Stages</CardTitle>
+            <p className="text-xs lg:text-sm text-muted-foreground mt-1">
+              Student completion rates across stages
+            </p>
           </div>
-
-          <div className="flex-1 border-l border-gray-200 dark:border-gray-600 pl-4">
-            <div className="flex gap-2 justify-between items-center mb-1">
-              <span className="text-amber-600 dark:text-amber-400 font-semibold text-nowrap">
-                Avg Hints:
-              </span>
-              <span className="text-gray-600 dark:text-gray-400 text-nowrap">
-                {data.avgHintUsed.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex gap-2 justify-between items-center">
-              <span className="text-purple-600 dark:text-purple-400 font-semibold text-nowrap">
-                Avg Time:
-              </span>
-              <span className="text-gray-600 dark:text-gray-400 text-nowrap">
-                {formatDuration(data.avgSecondsPlayed)}
-              </span>
-            </div>
-          </div>
+          <Select value={selectedSection} onValueChange={setSelectedSection}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select section..." />
+            </SelectTrigger>
+            <SelectContent>
+              {sectionOptions.map((section) => (
+                <SelectItem key={section.id} value={section.id}>
+                  {section.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </div>
-    );
-  }
-
-  return null;
-};
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        {chartData.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <StagesChart chartData={chartData} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}

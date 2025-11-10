@@ -1,14 +1,27 @@
 import { type ReactElement, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 
-interface DraftDecisionModalProps {
+type DraftDecisionModalProps = {
   isOpen: boolean;
   draft: Assessment | null;
   onContinue: () => void;
   onCreateNew: () => void;
   onClose: () => void;
-}
+};
 
 export default function DraftDecisionModal({
   isOpen,
@@ -61,12 +74,6 @@ export default function DraftDecisionModal({
     return Math.min(progress, totalWeight);
   };
 
-  const getProgressColor = (progress: number): string => {
-    if (progress < 33) return "bg-red-500";
-    if (progress < 66) return "bg-yellow-500";
-    return "bg-green-500";
-  };
-
   const getProgressMessage = (progress: number): string => {
     if (progress < 20) return "Just started";
     if (progress < 40) return "Getting there";
@@ -91,76 +98,61 @@ export default function DraftDecisionModal({
   if (!draft) return <></>;
 
   const progress = calculateProgress(draft);
-  const progressColor = getProgressColor(progress);
   const progressMessage = getProgressMessage(progress);
 
   return (
     <>
-      <AnimatePresence>
-        {isOpen && !showDeleteWarning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={onClose}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl border border-gray-200 dark:border-gray-700"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-3 h-3 rounded-full bg-yellow-500 flex-shrink-0"></div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Assessment in Progress
-                </h3>
-              </div>
+      <Dialog open={isOpen && !showDeleteWarning} onOpenChange={onClose}>
+        <DialogContent className="w-[95vw] max-w-md p-0">
+          <DialogHeader className="px-6 py-4 border-b">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-yellow-500 flex-shrink-0" />
+              <DialogTitle className="text-lg font-semibold">
+                Assessment in Progress
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-sm">
+              You have an unsaved draft assessment
+            </DialogDescription>
+          </DialogHeader>
 
-              {/* draft info card */}
-              <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                <div className="flex justify-between items-start mb-3">
-                  <p className="font-medium text-gray-900 dark:text-gray-100 text-sm line-clamp-2">
+          <div className="p-6 space-y-4">
+            <Card className="bg-muted/50 border-muted">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex justify-between items-start gap-2">
+                  <p className="font-medium text-foreground text-sm line-clamp-2 flex-1">
                     {draft.title || "Untitled Assessment"}
                   </p>
-                  <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full flex-shrink-0 ml-2">
+                  <Badge className="flex-shrink-0 bg-yellow-400 dark:bg-yellow-500 text-background">
                     Draft
-                  </span>
+                  </Badge>
                 </div>
 
                 {draft.topic && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                  <p className="text-xs text-muted-foreground">
                     Topic: {draft.topic}
                   </p>
                 )}
 
+                <Separator />
+
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Progress
-                    </span>
+                    <span className="text-muted-foreground">Progress</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-700 dark:text-gray-300 font-medium">
+                      <span className="font-medium text-foreground">
                         {progress}%
                       </span>
-                      <span className="text-gray-500 dark:text-gray-400">
-                        •
-                      </span>
-                      <span className="text-gray-500 dark:text-gray-400">
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-muted-foreground">
                         {progressMessage}
                       </span>
                     </div>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full ${progressColor} transition-all duration-300`}
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
 
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  <Progress value={progress} className="h-2" />
+
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>
                       {draft.pages?.length || 0} page
                       {(draft.pages?.length || 0) !== 1 ? "s" : ""}
@@ -169,123 +161,115 @@ export default function DraftDecisionModal({
                       Last updated:{" "}
                       {draft.updatedAt
                         ? new Date(draft.updatedAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
-                          )
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )
                         : "Recently"}
                     </span>
                   </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
 
-              <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                You have an assessment in progress. You can continue editing it
-                or start a new assessment{" "}
-                <span className="font-semibold text-amber-600 dark:text-amber-400">
-                  (this will delete your current draft)
-                </span>
-                .
-              </p>
+            <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+              <AlertDescription className="text-amber-800 dark:text-amber-300 text-sm">
+                You can continue editing it or start a new assessment{" "}
+                <strong>(this will delete your current draft)</strong>.
+              </AlertDescription>
+            </Alert>
 
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={onClose}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateNewClick}
-                  className="px-4 py-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-medium"
-                >
-                  Start New
-                </button>
-                <button
-                  onClick={onContinue}
-                  className="px-4 py-2 bg-[var(--primary-green)] text-white rounded-sm hover:bg-[var(--primary-green)]/80 transition-colors text-sm font-medium"
-                >
-                  Continue Editing
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                className="flex-1 order-2 sm:order-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleCreateNewClick}
+                className="flex-1 order-1 sm:order-2 border-red-300 bg-red-500 dark:bg-red-600 dark:border-red-600 text-foreground  hover:bg-red-500/80 dark:hover:bg-red-600/80"
+              >
+                Start New
+              </Button>
+              <Button onClick={onContinue} className="flex-1 order-3">
+                Continue Editing
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      {/* delete confirmation modal */}
-      <AnimatePresence>
-        {showDeleteWarning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl border border-gray-200 dark:border-gray-700"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Delete Draft Assessment?
-                </h3>
-              </div>
+      <Dialog open={showDeleteWarning} onOpenChange={handleCancelCreateNew}>
+        <DialogContent className="w-[95vw] max-w-md p-0">
+          <DialogHeader className="px-6 py-4 border-b">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-red-500 flex-shrink-0" />
+              <DialogTitle className="text-lg font-semibold">
+                Delete Draft Assessment?
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-sm">
+              This action cannot be undone
+            </DialogDescription>
+          </DialogHeader>
 
-              <div className="mb-6">
-                <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
-                  Starting a new assessment will{" "}
-                  <span className="font-semibold text-red-600 dark:text-red-400">
-                    permanently delete
-                  </span>{" "}
-                  your current draft:
+          <div className="p-6 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Starting a new assessment will{" "}
+              <strong className="text-red-600 dark:text-red-400">
+                permanently delete
+              </strong>{" "}
+              your current draft:
+            </p>
+
+            <Card className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800">
+              <CardContent className="p-3">
+                <p className="font-medium text-foreground text-sm">
+                  {draft.title || "Untitled Assessment"}
                 </p>
-
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-sm">
-                  <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">
-                    {draft.title || "Untitled Assessment"}
+                {draft.topic && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Topic: {draft.topic}
                   </p>
-                  {draft.topic && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Topic: {draft.topic}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    Progress: {progress}% • {draft.pages?.length || 0} pages
-                  </p>
-                </div>
-
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-3">
-                  This action cannot be undone. All progress on this draft will
-                  be lost.
+                )}
+                <p className="text-xs text-muted-foreground mt-2">
+                  Progress: {progress}% • {draft.pages?.length || 0} pages
                 </p>
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={handleCancelCreateNew}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmCreateNew}
-                  className="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700 transition-colors text-sm font-medium"
-                >
-                  Delete Draft & Create New
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+              <AlertDescription className="text-amber-800 dark:text-amber-300 text-xs">
+                All progress on this draft will be lost and cannot be recovered.
+              </AlertDescription>
+            </Alert>
+
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button
+                variant="ghost"
+                onClick={handleCancelCreateNew}
+                className="flex-1 order-2 sm:order-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleConfirmCreateNew}
+                className="flex-1 order-1 sm:order-2"
+              >
+                Delete Draft & Create New
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

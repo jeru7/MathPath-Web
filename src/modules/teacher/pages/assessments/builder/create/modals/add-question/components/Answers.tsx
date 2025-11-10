@@ -5,6 +5,8 @@ import {
   FillInTheBlankAnswerType,
   QuestionType,
 } from "../../../../../../../../core/types/assessment/assessment.type";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 type AnswersProp = {
   onAnswersChange: (
@@ -15,6 +17,7 @@ type AnswersProp = {
   isValidated: boolean;
   errors: { [key: string]: string | number[] };
 };
+
 export default function Answers({
   onAnswersChange,
   answers,
@@ -23,19 +26,22 @@ export default function Answers({
   errors,
 }: AnswersProp): ReactElement {
   return (
-    <div className="flex flex-col md:flex-row items-start gap-2 md:gap-4">
-      <label className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div className="flex flex-col gap-4">
+      <Label className="text-sm font-medium">
         {type === "fill_in_the_blanks" ? "Answers" : "Answer"}
-      </label>
-      <section className="border border-gray-300 dark:border-gray-600 rounded-sm bg-white dark:bg-gray-800 w-full h-fit flex flex-col transition-colors duration-200">
-        <div className="w-full flex justify-end p-1 bg-gray-100 dark:bg-gray-700 border-b border-b-gray-300 dark:border-b-gray-600 h-[40px] px-2 transition-colors duration-200"></div>
-
-        <motion.section
-          className="flex flex-col p-2 gap-2 relative overflow-y-auto"
-          style={{ maxHeight: "250px" }}
-        >
+      </Label>
+      <Card>
+        <CardHeader className="pb-3">
+          <Label className="text-sm font-medium">
+            {type === "fill_in_the_blanks"
+              ? "Fill in the Blank"
+              : type === "identification"
+                ? "Identification"
+                : "True or False"}
+          </Label>
+        </CardHeader>
+        <CardContent className="space-y-3">
           <AnimatePresence>
-            {/* fill in the blanks */}
             {type === "fill_in_the_blanks" &&
               (answers as FillInTheBlankAnswerType[])?.map((answer, index) => (
                 <motion.div
@@ -68,7 +74,6 @@ export default function Answers({
                 </motion.div>
               ))}
 
-            {/*  identification */}
             {type === "identification" && (
               <motion.div
                 layout
@@ -90,7 +95,6 @@ export default function Answers({
               </motion.div>
             )}
 
-            {/* true or false */}
             {type === "true_or_false" && (
               <motion.div
                 layout
@@ -98,30 +102,19 @@ export default function Answers({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25 }}
-                className="flex gap-4"
               >
                 <AnswerField
                   type="radio"
                   name="true-or-false"
-                  value={true}
-                  checked={answers === true}
-                  onChange={() => onAnswersChange(true)}
-                  radioLabel="True"
-                />
-
-                <AnswerField
-                  type="radio"
-                  name="true-or-false"
-                  value={false}
-                  checked={answers === false}
-                  onChange={() => onAnswersChange(false)}
-                  radioLabel="False"
+                  value={answers as boolean}
+                  onChange={onAnswersChange}
+                  checked={answers === true || answers === false}
                 />
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.section>
-      </section>
+        </CardContent>
+      </Card>
     </div>
   );
 }

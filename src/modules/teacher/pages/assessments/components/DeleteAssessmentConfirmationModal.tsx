@@ -1,11 +1,21 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useState } from "react";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 
 type DeleteAssessmentConfirmationModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  assessment: Assessment;
+  assessment: Assessment | null;
   studentCount: number;
   sectionCount: number;
 };
@@ -18,9 +28,30 @@ export default function DeleteAssessmentConfirmationModal({
   studentCount,
   sectionCount,
 }: DeleteAssessmentConfirmationModalProps): ReactElement {
-  if (!isOpen || !assessment) return <></>;
+  const [confirmationText, setConfirmationText] = useState("");
+
+  const assessmentTitle =
+    assessment?.title && assessment.title.length > 0
+      ? assessment.title
+      : "Untitled Assessment";
+
+  const isConfirmed = confirmationText === assessmentTitle;
+
+  const handleClose = () => {
+    setConfirmationText("");
+    onClose();
+  };
+
+  const handleConfirm = () => {
+    if (isConfirmed) {
+      onConfirm();
+      setConfirmationText("");
+    }
+  };
 
   const getWarningTitle = () => {
+    if (!assessment) return "Delete Assessment";
+
     switch (assessment.status) {
       case "published":
         return "Delete Published Assessment";
@@ -34,6 +65,8 @@ export default function DeleteAssessmentConfirmationModal({
   };
 
   const getStatusWarning = () => {
+    if (!assessment) return "This assessment will be permanently deleted.";
+
     switch (assessment.status) {
       case "published":
         return "This assessment has been published and is currently active.";
@@ -46,76 +79,100 @@ export default function DeleteAssessmentConfirmationModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-sm max-w-md w-full p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          {getWarningTitle()}
-        </h3>
+  if (!assessment) return <></>;
 
-        <div className="space-y-3 mb-4">
-          <p className="text-gray-600 dark:text-gray-400">
-            {getStatusWarning()} Are you sure you want to delete "
-            {assessment.title && assessment.title?.length > 0
-              ? assessment.title
-              : "Untitled Assessment"}
-            "? This action cannot be undone.
-          </p>
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">
+            {getWarningTitle()}
+          </DialogTitle>
+          <DialogDescription>
+            {getStatusWarning()} This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="bg-muted p-4 rounded-lg border">
+            <p className="text-sm font-medium">
+              Please type <strong>"{assessmentTitle}"</strong> to confirm:
+            </p>
+            <Input
+              value={confirmationText}
+              onChange={(e) => setConfirmationText(e.target.value)}
+              placeholder={`Enter "${assessmentTitle}"`}
+              className="mt-2"
+            />
+          </div>
 
           {(studentCount > 0 || sectionCount > 0) && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-sm p-3">
-              <p className="text-sm text-red-700 dark:text-red-300 font-medium mb-2">
-                This will affect:
-              </p>
-              <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-                {sectionCount > 0 && (
-                  <li>
-                    •{" "}
-                    <strong>
-                      {sectionCount} section{sectionCount !== 1 ? "s" : ""}
-                    </strong>{" "}
-                    assigned
-                  </li>
-                )}
-                {studentCount > 0 && (
-                  <li>
-                    •{" "}
-                    <strong>
-                      {studentCount} student{studentCount !== 1 ? "s" : ""}
-                    </strong>{" "}
-                    enrolled in these sections
-                  </li>
-                )}
-                {assessment.status === "in-progress" && studentCount > 0 && (
-                  <li className="font-semibold">
-                    Ongoing attempts will be lost
-                  </li>
-                )}
-                {assessment.status === "finished" && studentCount > 0 && (
-                  <li className="font-semibold">
-                    All results and grades will be permanently deleted
-                  </li>
-                )}
-              </ul>
-            </div>
+            <Alert variant="destructive">
+              <AlertDescription>
+                <div className="font-medium mb-2">
+                  This will permanently delete:
+                </div>
+                <ul className="text-sm space-y-1">
+                  {sectionCount > 0 && (
+                    <li>
+                      •{" "}
+                      <strong>
+                        {sectionCount} section{sectionCount !== 1 ? "s" : ""}
+                      </strong>{" "}
+                      assignments
+                    </li>
+                  )}
+                  {studentCount > 0 && (
+                    <li>
+                      •{" "}
+                      <strong>
+                        {studentCount} student{studentCount !== 1 ? "s" : ""}
+                      </strong>{" "}
+                      progress and attempts
+                    </li>
+                  )}
+                  {assessment.status === "in-progress" && studentCount > 0 && (
+                    <li>• All ongoing assessment attempts</li>
+                  )}
+                  {assessment.status === "finished" && studentCount > 0 && (
+                    <li>• All assessment results and grades</li>
+                  )}
+                  <li>• The assessment and all its content</li>
+                </ul>
+              </AlertDescription>
+            </Alert>
           )}
+
+          {studentCount === 0 && sectionCount === 0 && (
+            <Alert>
+              <AlertDescription>
+                <strong>Note:</strong> This assessment is not assigned to any
+                sections yet. Only the assessment content will be deleted.
+              </AlertDescription>
+            </Alert>
+          )}
+          <Alert>
+            <AlertDescription>
+              <strong>Warning:</strong> This action is irreversible. All data
+              associated with this student will be permanently removed from the
+              system.
+            </AlertDescription>
+          </Alert>
         </div>
 
         <div className="flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
-          >
+          <Button variant="outline" onClick={handleClose}>
             Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-sm hover:bg-red-700 transition-colors duration-200"
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleConfirm}
+            disabled={!isConfirmed}
           >
             Delete Assessment
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

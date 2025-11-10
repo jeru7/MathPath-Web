@@ -11,28 +11,27 @@ import {
   useTeacherRestoreStudent,
   useTeacherDeleteStudent,
   useTeacherEditStudent,
-  useTeacherArchivedStudent,
 } from "../../services/teacher-student.service";
-import StudentTable from "../../../core/components/student-table/StudentTable";
-import DeleteStudentConfirmationModal from "../../../core/components/student-table/DeleteStudentConfirmationModal";
-import StudentDetailsModal from "../../../core/components/student-table/student-details/StudentDetailsModal";
-import EditStudentModal from "../../../core/components/student-table/EditStudentModal";
+import StudentTable from "../../../core/components/tables/student-table/StudentTable";
+import DeleteStudentConfirmationModal from "../../../core/components/tables/student-table/DeleteStudentConfirmationModal";
+import StudentDetailsModal from "../../../core/components/tables/student-table/student-details/StudentDetailsModal";
+import EditStudentModal from "../../../core/components/tables/student-table/EditStudentModal";
 import { EditStudentDTO } from "../../../student/types/student.schema";
 import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
-import StudentArchiveModal from "../../../core/components/student-table/student-archive/StudentArchiveModal";
-import StudentArchiveConfirmationModal from "../../../core/components/student-table/StudentArchiveConfirmationModal";
+import StudentArchiveModal from "../../../core/components/tables/student-table/student-archive/StudentArchiveModal";
+import StudentArchiveConfirmationModal from "../../../core/components/tables/student-table/StudentArchiveConfirmationModal";
 
 export default function Students(): ReactElement {
   const teacherContext = useTeacherContext();
-  const { sections, students, teacherId } = teacherContext;
+  const { rawSections, allSections, archivedStudents, rawStudents, teacherId } =
+    teacherContext;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
   const { studentId } = useParams();
   const searchParams = new URLSearchParams(location.search);
 
-  const { data: archivedStudents } = useTeacherArchivedStudent(teacherId);
   const { mutate: deleteStudent } = useTeacherDeleteStudent(teacherId);
   const { mutate: editStudent, isPending: isEditPending } =
     useTeacherEditStudent(teacherId);
@@ -68,15 +67,15 @@ export default function Students(): ReactElement {
 
   useEffect(() => {
     if (studentId) {
-      const student = students.find((s) => s.id === studentId);
+      const student = rawStudents.find((s) => s.id === studentId);
       setSelectedStudent(student || null);
     } else {
       setSelectedStudent(null);
     }
-  }, [studentId, students]);
+  }, [studentId, rawStudents]);
 
   const handleAddStudent = () => {
-    if (sections.length === 0) {
+    if (rawSections.length === 0) {
       toast.error("You can't add students if there are no sections.");
       return;
     }
@@ -84,7 +83,7 @@ export default function Students(): ReactElement {
   };
 
   const handleStudentClick = (studentId: string) => {
-    setSelectedStudent(students.find((s) => s.id === studentId) || null);
+    setSelectedStudent(rawStudents.find((s) => s.id === studentId) || null);
     navigate(studentId);
   };
 
@@ -246,14 +245,14 @@ export default function Students(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col min-h-screen w-full gap-2 bg-inherit p-2 mt-4 lg:mt-0">
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
           Students
         </h3>
       </header>
 
-      <section className="overflow-y-hidden w-full bg-white border border-white dark:bg-gray-800 dark:border-gray-700 shadow-sm rounded-sm flex-1 flex flex-col">
+      <section className="overflow-y-hidden w-full bg-inherit flex flex-col flex-1">
         <StudentTable
           onClickAddStudent={handleAddStudent}
           onStudentClick={handleStudentClick}
@@ -271,7 +270,7 @@ export default function Students(): ReactElement {
         />
       )}
 
-      {showCodes && <RegistrationCode navigate={navigate} />}
+      {showCodes && <RegistrationCode />}
 
       {/* archive modal */}
       {showArchive && archivedStudents && (
@@ -281,7 +280,7 @@ export default function Students(): ReactElement {
           students={archivedStudents}
           onRestoreStudent={handleRestoreStudent}
           onDeleteStudent={handlePermanentDelete}
-          sections={sections}
+          sections={allSections}
         />
       )}
 
@@ -291,7 +290,7 @@ export default function Students(): ReactElement {
           student={selectedStudent}
           isOpen={isStudentDetailsRoute}
           onClose={handleCloseDetailsModal}
-          sections={sections}
+          sections={allSections}
           onEdit={handleEditInitiate}
           onArchive={() => handleArchiveInitiate(selectedStudent)}
           onDelete={() => handleDeleteInitiate(selectedStudent)}
@@ -306,7 +305,7 @@ export default function Students(): ReactElement {
           student={selectedStudent}
           onUpdateStudent={handleUpdateStudent}
           isSubmitting={isEditPending}
-          sections={sections}
+          sections={rawSections}
           showSectionSelection={false}
         />
       )}

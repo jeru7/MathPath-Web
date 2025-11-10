@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTeacher } from "../services/teacher.service";
 import { WSS } from "../../core/constants/api.constant";
 import { TeacherContext } from "./teacher.context";
-import { useQueryClient } from "@tanstack/react-query";
-import { useTeacherStudents } from "../services/teacher-student.service";
+import {
+  useTeacherStudentActivities,
+  useTeacherStudents,
+} from "../services/teacher-student.service";
 import { useTeacherSections } from "../services/teacher-section.service";
 import { useTeacherAssessments } from "../services/teacher-assessment.service";
 import { useTeacherRequests } from "../services/teacher-request.service";
@@ -16,148 +18,76 @@ export function TeacherProvider({
   children: React.ReactNode;
 }) {
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
-  const reconnectInterval = 3000;
-  const isMounted = useRef(true);
 
-  const queryClient = useQueryClient();
+  const { data: teacher, isLoading: isLoadingTeacher } = useTeacher(teacherId);
+  const { data: students, isLoading: isLoadingStudents } =
+    useTeacherStudents(teacherId);
+  const { data: sections, isLoading: isLoadingSections } =
+    useTeacherSections(teacherId);
+  const { data: assessments, isLoading: isLoadingAssessments } =
+    useTeacherAssessments(teacherId);
+  const { data: requests, isLoading: isLoadingRequests } =
+    useTeacherRequests(teacherId);
+  const { data: activities, isLoading: isLoadingActivities } =
+    useTeacherStudentActivities(teacherId);
 
-  // react query
-  const { data: teacher } = useTeacher(teacherId);
-  const { data: students } = useTeacherStudents(teacherId);
-  const { data: sections } = useTeacherSections(teacherId);
-  const { data: assessments } = useTeacherAssessments(teacherId);
-  const { data: requests } = useTeacherRequests(teacherId);
-
-  // track student online status
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
 
-  const onlineStudents = useMemo(() => {
-    return students?.filter((s) => onlineStudentIds.includes(s.id));
-  }, [students, onlineStudentIds]);
+  useEffect(() => {
+    if (!teacherId) return;
 
-  const connectWebSocket = useCallback(() => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      return;
-    }
-
-    if (wsRef.current) {
-      wsRef.current.close();
-    }
-
-    wsRef.current = new WebSocket(WSS);
-    // console.log(WSS);
-    const ws = wsRef.current;
+    const ws = new WebSocket(WSS);
+    wsRef.current = ws;
 
     ws.onopen = () => {
-      if (!isMounted.current) {
-        ws.close();
-        return;
-      }
-
-      // console.log("WebSocket connected");
-
-      reconnectAttempts.current = 0;
-      wsRef.current?.send(
-        JSON.stringify({
-          type: "TEACHER_LOGIN",
-          data: teacherId,
-        }),
-      );
+      ws.send(JSON.stringify({ type: "TEACHER_LOGIN", data: teacherId }));
     };
 
     ws.onmessage = (e) => {
-      if (!isMounted.current) return;
       const { type, data } = JSON.parse(e.data);
-      // console.log("Received message: ", type, data);
-
-      if (type === "TEACHER_INITIAL_DATA") {
-        setOnlineStudentIds(data.onlineStudents);
-      }
-
-      if (type === "STUDENT_ONLINE") {
-        setOnlineStudentIds((prev) =>
-          prev.includes(data.studentId) ? prev : [...prev, data.studentId],
-        );
-        queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "active-students"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "online-trend"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "students"],
-        });
-      }
-
-      if (type === "STUDENT_OFFLINE") {
+      if (type === "TEACHER_INITIAL_DATA")
+        setOnlineStudentIds(data.onlineStudents || []);
+      if (type === "STUDENT_ONLINE")
+        setOnlineStudentIds((prev) => [...prev, data.studentId]);
+      if (type === "STUDENT_OFFLINE")
         setOnlineStudentIds((prev) =>
           prev.filter((id) => id !== data.studentId),
         );
-        queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "active-students"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "online-trend"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["teacher", teacherId, "students"],
-        });
-      }
     };
-
-    ws.onclose = () => {
-      if (!isMounted.current) return;
-
-      // console.log("WebSocket closed");
-
-      if (reconnectAttempts.current < maxReconnectAttempts) {
-        reconnectAttempts.current += 1;
-        // console.log(
-        //   `Attempting to reconnect (${reconnectAttempts.current}/${maxReconnectAttempts})...`,
-        // );
-        setTimeout(connectWebSocket, reconnectInterval);
-      }
-    };
-
-    wsRef.current.onerror = () => {
-      if (!isMounted.current) return;
-
-      // console.error("WebSocket error:", error);
-    };
-  }, [teacherId, queryClient]);
-
-  useEffect(() => {
-    isMounted.current = true;
-    connectWebSocket();
 
     return () => {
-      isMounted.current = false;
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
+      ws.close();
     };
-  }, [connectWebSocket]);
+  }, [teacherId]);
 
   const value = {
-    teacherId: teacherId,
+    teacherId,
     teacher: teacher || null,
-    students: students || [],
-    sections: sections || [],
-    assessments: assessments || [],
+    allStudents: students || [],
+    rawStudents: students?.filter((s) => !s.archive.isArchive) || [],
+    archivedStudents: students?.filter((s) => s.archive.isArchive) || [],
+    allSections: sections || [],
+    rawSections: sections?.filter((s) => !s.archive.isArchive) || [],
+    archivedSections: sections?.filter((s) => s.archive.isArchive) || [],
+    allAssessments: assessments || [],
+    rawAssessments: assessments?.filter((a) => !a.archive.isArchive) || [],
+    archivedAssessments: assessments?.filter((a) => a.archive.isArchive) || [],
     requests: requests || [],
-    onlineStudents: onlineStudents || [],
+    activities: activities || [],
+    onlineStudents:
+      students?.filter((s) => onlineStudentIds.includes(s.id)) || [],
+
+    // loading states
+    isLoadingTeacher,
+    isLoadingStudents,
+    isLoadingSections,
+    isLoadingAssessments,
+    isLoadingRequests,
+    isLoadingActivities,
+    isCriticalDataLoaded: !!teacher,
   };
 
   return (
-    <TeacherContext.Provider value={value}>
-      {teacher && students && sections && assessments ? (
-        children
-      ) : (
-        <div>Loading teacher data...</div>
-      )}
-    </TeacherContext.Provider>
+    <TeacherContext.Provider value={value}>{children}</TeacherContext.Provider>
   );
 }

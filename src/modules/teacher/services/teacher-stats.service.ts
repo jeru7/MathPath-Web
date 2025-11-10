@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  QuestionStat,
-  SectionQuestionStats,
-  SectionTopicStats,
-  TopicStats,
+  QuestionStatsResponse,
+  TopicStatsResponse,
 } from "../../core/types/chart.type";
 import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
 import { fetchData } from "../../core/utils/api/api.util";
@@ -16,30 +14,15 @@ import {
   OnlineTrendResultToday,
 } from "../types/student-online-trend.type";
 import { AssessmentOverview } from "../../core/types/assessment/assessment-stats.type";
+import { TopStudent } from "@/modules/student/types/top-student.type";
 
-// get overall topic stats - all students handled by the teacher
-export const useTeacherOverallTopicStats = (teacherId: string) => {
-  return useQuery<TopicStats[]>({
-    queryKey: ["teacher", teacherId, "overall-topic-stats"],
+export const useTeacherTopicStats = (teacherId: string) => {
+  return useQuery<TopicStatsResponse>({
+    queryKey: ["teacher", teacherId, "topic-stats"],
     queryFn: () => {
-      return fetchData<TopicStats[]>(
-        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topic/overall`,
-        "Failed to fetch overall topic stats.",
-      );
-    },
-    staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
-  });
-};
-
-// get overall topic stats per section - all students (grouped by section) that is handled by the teacher
-export const useTeacherSectionTopicStats = (teacherId: string) => {
-  return useQuery<SectionTopicStats[]>({
-    queryKey: ["teacher", teacherId, "section-topic-stats"],
-    queryFn: () => {
-      return fetchData<SectionTopicStats[]>(
-        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topic/per-section`,
-        "Failed to fetch topic stats per section.",
+      return fetchData<TopicStatsResponse>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topics`,
+        "Failed to fetch topic stats.",
       );
     },
     staleTime: DATA_STALE_TIME,
@@ -112,29 +95,14 @@ export const useTeacherAssessmentStatus = (teacherId: string) => {
   });
 };
 
-// get overall question stats - all students handled by the teacher
-export const useTeacherOverallQuestionStats = (teacherId: string) => {
-  return useQuery<QuestionStat[]>({
-    queryKey: ["teacher", teacherId, "overall-question-stats"],
+// get question stats
+export const useTeacherQuestionStats = (teacherId: string) => {
+  return useQuery<QuestionStatsResponse>({
+    queryKey: ["teacher", teacherId, "question-stats"],
     queryFn: () => {
-      return fetchData<QuestionStat[]>(
-        `${BASE_URI}/api/web/teachers/${teacherId}/stats/questions/overall`,
-        "Failed to fetch overall question stats.",
-      );
-    },
-    staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
-  });
-};
-
-// get question stats per section - all students (grouped by section) that is handled by the teacher
-export const useTeacherSectionQuestionStats = (teacherId: string) => {
-  return useQuery<SectionQuestionStats[]>({
-    queryKey: ["teacher", teacherId, "section-question-stats"],
-    queryFn: () => {
-      return fetchData<SectionQuestionStats[]>(
-        `${BASE_URI}/api/web/teachers/${teacherId}/stats/questions/per-section`,
-        "Failed to fetch question stats per section.",
+      return fetchData<QuestionStatsResponse>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/questions`,
+        "Failed to fetch question stats.",
       );
     },
     staleTime: DATA_STALE_TIME,
@@ -150,6 +118,21 @@ export const useTeacherAssessmentOverview = (teacherId: string) => {
       return fetchData<AssessmentOverview>(
         `${BASE_URI}/api/web/teachers/${teacherId}/stats/assessment-overview`,
         "Failed to fetch assessment overview.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get top students
+export const useTeacherTopStudents = (teacherId: string) => {
+  return useQuery<TopStudent[]>({
+    queryKey: ["teacher", teacherId, "top-students"],
+    queryFn: () => {
+      return fetchData<TopStudent[]>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/top-students`,
+        "Failed to fetch top students.",
       );
     },
     staleTime: DATA_STALE_TIME,

@@ -1,5 +1,4 @@
-import { AnimatePresence } from "framer-motion";
-import { useState, type ReactElement } from "react";
+import { useState, type ReactElement, useEffect } from "react";
 import AddQuestionModal from "./add-question/AddQuestionModal";
 import AddImageModal from "./add-image/AddImageModal";
 import AddTextModal from "./add-text/AddTextModal";
@@ -12,46 +11,56 @@ type ModalsProps = {
   pageId: string;
   contentToEdit: AssessmentContent | null;
 };
+
 export default function Modals({
   activeModal,
   onClose,
   pageId,
   contentToEdit,
 }: ModalsProps): ReactElement {
-  // states
-  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // handlers
-  const handleClose = () => setIsVisible(false);
+  useEffect(() => {
+    // When activeModal changes, open the modal
+    if (activeModal) {
+      setIsOpen(true);
+    }
+  }, [activeModal]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    // Let the animation complete before calling onClose
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
   return (
-    <AnimatePresence onExitComplete={onClose}>
-      {isVisible && (
-        // overlay
-        <div className="fixed w-screen h-screen bg-black/20 z-50 top-0 left-0">
-          {/* wrapper */}
-          <div className="w-full h-full relative">
-            {activeModal === "question" ? (
-              <AddQuestionModal
-                onClose={handleClose}
-                pageId={pageId}
-                contentToEdit={contentToEdit}
-              />
-            ) : activeModal === "image" ? (
-              <AddImageModal
-                onClose={handleClose}
-                pageId={pageId}
-                contentToEdit={contentToEdit}
-              />
-            ) : activeModal === "text" ? (
-              <AddTextModal
-                onClose={handleClose}
-                pageId={pageId}
-                contentToEdit={contentToEdit}
-              />
-            ) : null}
-          </div>
-        </div>
+    <>
+      {activeModal === "question" && (
+        <AddQuestionModal
+          open={isOpen}
+          onClose={handleClose}
+          pageId={pageId}
+          contentToEdit={contentToEdit}
+        />
       )}
-    </AnimatePresence>
+      {activeModal === "image" && (
+        <AddImageModal
+          open={isOpen}
+          onClose={handleClose}
+          pageId={pageId}
+          contentToEdit={contentToEdit}
+        />
+      )}
+      {activeModal === "text" && (
+        <AddTextModal
+          open={isOpen}
+          onClose={handleClose}
+          pageId={pageId}
+          contentToEdit={contentToEdit}
+        />
+      )}
+    </>
   );
 }

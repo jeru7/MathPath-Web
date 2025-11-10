@@ -4,6 +4,8 @@ import {
   RequestType,
 } from "../../../../../core/types/requests/request.type";
 import { useTeacherContext } from "../../../../context/teacher.context";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 interface RequestTableItemProps {
   request: Request;
@@ -15,62 +17,93 @@ interface RequestTableItemProps {
 
 export default function RequestTableItem({
   request,
-  getStatusColor,
   getTypeLabel,
   formatDate,
   onRequestClick,
 }: RequestTableItemProps): ReactElement {
-  const { students } = useTeacherContext();
+  const { allStudents } = useTeacherContext();
 
-  const student = students.find((s) => s.id === request.senderId);
+  const student = allStudents.find((s) => s.id === request.senderId);
+  const isArchived = student?.archive?.isArchive;
 
   const handleClick = () => {
-    onRequestClick(request);
+    if (!isArchived) {
+      onRequestClick(request);
+    }
+  };
+
+  const statusVariant = () => {
+    switch (request.status) {
+      case "approved":
+        return "default";
+      case "rejected":
+        return "destructive";
+      case "pending":
+        return "secondary";
+      default:
+        return "outline";
+    }
   };
 
   return (
-    <tr
-      className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+    <TableRow
+      className={`transition-colors group h-18 ${isArchived
+        ? "opacity-50 bg-muted/30 cursor-not-allowed"
+        : "hover:bg-muted/50 cursor-pointer"
+        }`}
       onClick={handleClick}
     >
-      {/* name */}
-      <td className="py-4 w-[20%]">
+      {/* Name */}
+      <TableCell className="w-[20%] py-4">
         <div className="flex flex-col">
-          <span className="font-medium text-gray-900 dark:text-gray-100">
+          <span
+            className={`font-medium ${isArchived ? "text-muted-foreground" : "text-foreground"
+              }`}
+          >
             {student?.firstName} {student?.lastName}
           </span>
         </div>
-      </td>
+      </TableCell>
 
-      {/* request type */}
-      <td className="py-4 w-[20%]">
-        <span className="text-gray-900 dark:text-gray-100">
+      {/* Request Type */}
+      <TableCell className="w-[20%] py-4">
+        <span
+          className={isArchived ? "text-muted-foreground" : "text-foreground"}
+        >
           {getTypeLabel(request.type)}
         </span>
-      </td>
+      </TableCell>
 
-      {/* email */}
-      <td className="py-4 w-[20%]">
-        <span className="text-gray-900 dark:text-gray-100">
+      {/* Email */}
+      <TableCell className="w-[20%] py-4">
+        <span
+          className={isArchived ? "text-muted-foreground" : "text-foreground"}
+        >
           {student?.email || "N/A"}
         </span>
-      </td>
+      </TableCell>
 
-      {/* status */}
-      <td className="py-4 w-[20%]">
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-            request.status,
-          )}`}
+      {/* Status */}
+      <TableCell className="w-[20%] py-4">
+        <div className="w-full flex items-center justify-center">
+          <Badge
+            variant={statusVariant()}
+            className={`text-xs ${isArchived ? "opacity-70" : ""}`}
+          >
+            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+          </Badge>
+        </div>
+      </TableCell>
+
+      {/* Date */}
+      <TableCell className="w-[20%] py-4">
+        <div
+          className={`text-center ${isArchived ? "text-muted-foreground" : "text-foreground"
+            }`}
         >
-          {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-        </span>
-      </td>
-
-      {/* date */}
-      <td className="py-4 text-gray-900 dark:text-gray-100 w-[20%]">
-        {formatDate(request.createdAt)}
-      </td>
-    </tr>
+          {formatDate(request.createdAt)}
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }

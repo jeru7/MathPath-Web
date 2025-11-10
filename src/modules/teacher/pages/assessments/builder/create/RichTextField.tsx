@@ -12,19 +12,22 @@ import {
 import { FaItalic } from "react-icons/fa";
 import { FaUnderline } from "react-icons/fa";
 import { sanitizeHtml } from "../utils/sanitizeHtml";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type RichTextFieldProps = {
   value: string;
   onContentChange?: (content: string) => void;
   extensions?: Extensions;
-  classes: string;
+  classes?: string;
 };
 
 export default function RichTextField({
   onContentChange,
   extensions,
   value,
-  classes = "h-fit max-h-[150px]",
+  classes,
 }: RichTextFieldProps): ReactElement {
   const editor = useEditor({
     extensions: extensions ?? [
@@ -35,7 +38,6 @@ export default function RichTextField({
       }),
     ],
     content: value ?? "",
-    // initial value
     onCreate({ editor }) {
       editor.commands.setTextAlign("left");
       editor.commands.focus("end");
@@ -46,19 +48,11 @@ export default function RichTextField({
       onContentChange?.(isEmpty ? "" : sanitizeHtml(editor.getHTML()));
     },
     editorProps: {
-      // fix paste issue
-      handlePaste(view, event) {
-        const text = event.clipboardData?.getData("text/plain") ?? "";
-        const rawText = text.replace(/\n/g, " ");
-        const { tr } = view.state;
-        tr.insertText(rawText);
-        view.dispatch(tr);
-        event.preventDefault();
-        return true;
-      },
       attributes: {
-        class:
-          "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[100px] text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700",
+        class: cn(
+          "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[80px] w-full",
+          "p-3 text-foreground bg-background break-words whitespace-pre-wrap",
+        ),
       },
     },
   });
@@ -70,92 +64,104 @@ export default function RichTextField({
     }
   }, [value, editor]);
 
-  if (!editor) return <div>Loading...</div>;
+  if (!editor) {
+    return (
+      <div
+        className={cn(
+          "w-full border rounded-md flex flex-col overflow-hidden",
+          classes,
+        )}
+      >
+        <Skeleton className="h-10 w-full rounded-none" />
+        <Skeleton className="h-32 w-full rounded-none" />
+      </div>
+    );
+  }
 
   return (
     <section
-      className={`${classes} w-full border border-gray-300 dark:border-gray-600 rounded-sm flex flex-col bg-white dark:bg-gray-800 transition-colors duration-200`}
+      className={cn(
+        "w-full border rounded-md flex flex-col bg-background overflow-hidden",
+        "border-border transition-colors duration-200",
+        classes,
+      )}
     >
-      <div className="flex gap-2 p-1 justify-end bg-gray-100 dark:bg-gray-700 rounded-t-xs border-b border-b-gray-300 dark:border-b-gray-600 h-[40px] items-center px-2 transition-colors duration-200">
-        {/* left align */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          className="border border-gray-500 dark:border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
-          style={{
-            backgroundColor: editor.isActive({ textAlign: "left" })
-              ? "#CBD5E1"
-              : "",
-          }}
-        >
-          <FaAlignLeft />
-        </button>
-        {/* center align */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          className="border border-gray-500 dark:border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
-          style={{
-            backgroundColor: editor.isActive({ textAlign: "center" })
-              ? "#CBD5E1"
-              : "",
-          }}
-        >
-          <FaAlignCenter />
-        </button>
-        {/* right align */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          className="border border-gray-500 dark:border-gray-500 rounded w-6 h-6 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
-          style={{
-            backgroundColor: editor.isActive({ textAlign: "right" })
-              ? "#CBD5E1"
-              : "",
-          }}
-        >
-          <FaAlignRight />
-        </button>
-        {/* bold */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className="border border-gray-500 dark:border-gray-500 rounded text-sm w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
-          style={{
-            backgroundColor: editor.isActive("bold") ? "#CBD5E1" : "",
-          }}
-        >
-          <FaBold />
-        </button>
-        {/* italize */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className="border border-gray-500 dark:border-gray-500 rounded text-sm  w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
-          style={{
-            backgroundColor: editor.isActive("italic") ? "#CBD5E1" : "",
-          }}
-        >
-          <FaItalic />
-        </button>
-        {/* underline */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className="border border-gray-500 dark:border-gray-500 rounded text-sm  w-6 h-6 flex items-center justify-center hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-900 transition-colors duration-200"
-          style={{
-            backgroundColor: editor.isActive("underline") ? "#CBD5E1" : "",
-          }}
-        >
-          <FaUnderline />
-        </button>
+      {/* toolbar */}
+      <div className="flex gap-1 p-2 justify-end bg-muted border-b border-border h-10 items-center">
+        {/* text alignment */}
+        <div className="flex gap-1 mr-2">
+          <Button
+            type="button"
+            variant={
+              editor.isActive({ textAlign: "left" }) ? "default" : "outline"
+            }
+            size="sm"
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            className="h-7 w-7 p-0"
+          >
+            <FaAlignLeft className="w-3 h-3" />
+          </Button>
+          <Button
+            type="button"
+            variant={
+              editor.isActive({ textAlign: "center" }) ? "default" : "outline"
+            }
+            size="sm"
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            className="h-7 w-7 p-0"
+          >
+            <FaAlignCenter className="w-3 h-3" />
+          </Button>
+          <Button
+            type="button"
+            variant={
+              editor.isActive({ textAlign: "right" }) ? "default" : "outline"
+            }
+            size="sm"
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            className="h-7 w-7 p-0"
+          >
+            <FaAlignRight className="w-3 h-3" />
+          </Button>
+        </div>
+
+        {/* text formatting */}
+        <div className="flex gap-1">
+          <Button
+            type="button"
+            variant={editor.isActive("bold") ? "default" : "outline"}
+            size="sm"
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            className="h-7 w-7 p-0"
+          >
+            <FaBold className="w-3 h-3" />
+          </Button>
+          <Button
+            type="button"
+            variant={editor.isActive("italic") ? "default" : "outline"}
+            size="sm"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className="h-7 w-7 p-0"
+          >
+            <FaItalic className="w-3 h-3" />
+          </Button>
+          <Button
+            type="button"
+            variant={editor.isActive("underline") ? "default" : "outline"}
+            size="sm"
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className="h-7 w-7 p-0"
+          >
+            <FaUnderline className="w-3 h-3" />
+          </Button>
+        </div>
       </div>
 
-      <div className="h-fit w-full max-h-[400px] overflow-y-auto p-2 max-w-[620px] bg-white dark:bg-gray-700 transition-colors duration-200">
+      {/* Editor Content */}
+      <div className="flex-1 w-full overflow-y-auto">
         <EditorContent
           editor={editor}
-          className="h-full w-full max-w-full break-words whitespace-pre-wrap text-gray-900 dark:text-gray-100"
-          style={{ outline: "none" }}
+          className="h-full w-full max-w-full break-all whitespace-normal min-h-[80px] focus:outline-none"
         />
       </div>
     </section>

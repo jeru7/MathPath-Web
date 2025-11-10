@@ -1,5 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { type ReactElement } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type CreateAssessmentStepperProps = {
   currentStep: number;
@@ -18,168 +21,102 @@ export default function Stepper({
   configureErrors,
   publishErrors,
 }: CreateAssessmentStepperProps): ReactElement {
+  const steps = [
+    {
+      number: 1,
+      label: "Create",
+      errors: createErrors,
+      key: "create",
+    },
+    {
+      number: 2,
+      label: "Configure",
+      errors: configureErrors,
+      key: "configure",
+    },
+    {
+      number: 3,
+      label: "Publish",
+      errors: publishErrors,
+      key: "publish",
+    },
+  ];
+
   return (
-    <section className="flex rounded-sm items-center w-full">
-      {/* step 1 - create */}
-      <button
-        className={`flex justify-center px-4 py-2 rounded-tl-sm border-t sm:border-l shadow-[-1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[-1px_0_2px_0_rgba(255,255,255,0.05)] border-gray-300 dark:border-gray-600 gap-2 bg-white dark:bg-gray-700 items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 1)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
-        type="button"
-        style={{
-          opacity: getOpacity(currentStep, 1),
-          borderBottom:
-            currentStep === 1
-              ? "1px solid #ffffff"
-              : currentStep === 1
-                ? "1px solid #1f2937"
-                : "1px solid #D1D5DB",
-        }}
-        onClick={() => onChangeStep(1)}
-        key="create"
-      >
-        <div className="flex items-center gap-1 sm:gap-2">
-          <div className="flex">
-            <div
-              className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
-              style={{ backgroundColor: getCircleColor(currentStep, 1) }}
-            >
-              <p className="text-white text-xs xl:text-xl font-bold">1</p>
-            </div>
-          </div>
-          <div className="hidden sm:flex flex-col font-semibold text-lg">
-            <p className="text-xs xl:text-base font-semibold text-gray-900 dark:text-gray-100">
-              Create
-            </p>
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {isValidated && createErrors > 0 && (
-            <motion.div
-              className="h-5 w-5 bg-red-400 rounded-full flex items-center justify-center"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{
-                opacity: 0,
-                y: -5,
-                transition: { duration: 0.25 },
-              }}
-            >
-              <p className="text-white font-semibold text-xs">{createErrors}</p>
-            </motion.div>
+    <section className="flex rounded-t-md items-center w-full border border-b-0 border-border overflow-hidden">
+      {steps.map((stepInfo, index) => (
+        <Button
+          key={stepInfo.key}
+          variant="ghost"
+          className={cn(
+            "flex justify-center px-2 sm:px-4 py-4 sm:py-6 gap-1 sm:gap-2 items-center w-full min-w-0 flex-1",
+            "hover:bg-muted/50 transition-colors duration-200 rounded-none",
+            index < steps.length - 1 && "border-r border-border",
+            getOpacity(currentStep, stepInfo.number),
           )}
-        </AnimatePresence>
-      </button>
-      {/* step 2 - configure */}
-      <button
-        className={`flex justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 gap-2 bg-white dark:bg-gray-700 items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 2)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
-        type="button"
-        style={{
-          borderBottom:
-            currentStep === 2
-              ? "1px solid #ffffff"
-              : currentStep === 2
-                ? "1px solid #1f2937"
-                : "1px solid #D1D5DB",
-        }}
-        onClick={() => onChangeStep(2)}
-        key="configure"
-      >
-        <div className="flex items-center gap-1 sm:gap-2">
-          <div className="flex">
-            <div
-              className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
-              style={{ backgroundColor: getCircleColor(currentStep, 2) }}
-            >
-              <p className="text-white text-xs xl:text-xl font-bold">2</p>
-            </div>
-          </div>
-          <div className="hidden sm:flex flex-col text-lg">
-            <p className="text-xs xl:text-base font-semibold text-gray-900 dark:text-gray-100">
-              Configure
-            </p>
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {isValidated && configureErrors > 0 && (
-            <motion.div
-              className="h-5 w-5 bg-red-400 rounded-full flex items-center justify-center"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{
-                opacity: 0,
-                y: -5,
-                transition: { duration: 0.25 },
-              }}
-            >
-              <p className="text-white font-semibold text-xs">
-                {configureErrors}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </button>
-      {/* step 3 - publish */}
-      <button
-        className={`flex justify-center px-4 py-2 rounded-tr-sm border-t sm:border-r border-b border-gray-300 dark:border-gray-600 shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(255,255,255,0.05)] gap-2 bg-white dark:bg-gray-700 items-center sm:justify-between w-full min-w-[80px] sm:w-[150px] xl:w-[200px] ${getOpacity(currentStep, 3)} hover:opacity-80 hover:cursor-pointer transition-colors duration-200`}
-        type="button"
-        style={{
-          borderBottom:
-            currentStep === 3
-              ? "1px solid #ffffff"
-              : currentStep === 3
-                ? "1px solid #1f2937"
-                : "1px solid #D1D5DB",
-        }}
-        onClick={() => onChangeStep(3)}
-        key="publish"
-      >
-        <div className="flex items-center gap-1 sm:gap-2">
-          <div className="flex">
-            <div
-              className="flex items-center justify-center w-8 h-8 xl:w-10 xl:h-10 rounded-full"
-              style={{ backgroundColor: getCircleColor(currentStep, 3) }}
-            >
-              <p className="text-white text-xs xl:text-xl font-bold">3</p>
-            </div>
-          </div>
-          <div className="hidden sm:flex flex-col font-semibold text-lg">
-            <p className="text-xs xl:text-base font-semibold text-gray-900 dark:text-gray-100">
-              Publish
-            </p>
-          </div>
-
-          <AnimatePresence>
-            {isValidated && publishErrors > 0 && (
-              <motion.div
-                className="h-5 w-5 bg-red-400 rounded-full flex items-center justify-center"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{
-                  opacity: 0,
-                  y: -5,
-                  transition: { duration: 0.25 },
+          style={{
+            borderBottom:
+              currentStep === stepInfo.number
+                ? "2px solid hsl(var(--primary))"
+                : "0px solid transparent",
+          }}
+          onClick={() => onChangeStep(stepInfo.number as 1 | 2 | 3)}
+        >
+          <div className="flex items-center gap-2 sm:gap-3 w-full justify-center sm:justify-start max-w-[120px]">
+            <div className="flex-shrink-0">
+              <div
+                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 xl:w-9 xl:h-9 rounded-full"
+                style={{
+                  backgroundColor: getCircleColor(currentStep, stepInfo.number),
                 }}
               >
-                <p className="text-white font-semibold text-xs">
-                  {publishErrors}
+                <p className="text-white text-xs sm:text-sm xl:text-base font-bold">
+                  {stepInfo.number}
                 </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col flex-1 min-w-0 sm:min-w-[200px]">
+              <p className="text-xs sm:text-xs xl:text-sm font-semibold text-left truncate">
+                {stepInfo.label}
+              </p>
+            </div>
+
+            <AnimatePresence>
+              {isValidated && stepInfo.errors > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.8,
+                    transition: { duration: 0.2 },
+                  }}
+                  className="flex-shrink-0"
+                >
+                  <Badge
+                    variant="destructive"
+                    className="h-4 w-4 sm:h-5 sm:w-5 p-0 flex items-center justify-center text-[10px] sm:text-xs"
+                  >
+                    {stepInfo.errors}
+                  </Badge>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </Button>
+      ))}
     </section>
   );
 }
 
 const getCircleColor = (currentStep: number, step: number): string => {
   if (currentStep < step) {
-    return "#D1D5DB";
+    return "hsl(var(--muted-foreground))";
   } else if (currentStep > step) {
-    return "var(--primary-green)";
+    return "hsl(var(--primary))";
   } else {
-    return "var(--primary-yellow)";
+    return "hsl(var(--primary))";
   }
 };
 

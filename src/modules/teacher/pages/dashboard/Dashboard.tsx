@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import PrimaryStat, { IPrimaryStatProps } from "./components/PrimaryStat";
+import PrimaryStat from "./components/PrimaryStat";
 import ActivityList from "../../../core/components/activity/ActivityList";
 import CustomCalendar from "../../../core/components/calendar/CustomCalendar";
 import ActiveStudentsCard from "./components/active_students/ActiveStudentsCard";
@@ -7,50 +7,50 @@ import TopicHighlightsCard from "./components/topic_highlights/TopicHighlightsCa
 import AssessmentStatusCard from "./components/assessment_status/AssessmentStatusCard";
 import { useTeacherContext } from "../../context/teacher.context";
 import StudentOnlineTrend from "./components/student_online_trend/StudentOnlineTrend";
+import TopStudentsCard from "@/modules/core/components/top-students/TopStudentsCard";
 
 export default function Dashboard(): ReactElement {
-  const { students, sections, assessments, onlineStudents } =
-    useTeacherContext();
+  const {
+    rawStudents,
+    rawSections,
+    rawAssessments,
+    onlineStudents,
+    activities,
+    teacherId,
+    isLoadingActivities,
+  } = useTeacherContext();
 
-  const primaryStats: IPrimaryStatProps[] = [
+  const primaryStats = [
     {
-      color: "bg-[var(--primary-green)] dark:bg-[var(--primary-green-dark)]",
-      title: "Students",
-      students: students.length,
+      title: "Students" as const,
+      students: rawStudents.length,
       onlineStudents: onlineStudents.length,
     },
     {
-      color: "bg-[var(--primary-orange)] dark:bg-[var(--primary-orange-dark)]",
-      title: "Sections",
-      sections: sections.length,
+      title: "Sections" as const,
+      sections: rawSections.length,
     },
     {
-      color:
-        "bg-[var(--secondary-orange)] dark:bg-[var(--secondary-orange-dark)]",
-      title: "Assessments",
-      assessments: assessments.length,
+      title: "Assessments" as const,
+      assessments: rawAssessments.length,
     },
   ];
 
   return (
-    <main className="flex flex-col min-h-screen h-fit w-full max-w-[2400px] gap-2 bg-inherit p-2">
-      {/* header */}
+    <main className="flex flex-col min-h-screen h-full w-full gap-2 bg-inherit p-2 mt-4 lg:mt-0">
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
           Dashboard
         </h3>
       </header>
 
       <div className="flex-1 flex flex-col xl:flex-row gap-2">
-        {/* left column */}
         <div className="xl:w-[80%] flex-1 flex flex-col gap-2">
-          {/* stats */}
-          <section className="flex min-h-[120px] xl:h-[200px] xl:min-h-[200px] w-full xl:w-full gap-2 overflow-x-auto overflow-y-hidden xl:overflow-x-hidden no-scrollbar">
+          <section className="flex min-h-40 md:min-h-[210px] gap-2 overflow-x-auto overflow-y-hidden xl:overflow-x-hidden no-scrollbar">
             {primaryStats.map((stat, index) => (
               <PrimaryStat
                 key={index}
                 title={stat.title}
-                color={stat.color}
                 students={stat.students}
                 sections={stat.sections}
                 assessments={stat.assessments}
@@ -59,27 +59,23 @@ export default function Dashboard(): ReactElement {
             ))}
           </section>
 
-          {/* stage progression */}
-          <div className="w-full h-fit">
-            <StudentOnlineTrend classes="" />
-          </div>
+          <StudentOnlineTrend userId={teacherId} userType="teacher" />
 
-          {/* active students, correct percentage, assessment status */}
-          <div className="w-full h-full flex flex-col gap-2">
-            <section className="h-full w-full flex flex-col lg:flex-row gap-2">
-              <ActiveStudentsCard classes="flex-1" />
-              <TopicHighlightsCard classes="flex-1" />
-              <AssessmentStatusCard classes=" flex-1" />
-            </section>
+          <div className="h-full w-full gap-2 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4">
+            <ActiveStudentsCard userId={teacherId} userType="teacher" />
+            <TopicHighlightsCard userId={teacherId} userType="teacher" />
+            <AssessmentStatusCard />
+            <TopStudentsCard userType="teacher" userId={teacherId} />
           </div>
         </div>
 
-        {/* right column */}
-        <div className="w-full xl:w-[20%] flex flex-col md:flex-row xl:flex-col gap-2">
-          {/* calendar */}
+        <div className="w-full xl:w-[20%] flex flex-col md:flex-row xl:flex-col gap-2 overflow-hidden">
           <CustomCalendar classes="" />
-          {/* student activity */}
-          <ActivityList classes="min-h-[400px] w-full" type="Teacher" />
+          <ActivityList
+            activities={activities}
+            type="Teacher"
+            isLoading={isLoadingActivities}
+          />
         </div>
       </div>
     </main>

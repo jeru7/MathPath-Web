@@ -1,5 +1,4 @@
 import { useReducer, useState, type ReactElement } from "react";
-import { IoClose } from "react-icons/io5";
 import QuestionTypeSelect from "./components/QuestionTypeSelect";
 import RichTextField from "../../RichTextField";
 import Choices from "./choices/Choices";
@@ -12,16 +11,27 @@ import {
   QuestionType,
 } from "../../../../../../../core/types/assessment/assessment.type";
 import { AnimatePresence, motion } from "framer-motion";
-import ModalActions from "../ModalActions";
 import { getDefaultQuestion, addQuestionReducer } from "./add-question.reducer";
 import { useAssessmentBuilder } from "../../../context/assessment-builder.context";
 import { useQuestionValidation } from "../../hooks/useQuestionValidation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { NumberInputWithControls } from "@/components/custom/num-input";
 
 // types
 type AddQuestionModalProps = {
   onClose: () => void;
   pageId: string;
   contentToEdit: AssessmentContent | null;
+  open: boolean;
 };
 
 // default
@@ -29,6 +39,7 @@ export default function AddQuestionModal({
   onClose,
   pageId,
   contentToEdit,
+  open,
 }: AddQuestionModalProps): ReactElement {
   // initial value
   const initial: AssessmentQuestion = contentToEdit
@@ -101,149 +112,123 @@ export default function AddQuestionModal({
   };
 
   return (
-    <motion.article
-      className="flex flex-col w-[100vw] h-full min-h-[100vh] overflow-y-auto fixed md:h-fit md:min-h-0 md:w-[800px] md:rounded-sm md:drop-shadow-sm md:top-1/2 md:-translate-y-[60%] md:left-1/2 md:right-1/2 md:-translate-x-1/2 md:absolute bg-white dark:bg-gray-800 transition-colors duration-200"
-      key="add-question-modal"
-      initial={{ opacity: 0, scale: 1, y: -20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 1, y: 50 }}
-      transition={{ duration: 0.25 }}
-    >
-      {/* header */}
-      <header className="p-4 bg-inherit rounded-t-sm flex items-center justify-between border-b border-b-gray-300 dark:border-b-gray-600 transition-colors duration-200">
-        <h3 className="text-gray-900 dark:text-gray-100 transition-colors duration-200">
-          New Question
-        </h3>
-        {/* close button */}
-        <button
-          className="opacity-80 hidden md:block hover:opacity-100 hover:cursor-pointer transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-          type="button"
-          onClick={onClose}
-        >
-          <IoClose size={24} />
-        </button>
-      </header>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="w-[100dvw] h-[100dvh] max-w-none sm:max-w-4xl sm:max-h-[90vh] sm:h-fit overflow-y-auto flex flex-col p-0">
+        <DialogHeader className="px-4 sm:px-6 py-4 border-b flex-shrink-0">
+          <DialogTitle>
+            {contentToEdit ? "Edit Question" : "New Question"}
+          </DialogTitle>
+        </DialogHeader>
 
-      {/* form */}
-      <section className="flex-1 flex flex-col bg-inherit rounded-b-sm p-4">
-        <form className="flex flex-col gap-4 flex-1 justify-between">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              {/* question type */}
-              <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-                <label
-                  htmlFor="type"
-                  className="font-semibold w-32 min-w-32 md:text-right text-sm md:text-base text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  Question Type
-                </label>
-                <QuestionTypeSelect
-                  onTypeChange={handleTypeChange}
-                  classes={"w-full text-sm md:text-base md:w-48"}
-                />
-              </div>
-
-              {/* points */}
-              <div className="flex flex-col md:flex-row gap-2 md:gap-4 md:items-center">
-                <label
-                  htmlFor="points"
-                  className="font-semibold text-sm md:text-base text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                >
-                  Points
-                </label>
-                <input
-                  id="points"
-                  type="number"
-                  className="border border-gray-300 dark:border-gray-600 text-center text-sm md:text-base rounded-sm px-2 py-1 w-24 focus:outline-none focus:ring-1 focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
-                  defaultValue={question.points}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-                    handlePointsChange(isNaN(value) ? 1 : value);
-                  }}
-                  min={1}
-                  max={100}
-                />
-              </div>
+        <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <div className="w-full flex flex-col gap-2">
+              <Label htmlFor="type" className="text-sm font-medium">
+                Question Type
+              </Label>
+              <QuestionTypeSelect
+                onTypeChange={handleTypeChange}
+                defaultValue={question.type}
+                className="w-full"
+              />
             </div>
-            <div className="flex flex-col md:flex-row gap-2 md:gap-4">
-              {/* Question Field */}
-              <label
-                htmlFor="question"
-                className="text-sm md:text-base font-semibold w-32 min-w-32 md:text-right text-gray-900 dark:text-gray-100 transition-colors duration-200"
-              >
-                Question
-              </label>
-              <div className="flex flex-col w-full gap-2">
-                <RichTextField
-                  value={question.question}
-                  onContentChange={handleQuestionContentChange}
-                  classes="h-fit max-h-[200px] md:max-h-[150px]"
-                />
-                <AnimatePresence>
-                  {isValidated &&
-                    errors.question &&
-                    question.type !== "fill_in_the_blanks" && (
-                      <motion.p
-                        className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{
-                          opacity: 0,
-                          y: 0,
-                          transition: { duration: 0.1 },
-                        }}
-                        key="fill-in-the-blank-error"
-                      >
-                        {errors.question}
-                      </motion.p>
-                    )}
-                </AnimatePresence>
-                <AnimatePresence>
-                  {isValidated && errors.fillInTheBlankQuestion && (
+
+            <div className="flex flex-col gap-2 pr-8">
+              <Label htmlFor="points" className="text-sm font-medium">
+                Points
+              </Label>
+              <NumberInputWithControls
+                id="points"
+                value={question.points}
+                min={1}
+                max={5}
+                onChange={handlePointsChange}
+                className="w-full sm:w-fit"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label htmlFor="question" className="text-sm font-medium">
+              Question
+            </Label>
+            <div className="space-y-3">
+              <RichTextField
+                value={question.question}
+                onContentChange={handleQuestionContentChange}
+                classes="h-fit min-h-[120px] max-h-[300px] sm:max-h-[200px]"
+              />
+
+              <AnimatePresence>
+                {isValidated &&
+                  errors.question &&
+                  question.type !== "fill_in_the_blanks" && (
                     <motion.p
-                      className="text-xs md:text-sm text-red-500 dark:text-red-400 self-end transition-colors duration-200"
+                      className="text-xs text-destructive font-medium"
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 0, transition: { duration: 0.1 } }}
-                      key="fill-in-the-blank-error"
+                      exit={{
+                        opacity: 0,
+                        y: 0,
+                        transition: { duration: 0.1 },
+                      }}
+                      key="question-error"
                     >
-                      {errors.fillInTheBlankQuestion}
+                      {errors.question}
                     </motion.p>
                   )}
-                </AnimatePresence>
-                <AnimatePresence>
-                  {/* info for fill in the blanks */}
-                  {question.type === "fill_in_the_blanks" && (
-                    <motion.div
-                      className="p-2 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 transition-colors duration-200"
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      key="fill-in-the-blank-info"
-                    >
-                      <p className="italic text-right text-xs text-gray-700 dark:text-gray-300 transition-colors duration-200">
-                        Use brackets to indicate blanks. <br />
-                        Example: The capital of the Philippines is [1] <br />
-                        "The capital of the Philippines is _____"
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              </AnimatePresence>
+
+              <AnimatePresence>
+                {isValidated && errors.fillInTheBlankQuestion && (
+                  <motion.p
+                    className="text-xs text-destructive font-medium"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 0, transition: { duration: 0.1 } }}
+                    key="fill-in-the-blank-error"
+                  >
+                    {errors.fillInTheBlankQuestion}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence>
+                {question.type === "fill_in_the_blanks" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key="fill-in-the-blank-info"
+                  >
+                    <Alert className="bg-yellow-50 border-yellow-200 dark:bg-yellow-950/20 dark:border-yellow-800">
+                      <AlertDescription className="text-xs text-yellow-800 dark:text-yellow-200">
+                        <strong>How to create blanks:</strong> Use brackets to
+                        indicate blanks. <br />
+                        <strong>Example:</strong> "The capital of the
+                        Philippines is [1]" <br />
+                        <strong>Result:</strong> "The capital of the Philippines
+                        is _____"
+                      </AlertDescription>
+                    </Alert>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            {/* divider */}
-            <div className="border-b border-b-gray-300 dark:border-b-gray-600 transition-colors duration-200"></div>
-            {/* bottom section */}
+          </div>
+
+          <Separator />
+
+          <div className="space-y-4">
             <AnimatePresence mode="wait">
-              <div className="gap-4 flex flex-col">
-                {/* choices for single or multiple choice */}
+              <div className="space-y-4">
                 {question.type === "single_choice" ||
-                question.type === "multiple_choice" ? (
+                  question.type === "multiple_choice" ? (
                   <motion.div
                     key="choices"
-                    initial={{ opacity: 0, scale: 1 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.25 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <Choices
                       isValidated={isValidated}
@@ -255,7 +240,7 @@ export default function AddQuestionModal({
                     />
                   </motion.div>
                 ) : (
-                  // answer fields for the rest of types
+                  // Answer fields for the rest of types
                   (((question.answers as string[] | FillInTheBlankAnswerType[])
                     .length > 0 &&
                     question.type === "fill_in_the_blanks") ||
@@ -263,10 +248,10 @@ export default function AddQuestionModal({
                     question.type === "true_or_false") && (
                     <motion.div
                       key="answers"
-                      initial={{ opacity: 0, scale: 1 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.25 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
                     >
                       <Answers
                         answers={question.answers as FillInTheBlankAnswerType[]}
@@ -281,13 +266,24 @@ export default function AddQuestionModal({
               </div>
             </AnimatePresence>
           </div>
-          {/* actions */}
-          <ModalActions
-            onAddContent={handleAddQuestion}
-            onCancelClick={onClose}
-          />
-        </form>
-      </section>
-    </motion.article>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 p-4 sm:p-6 border-t bg-muted/30 flex-shrink-0">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="flex-1 order-2 sm:order-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAddQuestion}
+            className="flex-1 order-1 sm:order-2"
+          >
+            {contentToEdit ? "Update Question" : "Add Question"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

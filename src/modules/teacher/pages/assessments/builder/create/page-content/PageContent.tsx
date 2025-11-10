@@ -21,6 +21,7 @@ import { useAssessmentBuilder } from "../../context/assessment-builder.context";
 import { ModalType } from "../modals/Modals";
 import { deleteImage } from "../../../../../../core/utils/cloudinary/cloudinary.util";
 import { toast } from "react-toastify";
+import { Card } from "@/components/ui/card";
 
 type PageContentProps = {
   contents: AssessmentContent[];
@@ -96,7 +97,7 @@ export default function PageContent({
   };
 
   return (
-    <section className="flex flex-col gap-8 overflow-hidden">
+    <section className="flex flex-col gap-4 sm:gap-6 overflow-hidden">
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -160,7 +161,7 @@ export default function PageContent({
 
                   if (activeContent.type === "question") {
                     return (
-                      <div className="rounded scale-105 bg-white dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-600 shadow-lg">
+                      <Card className="scale-105 shadow-lg border-primary/50 bg-card">
                         <Question
                           content={activeContent}
                           questionNumber={0}
@@ -169,29 +170,29 @@ export default function PageContent({
                           onEdit={() => onEditContent}
                           isEditMode={isEditMode}
                         />
-                      </div>
+                      </Card>
                     );
                   } else if (activeContent.type === "image") {
                     return (
-                      <div className="rounded scale-105 bg-white dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-600 shadow-lg">
+                      <Card className="scale-105 shadow-lg border-primary/50 bg-card">
                         <Image
                           content={activeContent}
                           onDeleteContent={handleDeleteContent}
                           onEdit={() => onEditContent}
                           isEditMode={isEditMode}
                         />
-                      </div>
+                      </Card>
                     );
                   } else if (activeContent.type === "text") {
                     return (
-                      <div className="rounded scale-105 bg-white dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-600 shadow-lg">
+                      <Card className="scale-105 shadow-lg border-primary/50 bg-card">
                         <Text
                           content={activeContent}
                           onDeleteContent={handleDeleteContent}
                           onEdit={() => onEditContent}
                           isEditMode={isEditMode}
                         />
-                      </div>
+                      </Card>
                     );
                   }
 
