@@ -2,6 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useStudent } from "../services/student.service";
 import { StudentContext } from "./student.context";
 import PageLoader from "@/components/ui/page-loader";
+import { useStudentActivities } from "../services/student-activity.service";
 
 export function StudentProvider({
   studentId,
@@ -17,6 +18,9 @@ export function StudentProvider({
   const isMounted = useRef(true);
 
   const { data: student } = useStudent(studentId);
+  const { data: activities, isLoading: isActivityLoading } =
+    useStudentActivities(studentId);
+
   const [showLoader, setShowLoader] = useState(true);
 
   const connectWebSocket = useCallback(() => {
@@ -87,7 +91,12 @@ export function StudentProvider({
     return () => clearTimeout(timer);
   }, []);
 
-  const value = { student: student || null, studentId };
+  const value = {
+    student: student!,
+    studentId,
+    activities: activities || [],
+    isActivityLoading,
+  };
 
   if (showLoader || !student)
     return <PageLoader items={["Loading student data..."]} />;

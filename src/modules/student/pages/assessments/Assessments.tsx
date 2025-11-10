@@ -1,11 +1,11 @@
 import { type ReactElement, useState } from "react";
 import { useStudentContext } from "../../contexts/student.context";
-import AssessmentTable from "./components/AssessmentTable";
 import { useNavigate } from "react-router-dom";
 import { useStudentAssessments } from "../../services/student-assessment.service";
 import { Assessment } from "../../../core/types/assessment/assessment.type";
-import AssessmentDetailsModal from "./components/AssessmentDetailsModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import StudentAssessmentTable from "./components/StudentAssessmentTable";
+import StudentAssessmentDetailsModal from "./components/StudentAssessmentDetailsModal";
 
 export default function Assessments(): ReactElement {
   const { studentId, student } = useStudentContext();
@@ -34,7 +34,7 @@ export default function Assessments(): ReactElement {
 
   if (assessmentPending) {
     return (
-      <div className="min-h-screen h-fit w-full p-2 flex flex-col gap-2">
+      <div className="min-h-screen mt-4 lg:mt-0 h-fit w-full p-2 flex flex-col gap-2">
         {/* header skeleton */}
         <Skeleton className="h-8 w-64 rounded" />
 
@@ -49,7 +49,7 @@ export default function Assessments(): ReactElement {
   }
 
   return (
-    <div className="min-h-screen h-fit w-full p-2 flex flex-col gap-2">
+    <main className="min-h-screen mt-4 lg:mt-0 h-fit w-full p-2 flex flex-col gap-2">
       {/* header */}
       <header className="flex items-center justify-between">
         <div>
@@ -58,7 +58,7 @@ export default function Assessments(): ReactElement {
       </header>
 
       <div className="flex-1 min-h-0">
-        <AssessmentTable
+        <StudentAssessmentTable
           assessments={assessments || []}
           navigate={navigate}
           student={student}
@@ -67,7 +67,7 @@ export default function Assessments(): ReactElement {
       </div>
 
       {selectedAssessment && (
-        <AssessmentDetailsModal
+        <StudentAssessmentDetailsModal
           isOpen={showDetailsModal}
           assessment={selectedAssessment}
           student={student}
@@ -75,6 +75,6 @@ export default function Assessments(): ReactElement {
           onTakeAssessment={handleTakeAssessment}
         />
       )}
-    </div>
+    </main>
   );
 }

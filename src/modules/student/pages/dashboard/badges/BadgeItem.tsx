@@ -44,7 +44,7 @@ export default function BadgeItem({
 
   return (
     <Card
-      className={`flex flex-col items-center p-3 border-2 w-48 max-h-54 transition-all hover:shadow-md flex-shrink-0 ${status.border} ${status.background}`}
+      className={`flex flex-col items-center p-3 w-48 max-h-54 transition-all flex-shrink-0 ${status.border} ${status.background}`}
     >
       <CardContent className="p-0 flex flex-col items-center w-full h-full justify-between">
         {/* icon */}

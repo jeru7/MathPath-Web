@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import { format } from "date-fns-tz";
 import {
-  FaTimes,
   FaClock,
   FaCalendarAlt,
   FaListAlt,
@@ -21,14 +20,19 @@ import {
 } from "../../../services/student-assessment-attempt.service";
 import { getTotalScore } from "../../../../teacher/pages/assessments/builder/utils/assessment-builder.util";
 import { AssessmentAttempt } from "../../../../core/types/assessment-attempt/assessment-attempt.type";
-import AttemptReviewModal from "./assessment-attempt/AttemptReviewModal";
 import { useNavigate } from "react-router-dom";
-import ModalOverlay from "../../../../core/components/modal/ModalOverlay";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import AttemptReviewModal from "@/modules/core/components/assessment-attempt-review/AttemptReviewModal";
 
-type AssessmentDetailsModalProps = {
+type StudentAssessmentDetailsModalProps = {
   isOpen: boolean;
   assessment: Assessment | null;
   student: Student | null;
@@ -36,12 +40,12 @@ type AssessmentDetailsModalProps = {
   onTakeAssessment: (assessment: Assessment) => void;
 };
 
-export default function AssessmentDetailsModal({
+export default function StudentAssessmentDetailsModal({
   isOpen,
   assessment,
   student,
   onClose,
-}: AssessmentDetailsModalProps): ReactElement {
+}: StudentAssessmentDetailsModalProps): ReactElement {
   const navigate = useNavigate();
   const { data: attempts = [], isLoading: attemptsLoading } =
     useAssessmentAttempt(student?.id ?? "", assessment?.id ?? "");
@@ -119,9 +123,9 @@ export default function AssessmentDetailsModal({
   const getAttemptDisplayText = (status: string) => {
     switch (status) {
       case "completed":
-        return "Pass";
+        return "Passed";
       case "failed":
-        return "Fail";
+        return "Failed";
       case "paused":
         return "Paused";
       case "abandoned":
@@ -183,58 +187,55 @@ export default function AssessmentDetailsModal({
 
   if (!assessment || !student) {
     return (
-      <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <Card className="h-[100dvh] w-[100dvw] rounded-none md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-bold">Assessment Not Found</h2>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <FaTimes className="w-4 h-4" />
-            </Button>
-          </div>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="h-[100dvh] w-[100dvw] max-w-none flex flex-col p-0 rounded-none">
+          <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b">
+            <DialogTitle>Assessment Not Found</DialogTitle>
+          </DialogHeader>
           <div className="flex-1 p-6 flex items-center justify-center">
             <p className="text-muted-foreground text-center">
               Unable to load assessment details. Please try again.
             </p>
           </div>
-          <div className="flex justify-end gap-3 p-4 border-t bg-muted/50">
+          <div className="flex justify-end gap-3 p-6 border-t bg-muted/50">
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
           </div>
-        </Card>
-      </ModalOverlay>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   return (
     <>
-      <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <Card className="h-[100dvh] w-[100dvw] rounded-none md:rounded-sm md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold truncate">
-                  {assessment.title || "Untitled Assessment"}
-                </h2>
-                <div className="sm:hidden flex items-center gap-2 mt-1">
-                  <span className="text-xs text-muted-foreground">
-                    {totalQuestions} questions
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    • {totalAttempts}/{assessment.attemptLimit || "∞"} attempts
-                  </span>
-                  {hasPausedAttempt && (
-                    <Badge variant="secondary" className="text-xs">
-                      Paused
-                    </Badge>
-                  )}
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="h-[100dvh] w-[100dvw] max-w-none flex flex-col p-0 rounded-none md:rounded-lg md:h-[85dvh] md:w-[90dvw] lg:w-[75dvw] md:max-w-7xl">
+          <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="flex-1 min-w-0">
+                  <DialogTitle className="text-lg font-bold truncate">
+                    {assessment.title || "Untitled Assessment"}
+                  </DialogTitle>
+                  <div className="sm:hidden flex items-center gap-2 mt-1">
+                    <span className="text-xs text-muted-foreground">
+                      {totalQuestions} questions
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      • {totalAttempts}/{assessment.attemptLimit || "∞"}{" "}
+                      attempts
+                    </span>
+                    {hasPausedAttempt && (
+                      <Badge variant="secondary" className="text-xs">
+                        Paused
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <FaTimes className="w-4 h-4" />
-            </Button>
-          </div>
+          </DialogHeader>
 
           <div className="sm:hidden border-b">
             <Button
@@ -341,7 +342,7 @@ export default function AssessmentDetailsModal({
           </div>
 
           <div className="flex-1 overflow-y-auto">
-            <div className="hidden sm:grid grid-cols-2 gap-3 p-4 bg-muted/50 border-b">
+            <div className="hidden sm:grid grid-cols-2 gap-3 p-6 bg-muted/50 border-b">
               <Card>
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
@@ -378,11 +379,6 @@ export default function AssessmentDetailsModal({
                       <p className="text-xs text-muted-foreground">Attempts</p>
                       <p className="text-sm font-medium">
                         {totalAttempts}/{assessment.attemptLimit || "∞"}
-                        {hasPausedAttempt && (
-                          <span className="block text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                            (1 paused)
-                          </span>
-                        )}
                       </p>
                     </div>
                   </div>
@@ -406,17 +402,17 @@ export default function AssessmentDetailsModal({
               </Card>
             </div>
 
-            <div className="p-4">
+            <div className="p-6 space-y-6">
               {hasPausedAttempt && currentPausedAttempt && (
-                <Card className="mb-4 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
+                <Card className="bg-primary/50 dark:bg-primary/5 border-primary/50">
                   <CardContent className="p-3">
                     <div className="flex items-start gap-3">
-                      <FaPause className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                      <FaPause className="w-4 h-4 text-foreground mt-0.5 flex-shrink-0 dark:text-primary" />
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">
+                        <h3 className="text-sm font-semibold text-foreground dark:text-primary">
                           Assessment Paused
                         </h3>
-                        <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
+                        <p className="text-sm text-foreground mt-1 dark:text-primary">
                           You have an incomplete attempt. You can continue where
                           you left off.
                           {currentPausedAttempt.timeSpent > 0 && (
@@ -436,7 +432,7 @@ export default function AssessmentDetailsModal({
               )}
 
               {assessment.description && (
-                <div className="mb-4">
+                <div>
                   <h3 className="text-sm font-semibold mb-2">Description</h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">
                     {assessment.description}
@@ -445,7 +441,7 @@ export default function AssessmentDetailsModal({
               )}
 
               {assessment.topic && (
-                <div className="mb-4">
+                <div>
                   <h3 className="text-sm font-semibold mb-2">Topic</h3>
                   <p className="text-sm text-muted-foreground">
                     {assessment.topic}
@@ -454,13 +450,13 @@ export default function AssessmentDetailsModal({
               )}
 
               {attemptsLoading ? (
-                <div className="mb-4">
+                <div>
                   <p className="text-sm text-muted-foreground">
                     Loading attempts...
                   </p>
                 </div>
               ) : attempts.length > 0 ? (
-                <div className="mb-4">
+                <div>
                   <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                     <FaHistory className="w-4 h-4" />
                     Attempt History
@@ -482,12 +478,6 @@ export default function AssessmentDetailsModal({
                                 >
                                   {getAttemptDisplayText(attempt.status)}
                                 </Badge>
-                                {attempt.score !== undefined &&
-                                  attempt.status !== "paused" && (
-                                    <span className="text-xs text-muted-foreground">
-                                      Score: {attempt.score}
-                                    </span>
-                                  )}
                               </div>
                               {attempt.dateCompleted && (
                                 <p className="text-xs text-muted-foreground truncate mt-1">
@@ -512,7 +502,8 @@ export default function AssessmentDetailsModal({
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                               {(attempt.status === "completed" ||
-                                attempt.status === "failed") && (
+                                attempt.status === "failed" ||
+                                attempt.status === "abandoned") && (
                                   <div className="text-right">
                                     <p className="text-sm font-medium">
                                       {attempt.score || 0}/
@@ -520,14 +511,16 @@ export default function AssessmentDetailsModal({
                                     </p>
                                   </div>
                                 )}
-                              {attempt.status !== "paused" && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleViewAttempt(attempt)}
-                                >
-                                  Review
-                                </Button>
-                              )}
+                              {(attempt.status === "completed" ||
+                                attempt.status === "failed" ||
+                                attempt.status === "abandoned") && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleViewAttempt(attempt)}
+                                  >
+                                    Review
+                                  </Button>
+                                )}
                             </div>
                           </div>
                         </CardContent>
@@ -574,7 +567,7 @@ export default function AssessmentDetailsModal({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 p-4 border-t bg-muted/50">
+          <div className="flex justify-end gap-3 p-6 border-t bg-muted/50">
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
@@ -588,8 +581,8 @@ export default function AssessmentDetailsModal({
               {getActionButtonText()}
             </Button>
           </div>
-        </Card>
-      </ModalOverlay>
+        </DialogContent>
+      </Dialog>
 
       <AttemptReviewModal
         isOpen={isReviewModalOpen}

@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -22,126 +22,11 @@ import {
 import { CustomAxisTick } from "../../../../teacher/pages/statistics/components/CustomAxisTick";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type StudentStageStatsProps = {
   studentId: string;
 };
-
-export default function StudentStageStats({
-  studentId,
-}: StudentStageStatsProps): ReactElement {
-  const { data: studentTopicStats, isLoading } =
-    useStudentTopicStats(studentId);
-
-  const chartData = getTopicStats(studentTopicStats || []);
-
-  if (isLoading) {
-    return (
-      <Card className="flex-1">
-        <CardContent className="flex items-center justify-center h-48 p-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-muted-foreground">Loading stage statistics...</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="flex flex-col h-full w-full">
-      <CardHeader className="p-3">
-        <CardTitle className="text-lg font-semibold">Stage</CardTitle>
-      </CardHeader>
-      <CardContent className="p-3 flex flex-col justify-around flex-1">
-        {chartData.length === 0 ? (
-          <div className="flex h-48 items-center justify-center border border-dashed rounded-lg">
-            <div className="text-center text-muted-foreground">
-              <div className="text-4xl mb-2">📊</div>
-              <p className="italic">No stage data available</p>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full overflow-x-auto">
-            <div className="min-w-[1200px] h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: -20,
-                  }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    className="stroke-muted"
-                  />
-                  <XAxis
-                    dataKey="stage"
-                    height={60}
-                    interval={0}
-                    tick={<CustomAxisTick />}
-                    className="fill-muted-foreground"
-                  />
-                  <YAxis
-                    domain={[0, 100]}
-                    className="fill-muted-foreground"
-                    label={{
-                      value: "Completion Rate (%)",
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: -10,
-                      style: {
-                        textAnchor: "middle",
-                        fontSize: 12,
-                        fill: "hsl(var(--muted-foreground))",
-                      },
-                    }}
-                  />
-                  <Tooltip content={<StudentStageCustomTooltip />} />
-                  <Bar
-                    dataKey="completionRate"
-                    name="Completion Rate (%)"
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={getCompletionColor(entry.completionRate)}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        {/* Completion Rate Legend */}
-        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-2 px-4 sm:px-2">
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Excellent (80-100%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Good (60-79%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Average (40-59%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Poor (0-39%)</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 interface ChartDataItem {
   topicName: string;
@@ -154,41 +39,39 @@ interface ChartDataItem {
 }
 
 const COMPLETION_COLORS = {
-  excellent: "#22c55e", // green-500
-  good: "#3b82f6", // blue-500
-  average: "#f59e0b", // amber-500
-  poor: "#ef4444", // red-500
+  excellent: "#22c55e",
+  good: "#3b82f6",
+  average: "#f59e0b",
+  poor: "#ef4444",
 };
 
-const getCompletionColor = (completionRate: number): string => {
-  if (completionRate >= 80) return COMPLETION_COLORS.excellent;
-  if (completionRate >= 60) return COMPLETION_COLORS.good;
-  if (completionRate >= 40) return COMPLETION_COLORS.average;
-  return COMPLETION_COLORS.poor;
-};
+// Skeleton Component
+function StudentStageStatsSkeleton(): ReactElement {
+  return (
+    <Card className="flex flex-col h-full w-full">
+      <CardHeader className="p-3">
+        <CardTitle className="text-lg font-semibold">
+          <Skeleton className="h-6 w-24" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        <Skeleton className="h-48 w-full" />
+        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-2 px-4 sm:px-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
-  return topics.map((topic) => ({
-    topicName: topic.topic.trim(),
-    totalAttempts: topic.totalAttempts,
-    stage: topic.stage,
-    avgSecondsPlayed: topic.avgSecondsPlayed,
-    avgHintUsed: topic.avgHintUsed,
-    completionRate: topic.completionRate,
-    correctness: topic.correctness,
-  }));
-};
-
-const formatDuration = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.round(seconds % 60);
-  return `${minutes}m ${remainingSeconds}s`;
-};
-
-const StudentStageCustomTooltip = ({
+// Memoized tooltip component
+function StudentStageCustomTooltip({
   active,
   payload,
-}: TooltipProps<ValueType, NameType>) => {
+}: TooltipProps<ValueType, NameType>) {
   if (active && payload && payload.length > 0) {
     const data = payload[0].payload as ChartDataItem;
 
@@ -248,4 +131,155 @@ const StudentStageCustomTooltip = ({
   }
 
   return null;
+}
+
+// Memoized chart component
+function StageChart({ chartData }: { chartData: ChartDataItem[] }) {
+  const getCompletionColor = (completionRate: number): string => {
+    if (completionRate >= 80) return COMPLETION_COLORS.excellent;
+    if (completionRate >= 60) return COMPLETION_COLORS.good;
+    if (completionRate >= 40) return COMPLETION_COLORS.average;
+    return COMPLETION_COLORS.poor;
+  };
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-[1200px] h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: -20,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis
+              dataKey="stage"
+              height={60}
+              interval={0}
+              tick={<CustomAxisTick />}
+              className="fill-muted-foreground"
+            />
+            <YAxis
+              domain={[0, 100]}
+              className="fill-muted-foreground"
+              label={{
+                value: "Completion Rate (%)",
+                angle: -90,
+                position: "insideLeft",
+                offset: -10,
+                style: {
+                  textAnchor: "middle",
+                  fontSize: 12,
+                  fill: "hsl(var(--muted-foreground))",
+                },
+              }}
+            />
+            <Tooltip content={<StudentStageCustomTooltip />} />
+            <Bar
+              dataKey="completionRate"
+              name="Completion Rate (%)"
+              radius={[4, 4, 0, 0]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getCompletionColor(entry.completionRate)}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+// Memoized empty state component
+function EmptyState() {
+  return (
+    <div className="flex h-48 items-center justify-center border border-dashed rounded-lg">
+      <div className="text-center text-muted-foreground">
+        <p className="italic">No stage data available</p>
+      </div>
+    </div>
+  );
+}
+
+// Memoized legend component
+function CompletionLegend() {
+  return (
+    <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-2 px-4 sm:px-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Excellent (80-100%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Good (60-79%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Average (40-59%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Poor (0-39%)</span>
+      </div>
+    </div>
+  );
+}
+
+// Helper functions
+const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
+  return topics.map((topic) => ({
+    topicName: topic.topic.trim(),
+    totalAttempts: topic.totalAttempts,
+    stage: topic.stage,
+    avgSecondsPlayed: topic.avgSecondsPlayed,
+    avgHintUsed: topic.avgHintUsed,
+    completionRate: topic.completionRate,
+    correctness: topic.correctness,
+  }));
 };
+
+const formatDuration = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.round(seconds % 60);
+  return `${minutes}m ${remainingSeconds}s`;
+};
+
+export default function StudentStageStats({
+  studentId,
+}: StudentStageStatsProps): ReactElement {
+  const { data: studentTopicStats, isLoading } =
+    useStudentTopicStats(studentId);
+
+  const chartData = useMemo(
+    () => getTopicStats(studentTopicStats || []),
+    [studentTopicStats],
+  );
+
+  if (isLoading) {
+    return <StudentStageStatsSkeleton />;
+  }
+
+  return (
+    <Card className="flex flex-col h-full w-full">
+      <CardHeader className="p-3">
+        <CardTitle className="text-lg font-semibold">Stage</CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        {chartData.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <StageChart chartData={chartData} />
+        )}
+        <CompletionLegend />
+      </CardContent>
+    </Card>
+  );
+}

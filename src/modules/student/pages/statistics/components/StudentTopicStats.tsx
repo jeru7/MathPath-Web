@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -22,144 +22,11 @@ import { useStudentTopicStats } from "../../../services/student-stats.service";
 import { CustomAxisTick } from "../../../../teacher/pages/statistics/components/CustomAxisTick";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type StudentTopicStatsProps = {
   studentId: string;
 };
-
-export default function StudentTopicStats({
-  studentId,
-}: StudentTopicStatsProps): ReactElement {
-  const { data: topicStats, isLoading } = useStudentTopicStats(studentId);
-
-  const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
-    return topics.map((topic) => {
-      const avgCorrectness =
-        (topic.correctness.easy.correctPercentage +
-          topic.correctness.medium.correctPercentage +
-          topic.correctness.hard.correctPercentage) /
-        3;
-
-      return {
-        topicName: topic.topic.trim(),
-        totalAttempts: topic.totalAttempts,
-        stage: topic.stage,
-        avgSecondsPlayed: topic.avgSecondsPlayed,
-        avgHintUsed: topic.avgHintUsed,
-        completionRate: topic.completionRate,
-        correctness: topic.correctness,
-        avgCorrectPercentage: avgCorrectness,
-      };
-    });
-  };
-
-  const chartData = getTopicStats(topicStats || []);
-
-  if (isLoading) {
-    return (
-      <Card className="flex-1 min-h-0">
-        <CardContent className="flex h-full items-center justify-center p-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-muted-foreground">Loading topic statistics...</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="flex-1 flex flex-col overflow-hidden">
-      <CardHeader className="p-3">
-        <CardTitle className="text-lg font-semibold">Topics</CardTitle>
-      </CardHeader>
-      <CardContent className="p-3 flex flex-col justify-around flex-1">
-        {chartData.length === 0 ? (
-          <div className="flex h-48 items-center justify-center">
-            <div className="text-center text-muted-foreground">
-              <p className="italic">No topic data available</p>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full h-fit overflow-x-auto overflow-y-clip">
-            <div className="w-full min-w-[1200px] h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: -20,
-                  }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    className="stroke-muted"
-                  />
-                  <XAxis
-                    dataKey="stage"
-                    height={60}
-                    interval={0}
-                    tick={<CustomAxisTick />}
-                    className="fill-muted-foreground"
-                  />
-                  <YAxis
-                    domain={[0, 100]}
-                    className="fill-muted-foreground"
-                    label={{
-                      value: "Avg. Correctness (%)",
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: -10,
-                      style: {
-                        textAnchor: "middle",
-                        fontSize: 12,
-                        fill: "hsl(var(--muted-foreground))",
-                      },
-                    }}
-                  />
-                  <Tooltip content={<TopicCustomTooltip />} />
-                  <Bar
-                    dataKey="avgCorrectPercentage"
-                    name="Avg. Correctness (%)"
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={getBarColor(entry.avgCorrectPercentage)}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-4 px-4 sm:px-2">
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Excellent (80-100%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Good (60-79%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Average (40-59%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Poor (0-39%)</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 interface ChartDataItem {
   topicName: string;
@@ -179,17 +46,33 @@ const CORRECTNESS_COLORS = {
   poor: "#ef4444",
 };
 
-const getBarColor = (correctness: number): string => {
-  if (correctness >= 80) return CORRECTNESS_COLORS.excellent;
-  if (correctness >= 60) return CORRECTNESS_COLORS.good;
-  if (correctness >= 40) return CORRECTNESS_COLORS.average;
-  return CORRECTNESS_COLORS.poor;
-};
+// Skeleton Component
+function StudentTopicStatsSkeleton(): ReactElement {
+  return (
+    <Card className="w-full flex flex-col overflow-hidden">
+      <CardHeader className="p-3">
+        <CardTitle className="text-lg font-semibold">
+          <Skeleton className="h-6 w-24" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        <Skeleton className="h-48 w-full" />
+        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-4 px-4 sm:px-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-const TopicCustomTooltip = ({
+// Memoized tooltip component
+function TopicCustomTooltip({
   active,
   payload,
-}: TooltipProps<ValueType, NameType>) => {
+}: TooltipProps<ValueType, NameType>) {
   if (active && payload && payload.length > 0) {
     const data = payload[0].payload as ChartDataItem;
 
@@ -252,4 +135,156 @@ const TopicCustomTooltip = ({
   }
 
   return null;
-};
+}
+
+// Memoized chart component
+function TopicChart({ chartData }: { chartData: ChartDataItem[] }) {
+  const getBarColor = (correctness: number): string => {
+    if (correctness >= 80) return CORRECTNESS_COLORS.excellent;
+    if (correctness >= 60) return CORRECTNESS_COLORS.good;
+    if (correctness >= 40) return CORRECTNESS_COLORS.average;
+    return CORRECTNESS_COLORS.poor;
+  };
+
+  return (
+    <div className="w-full h-fit overflow-x-auto overflow-y-clip">
+      <div className="w-full min-w-[1200px] h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: -20,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis
+              dataKey="stage"
+              height={60}
+              interval={0}
+              tick={<CustomAxisTick />}
+              className="fill-muted-foreground"
+            />
+            <YAxis
+              domain={[0, 100]}
+              className="fill-muted-foreground"
+              label={{
+                value: "Avg. Correctness (%)",
+                angle: -90,
+                position: "insideLeft",
+                offset: -10,
+                style: {
+                  textAnchor: "middle",
+                  fontSize: 12,
+                  fill: "hsl(var(--muted-foreground))",
+                },
+              }}
+            />
+            <Tooltip content={<TopicCustomTooltip />} />
+            <Bar
+              dataKey="avgCorrectPercentage"
+              name="Avg. Correctness (%)"
+              radius={[4, 4, 0, 0]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getBarColor(entry.avgCorrectPercentage)}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+// Memoized empty state component
+function EmptyState() {
+  return (
+    <div className="flex h-48 items-center justify-center border border-dashed rounded-lg">
+      <div className="text-center text-muted-foreground">
+        <p className="italic">No topic data available</p>
+      </div>
+    </div>
+  );
+}
+
+// Memoized legend component
+function CorrectnessLegend() {
+  return (
+    <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-4 px-4 sm:px-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Excellent (80-100%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Good (60-79%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Average (40-59%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Poor (0-39%)</span>
+      </div>
+    </div>
+  );
+}
+
+export default function StudentTopicStats({
+  studentId,
+}: StudentTopicStatsProps): ReactElement {
+  const { data: topicStats, isLoading } = useStudentTopicStats(studentId);
+
+  const getTopicStats = (topics: TopicStats[] = []): ChartDataItem[] => {
+    return topics.map((topic) => {
+      const avgCorrectness =
+        (topic.correctness.easy.correctPercentage +
+          topic.correctness.medium.correctPercentage +
+          topic.correctness.hard.correctPercentage) /
+        3;
+
+      return {
+        topicName: topic.topic.trim(),
+        totalAttempts: topic.totalAttempts,
+        stage: topic.stage,
+        avgSecondsPlayed: topic.avgSecondsPlayed,
+        avgHintUsed: topic.avgHintUsed,
+        completionRate: topic.completionRate,
+        correctness: topic.correctness,
+        avgCorrectPercentage: avgCorrectness,
+      };
+    });
+  };
+
+  const chartData = useMemo(
+    () => getTopicStats(topicStats || []),
+    [topicStats],
+  );
+
+  if (isLoading) {
+    return <StudentTopicStatsSkeleton />;
+  }
+
+  return (
+    <Card className="w-full h-full flex flex-col overflow-hidden">
+      <CardHeader className="p-3">
+        <CardTitle className="text-lg font-semibold">Topics</CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        {chartData.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <TopicChart chartData={chartData} />
+        )}
+        <CorrectnessLegend />
+      </CardContent>
+    </Card>
+  );
+}

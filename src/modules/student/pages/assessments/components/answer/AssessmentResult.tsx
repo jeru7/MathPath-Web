@@ -24,8 +24,8 @@ import {
 } from "../../../../../../components/ui/card";
 import { Button } from "../../../../../../components/ui/button";
 import { Progress } from "../../../../../../components/ui/progress";
-import AttemptReviewModal from "../assessment-attempt/AttemptReviewModal";
 import { useStudentContext } from "@/modules/student/contexts/student.context";
+import AttemptReviewModal from "@/modules/core/components/assessment-attempt-review/AttemptReviewModal";
 
 type AssessmentResultProps = {
   assessment: Assessment;
@@ -69,6 +69,7 @@ const isIdentificationQuestion = (
 type QuestionWithPageInfo = AssessmentQuestion & {
   pageIndex: number;
   pageTitle: string;
+  contentId: string;
 };
 
 type QuestionMappingResult = {
@@ -76,6 +77,159 @@ type QuestionMappingResult = {
   questions: QuestionWithPageInfo[];
   questionAnswerMap: Map<string, string>;
   questionNumberMap: Map<string, number>;
+};
+
+const isOldDataFormat = (attempt: AssessmentAttempt): boolean => {
+  if (!attempt.answers || attempt.answers.length === 0) return false;
+
+  const firstAnswer = attempt.answers[0];
+  const hasQuestionId = "questionId" in firstAnswer;
+  const hasAnswer = "answer" in firstAnswer;
+
+  const nonMetadataKeys = Object.keys(firstAnswer).filter(
+    (key) => key !== "_id" && key !== "id",
+  );
+
+  return !hasQuestionId && !hasAnswer && nonMetadataKeys.length > 0;
+};
+
+const convertOldDataToNewFormat = (
+  attempt: AssessmentAttempt,
+): AssessmentAttempt => {
+  if (!isOldDataFormat(attempt)) return attempt;
+
+  const convertedAnswers: StudentAnswer[] = [];
+
+  // NOTE: di ko na makuha yung type nung old data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  attempt.answers.forEach((oldAnswer: any) => {
+    Object.keys(oldAnswer).forEach((key) => {
+      if (key === "_id" || key === "id") return;
+
+      const answerValue = oldAnswer[key];
+      convertedAnswers.push({
+        questionId: key,
+        answer: answerValue,
+      });
+    });
+  });
+
+  return {
+    ...attempt,
+    answers: convertedAnswers,
+  };
+};
+
+const getCorrectAnswers = (question: AssessmentQuestion): string[] => {
+  if (isChoiceQuestion(question)) {
+    return question.answers;
+  } else if (isTrueOrFalseQuestion(question)) {
+    return [question.answers.toString()];
+  } else if (isIdentificationQuestion(question)) {
+    return [question.answers];
+  } else if (isFillInTheBlanksQuestion(question)) {
+    return question.answers.map((answer) => answer.value);
+  }
+  return [];
+};
+
+const normalizeStudentAnswer = (
+  answer: string | string[] | Record<string, string> | boolean,
+): string[] => {
+  if (typeof answer === "string") return [answer];
+  if (Array.isArray(answer)) return answer;
+  if (typeof answer === "object" && !Array.isArray(answer)) {
+    return Object.values(answer);
+  }
+  if (typeof answer === "boolean") return [answer.toString()];
+  return [];
+};
+
+const isAnswerCorrect = (
+  question: AssessmentQuestion,
+  studentAnswer: StudentAnswer | null,
+): boolean => {
+  if (!studentAnswer) return false;
+
+  const hasAnswer = (): boolean => {
+    if (typeof studentAnswer.answer === "string")
+      return studentAnswer.answer.trim() !== "";
+    if (Array.isArray(studentAnswer.answer))
+      return (
+        studentAnswer.answer.length > 0 &&
+        studentAnswer.answer.some((a) => a && a.trim() !== "")
+      );
+    if (
+      typeof studentAnswer.answer === "object" &&
+      !Array.isArray(studentAnswer.answer)
+    )
+      return Object.values(studentAnswer.answer).some(
+        (val) => val && val.trim() !== "",
+      );
+    if (typeof studentAnswer.answer === "boolean") return true;
+
+    return false;
+  };
+
+  if (!hasAnswer()) return false;
+
+  const correctAnswers = getCorrectAnswers(question);
+
+  if (isFillInTheBlanksQuestion(question)) {
+    if (
+      typeof studentAnswer.answer === "object" &&
+      !Array.isArray(studentAnswer.answer)
+    ) {
+      let allCorrect = true;
+      question.answers.forEach((blank) => {
+        const studentBlankAnswer = (
+          studentAnswer.answer as Record<string, string>
+        )[blank.id];
+        const isBlankCorrect =
+          studentBlankAnswer?.toLowerCase().trim() ===
+          blank.value.toLowerCase().trim();
+        if (!isBlankCorrect) {
+          allCorrect = false;
+        }
+      });
+      return allCorrect;
+    } else {
+      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
+      if (studentAnswers.length !== correctAnswers.length) return false;
+      return studentAnswers.every(
+        (answer, index) =>
+          answer?.toLowerCase().trim() ===
+          correctAnswers[index]?.toLowerCase().trim(),
+      );
+    }
+  } else {
+    const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
+
+    switch (question.type) {
+      case "single_choice":
+        return (
+          studentAnswers.length === 1 && studentAnswers[0] === correctAnswers[0]
+        );
+
+      case "multiple_choice":
+        if (studentAnswers.length !== correctAnswers.length) return false;
+        return studentAnswers.every((answer) =>
+          correctAnswers.includes(answer),
+        );
+
+      case "true_or_false":
+        return studentAnswers[0] === correctAnswers[0];
+
+      case "identification":
+        return (
+          studentAnswers[0]?.toLowerCase().trim() ===
+          correctAnswers[0]?.toLowerCase().trim()
+        );
+
+      default:
+        return false;
+    }
+  }
 };
 
 export default function AssessmentResult({
@@ -90,6 +244,8 @@ export default function AssessmentResult({
   const [showReviewModal, setShowReviewModal] = useState(false);
   const isPassed = attempt.status === "completed";
 
+  const normalizedAttempt = convertOldDataToNewFormat(attempt);
+
   const { questions }: QuestionMappingResult = assessment.pages.reduce(
     (acc: QuestionMappingResult, page: AssessmentPage, pageIndex: number) => {
       page.contents.forEach((content) => {
@@ -97,39 +253,11 @@ export default function AssessmentResult({
           const question = content.data;
           acc.totalPossiblePoints += question.points;
 
-          const questionIndex = acc.questions.length;
-
-          let answerKey: string | null = null;
-
-          // find the answer by questionid in the array
-          const answerObj = attempt.answers.find(
-            (answer) => answer.questionId === question.id,
-          );
-          if (answerObj) {
-            answerKey = question.id;
-          } else {
-            // fallback: try to find by content id
-            const answerByContentId = attempt.answers.find(
-              (answer) => answer.questionId === content.id,
-            );
-            if (answerByContentId) {
-              answerKey = content.id;
-            } else if (questionIndex < attempt.answers.length) {
-              // fallback: use index-based lookup
-              answerKey =
-                attempt.answers[questionIndex]?.questionId || question.id;
-            } else {
-              answerKey = question.id;
-            }
-          }
-
-          acc.questionAnswerMap.set(question.id, answerKey);
-          acc.questionNumberMap.set(question.id, questionIndex + 1);
-
           const questionWithPageInfo: QuestionWithPageInfo = {
             ...question,
             pageIndex,
             pageTitle: page.title || `Page ${pageIndex + 1}`,
+            contentId: content.id,
           };
 
           acc.questions.push(questionWithPageInfo);
@@ -180,126 +308,30 @@ export default function AssessmentResult({
     return "You didn't pass this time. Keep practicing!";
   };
 
-  const getStudentAnswer = (questionId: string): StudentAnswer | null => {
-    const answerKey = attempt.answers.find(
+  const getStudentAnswer = (
+    questionId: string,
+    contentId: string,
+  ): StudentAnswer | null => {
+    const directAnswer = normalizedAttempt.answers.find(
       (answer) => answer.questionId === questionId,
     );
-    return answerKey || null;
-  };
 
-  const hasStudentAnswer = (questionId: string): boolean => {
-    const answer = getStudentAnswer(questionId);
-    if (!answer) return false;
-
-    if (typeof answer.answer === "string") return answer.answer.trim() !== "";
-    if (Array.isArray(answer.answer))
-      return (
-        answer.answer.length > 0 &&
-        answer.answer.some((a) => a && a.trim() !== "")
-      );
-    if (typeof answer.answer === "object" && !Array.isArray(answer.answer))
-      return Object.values(answer.answer).some(
-        (val) => val && val.trim() !== "",
-      );
-    if (typeof answer.answer === "boolean") return true;
-
-    return false;
-  };
-
-  const isAnswerCorrect = (
-    question: AssessmentQuestion,
-    questionId: string,
-  ): boolean => {
-    const studentAnswer = getStudentAnswer(questionId);
-    if (!studentAnswer || !hasStudentAnswer(questionId)) return false;
-
-    const correctAnswers = getCorrectAnswers(question);
-
-    if (isFillInTheBlanksQuestion(question)) {
-      if (
-        typeof studentAnswer.answer === "object" &&
-        !Array.isArray(studentAnswer.answer)
-      ) {
-        let allCorrect = true;
-        question.answers.forEach((blank) => {
-          const studentBlankAnswer = (
-            studentAnswer.answer as Record<string, string>
-          )[blank.id];
-          const isBlankCorrect =
-            studentBlankAnswer?.toLowerCase().trim() ===
-            blank.value.toLowerCase().trim();
-          if (!isBlankCorrect) {
-            allCorrect = false;
-          }
-        });
-        return allCorrect;
-      } else {
-        const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
-        if (studentAnswers.length !== correctAnswers.length) return false;
-        return studentAnswers.every(
-          (answer, index) =>
-            answer?.toLowerCase().trim() ===
-            correctAnswers[index]?.toLowerCase().trim(),
-        );
-      }
-    } else {
-      const studentAnswers = normalizeStudentAnswer(studentAnswer.answer);
-
-      switch (question.type) {
-        case "single_choice":
-          return (
-            studentAnswers.length === 1 &&
-            studentAnswers[0] === correctAnswers[0]
-          );
-
-        case "multiple_choice":
-          if (studentAnswers.length !== correctAnswers.length) return false;
-          return studentAnswers.every((answer) =>
-            correctAnswers.includes(answer),
-          );
-
-        case "true_or_false":
-          return studentAnswers[0] === correctAnswers[0];
-
-        case "identification":
-          return (
-            studentAnswers[0]?.toLowerCase().trim() ===
-            correctAnswers[0]?.toLowerCase().trim()
-          );
-
-        default:
-          return false;
-      }
+    if (directAnswer) {
+      return directAnswer;
     }
-  };
 
-  const getCorrectAnswers = (question: AssessmentQuestion): string[] => {
-    if (isChoiceQuestion(question)) {
-      return question.answers;
-    } else if (isTrueOrFalseQuestion(question)) {
-      return [question.answers.toString()];
-    } else if (isIdentificationQuestion(question)) {
-      return [question.answers];
-    } else if (isFillInTheBlanksQuestion(question)) {
-      return question.answers.map((answer) => answer.value);
-    }
-    return [];
-  };
+    const contentIdAnswer = normalizedAttempt.answers.find(
+      (answer) => answer.questionId === contentId,
+    );
 
-  const normalizeStudentAnswer = (
-    answer: string | string[] | Record<string, string> | boolean,
-  ): string[] => {
-    if (typeof answer === "string") return [answer];
-    if (Array.isArray(answer)) return answer;
-    if (typeof answer === "object" && !Array.isArray(answer)) {
-      return Object.values(answer);
-    }
-    if (typeof answer === "boolean") return [answer.toString()];
-    return [];
+    return contentIdAnswer || null;
   };
 
   const correctAnswers: number = questions.filter(
-    (question: QuestionWithPageInfo) => isAnswerCorrect(question, question.id),
+    (question: QuestionWithPageInfo) => {
+      const studentAnswer = getStudentAnswer(question.id, question.contentId);
+      return isAnswerCorrect(question, studentAnswer);
+    },
   ).length;
 
   const scorePercentage =
@@ -368,7 +400,7 @@ export default function AssessmentResult({
                   Time Spent
                 </div>
                 <div className="mt-4 text-xs text-muted-foreground">
-                  Score: {attempt.score}/{assessment.passingScore} required
+                  Score: {correctAnswers}/{assessment.passingScore} required
                 </div>
               </CardContent>
             </Card>
@@ -392,7 +424,7 @@ export default function AssessmentResult({
           <Button
             onClick={() => setShowReviewModal(true)}
             variant="outline"
-            className="w-full h-auto min-h-14 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-2 hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group hover:text-foreground"
+            className="w-full h-auto min-h-14 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-2 opacity-80 hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group hover:text-foreground"
           >
             <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
               <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors flex-shrink-0">
@@ -468,11 +500,10 @@ export default function AssessmentResult({
         </CardContent>
       </Card>
 
-      {/* Review Modal */}
       <AttemptReviewModal
         isOpen={showReviewModal}
         assessment={assessment}
-        attempt={attempt}
+        attempt={normalizedAttempt}
         student={student}
         onClose={() => setShowReviewModal(false)}
       />

@@ -9,11 +9,10 @@ import ProfileCard from "./playerCard/ProfileCard.tsx";
 import BadgeList from "./badges/BadgeList.tsx";
 
 export default function Dashboard(): ReactElement {
-  const { student } = useStudentContext();
-  if (!student?.id) return <div>Loading...</div>;
+  const { student, activities, isActivityLoading } = useStudentContext();
 
   return (
-    <main className="flex flex-col min-h-screen h-fit w-full gap-2 bg-inherit p-2">
+    <main className="flex flex-col min-h-screen mt-4 lg:mt-0 h-fit w-full gap-2 bg-inherit p-2">
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold dark:text-gray-300">
           Dashboard
@@ -49,7 +48,11 @@ export default function Dashboard(): ReactElement {
             <Todo />
           </section>
           <section className="flex-1">
-            <ActivityList type="Student" />
+            <ActivityList
+              type="Student"
+              activities={activities}
+              isLoading={isActivityLoading}
+            />
           </section>
         </section>
       </div>

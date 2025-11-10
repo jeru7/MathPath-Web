@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -22,129 +22,7 @@ import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import { CustomAxisTick } from "../../../../teacher/pages/statistics/components/CustomAxisTick";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-export default function StudentAssessmentStats(): ReactElement {
-  const { studentId } = useStudentContext();
-  const { data: assessments, isLoading: assessmentsLoading } =
-    useStudentAssessments(studentId);
-  const { data: attempts, isLoading: attemptsLoading } =
-    useAssessmentsAttempts(studentId);
-
-  const isLoading = assessmentsLoading || attemptsLoading;
-
-  const chartData = getAssessmentStats(assessments || [], attempts || []);
-
-  if (isLoading) {
-    return (
-      <Card className="flex-1">
-        <CardContent className="flex items-center justify-center h-48 p-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-muted-foreground">
-              Loading assessment statistics...
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="flex flex-col h-full w-full">
-      <CardHeader className="p-3">
-        <CardTitle className="text-lg font-semibold">Assessments</CardTitle>
-      </CardHeader>
-      <CardContent className="p-3 flex flex-col justify-around flex-1">
-        {chartData.length === 0 ? (
-          <div className="flex h-48 items-center justify-center border border-dashed rounded-lg">
-            <div className="text-center text-muted-foreground">
-              <div className="text-4xl mb-2">📊</div>
-              <p className="italic">No assessment data available</p>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full overflow-x-auto">
-            <div className="min-w-[800px] h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: -20,
-                  }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    className="stroke-muted"
-                  />
-                  <XAxis
-                    dataKey="title"
-                    height={60}
-                    interval={0}
-                    tick={<CustomAxisTick />}
-                    className="fill-muted-foreground"
-                  />
-                  <YAxis
-                    className="fill-muted-foreground"
-                    label={{
-                      value: "Score (Points)",
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: -10,
-                      style: {
-                        textAnchor: "middle",
-                        fontSize: 12,
-                        fill: "hsl(var(--muted-foreground))",
-                      },
-                    }}
-                  />
-                  <Tooltip content={<AssessmentCustomTooltip />} />
-                  <Bar
-                    dataKey="bestScore"
-                    name="Best Score (Points)"
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={getScoreColor(
-                          entry.bestScore,
-                          entry.passingScore,
-                        )}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        {/* Score Legend */}
-        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-2 px-4 sm:px-2">
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Excellent (80-100%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Good (60-79%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Average (40-59%)</span>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
-            <span className="whitespace-nowrap">Poor (0-39%)</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChartDataItem {
   assessmentId: string;
@@ -159,82 +37,39 @@ interface ChartDataItem {
 }
 
 const SCORE_COLORS = {
-  passed: "#22c55e", // green-500
-  close: "#f59e0b", // amber-500
-  needsImprovement: "#ef4444", // red-500
-  notAttempted: "#9ca3af", // gray-400
+  passed: "#22c55e",
+  close: "#f59e0b",
+  needsImprovement: "#ef4444",
+  notAttempted: "#9ca3af",
 };
 
-const getScoreColor = (bestScore: number, passingScore: number): string => {
-  if (bestScore === 0) return SCORE_COLORS.notAttempted;
-  if (bestScore >= passingScore) return SCORE_COLORS.passed;
-  if (bestScore >= passingScore * 0.7) return SCORE_COLORS.close;
-  return SCORE_COLORS.needsImprovement;
-};
+// Skeleton Component
+function StudentAssessmentStatsSkeleton(): ReactElement {
+  return (
+    <Card className="flex flex-col h-full w-full">
+      <CardHeader className="p-3">
+        <CardTitle className="text-lg font-semibold">
+          <Skeleton className="h-6 w-32" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        <Skeleton className="h-48 w-full" />
+        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-2 px-4 sm:px-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-const getAssessmentStats = (
-  assessments: Assessment[],
-  attempts: AssessmentAttempt[],
-): ChartDataItem[] => {
-  return assessments.map((assessment) => {
-    const assessmentAttempts = attempts.filter(
-      (attempt) => attempt.assessmentId === assessment.id,
-    );
-
-    const completedAttempts = assessmentAttempts.filter(
-      (attempt) => attempt.status === "completed",
-    );
-
-    // calculate best score from completed attempts
-    const bestScore =
-      completedAttempts.length > 0
-        ? Math.max(...completedAttempts.map((attempt) => attempt.score))
-        : 0;
-
-    const averageScore =
-      completedAttempts.length > 0
-        ? completedAttempts.reduce((sum, attempt) => sum + attempt.score, 0) /
-        completedAttempts.length
-        : 0;
-
-    let status: "passed" | "failed" | "not_attempted" | "in_progress" =
-      "not_attempted";
-
-    if (completedAttempts.length > 0) {
-      status = bestScore >= assessment.passingScore ? "passed" : "failed";
-    } else if (assessmentAttempts.length > 0) {
-      status = "in_progress";
-    }
-
-    const totalTimeSpent = completedAttempts.reduce(
-      (total, attempt) => total + attempt.timeSpent,
-      0,
-    );
-
-    return {
-      assessmentId: assessment.id,
-      title: assessment.title || "Untitled Assessment",
-      topic: assessment.topic || "General",
-      passingScore: assessment.passingScore,
-      bestScore,
-      averageScore,
-      totalAttempts: assessmentAttempts.length,
-      timeSpent: totalTimeSpent,
-      status,
-    };
-  });
-};
-
-const formatDuration = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.round(seconds % 60);
-  return `${minutes}m ${remainingSeconds}s`;
-};
-
-const AssessmentCustomTooltip = ({
+// Memoized tooltip component
+function AssessmentCustomTooltip({
   active,
   payload,
-}: TooltipProps<ValueType, NameType>) => {
+}: TooltipProps<ValueType, NameType>) {
   if (active && payload && payload.length > 0) {
     const data = payload[0].payload as ChartDataItem;
 
@@ -296,4 +131,199 @@ const AssessmentCustomTooltip = ({
   }
 
   return null;
+}
+
+// Memoized chart component
+function AssessmentChart({ chartData }: { chartData: ChartDataItem[] }) {
+  const getScoreColor = (bestScore: number, passingScore: number): string => {
+    if (bestScore === 0) return SCORE_COLORS.notAttempted;
+    if (bestScore >= passingScore) return SCORE_COLORS.passed;
+    if (bestScore >= passingScore * 0.7) return SCORE_COLORS.close;
+    return SCORE_COLORS.needsImprovement;
+  };
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-[800px] h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: -20,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis
+              dataKey="title"
+              height={60}
+              interval={0}
+              tick={<CustomAxisTick />}
+              className="fill-muted-foreground"
+            />
+            <YAxis
+              className="fill-muted-foreground"
+              label={{
+                value: "Score (Points)",
+                angle: -90,
+                position: "insideLeft",
+                offset: -10,
+                style: {
+                  textAnchor: "middle",
+                  fontSize: 12,
+                  fill: "hsl(var(--muted-foreground))",
+                },
+              }}
+            />
+            <Tooltip content={<AssessmentCustomTooltip />} />
+            <Bar
+              dataKey="bestScore"
+              name="Best Score (Points)"
+              radius={[4, 4, 0, 0]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getScoreColor(entry.bestScore, entry.passingScore)}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+// Memoized empty state component
+function EmptyState() {
+  return (
+    <div className="flex h-48 items-center justify-center border border-dashed rounded-lg">
+      <div className="text-center text-muted-foreground">
+        <div className="text-4xl mb-2">📊</div>
+        <p className="italic">No assessment data available</p>
+      </div>
+    </div>
+  );
+}
+
+// Memoized legend component
+function ScoreLegend() {
+  return (
+    <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 text-xs text-muted-foreground mt-2 px-4 sm:px-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-green-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Excellent (80-100%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-blue-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Good (60-79%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Average (40-59%)</span>
+      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className="w-3 h-3 rounded bg-red-500 flex-shrink-0"></div>
+        <span className="whitespace-nowrap">Poor (0-39%)</span>
+      </div>
+    </div>
+  );
+}
+
+// Helper functions
+const getAssessmentStats = (
+  assessments: Assessment[],
+  attempts: AssessmentAttempt[],
+): ChartDataItem[] => {
+  return assessments.map((assessment) => {
+    const assessmentAttempts = attempts.filter(
+      (attempt) => attempt.assessmentId === assessment.id,
+    );
+
+    const completedAttempts = assessmentAttempts.filter(
+      (attempt) => attempt.status === "completed",
+    );
+
+    // calculate best score from completed attempts
+    const bestScore =
+      completedAttempts.length > 0
+        ? Math.max(...completedAttempts.map((attempt) => attempt.score))
+        : 0;
+
+    const averageScore =
+      completedAttempts.length > 0
+        ? completedAttempts.reduce((sum, attempt) => sum + attempt.score, 0) /
+        completedAttempts.length
+        : 0;
+
+    let status: "passed" | "failed" | "not_attempted" | "in_progress" =
+      "not_attempted";
+
+    if (completedAttempts.length > 0) {
+      status = bestScore >= assessment.passingScore ? "passed" : "failed";
+    } else if (assessmentAttempts.length > 0) {
+      status = "in_progress";
+    }
+
+    const totalTimeSpent = completedAttempts.reduce(
+      (total, attempt) => total + attempt.timeSpent,
+      0,
+    );
+
+    return {
+      assessmentId: assessment.id,
+      title: assessment.title || "Untitled Assessment",
+      topic: assessment.topic || "General",
+      passingScore: assessment.passingScore,
+      bestScore,
+      averageScore,
+      totalAttempts: assessmentAttempts.length,
+      timeSpent: totalTimeSpent,
+      status,
+    };
+  });
 };
+
+const formatDuration = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.round(seconds % 60);
+  return `${minutes}m ${remainingSeconds}s`;
+};
+
+export default function StudentAssessmentStats(): ReactElement {
+  const { studentId } = useStudentContext();
+  const { data: assessments, isLoading: assessmentsLoading } =
+    useStudentAssessments(studentId);
+  const { data: attempts, isLoading: attemptsLoading } =
+    useAssessmentsAttempts(studentId);
+
+  const isLoading = assessmentsLoading || attemptsLoading;
+
+  const chartData = useMemo(
+    () => getAssessmentStats(assessments || [], attempts || []),
+    [assessments, attempts],
+  );
+
+  if (isLoading) {
+    return <StudentAssessmentStatsSkeleton />;
+  }
+
+  return (
+    <Card className="flex flex-col h-full w-full">
+      <CardHeader className="p-3">
+        <CardTitle className="text-lg font-semibold">Assessments</CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 flex flex-col justify-around flex-1">
+        {chartData.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <AssessmentChart chartData={chartData} />
+        )}
+        <ScoreLegend />
+      </CardContent>
+    </Card>
+  );
+}

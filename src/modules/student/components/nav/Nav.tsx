@@ -73,10 +73,8 @@ export default function Nav(): ReactElement {
 
   return (
     <>
-      {/* desktop navigation */}
       <nav className="hidden w-18 fixed bottom-0 left-0 z-10 xl:flex h-screen flex-col items-center py-6 bg-background border-r border-border">
         <div className="flex flex-col items-center justify-between h-full w-full">
-          {/* nav items */}
           <div className="flex flex-col gap-3 w-full px-2">
             {navItems.map(({ to, icon, defaultPage, title }, index) => {
               const isActive = defaultPage
@@ -103,64 +101,63 @@ export default function Nav(): ReactElement {
             })}
           </div>
 
-          {/* user actions */}
           <div className="flex flex-col gap-3 w-full px-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 relative group text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              onClick={() => navigate(`/student/${studentId}/settings`)}
-            >
-              <IoMdSettings className="h-5 w-5" />
+            <div className="relative group">
+              <button
+                onClick={() => navigate(`/student/${studentId}/settings`)}
+                className="flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <IoMdSettings className="h-5 w-5" />
+              </button>
               <div className="pointer-events-none absolute opacity-0 group-hover:opacity-100 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-medium top-1/2 -translate-y-1/2 left-full ml-3 whitespace-nowrap transition-opacity duration-200 z-50 shadow-lg">
                 Settings
                 <div className="absolute w-2 h-2 bg-primary rotate-45 -left-1 top-1/2 -translate-y-1/2" />
               </div>
-            </Button>
+            </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 relative group text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              onClick={handleLogoutClick}
-            >
-              <IoLogOut className="h-5 w-5" />
+            <div className="relative group">
+              <button
+                onClick={handleLogoutClick}
+                className="flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <IoLogOut className="h-5 w-5" />
+              </button>
               <div className="pointer-events-none absolute opacity-0 group-hover:opacity-100 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-medium top-1/2 -translate-y-1/2 left-full ml-3 whitespace-nowrap transition-opacity duration-200 z-50 shadow-lg">
                 Logout
                 <div className="absolute w-2 h-2 bg-primary rotate-45 -left-1 top-1/2 -translate-y-1/2" />
               </div>
-            </Button>
+            </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 relative group p-0 hover:bg-accent"
-              onClick={() => navigate(`/student/${studentId}/profile`)}
-            >
-              <Avatar className="h-10 w-10 border-2 border-transparent group-hover:border-primary/20 transition-colors">
-                <AvatarImage
-                  src={getProfilePicture(student?.profilePicture ?? "Default")}
-                  alt="Profile picture"
-                />
-                <AvatarFallback className="bg-muted text-muted-foreground">
-                  {student?.firstName?.[0]}
-                  {student?.lastName?.[0]}
-                </AvatarFallback>
-              </Avatar>
+            <div className="relative group">
+              <button
+                onClick={() => navigate(`/student/${studentId}/profile`)}
+                className="flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-accent-foreground p-0"
+              >
+                <Avatar className="h-8 w-8 border-2 border-transparent group-hover:border-primary/20 transition-colors">
+                  <AvatarImage
+                    src={getProfilePicture(
+                      student?.profilePicture ?? "Default",
+                    )}
+                    alt="Profile picture"
+                  />
+                  <AvatarFallback className="bg-muted text-muted-foreground">
+                    {student?.firstName?.[0]}
+                    {student?.lastName?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
               <div className="pointer-events-none absolute opacity-0 group-hover:opacity-100 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-medium top-1/2 -translate-y-1/2 left-full ml-3 whitespace-nowrap transition-opacity duration-200 z-50 shadow-lg min-w-32">
                 <p className="font-semibold">
                   {student?.lastName}, {capitalizeWord(student?.firstName)}
                 </p>
                 <div className="absolute w-2 h-2 bg-primary rotate-45 -left-1 top-1/2 -translate-y-1/2" />
               </div>
-            </Button>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* mobile navigation */}
       <div className="xl:hidden">
-        {/* top bar */}
         <nav className="bg-background border-b border-border flex items-center fixed left-0 top-0 z-20 w-full h-16 px-4 shadow-sm">
           <Button
             variant="ghost"
@@ -168,27 +165,25 @@ export default function Nav(): ReactElement {
             onClick={() => setIsMenuOpen((prev) => !prev)}
             className="mr-3"
           >
-            <MdOutlineMenu className="h-5 w-5" />
+            <MdOutlineMenu className="h-5 w-5 text-foreground" />
           </Button>
-          <h1 className="font-bold font-baloo text-xl text-foreground">
+          <h1 className="font-bold font-baloo text-xl text-primary">
             MathPath
           </h1>
         </nav>
 
-        {/* Mobile Menu Sheet */}
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <SheetContent
             side="left"
             className="w-80 p-0 bg-background border-r border-border"
           >
-            <SheetHeader className="border-b border-border px-6 h-14 flex flex-row items-center">
-              <SheetTitle className="text-foreground font-bold text-lg font-baloo">
+            <SheetHeader className="px-6 h-14 flex flex-row items-center border-b border-border">
+              <SheetTitle className="text-primary font-bold text-lg font-baloo">
                 MathPath
               </SheetTitle>
             </SheetHeader>
 
             <div className="flex flex-col h-[calc(100vh-56px)]">
-              {/* Navigation Items */}
               <div className="flex-1 flex flex-col gap-1 p-4">
                 {navItems.map(({ to, icon, defaultPage, title }, index) => {
                   const isActive = defaultPage
@@ -213,46 +208,38 @@ export default function Nav(): ReactElement {
                     </NavLink>
                   );
                 })}
+
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate(`/student/${studentId}/settings`);
+                  }}
+                  className="flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                >
+                  <IoMdSettings className="h-5 w-5" />
+                  <span className="text-sm font-medium">Settings</span>
+                </button>
+
+                <button
+                  onClick={handleLogoutClick}
+                  className="flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                >
+                  <IoLogOut className="h-5 w-5" />
+                  <span className="text-sm font-medium">Logout</span>
+                </button>
               </div>
 
-              {/* Bottom Section */}
-              <div className="border-t border-border p-4 space-y-4">
-                {/* Action Buttons */}
-                <div className="space-y-1">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-3 px-3 py-3 h-auto text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      navigate(`/student/${studentId}/settings`);
-                    }}
-                  >
-                    <IoMdSettings className="h-5 w-5" />
-                    <span className="text-sm font-medium">Settings</span>
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-3 px-3 py-3 h-auto text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    onClick={handleLogoutClick}
-                  >
-                    <IoLogOut className="h-5 w-5" />
-                    <span className="text-sm font-medium">Logout</span>
-                  </Button>
-                </div>
-
-                {/* User Profile */}
+              <div className="p-4 border-t border-border">
                 <Card className="bg-muted/50 border-border">
                   <CardContent className="p-4">
-                    <Button
-                      variant="ghost"
-                      className="w-full p-0 h-auto hover:bg-transparent"
+                    <button
+                      className="w-full p-0 h-auto hover:bg-transparent text-left"
                       onClick={() => {
                         setIsMenuOpen(false);
                         navigate(`/student/${studentId}/profile`);
                       }}
                     >
-                      <div className="flex gap-3 items-center w-full text-left">
+                      <div className="flex gap-3 items-center w-full">
                         <Avatar className="h-10 w-10 border border-border">
                           <AvatarImage
                             src={getProfilePicture(
@@ -275,7 +262,7 @@ export default function Nav(): ReactElement {
                           </p>
                         </div>
                       </div>
-                    </Button>
+                    </button>
                   </CardContent>
                 </Card>
               </div>
@@ -284,7 +271,6 @@ export default function Nav(): ReactElement {
         </Sheet>
       </div>
 
-      {/* Logout Confirmation Dialog */}
       <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
         <DialogContent className="max-w-md">
           <DialogHeader>

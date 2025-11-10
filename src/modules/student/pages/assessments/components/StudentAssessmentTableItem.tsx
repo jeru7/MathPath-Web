@@ -11,19 +11,19 @@ import { TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-type AssessmentTableItemProps = {
+type StudentAssessmentTableItemProps = {
   assessment: Assessment;
   student: Student | null | undefined;
   onAssessmentClick: (assessment: Assessment) => void;
   isLastItem?: boolean;
 };
 
-export default function AssessmentTableItem({
+export default function StudentAssessmentTableItem({
   assessment,
   student,
   onAssessmentClick,
   isLastItem,
-}: AssessmentTableItemProps): ReactElement {
+}: StudentAssessmentTableItemProps): ReactElement {
   const totalQuestions = assessment.pages.reduce((total, page) => {
     const questionCount = page.contents.filter(
       (content) => content.type === "question",
@@ -75,12 +75,8 @@ export default function AssessmentTableItem({
       onClick={() => onAssessmentClick(assessment)}
     >
       <TableCell className="py-4 align-middle">
-        {" "}
-        {/* Added align-middle */}
         <div className="flex items-center">
           <p className="font-medium text-sm line-clamp-2">
-            {" "}
-            {/* Added line-clamp */}
             {assessment.title || "Untitled Assessment"}
           </p>
         </div>

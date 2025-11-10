@@ -62,7 +62,7 @@ export default function QuestItem({
             <div className="flex items-center gap-1 mt-0.5">
               <Badge
                 variant="secondary"
-                className={`text-[10px] px-1.5 py-0 h-4 ${isClaimed ? "text-green-600" : "text-muted-foreground"}`}
+                className={`text-[10px] px-1.5 py-0 h-4`}
               >
                 {isClaimed ? "Claimed" : "In Progress"}
               </Badge>

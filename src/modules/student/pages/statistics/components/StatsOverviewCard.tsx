@@ -19,16 +19,86 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../../components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type StatsOverviewCardProps = {
   student: Student;
 };
 
+// Skeleton component
+function StatsOverviewCardSkeleton(): ReactElement {
+  const stats = [
+    {
+      title: "Player Level",
+      icon: FaStar,
+    },
+    {
+      title: "Total Attempts",
+      icon: FaSkull,
+    },
+    {
+      title: "Win Rate",
+      icon: FaTrophy,
+    },
+    {
+      title: "Playtime",
+      icon: FaHourglassHalf,
+    },
+    {
+      title: "Most Failed",
+      icon: FaTimes,
+    },
+    {
+      title: "Most Played",
+      icon: FaGamepad,
+    },
+    {
+      title: "Top Skill",
+      icon: FaMagic,
+    },
+  ];
+
+  return (
+    <Card className="w-full h-full">
+      <CardHeader>
+        <CardTitle className="text-lg">
+          <Skeleton className="h-6 w-32" />
+        </CardTitle>
+        <Skeleton className="h-4 w-48 mt-0.5" />
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {stats.map((_stat, index) => (
+            <Card key={index} className="p-3 bg-muted/50 border-border">
+              <CardContent className="p-0 flex items-center justify-between">
+                <div className="flex-1">
+                  <Skeleton className="h-3 w-16 mb-2" />
+                  <Skeleton className="h-4 w-12" />
+                </div>
+                <Skeleton className="w-5 h-5 ml-2 flex-shrink-0" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function StatsOverviewCard({
   student,
 }: StatsOverviewCardProps): ReactElement {
-  const { data: attempts } = useStudentAttemptStats(student.id);
-  const { data: playerCard } = useStudentPlayerCard(student.id);
+  const { data: attempts, isLoading: attemptsLoading } = useStudentAttemptStats(
+    student.id,
+  );
+  const { data: playerCard, isLoading: playerCardLoading } =
+    useStudentPlayerCard(student.id);
+
+  const isLoading = attemptsLoading || playerCardLoading;
+
+  if (isLoading) {
+    return <StatsOverviewCardSkeleton />;
+  }
 
   const formatPlaytime = (seconds?: number): string => {
     if (!seconds || isNaN(seconds)) return "0mins";
@@ -107,21 +177,21 @@ export default function StatsOverviewCard({
   ];
 
   return (
-    <Card className="w-full h-full">
-      <CardHeader className="">
+    <Card className="flex flex-col w-full h-full p-2 overflow-hidden">
+      <CardHeader className="p-0 pb-4">
         <CardTitle className="text-lg">Overview</CardTitle>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-xs text-muted-foreground">
           {student?.characterName
             ? `Player Name: ${student.characterName}`
             : "Player Stats"}
         </p>
       </CardHeader>
-      <CardContent className="">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <CardContent className="p-0 overflow-hidden w-full h-full">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full h-full">
           {stats.map((stat, index) => (
             <Card
               key={index}
-              className={`p-3 ${stat.bgColor} ${stat.borderColor}`}
+              className={`p-2 ${stat.bgColor} ${stat.borderColor}`}
             >
               <CardContent className="p-0 flex items-center justify-between">
                 <div className="flex-1">
@@ -130,9 +200,7 @@ export default function StatsOverviewCard({
                   </p>
                   <p className="text-sm font-semibold">{stat.value}</p>
                 </div>
-                <stat.icon
-                  className={`text-lg ml-2 flex-shrink-0 ${stat.color}`}
-                />
+                <stat.icon className={`text-lg flex-shrink-0 ${stat.color}`} />
               </CardContent>
             </Card>
           ))}

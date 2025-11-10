@@ -24,14 +24,12 @@ export default function Todo(): ReactElement {
     if (startDate && now < startDate) return false;
     if (endDate && now > endDate) return false;
 
-    // find student's attempt data for this assessment
     const studentAssessment = student?.assessments?.find(
       (sa) => sa.assessmentId === assessment.id,
     );
 
-    // check if student hasn't reached attempt limit
     const attemptsCount = studentAssessment?.attempts?.length || 0;
-    return attemptsCount < assessment.attemptLimit;
+    return attemptsCount === 0;
   }).length;
 
   const hasAssessmentsDue = assessmentsDue > 0;

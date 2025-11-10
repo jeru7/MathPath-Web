@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useMemo } from "react";
 import { CiSearch, CiFilter } from "react-icons/ci";
 import { NavigateFunction } from "react-router-dom";
-import AssessmentTableItem from "./AssessmentTableItem";
+import StudentAssessmentTableItem from "./StudentAssessmentTableItem";
 import { Assessment } from "../../../../core/types/assessment/assessment.type";
 import { Student } from "../../../types/student.type";
 import { getAssessmentStatus } from "../../../utils/assessments/assessment.util";
@@ -39,19 +39,20 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
-type AssessmentTableProps = {
+type StudentAssessmentTableProps = {
   navigate: NavigateFunction;
   assessments: Assessment[];
   student: Student | null;
   onAssessmentClick: (assessment: Assessment) => void;
 };
 
-export default function AssessmentTable({
+export default function StudentAssessmentTable({
   assessments,
   student,
   onAssessmentClick,
-}: AssessmentTableProps): ReactElement {
+}: StudentAssessmentTableProps): ReactElement {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<
     "all" | "available" | "expired"
@@ -475,7 +476,7 @@ export default function AssessmentTable({
                   </TableHeader>
                   <TableBody className="">
                     {displayItems.map((assessment, index) => (
-                      <AssessmentTableItem
+                      <StudentAssessmentTableItem
                         key={assessment.id}
                         assessment={assessment}
                         student={student}
@@ -524,50 +525,66 @@ export default function AssessmentTable({
                     <span className="font-medium">
                       {filteredAssessments.length}
                     </span>{" "}
-                    results
+                    assessments
                   </div>
 
                   {totalPages > 1 && (
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious
-                            size="sm"
-                            onClick={handlePrevPage}
-                            className={
-                              currentPage === 1
-                                ? "pointer-events-none opacity-50"
-                                : "cursor-pointer"
-                            }
-                          />
-                        </PaginationItem>
-
-                        {getPageNumbers().map((pageNumber) => (
-                          <PaginationItem key={pageNumber}>
-                            <PaginationLink
+                    <div className="w-full sm:w-auto">
+                      <Pagination>
+                        <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
+                          <PaginationItem className="sm:flex-1 sm:text-left">
+                            <PaginationPrevious
                               size="sm"
-                              onClick={() => handlePageClick(pageNumber)}
-                              isActive={currentPage === pageNumber}
-                              className="cursor-pointer"
+                              onClick={handlePrevPage}
+                              className={
+                                currentPage === 1
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
                             >
-                              {pageNumber}
-                            </PaginationLink>
+                              <IoChevronBack className="w-4 h-4 sm:mr-1" />
+                              <span className="hidden sm:inline">Prev</span>
+                            </PaginationPrevious>
                           </PaginationItem>
-                        ))}
 
-                        <PaginationItem>
-                          <PaginationNext
-                            size="sm"
-                            onClick={handleNextPage}
-                            className={
-                              currentPage === totalPages
-                                ? "pointer-events-none opacity-50"
-                                : "cursor-pointer"
-                            }
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
+                          {/* Hide page numbers on mobile, show on desktop */}
+                          <div className="hidden sm:flex items-center gap-1">
+                            {getPageNumbers().map((pageNumber) => (
+                              <PaginationItem key={pageNumber}>
+                                <PaginationLink
+                                  size="sm"
+                                  onClick={() => handlePageClick(pageNumber)}
+                                  isActive={currentPage === pageNumber}
+                                  className="cursor-pointer"
+                                >
+                                  {pageNumber}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                          </div>
+
+                          <PaginationItem className="sm:flex-1 sm:text-right">
+                            <PaginationNext
+                              size="sm"
+                              onClick={handleNextPage}
+                              className={
+                                currentPage === totalPages
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            >
+                              <span className="hidden sm:inline">Next</span>
+                              <IoChevronForward className="w-4 h-4 sm:ml-1" />
+                            </PaginationNext>
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+
+                      {/* Mobile page indicator - show current page and total */}
+                      <div className="sm:hidden text-center text-sm text-muted-foreground mt-2">
+                        Page {currentPage} of {totalPages}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
