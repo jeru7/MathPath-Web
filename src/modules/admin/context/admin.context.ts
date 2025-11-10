@@ -4,14 +4,22 @@ import { Teacher } from "../../teacher/types/teacher.type";
 import { Student } from "../../student/types/student.type";
 import { Section } from "../../core/types/section/section.type";
 import { Assessment } from "../../core/types/assessment/assessment.type";
+import { AdminActivity } from "@/modules/core/types/activity/activity.type";
 
 type AdminContextType = {
   adminId: string;
   admin: Admin | null;
   teachers: Teacher[];
-  students: Student[];
-  sections: Section[];
-  assessments: Assessment[];
+  allStudents: Student[];
+  rawStudents: Student[];
+  archivedStudents: Student[];
+  allSections: Section[];
+  rawSections: Section[];
+  archivedSections: Section[];
+  allAssessments: Assessment[];
+  rawAssessments: Assessment[];
+  archivedAssessments: Assessment[];
+  activities: AdminActivity[];
   onlineStudents: Student[];
 };
 

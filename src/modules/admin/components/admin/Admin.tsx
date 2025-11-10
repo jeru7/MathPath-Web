@@ -13,7 +13,7 @@ export default function Admin(): ReactElement {
 
   return (
     <AdminProvider adminId={user?.id}>
-      <div className="font-openSans pt-12 xl:pt-0 xl:pl-18 w-full max-w-[3000px] bg-inherit text-[var(--primary-black)]">
+      <div className="font-openSans pt-12 xl:pt-0 xl:pl-18 w-full bg-inherit text-[var(--primary-black)]">
         <Nav />
         <Outlet />
       </div>

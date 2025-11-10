@@ -5,6 +5,7 @@ import { IoIosDocument } from "react-icons/io";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export type PrimaryStatProps = {
   color: string;
@@ -43,21 +44,15 @@ export default function PrimaryStat({
   const getIcon = () => {
     switch (title) {
       case "Students":
-        return (
-          <PiStudent className="h-8 w-8 md:h-15 md:w-15 lg:h-20 lg:w-20" />
-        );
+        return <PiStudent className="h-12 w-12 lg:h-16 lg:w-16" />;
       case "Teachers":
-        return (
-          <FaChalkboardTeacher className="h-8 w-8 md:h-15 md:w-15 lg:h-20 lg:w-20" />
-        );
+        return <FaChalkboardTeacher className="h-12 w-12 lg:h-16 lg:w-16" />;
       case "Sections":
-        return <GrGroup className="h-8 w-8 md:h-15 md:w-15 lg:h-20 lg:w-20" />;
+        return <GrGroup className="h-12 w-12 lg:h-16 lg:w-16" />;
       case "Assessments":
-        return (
-          <IoIosDocument className="h-8 w-8 md:h-15 md:w-15 lg:h-20 lg:w-20" />
-        );
+        return <IoIosDocument className="h-12 w-12 lg:h-16 lg:w-16" />;
       default:
-        return <GrGroup className="h-8 w-8 md:h-15 md:w-15 lg:h-20 lg:w-20" />;
+        return <GrGroup className="h-12 w-12 lg:h-16 lg:w-16" />;
     }
   };
 
@@ -106,38 +101,38 @@ export default function PrimaryStat({
 
   return (
     <div
-      className={`flex flex-1 min-w-[300px] flex-col rounded-sm p-2 text-white shadow-sm ${color}`}
+      className={`flex flex-1 min-w-[280px] flex-col rounded-lg p-4 text-white shadow-lg ${color}`}
     >
-      <div className="flex w-full h-full">
+      <div className="flex w-full h-full flex-1 mb-4">
         {/* icon */}
         <div className="flex w-full items-center justify-center">
-          <div className="bg-[var(--primary-white)]/50 flex h-fit w-fit rounded-full p-4 text-white">
+          <div className="bg-white/20 flex h-fit w-fit rounded-full p-3 lg:p-4">
             {getIcon()}
           </div>
         </div>
         {/* total number */}
         <div className="w-full">
           <div className="text-right flex flex-col">
-            <p className="md:text-xl lg:text-4xl">{getValue()}</p>
-            <p className="text-sm font-semibold text-nowrap md:text-lg">{`Total ${title}`}</p>
+            <p className="text-2xl lg:text-4xl font-bold">{getValue()}</p>
+            <p className="text-sm font-semibold text-nowrap lg:text-base opacity-90">
+              {`Total ${title}`}
+            </p>
           </div>
         </div>
       </div>
       {/* specific stat/detail */}
-      <div className="flex h-fit items-end justify-between">
-        <p className="text-[var(--primary-white)]/80 text-xs ">
-          {getSubtitle()}
-        </p>
+      <div className="flex items-center justify-between mt-auto">
+        <p className="text-white/80 text-xs lg:text-sm">{getSubtitle()}</p>
         {/* quick nav button */}
-        <button
-          className="bg-[var(--primary-white)]/50 hover:bg-[var(--primary-white)]/60 flex items-center gap-2 rounded-2xl px-3 py-2 font-semibold hover:cursor-pointer"
+        <Button
+          variant="ghost"
+          size="sm"
+          className="bg-white/20 hover:bg-white/30 text-white border-0 h-8 px-3 rounded-full font-semibold hover:text-white"
           onClick={navigateClickHandler}
         >
-          <p className="text-nowrap text-[10px] md:text-xs">
-            {getButtonText()}
-          </p>
-          <FaChevronRight className="w-2 h-2 md:w-4 md:h-4" />
-        </button>
+          <span className="text-xs mr-1">{getButtonText()}</span>
+          <FaChevronRight className="w-3 h-3" />
+        </Button>
       </div>
     </div>
   );

@@ -18,6 +18,11 @@ export type StudentTopicResponse = {
   data: TopicStats[];
 };
 
+export type TopicStatsResponse = {
+  overall: TopicStats[];
+  sections: SectionTopicStats[];
+};
+
 export type TopicStats = {
   totalAttempts: number;
   topic: string;
@@ -38,6 +43,11 @@ export type TopicCorrectness = {
   hard: {
     correctPercentage: number;
   };
+};
+
+export type QuestionStatsResponse = {
+  overall: QuestionStats[];
+  sections: SectionQuestionStats[];
 };
 
 export type QuestionStats = {

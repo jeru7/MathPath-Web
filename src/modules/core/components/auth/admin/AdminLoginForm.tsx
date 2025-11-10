@@ -55,7 +55,7 @@ export default function AdminLoginForm(): ReactElement {
   };
 
   return (
-    <main className="relative w-full min-h-screen mt-24 overflow-auto md:min-h-0 flex gap-4 md:h-fit min-w-[300px] flex-col rounded-xl border-2 border-white/20 bg-black/50 py-4 px-8 shadow-lg backdrop-blur-sm  md:max-w-2xl transition-all duration-200">
+    <main className="relative w-full min-h-screen mt-0 md:mt-24 overflow-auto md:min-h-0 flex gap-4 md:h-fit min-w-[300px] flex-col rounded-xl border-2 border-white/20 bg-black/50 py-4 px-8 shadow-lg backdrop-blur-sm  md:max-w-2xl transition-all duration-200">
       <header className="flex flex-col gap-4">
         <img
           src={mathPathTitle}

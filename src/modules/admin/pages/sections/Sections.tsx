@@ -5,9 +5,9 @@ import { GoPlus } from "react-icons/go";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Section } from "../../../core/types/section/section.type";
 import CreateSectionForm from "./CreateSectionForm";
-import SectionTable from "../../../core/components/section-table/SectionTable";
-import SectionDetailsModal from "../../../core/components/section-table/SectionDetailsModal";
-import DeleteSectionConfirmationModal from "../../../core/components/section-table/DeleteSectionConfirmationModal";
+import SectionTable from "../../../core/components/tables/section-table/SectionTable";
+import SectionDetailsModal from "../../../core/components/tables/section-table/SectionDetailsModal";
+import DeleteSectionConfirmationModal from "../../../core/components/tables/section-table/DeleteSectionConfirmationModal";
 import {
   useAdminDeleteSection,
   useAdminEditSection,
@@ -18,11 +18,11 @@ import { getStudentCountForSection } from "../../../core/utils/section/section.u
 import { EditSectionDTO } from "../../../core/types/section/section.schema";
 import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
-import EditSectionModal from "../../../core/components/section-table/EditSectionModal";
+import EditSectionModal from "../../../core/components/tables/section-table/EditSectionModal";
 
 export default function Sections(): ReactElement {
   const adminContext = useAdminContext();
-  const { sections, adminId, students, assessments } = adminContext;
+  const { rawSections, adminId, rawStudents, rawAssessments } = adminContext;
   const navigate = useNavigate();
   const location = useLocation();
   const { sectionId } = useParams();
@@ -47,7 +47,7 @@ export default function Sections(): ReactElement {
   const getExclusiveAssessmentCount = (section: Section | null): number => {
     if (!section) return 0;
 
-    return assessments.filter(
+    return rawAssessments.filter(
       (assessment) =>
         assessment.sections.includes(section.id) &&
         assessment.sections.length === 1,
@@ -56,12 +56,12 @@ export default function Sections(): ReactElement {
 
   useEffect(() => {
     if (sectionId) {
-      const section = sections.find((s) => s.id === sectionId);
+      const section = rawSections.find((s) => s.id === sectionId);
       setSelectedSection(section || null);
     } else {
       setSelectedSection(null);
     }
-  }, [sectionId, sections]);
+  }, [sectionId, rawSections]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -175,7 +175,7 @@ export default function Sections(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen w-full mt-4 md:mt-4 gap-2 bg-inherit p-2">
       <AnimatePresence>
         {showAddButton && (
           <motion.button
@@ -193,17 +193,17 @@ export default function Sections(): ReactElement {
 
       {/* header */}
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
           Sections
         </h3>
       </header>
 
       {/* section grid list */}
-      <section className="flex-1 flex bg-white border border-white dark:bg-gray-800 dark:border-gray-700 rounded-sm shadow-sm">
+      <section className="flex-1 flex ">
         <SectionTable
           userType="admin"
           context={adminContext}
-          sections={sections}
+          sections={rawSections}
           onShowForm={handleCreateSection}
           onSectionClick={handleSectionClick}
         />
@@ -222,7 +222,7 @@ export default function Sections(): ReactElement {
           section={selectedSection}
           isOpen={isSectionDetailsRoute}
           onClose={handleCloseDetailsModal}
-          sections={sections}
+          sections={rawSections}
           onEdit={handleEditInitiate}
           onDelete={() => handleDeleteInitiate(selectedSection)}
         />
@@ -245,7 +245,7 @@ export default function Sections(): ReactElement {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         section={sectionToDelete}
-        studentCount={getStudentCountForSection(sectionToDelete, students)}
+        studentCount={getStudentCountForSection(sectionToDelete, rawStudents)}
         assessmentCount={getExclusiveAssessmentCount(sectionToDelete)}
       />
     </main>

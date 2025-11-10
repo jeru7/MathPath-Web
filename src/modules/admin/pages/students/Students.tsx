@@ -10,18 +10,18 @@ import {
   useAdminDeleteStudent,
   useAdminEditStudent,
 } from "../../services/admin-student.service";
-import StudentTable from "../../../core/components/student-table/StudentTable";
-import StudentDetailsModal from "../../../core/components/student-table/student-details/StudentDetailsModal";
-import DeleteStudentConfirmationModal from "../../../core/components/student-table/DeleteStudentConfirmationModal";
+import StudentTable from "../../../core/components/tables/student-table/StudentTable";
+import StudentDetailsModal from "../../../core/components/tables/student-table/student-details/StudentDetailsModal";
+import DeleteStudentConfirmationModal from "../../../core/components/tables/student-table/DeleteStudentConfirmationModal";
 import { EditStudentDTO } from "../../../student/types/student.schema";
 import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
-import EditStudentModal from "../../../core/components/student-table/EditStudentModal";
-import AddStudentModal from "../../../core/components/student-table/AddStudentModal";
+import EditStudentModal from "../../../core/components/tables/student-table/EditStudentModal";
+import AddStudentModal from "../../../core/components/tables/student-table/AddStudentModal";
 
 export default function Students(): ReactElement {
   const adminContext = useAdminContext();
-  const { sections, students, adminId } = adminContext;
+  const { rawSections, rawStudents, adminId } = adminContext;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,15 +44,15 @@ export default function Students(): ReactElement {
 
   useEffect(() => {
     if (studentId) {
-      const student = students.find((s) => s.id === studentId);
+      const student = rawStudents.find((s) => s.id === studentId);
       setSelectedStudent(student || null);
     } else {
       setSelectedStudent(null);
     }
-  }, [studentId, students]);
+  }, [studentId, rawStudents]);
 
   const handleAddStudent = () => {
-    if (sections.length === 0) {
+    if (rawSections.length === 0) {
       toast.error("You can't add students if there are no sections.");
       return;
     }
@@ -64,7 +64,7 @@ export default function Students(): ReactElement {
   };
 
   const handleStudentClick = (studentId: string) => {
-    setSelectedStudent(students.find((s) => s.id === studentId) || null);
+    setSelectedStudent(rawStudents.find((s) => s.id === studentId) || null);
     navigate(studentId);
   };
 
@@ -162,7 +162,7 @@ export default function Students(): ReactElement {
   }, []);
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen mt-4 md:mt-0 w-full gap-2 bg-inherit p-2">
       <AnimatePresence>
         {showAddButton && (
           <motion.button
@@ -179,12 +179,12 @@ export default function Students(): ReactElement {
       </AnimatePresence>
 
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
           Students
         </h3>
       </header>
 
-      <section className="overflow-y-hidden w-full bg-white border border-white dark:bg-gray-800 dark:border-gray-700 shadow-sm rounded-sm flex-1 flex flex-col">
+      <section className="overflow-y-hidden w-full  flex-1 flex flex-col">
         <StudentTable
           onClickAddStudent={handleAddStudent}
           onStudentClick={handleStudentClick}
@@ -205,7 +205,7 @@ export default function Students(): ReactElement {
           student={selectedStudent}
           isOpen={isStudentDetailsRoute}
           onClose={handleCloseDetailsModal}
-          sections={sections}
+          sections={rawSections}
           onEdit={handleEditInitiate}
           onDelete={() => handleDeleteInitiate(selectedStudent)}
         />
@@ -219,7 +219,7 @@ export default function Students(): ReactElement {
           student={selectedStudent}
           onUpdateStudent={handleUpdateStudent}
           isSubmitting={isUpdating}
-          sections={sections}
+          sections={rawSections}
           showSectionSelection={true}
         />
       )}

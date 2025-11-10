@@ -1,11 +1,44 @@
-import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa";
-import { CiFilter, CiSearch } from "react-icons/ci";
-import { GoPlus } from "react-icons/go";
-import { useAdminContext } from "../../context/admin.context";
+import { useMemo, useRef, useState, type ReactElement } from "react";
 import { Teacher } from "../../../teacher/types/teacher.type";
+import { useAdminContext } from "../../context/admin.context";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+} from "@/components/ui/table";
+import { CiSearch, CiFilter } from "react-icons/ci";
+import { GoPlus } from "react-icons/go";
+import { IoChevronUp, IoChevronDown } from "react-icons/io5";
+import { motion, AnimatePresence } from "framer-motion";
 import TeacherTableItem from "./TeacherTableItem";
-import "../../../core/styles/customTable.css";
 
 type TeacherTableProps = {
   onTeacherClick: (teacherId: string) => void;
@@ -18,17 +51,19 @@ export default function TeacherTable({
 }: TeacherTableProps): ReactElement {
   const { teachers } = useAdminContext();
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedVerification, setSelectedVerification] = useState<
-    "verified" | "unverified" | null
-  >(null);
-  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const filterDropdownRef = useRef<HTMLDivElement | null>(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedVerification, setSelectedVerification] =
+    useState<string>("all");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Teacher | "fullName" | "verificationStatus";
-    direction: "ascending" | "descending";
-  }>({ key: "lastName", direction: "ascending" });
+    direction: "asc" | "desc";
+  }>({ key: "lastName", direction: "asc" });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [showMobileFab, setShowMobileFab] = useState(true);
+  const [expandFab, setExpandFab] = useState(false);
+  const mobileFabRef = useRef<HTMLDivElement | null>(null);
 
   const filteredAndSortedTeachers = useMemo(() => {
     const filtered = teachers.filter((teacher) => {
@@ -39,7 +74,7 @@ export default function TeacherTable({
         email = "",
       } = teacher;
 
-      const query = searchQuery.toLowerCase();
+      const query = searchTerm.toLowerCase();
 
       const safeFirstName = firstName || "";
       const safeLastName = lastName || "";
@@ -62,7 +97,8 @@ export default function TeacherTable({
         ? "verified"
         : "unverified";
       const matchesVerification =
-        !selectedVerification || verificationStatus === selectedVerification;
+        selectedVerification === "all" ||
+        verificationStatus === selectedVerification;
 
       return matchesSearch && matchesVerification;
     });
@@ -96,309 +132,460 @@ export default function TeacherTable({
         }
       }
 
-      return sortConfig.direction === "ascending" ? comparison : -comparison;
+      return sortConfig.direction === "asc" ? comparison : -comparison;
     });
 
     return sorted;
-  }, [teachers, searchQuery, selectedVerification, sortConfig]);
+  }, [teachers, searchTerm, selectedVerification, sortConfig]);
+
+  const totalPages = Math.ceil(filteredAndSortedTeachers.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredAndSortedTeachers.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
 
   const handleSort = (
     column: keyof Teacher | "fullName" | "verificationStatus",
   ) => {
-    let direction: "ascending" | "descending" = "ascending";
-    if (sortConfig.key === column && sortConfig.direction === "ascending") {
-      direction = "descending";
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === column && sortConfig.direction === "asc") {
+      direction = "desc";
     }
     setSortConfig({ key: column, direction });
   };
 
-  const handleSearchTeacher = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleClearSearch = () => {
-    setSearchQuery("");
+    setSearchTerm("");
+    setCurrentPage(1);
   };
 
-  const handleItemOnclick = (teacherId: string) => {
+  const handleClearFilters = () => {
+    setSelectedVerification("all");
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  const handleTeacherClick = (teacherId: string) => {
     onTeacherClick(teacherId);
   };
 
-  const handleClearAllFilters = () => {
-    setSelectedVerification(null);
-    setSearchQuery("");
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const hasActiveFilters = selectedVerification !== null || searchQuery !== "";
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterDropdownRef.current &&
-        !filterDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowFilterDropdown(false);
-      }
-    };
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const hasActiveFilters = selectedVerification !== "all" || searchTerm !== "";
 
-  const showNoDataAvailable =
-    teachers.length === 0 || filteredAndSortedTeachers.length === 0;
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+      const startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxVisiblePages / 2),
+      );
+      const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  };
+
+  const EmptyState = () => (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+          <CiSearch className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">No teachers available</h3>
+          <p className="text-muted-foreground mt-1">
+            There are no teachers to display at the moment.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const NoResultsState = () => (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+          <CiFilter className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">No matches found</h3>
+          <p className="text-muted-foreground mt-1">
+            No teachers match your search criteria.
+          </p>
+        </div>
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClearFilters}
+            className="mt-4"
+          >
+            Clear all filters
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+  const MobileTeacherCard = ({ teacher }: { teacher: Teacher }) => {
+    const status = teacher.verified.verified ? "Verified" : "Unverified";
+
+    return (
+      <Card
+        className="cursor-pointer transition-colors hover:bg-muted/50 mb-3 shadow-none"
+        onClick={() => handleTeacherClick(teacher.id)}
+      >
+        <CardContent className="p-4 shadow-none">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h3 className="font-semibold text-base">{teacher.email}</h3>
+              <p className="text-sm text-muted-foreground">
+                {teacher.lastName}, {teacher.firstName} {teacher.middleName}
+              </p>
+            </div>
+            <Badge
+              variant={status === "Verified" ? "default" : "secondary"}
+              className={
+                status === "Verified"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }
+            >
+              {status}
+            </Badge>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Gender:</span>
+              <span className="capitalize">{teacher.gender}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const SortableHeader = ({
+    column,
+    children,
+  }: {
+    column: keyof Teacher | "fullName" | "verificationStatus";
+    children: React.ReactNode;
+  }) => (
+    <TableHead
+      className="cursor-pointer hover:bg-muted/50 transition-colors"
+      onClick={() => handleSort(column)}
+    >
+      <div className="flex items-center gap-2">
+        {children}
+        {sortConfig.key === column ? (
+          sortConfig.direction === "asc" ? (
+            <IoChevronUp className="h-4 w-4" />
+          ) : (
+            <IoChevronDown className="h-4 w-4" />
+          )
+        ) : (
+          <IoChevronDown className="h-4 w-4 text-muted-foreground" />
+        )}
+      </div>
+    </TableHead>
+  );
 
   return (
-    <section className="flex flex-col flex-1 overflow-x-hidden">
-      <section className="w-full border-b-gray-200 dark:border-b-gray-700 p-4 border-b flex justify-between transition-colors duration-200 h-20 items-center">
-        {/* search and filters */}
-        <section className="relative flex gap-2 items-center w-full md:w-fit">
-          <div className="flex rounded-sm border-gray-200 dark:border-gray-600 border h-fit items-center pr-2 w-full bg-white dark:bg-gray-800 transition-colors duration-200">
-            <div className="p-2">
-              <CiSearch className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-            </div>
-            <input
-              placeholder="Search teacher"
-              className="text-xs focus:outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-              value={searchQuery}
-              onChange={handleSearchTeacher}
-            />
-            {searchQuery && (
-              <button
-                onClick={handleClearSearch}
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1"
-              >
-                ×
-              </button>
-            )}
-          </div>
-
-          {/* filter dropdown */}
-          <button
-            className={`p-2 rounded-xs border h-fit w-fit hover:cursor-pointer hover:bg-[var(--primary-green)] hover:text-white hover:border-[var(--primary-green)] transition-all duration-200 ${hasActiveFilters
-                ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                : "border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800"
-              }`}
-            onClick={() => setShowFilterDropdown((prev) => !prev)}
-          >
-            <CiFilter className="w-4 h-4" />
-          </button>
-
-          {showFilterDropdown && (
-            <div
-              className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-lg z-30 p-4 transition-colors duration-200"
-              ref={filterDropdownRef}
-            >
-              {hasActiveFilters && (
-                <div className="flex justify-end mb-3">
-                  <button
-                    onClick={handleClearAllFilters}
-                    className="text-xs text-[var(--primary-green)] dark:text-green-400 hover:underline"
-                  >
-                    Clear all
-                  </button>
-                </div>
+    <Card className="flex flex-col rounded-sm shadow-none w-full h-full flex-1">
+      <CardHeader className="pb-4 shadow-none">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80 shadow-none">
+              <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search teacher"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="pl-9 pr-8 h-9"
+              />
+              {searchTerm && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearSearch}
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-transparent"
+                >
+                  ×
+                </Button>
               )}
+            </div>
 
-              {/* verification status */}
-              <div className="mb-2">
-                <p className="font-semibold mb-2 text-sm text-gray-700 dark:text-gray-300">
-                  Verification Status
-                </p>
-                <div className="flex gap-1 text-sm">
-                  {["all", "verified", "unverified"].map((status) => {
-                    const isSelected =
-                      (status === "all" && selectedVerification === null) ||
-                      (status === "verified" &&
-                        selectedVerification === "verified") ||
-                      (status === "unverified" &&
-                        selectedVerification === "unverified");
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={`h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-inherit hover:bg-accent hover:text-accent-foreground ${hasActiveFilters ? "bg-primary text-primary-foreground" : ""}`}
+              >
+                <div className="flex items-center gap-2">
+                  <CiFilter className="h-4 w-4" />
+                  Filter
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel className="flex items-center gap-2">
+                  <CiFilter className="h-4 w-4" />
+                  Filter Teachers
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="p-3 space-y-3">
+                  <div>
+                    <label className="text-sm font-medium">
+                      Verification Status
+                    </label>
+                    <Select
+                      value={selectedVerification}
+                      onValueChange={setSelectedVerification}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="verified">Verified</SelectItem>
+                        <SelectItem value="unverified">Unverified</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    const displayText =
-                      status === "all"
-                        ? "All"
-                        : status.charAt(0).toUpperCase() + status.slice(1);
+                  <DropdownMenuSeparator className="my-3" />
 
-                    return (
-                      <div
-                        key={status}
-                        className={`cursor-pointer px-2 py-1 rounded border text-sm text-center transition-colors duration-200 ${isSelected
-                            ? "bg-[var(--primary-green)] text-white border-[var(--primary-green)]"
-                            : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
-                          }`}
-                        onClick={() => {
-                          if (status === "all") {
-                            setSelectedVerification(null);
-                          } else {
-                            setSelectedVerification(
-                              status as "verified" | "unverified",
-                            );
-                          }
-                        }}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>
+                      {filteredAndSortedTeachers.length} of {teachers.length}{" "}
+                      teachers
+                    </span>
+                    {hasActiveFilters && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearFilters}
+                        className="h-auto p-2 text-primary hover:bg-transparent text-xs"
                       >
-                        {displayText}
-                      </div>
-                    );
-                  })}
+                        Clear all
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div className="hidden sm:flex gap-2 items-center">
+            <Button
+              size="sm"
+              onClick={onAddTeacher}
+              className="flex items-center gap-2"
+            >
+              <GoPlus className="h-4 w-4" />
+              Add Teacher
+            </Button>
+          </div>
+        </div>
+
+        {hasActiveFilters && (
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950/20 dark:border-blue-800">
+            <div className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
+              <CiFilter className="h-4 w-4" />
+              <span className="text-sm">
+                <Badge variant="secondary" className="mr-2">
+                  {filteredAndSortedTeachers.length}
+                </Badge>
+                teacher{filteredAndSortedTeachers.length !== 1 ? "s" : ""} found
+                {searchTerm && ` for "${searchTerm}"`}
+                {selectedVerification !== "all" &&
+                  ` with status: ${selectedVerification}`}
+              </span>
+            </div>
+          </div>
+        )}
+      </CardHeader>
+
+      <CardContent className="p-0 shadow-none flex flex-1 flex-col">
+        {teachers.length === 0 ? (
+          <div className="flex-1 min-h-[750px]">
+            <EmptyState />
+          </div>
+        ) : filteredAndSortedTeachers.length === 0 ? (
+          <div className="flex-1 min-h-[750px]">
+            <NoResultsState />
+          </div>
+        ) : (
+          <div className="flex flex-col flex-1 h-full w-full">
+            <div className="hidden lg:flex flex-col flex-1">
+              <div className="min-h-0 flex-1">
+                <Table className="w-full table-fixed h-full">
+                  <TableHeader className="bg-muted/50 h-14">
+                    <TableRow>
+                      <SortableHeader column="email">Email</SortableHeader>
+                      <SortableHeader column="lastName">Name</SortableHeader>
+                      <SortableHeader column="gender">Gender</SortableHeader>
+                      <SortableHeader column="verificationStatus">
+                        Status
+                      </SortableHeader>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="">
+                    {currentItems.map((teacher) => (
+                      <TeacherTableItem
+                        key={teacher.id}
+                        teacher={teacher}
+                        onClick={handleTeacherClick}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            <div className="block lg:hidden p-4 min-h-[480px] flex-1">
+              {currentItems.map((teacher) => (
+                <MobileTeacherCard key={teacher.id} teacher={teacher} />
+              ))}
+            </div>
+
+            {filteredAndSortedTeachers.length > 0 && (
+              <div className="border-t rounded-b-sm bg-background p-2">
+                <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-2">
+                  <div className="text-sm text-muted-foreground text-nowrap">
+                    Showing{" "}
+                    <span className="font-medium">
+                      {indexOfFirstItem + 1}-
+                      {Math.min(
+                        indexOfLastItem,
+                        filteredAndSortedTeachers.length,
+                      )}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-medium">
+                      {filteredAndSortedTeachers.length}
+                    </span>{" "}
+                    results
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              size="sm"
+                              onClick={handlePrevPage}
+                              className={
+                                currentPage === 1
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            />
+                          </PaginationItem>
+
+                          {getPageNumbers().map((pageNumber) => (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationLink
+                                size="sm"
+                                onClick={() => handlePageClick(pageNumber)}
+                                isActive={currentPage === pageNumber}
+                                className="cursor-pointer"
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+
+                          <PaginationItem>
+                            <PaginationNext
+                              size="sm"
+                              onClick={handleNextPage}
+                              className={
+                                currentPage === totalPages
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* results */}
-              <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                Showing {filteredAndSortedTeachers.length} of {teachers.length}{" "}
-                teachers
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* add teacher button */}
-        <div className="hidden md:flex gap-2 items-center">
-          <button
-            className="flex gap-2 items-center justify-center py-3 px-4 bg-[var(--primary-green)]/90 rounded-sm text-white hover:cursor-pointer hover:bg-[var(--primary-green)] transition-all duration-200"
-            onClick={onAddTeacher}
-          >
-            <GoPlus className="w-4 h-4" />
-            <p className="text-sm font-semibold">Add Teacher</p>
-          </button>
-        </div>
-      </section>
-
-      {/* results info */}
-      {hasActiveFilters && (
-        <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {filteredAndSortedTeachers.length} teacher
-            {filteredAndSortedTeachers.length !== 1 ? "s" : ""} found
-            {searchQuery && ` for "${searchQuery}"`}
-            {selectedVerification !== null && " with filters applied"}
-          </div>
-        </div>
-      )}
-
-      {!showNoDataAvailable ? (
-        <div className="flex flex-col flex-1 overflow-x-auto">
-          <div className="flex flex-col w-full min-w-[800px] flex-1">
-            {/* headers */}
-            <table className="font-primary table-auto w-full">
-              <thead className="text-gray-400 dark:text-gray-500 text-sm xl:text-base transition-colors duration-200">
-                <tr className="text-left">
-                  <th className="w-[30%]">Email</th>
-                  <th
-                    className="cursor-pointer w-[30%]"
-                    onClick={() => handleSort("lastName")}
-                  >
-                    <div
-                      className={`flex items-center justify-start gap-2 transition-colors duration-200 ${sortConfig.key === "lastName"
-                          ? "text-[var(--primary-black)] dark:text-gray-200"
-                          : ""
-                        }`}
-                    >
-                      Name
-                      {sortConfig.key === "lastName" ? (
-                        sortConfig.direction === "ascending" ? (
-                          <FaChevronUp />
-                        ) : (
-                          <FaChevronDown />
-                        )
-                      ) : (
-                        <FaChevronDown />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="cursor-pointer w-[20%]"
-                    onClick={() => handleSort("gender")}
-                  >
-                    <div
-                      className={`flex items-center gap-2 transition-colors duration-200 ${sortConfig.key === "gender"
-                          ? "text-[var(--primary-black)] dark:text-gray-200"
-                          : ""
-                        }`}
-                    >
-                      Gender
-                      {sortConfig.key === "gender" ? (
-                        sortConfig.direction === "ascending" ? (
-                          <FaChevronUp />
-                        ) : (
-                          <FaChevronDown />
-                        )
-                      ) : (
-                        <FaChevronDown />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="cursor-pointer w-[20%]"
-                    onClick={() => handleSort("verificationStatus")}
-                  >
-                    <div
-                      className={`flex items-center gap-2 transition-colors duration-200 ${sortConfig.key === "verificationStatus"
-                          ? "text-[var(--primary-black)] dark:text-gray-200"
-                          : ""
-                        }`}
-                    >
-                      Status
-                      {sortConfig.key === "verificationStatus" ? (
-                        sortConfig.direction === "ascending" ? (
-                          <FaChevronUp />
-                        ) : (
-                          <FaChevronDown />
-                        )
-                      ) : (
-                        <FaChevronDown />
-                      )}
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-            </table>
-
-            {/* teacher items/list */}
-            <div className="flex-1 overflow-y-auto">
-              <table className="font-primary table-auto w-full text-sm xl:text-base">
-                <tbody>
-                  {filteredAndSortedTeachers.map((teacher) => (
-                    <TeacherTableItem
-                      teacher={teacher}
-                      key={teacher.id}
-                      onClick={handleItemOnclick}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-1 w-full items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-300 dark:text-gray-600 italic mb-2">
-              No data available
-            </p>
-            {hasActiveFilters && (
-              <button
-                onClick={handleClearAllFilters}
-                className="text-sm text-[var(--primary-green)] dark:text-green-400 hover:underline"
-              >
-                Clear filters
-              </button>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </CardContent>
 
-      {/* floating action button for mobile */}
-      <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <button
-          className="flex items-center justify-center w-14 h-14 bg-[var(--primary-green)] rounded-full text-white shadow-lg hover:bg-[var(--primary-green)] hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-          onClick={onAddTeacher}
-        >
-          <GoPlus className="w-6 h-6" />
-        </button>
-      </div>
-    </section>
+      <AnimatePresence>
+        {showMobileFab && (
+          <div
+            className="md:hidden fixed bottom-6 right-6 z-50"
+            ref={mobileFabRef}
+          >
+            {expandFab && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                className="flex flex-col gap-3 mb-3"
+              >
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex items-center justify-center w-14 h-14 bg-background rounded-full border border-border text-foreground hover:bg-muted shadow-sm"
+                  onClick={() => {
+                    onAddTeacher();
+                    setShowMobileFab(false);
+                  }}
+                  title="Add Teacher"
+                >
+                  <GoPlus className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
+            )}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className={`flex items-center justify-center w-14 h-14 rounded-full shadow-sm bg-primary text-white`}
+              onClick={() => setExpandFab(!expandFab)}
+              title={expandFab ? "Close" : "Menu"}
+            >
+              {expandFab ? (
+                <IoChevronDown className="w-5 h-5" />
+              ) : (
+                <IoChevronUp className="w-5 h-5" />
+              )}
+            </motion.button>
+          </div>
+        )}
+      </AnimatePresence>
+    </Card>
   );
 }

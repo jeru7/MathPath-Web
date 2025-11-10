@@ -40,9 +40,11 @@ export default function Settings({
   ];
 
   return (
-    <main className="flex flex-col min-h-screen h-fit w-full gap-2 p-2">
+    <main className="flex flex-col mt-4 lg:mt-0 min-h-screen h-full w-full gap-2 p-2">
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold">Settings</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+          Settings
+        </h3>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-2">

@@ -1,13 +1,20 @@
 import { type ReactElement, useState } from "react";
-import { IoClose } from "react-icons/io5";
 import AssessmentArchiveList from "./AssessmentArchiveList";
 import { Assessment } from "../../types/assessment/assessment.type";
 import { Student } from "../../../student/types/student.type";
 import { AssessmentAttempt } from "../../types/assessment-attempt/assessment-attempt.type";
-import ModalOverlay from "../modal/ModalOverlay";
-import AssessmentDetailsModal from "../../../teacher/pages/assessments/components/assessment-details/AssessmentDetailsModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import AssessmentDetailsModal from "../assessment-details/AssessesmentDetailsModal";
 
 type AssessmentArchiveModalProps = {
+  userType: "teacher" | "admin";
+  userId: string;
   isOpen: boolean;
   onClose: () => void;
   assessments: Assessment[];
@@ -18,7 +25,9 @@ type AssessmentArchiveModalProps = {
 };
 
 export default function AssessmentArchiveModal({
+  userType,
   isOpen,
+  userId,
   onClose,
   assessments,
   onRestoreAssessment,
@@ -60,51 +69,48 @@ export default function AssessmentArchiveModal({
 
   return (
     <>
-      <ModalOverlay isOpen={isOpen} onClose={onClose}>
-        <div className="bg-white dark:bg-gray-800 rounded-sm border border-white dark:border-gray-700 h-[100svh] w-[100svw] md:h-[85svh] md:w-[90svw] lg:w-[75svw] md:max-w-7xl md:max-h-[800px] overflow-hidden flex flex-col">
-          {/* header */}
-          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-            <div className="flex-1">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Archived Assessments
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {assessments.length} archived assessment
-                {assessments.length !== 1 ? "s" : ""}
-              </p>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-7xl h-[85vh] max-h-[800px] flex flex-col p-0 overflow-hidden">
+          <DialogHeader className="p-6 pb-4 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <DialogTitle className="text-2xl font-bold">
+                  Archived Assessments
+                </DialogTitle>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="secondary">
+                    {assessments.length} archived assessment
+                    {assessments.length !== 1 ? "s" : ""}
+                  </Badge>
+                </div>
+              </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-900 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 ml-4"
-            >
-              <IoClose className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-          </div>
+          </DialogHeader>
 
           {/* content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 sm:p-6">
-              <AssessmentArchiveList
-                assessments={assessments}
-                onAssessmentClick={handleAssessmentClick}
-              />
-            </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <AssessmentArchiveList
+              assessments={assessments}
+              onAssessmentClick={handleAssessmentClick}
+            />
           </div>
 
           {/* footer */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900/50 flex-shrink-0">
+          <div className="border-t p-4 bg-muted/50">
             <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Select an assessment to view details or restore
               </p>
             </div>
           </div>
-        </div>
-      </ModalOverlay>
+        </DialogContent>
+      </Dialog>
 
       {/* assessment details modal for archived assessments */}
       {selectedAssessment && (
         <AssessmentDetailsModal
+          userType={userType}
+          userId={userId}
           assessment={selectedAssessment}
           isOpen={!!selectedAssessment}
           onClose={handleCloseDetailsModal}
@@ -115,6 +121,7 @@ export default function AssessmentArchiveModal({
           onArchive={handleRestore}
           onDelete={handleDelete}
           disableEdit={true}
+          disableDelete={true}
           archiveLabel="Restore"
         />
       )}

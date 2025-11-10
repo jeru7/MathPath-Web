@@ -6,28 +6,35 @@ import {
   FaUsers,
   FaChartBar,
   FaGamepad,
+  FaList,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import PreviewDownloadModal from "./PreviewDownloadModal";
 import {
-  AssessmentData,
-  StageData,
   StudentData,
+  AssessmentData,
+  AssessmentAttemptData,
+  StageData,
+  PreviewDataItem,
 } from "../../../../teacher/types/teacher-data-report";
 import { useTeacherContext } from "../../../../teacher/context/teacher.context";
 import {
-  useTeacherAssessmentData,
-  useTeacherStageData,
   useTeacherStudentData,
+  useTeacherAssessmentCombined,
+  useTeacherStageData,
 } from "../../../../teacher/services/teacher-data-report.service";
-
-type ReportConfig = {
-  reportType: "student_overview" | "assessment_student" | "stage_student";
-  format: "excel" | "csv";
-  section: string;
-  assessment?: string;
-};
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 type ReportType = {
   id: "student_overview" | "assessment_student" | "stage_student";
@@ -36,112 +43,149 @@ type ReportType = {
   icon: ReactElement;
   headers: string[];
   dataKeys: string[];
+  subHeaders?: string[];
+  subDataKeys?: string[];
 };
 
 type PreviewData = {
-  data: StudentData[] | AssessmentData[] | StageData[];
+  data: PreviewDataItem[];
   fileSize: string;
   recordCount: number;
 };
 
+const isAssessmentData = (item: PreviewDataItem): item is AssessmentData => {
+  return "assessmentTitle" in item;
+};
+
+const isStudentData = (item: PreviewDataItem): item is StudentData => {
+  return "lrn" in item;
+};
+
+const isStageData = (item: PreviewDataItem): item is StageData => {
+  return "stage" in item;
+};
+
 export default function TeacherReportsCard(): ReactElement {
-  const { teacherId, assessments, sections } = useTeacherContext();
+  const { teacherId, rawSections, rawAssessments } = useTeacherContext();
   const [selectedReport, setSelectedReport] =
     useState<ReportType["id"]>("student_overview");
   const [selectedFormat, setSelectedFormat] = useState<"excel" | "csv">(
     "excel",
   );
   const [selectedSection, setSelectedSection] = useState<string>("all");
-  const [selectedAssessment, setSelectedAssessment] = useState<string>("");
+  const [selectedAssessment, setSelectedAssessment] = useState<string>("all");
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [includeAttempts, setIncludeAttempts] = useState(false);
 
   const { data: studentData, isLoading: studentLoading } =
     useTeacherStudentData(
       teacherId,
       selectedSection !== "all" ? selectedSection : undefined,
     );
+
   const { data: assessmentData, isLoading: assessmentLoading } =
-    useTeacherAssessmentData(
+    useTeacherAssessmentCombined(
       teacherId,
       selectedSection !== "all" ? selectedSection : undefined,
-      selectedAssessment || undefined,
+      selectedAssessment !== "all" ? selectedAssessment : undefined,
+      selectedReport === "assessment_student" ? includeAttempts : false,
     );
+
   const { data: stageData, isLoading: stageLoading } = useTeacherStageData(
     teacherId,
     selectedSection !== "all" ? selectedSection : undefined,
   );
 
-  console.log("Available assessments:", assessments);
-  console.log("Available assessments data:", assessmentData);
-
   const reportTypes: ReportType[] = [
     {
       id: "student_overview",
-      label: "Student Data",
-      description: "Student data report",
-      icon: <FaUsers className="w-4 h-4" />,
+      label: "Student Overview Data Report",
+      description: "Comprehensive student performance analysis",
+      icon: <FaUsers className="w-5 h-5" />,
       headers: [
         "LRN",
         "Full Name",
         "Section",
         "Assessments Taken",
+        "Assessments Passed",
+        "Assessments Passing Rate",
         "Stage Attempts",
         "Current Stage",
-        "Avg Correctness",
-        "Overall Assessment Score",
-        "Date Created",
+        "Average Answer Correctness",
+        "Win Rate",
         "Area of Difficulty",
       ],
       dataKeys: [
         "lrn",
         "fullName",
         "sectionName",
-        "totalAssessmentsTaken",
-        "totalStageAttempts",
+        "assessmentsTaken",
+        "assessmentsPassed",
+        "assessmentsPassingRate",
+        "stageAttempts",
         "currentStage",
-        "overallAverageCorrectness",
-        "overallAssessmentScorePercentage",
-        "dateCreated",
+        "averageAnswerCorrectness",
+        "winRate",
         "areaOfDifficulty",
       ],
     },
     {
       id: "assessment_student",
-      label: "Assessment Data",
-      description: "Assessment data report",
-      icon: <FaChartBar className="w-4 h-4" />,
+      label: "Assessment Data Report",
+      description: "Detailed assessment performance metrics",
+      icon: <FaChartBar className="w-5 h-5" />,
       headers: [
-        "Title",
+        "Assessment Title",
         "Topic",
-        "Avg Score %",
-        "Avg Time (seconds)",
+        "Total Points",
+        "Average Score",
+        "Average Time Taken",
+        "Passing Rate",
         "Total Attempts",
       ],
       dataKeys: [
-        "title",
+        "assessmentTitle",
         "topic",
-        "averageScorePercentage",
+        "score",
+        "averageScore",
         "averageTimeTaken",
-        "totalAttemptsTaken",
+        "passingRate",
+        "totalAttempts",
+      ],
+      subHeaders: [
+        "Assessment Title",
+        "Student Name",
+        "Score",
+        "Time Taken",
+        "Date Completed",
+        "Result",
+      ],
+      subDataKeys: [
+        "assessmentTitle",
+        "studentName",
+        "score",
+        "timeTaken",
+        "dateCompleted",
+        "result",
       ],
     },
     {
       id: "stage_student",
-      label: "Stage Data",
-      description: "Stage data report",
-      icon: <FaGamepad className="w-4 h-4" />,
+      label: "Stage Performance Data Report",
+      description: "Game stage progression and performance analytics",
+      icon: <FaGamepad className="w-5 h-5" />,
       headers: [
         "Stage",
         "Topic",
-        "Avg Correctness",
-        "Total Attempts",
-        "Avg Time",
+        "Average Correctness",
+        "Total Stage Attempts",
+        "Average Time Taken",
         "Win Rate",
-        "Easy %",
-        "Medium %",
-        "Hard %",
+        "Easy Questions",
+        "Medium Questions",
+        "Hard Questions",
       ],
       dataKeys: [
         "stage",
@@ -158,29 +202,67 @@ export default function TeacherReportsCard(): ReactElement {
   ];
 
   const handlePreview = async (): Promise<void> => {
-    setIsGenerating(true);
-    try {
-      const config: ReportConfig = {
-        reportType: selectedReport,
-        format: selectedFormat,
-        section: selectedSection,
-        assessment: selectedAssessment,
-      };
+    if (selectedReport === "assessment_student") {
+      setIsGenerating(true);
+      try {
+        if (!assessmentData) {
+          throw new Error("No assessment data available");
+        }
 
-      const data = await fetchReportData(config);
-      const fileSize = await calculateFileSize(data, config.format);
+        const dataToPreview = assessmentData.overview;
 
-      setPreviewData({
-        data,
-        fileSize,
-        recordCount: data.length,
-      });
-      setShowPreviewModal(true);
-    } catch (error) {
-      console.error("Preview failed:", error);
-      toast.error("Failed to generate preview");
-    } finally {
-      setIsGenerating(false);
+        const fileSize = await calculateFileSize(dataToPreview, selectedFormat);
+
+        setPreviewData({
+          data: dataToPreview,
+          fileSize,
+          recordCount: dataToPreview.length,
+        });
+        setShowPreviewModal(true);
+      } catch (error) {
+        console.error("Preview failed:", error);
+        toast.error("Failed to generate preview");
+      } finally {
+        setIsGenerating(false);
+      }
+    } else if (selectedReport === "student_overview") {
+      setIsGenerating(true);
+      try {
+        const data: PreviewDataItem[] = (studentData as StudentData[]) || [];
+        const fileSize = await calculateFileSize(data, selectedFormat);
+
+        setPreviewData({
+          data,
+          fileSize,
+          recordCount: data.length,
+        });
+        setShowPreviewModal(true);
+      } catch (error) {
+        console.error("Preview failed:", error);
+        toast.error("Failed to generate preview");
+      } finally {
+        setIsGenerating(false);
+      }
+    } else if (selectedReport === "stage_student") {
+      setIsGenerating(true);
+      try {
+        const data: PreviewDataItem[] = (stageData as StageData[]) || [];
+        const fileSize = await calculateFileSize(data, selectedFormat);
+
+        setPreviewData({
+          data,
+          fileSize,
+          recordCount: data.length,
+        });
+        setShowPreviewModal(true);
+      } catch (error) {
+        console.error("Preview failed:", error);
+        toast.error("Failed to generate preview");
+      } finally {
+        setIsGenerating(false);
+      }
+    } else {
+      toast.info("This report type is coming soon!");
     }
   };
 
@@ -189,14 +271,18 @@ export default function TeacherReportsCard(): ReactElement {
 
     setIsGenerating(true);
     try {
-      const config: ReportConfig = {
-        reportType: selectedReport,
-        format: selectedFormat,
-        section: selectedSection,
-        assessment: selectedAssessment,
-      };
-
-      await generateAndDownloadReport(previewData.data, config);
+      if (
+        selectedReport === "assessment_student" &&
+        includeAttempts &&
+        assessmentData
+      ) {
+        await generateAndDownloadReportWithAttempts(
+          assessmentData.overview,
+          assessmentData.attempts,
+        );
+      } else {
+        await generateAndDownloadReport(previewData.data);
+      }
       setShowPreviewModal(false);
       setPreviewData(null);
       toast.success("Report downloaded successfully!");
@@ -214,13 +300,12 @@ export default function TeacherReportsCard(): ReactElement {
   };
 
   const calculateFileSize = async (
-    data: StudentData[] | AssessmentData[] | StageData[],
+    data: PreviewDataItem[],
     format: "excel" | "csv",
   ): Promise<string> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        // Simulate file size calculation based on data length and format
-        const baseSize = data.length * 100; // 100 bytes per record
+        const baseSize = data.length * 150;
         const formatMultiplier = format === "excel" ? 1.5 : 1;
         const sizeInBytes = baseSize * formatMultiplier;
 
@@ -235,78 +320,320 @@ export default function TeacherReportsCard(): ReactElement {
     });
   };
 
-  const fetchReportData = async (
-    config: ReportConfig,
-  ): Promise<StudentData[] | AssessmentData[] | StageData[]> => {
-    switch (config.reportType) {
-      case "student_overview":
-        return studentData || [];
-      case "assessment_student":
-        return assessmentData || [];
-      case "stage_student":
-        return stageData || [];
-      default:
-        return [];
-    }
-  };
-
   const generateAndDownloadReport = async (
-    data: StudentData[] | AssessmentData[] | StageData[],
-    config: ReportConfig,
+    data: PreviewDataItem[],
   ): Promise<void> => {
-    if (config.format === "excel") {
-      await downloadAsExcel(data, config.reportType);
+    if (selectedFormat === "excel") {
+      await downloadAsExcel(data);
     } else {
-      await downloadAsCSV(data, config.reportType);
+      await downloadAsCSV(data);
     }
   };
 
-  const downloadAsExcel = async (
-    data: StudentData[] | AssessmentData[] | StageData[],
-    reportType: string,
+  const generateAndDownloadReportWithAttempts = async (
+    overviewData: AssessmentData[],
+    attemptData: AssessmentAttemptData[],
   ): Promise<void> => {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    if (selectedFormat === "excel") {
+      await downloadAsExcelWithAttempts(overviewData, attemptData);
+    } else {
+      await downloadAsCSVWithAttempts(overviewData, attemptData);
+    }
+  };
 
-    // Auto-size columns
-    const maxWidth = data.reduce((w, r) => {
-      const rowLength = Math.max(
-        ...Object.values(r).map((v) => String(v).length),
+  const downloadAsExcel = async (data: PreviewDataItem[]): Promise<void> => {
+    const currentReport = reportTypes.find(
+      (report) => report.id === selectedReport,
+    );
+    if (!currentReport) return;
+
+    if (selectedReport === "assessment_student") {
+      const assessmentData = data.filter(isAssessmentData);
+      const orderedData = assessmentData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof AssessmentData];
+        });
+        return orderedRow;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(orderedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Assessment Overview");
+
+      const colWidths = currentReport.headers.map((header) => {
+        const maxContentWidth = Math.max(
+          ...orderedData.map((row) => String(row[header] || "").length),
+          header.length,
+        );
+        return { wch: Math.min(Math.max(maxContentWidth, 10), 50) };
+      });
+      worksheet["!cols"] = colWidths;
+
+      XLSX.writeFile(
+        workbook,
+        `assessment_report_${getFormattedTimestamp()}.xlsx`,
       );
-      return Math.max(w, rowLength);
-    }, 10);
-    worksheet["!cols"] = [{ wch: maxWidth }];
+    } else if (selectedReport === "stage_student") {
+      const stageData = data.filter(isStageData);
+      const orderedData = stageData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof StageData];
+        });
+        return orderedRow;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(orderedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Stage Performance");
+
+      const colWidths = currentReport.headers.map((header) => {
+        const maxContentWidth = Math.max(
+          ...orderedData.map((row) => String(row[header] || "").length),
+          header.length,
+        );
+        return { wch: Math.min(Math.max(maxContentWidth, 10), 50) };
+      });
+      worksheet["!cols"] = colWidths;
+
+      XLSX.writeFile(
+        workbook,
+        `stage_performance_${getFormattedTimestamp()}.xlsx`,
+      );
+    } else {
+      const studentData = data.filter(isStudentData);
+      const orderedData = studentData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof StudentData];
+        });
+        return orderedRow;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(orderedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Student Overview");
+
+      const colWidths = currentReport.headers.map((header) => {
+        const maxContentWidth = Math.max(
+          ...orderedData.map((row) => String(row[header] || "").length),
+          header.length,
+        );
+        return { wch: Math.min(Math.max(maxContentWidth, 10), 50) };
+      });
+      worksheet["!cols"] = colWidths;
+
+      XLSX.writeFile(
+        workbook,
+        `student_overview_${getFormattedTimestamp()}.xlsx`,
+      );
+    }
+  };
+
+  const downloadAsExcelWithAttempts = async (
+    overviewData: AssessmentData[],
+    attemptData: AssessmentAttemptData[],
+  ): Promise<void> => {
+    const currentReport = reportTypes.find(
+      (report) => report.id === selectedReport,
+    );
+    if (!currentReport) return;
+
+    const assessmentWorksheet = XLSX.utils.json_to_sheet(
+      overviewData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof AssessmentData];
+        });
+        return orderedRow;
+      }),
+    );
+
+    const attemptWorksheet = XLSX.utils.json_to_sheet(
+      attemptData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.subHeaders!.forEach((header, index) => {
+          const dataKey = currentReport.subDataKeys![index];
+          orderedRow[header] = row[dataKey as keyof AssessmentAttemptData];
+        });
+        return orderedRow;
+      }),
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      assessmentWorksheet,
+      "Assessment Overview",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      attemptWorksheet,
+      "Student Attempts",
+    );
 
     XLSX.writeFile(
       workbook,
-      `report_${reportType}_${getFormattedTimestamp()}.xlsx`,
+      `assessment_report_${getFormattedTimestamp()}.xlsx`,
     );
   };
 
-  const downloadAsCSV = async (
-    data: StudentData[] | AssessmentData[] | StageData[],
-    reportType: string,
+  const downloadAsCSV = async (data: PreviewDataItem[]): Promise<void> => {
+    const currentReport = reportTypes.find(
+      (report) => report.id === selectedReport,
+    );
+    if (!currentReport) return;
+
+    if (selectedReport === "assessment_student") {
+      const assessmentData = data.filter(isAssessmentData);
+      const orderedData = assessmentData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof AssessmentData];
+        });
+        return orderedRow;
+      });
+
+      const headers = currentReport.headers;
+      const csvContent = [
+        headers.join(","),
+        ...orderedData.map((row) =>
+          headers.map((header) => `"${String(row[header] || "")}"`).join(","),
+        ),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `assessment_report_${getFormattedTimestamp()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else if (selectedReport === "stage_student") {
+      const stageData = data.filter(isStageData);
+      const orderedData = stageData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof StageData];
+        });
+        return orderedRow;
+      });
+
+      const headers = currentReport.headers;
+      const csvContent = [
+        headers.join(","),
+        ...orderedData.map((row) =>
+          headers.map((header) => `"${String(row[header] || "")}"`).join(","),
+        ),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `stage_performance_${getFormattedTimestamp()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      const studentData = data.filter(isStudentData);
+      const orderedData = studentData.map((row) => {
+        const orderedRow: Record<string, unknown> = {};
+        currentReport.headers.forEach((header, index) => {
+          const dataKey = currentReport.dataKeys[index];
+          orderedRow[header] = row[dataKey as keyof StudentData];
+        });
+        return orderedRow;
+      });
+
+      const headers = currentReport.headers;
+      const csvContent = [
+        headers.join(","),
+        ...orderedData.map((row) =>
+          headers.map((header) => `"${String(row[header] || "")}"`).join(","),
+        ),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `student_overview_${getFormattedTimestamp()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const downloadAsCSVWithAttempts = async (
+    overviewData: AssessmentData[],
+    attemptData: AssessmentAttemptData[],
   ): Promise<void> => {
-    const headers = Object.keys(data[0] || {});
-    const csvContent = [
-      headers.join(","),
-      ...data.map((row) =>
-        headers
-          .map((header) => `"${String(row[header as keyof typeof row] || "")}"`)
+    const currentReport = reportTypes.find(
+      (report) => report.id === selectedReport,
+    );
+    if (!currentReport) return;
+
+    const assessmentHeaders = currentReport.headers;
+    const assessmentCsvContent = [
+      assessmentHeaders.join(","),
+      ...overviewData.map((row) =>
+        assessmentHeaders
+          .map(
+            (header) =>
+              `"${String(row[header as keyof AssessmentData] || "")}"`,
+          )
           .join(","),
       ),
     ].join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `report_${reportType}_${getFormattedTimestamp()}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const attemptHeaders = currentReport.subHeaders!;
+    const attemptCsvContent = [
+      attemptHeaders.join(","),
+      ...attemptData.map((row) =>
+        attemptHeaders
+          .map(
+            (header) =>
+              `"${String(row[header as keyof AssessmentAttemptData] || "")}"`,
+          )
+          .join(","),
+      ),
+    ].join("\n");
+
+    const assessmentBlob = new Blob([assessmentCsvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const assessmentUrl = URL.createObjectURL(assessmentBlob);
+    const assessmentLink = document.createElement("a");
+    assessmentLink.href = assessmentUrl;
+    assessmentLink.download = `assessment_overview_${getFormattedTimestamp()}.csv`;
+    document.body.appendChild(assessmentLink);
+    assessmentLink.click();
+    document.body.removeChild(assessmentLink);
+    URL.revokeObjectURL(assessmentUrl);
+
+    const attemptBlob = new Blob([attemptCsvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const attemptUrl = URL.createObjectURL(attemptBlob);
+    const attemptLink = document.createElement("a");
+    attemptLink.href = attemptUrl;
+    attemptLink.download = `assessment_attempts_${getFormattedTimestamp()}.csv`;
+    document.body.appendChild(attemptLink);
+    attemptLink.click();
+    document.body.removeChild(attemptLink);
+    URL.revokeObjectURL(attemptUrl);
   };
 
   const getFormattedTimestamp = (): string => {
@@ -317,11 +644,21 @@ export default function TeacherReportsCard(): ReactElement {
     (report) => report.id === selectedReport,
   );
 
-  // Determine loading state for the preview button
   const isLoadingData =
     (selectedReport === "student_overview" && studentLoading) ||
     (selectedReport === "assessment_student" && assessmentLoading) ||
     (selectedReport === "stage_student" && stageLoading);
+
+  const getRecordCount = () => {
+    if (selectedReport === "student_overview") {
+      return studentData?.length || 0;
+    } else if (selectedReport === "assessment_student") {
+      return assessmentData?.overview.length || 0;
+    } else if (selectedReport === "stage_student") {
+      return stageData?.length || 0;
+    }
+    return 0;
+  };
 
   return (
     <>
@@ -333,145 +670,214 @@ export default function TeacherReportsCard(): ReactElement {
         previewData={previewData}
         currentReport={currentReport}
         selectedFormat={selectedFormat}
+        includeAttempts={
+          selectedReport === "assessment_student" ? includeAttempts : undefined
+        }
+        assessmentData={assessmentData}
+        stageData={stageData}
       />
 
-      {/* Main Content */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
-              Data Reports
-            </h4>
-          </div>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Data Reports</CardTitle>
+        </CardHeader>
 
-        <div className="space-y-4">
-          {/* Report Type Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {reportTypes.map((report) => (
-              <button
-                key={report.id}
-                onClick={() => setSelectedReport(report.id)}
-                className={`p-3 border rounded-lg text-left transition-all ${selectedReport === report.id
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                    : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                  }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <div
-                    className={`p-1 rounded ${selectedReport === report.id
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-500 dark:text-gray-400"
-                      }`}
-                  >
-                    {report.icon}
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Report Type</Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {reportTypes.map((report) => (
+                <Card
+                  key={report.id}
+                  className={`cursor-pointer transition-all border-2 hover:shadow-sm ${selectedReport === report.id
+                      ? "border-primary shadow-sm bg-primary/5"
+                      : "border-border hover:border-primary/50"
+                    }`}
+                  onClick={() => setSelectedReport(report.id)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`p-2 rounded-lg ${selectedReport === report.id
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
+                          }`}
+                      >
+                        {report.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3
+                          className={`font-semibold ${selectedReport === report.id
+                              ? "text-primary"
+                              : "text-foreground"
+                            }`}
+                        >
+                          {report.label}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {report.description}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          <Card className="bg-card border">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    Export Format
+                  </Label>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setSelectedFormat("excel")}
+                      variant={
+                        selectedFormat === "excel" ? "default" : "outline"
+                      }
+                      size="sm"
+                      className="flex items-center gap-2 flex-1"
+                    >
+                      <FaFileExcel className="w-4 h-4" />
+                      Excel
+                    </Button>
+                    <Button
+                      onClick={() => setSelectedFormat("csv")}
+                      variant={selectedFormat === "csv" ? "default" : "outline"}
+                      size="sm"
+                      className="flex items-center gap-2 flex-1"
+                    >
+                      <FaFileCsv className="w-4 h-4" />
+                      CSV
+                    </Button>
                   </div>
-                  <span className="font-medium text-sm text-gray-900 dark:text-white">
-                    {report.label}
-                  </span>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {report.description}
-                </p>
-              </button>
-            ))}
-          </div>
 
-          {/* Quick Configuration */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            {/* Format Selection */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Format
-              </label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setSelectedFormat("excel")}
-                  className={`flex items-center gap-1 px-3 py-2 text-xs rounded border transition-all ${selectedFormat === "excel"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                      : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-600"
-                    }`}
-                >
-                  <FaFileExcel className="w-3 h-3" />
-                  Excel
-                </button>
-                <button
-                  onClick={() => setSelectedFormat("csv")}
-                  className={`flex items-center gap-1 px-3 py-2 text-xs rounded border transition-all ${selectedFormat === "csv"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                      : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-600"
-                    }`}
-                >
-                  <FaFileCsv className="w-3 h-3" />
-                  CSV
-                </button>
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    Section Filter
+                  </Label>
+                  <Select
+                    value={selectedSection}
+                    onValueChange={setSelectedSection}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select section" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Sections</SelectItem>
+                      {rawSections?.map((section) => (
+                        <SelectItem key={section.id} value={section.id}>
+                          {section.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedReport === "assessment_student" && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      Assessment Filter
+                    </Label>
+                    <Select
+                      value={selectedAssessment}
+                      onValueChange={setSelectedAssessment}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select assessment" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Assessments</SelectItem>
+                        {rawAssessments?.map((assessment) => (
+                          <SelectItem key={assessment.id} value={assessment.id}>
+                            {assessment.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {selectedReport !== "assessment_student" && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      Report Status
+                    </Label>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <div className="flex justify-between">
+                        <span>Records:</span>
+                        <span className="font-semibold text-foreground">
+                          {getRecordCount()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Format:</span>
+                        <span className="font-semibold text-foreground">
+                          {selectedFormat.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
 
-            {/* Section Selection */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Section
-              </label>
-              <select
-                value={selectedSection}
-                onChange={(e) => setSelectedSection(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="all">All Sections</option>
-                {sections?.map((section) => (
-                  <option key={section.id} value={section.id}>
-                    {section.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {selectedReport === "assessment_student" && (
+                <div className="mt-6 p-4 border rounded-lg bg-muted/30">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-semibold flex items-center gap-2">
+                        <FaList className="w-4 h-4" />
+                        Include Student Attempts
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Download detailed student attempt data along with
+                        assessment overview
+                      </p>
+                    </div>
+                    <Switch
+                      checked={includeAttempts}
+                      onCheckedChange={setIncludeAttempts}
+                    />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            {/* Assessment Selection */}
-            {selectedReport === "assessment_student" && (
-              <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Assessment
-                </label>
-                <select
-                  value={selectedAssessment}
-                  onChange={(e) => setSelectedAssessment(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">All Assessments</option>
-                  {assessments?.map((assessment) => (
-                    <option key={assessment.id} value={assessment.id}>
-                      {assessment.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-
-          {/* Action Button */}
-          <div className="pt-2 w-fit ml-auto">
-            <button
+          <div className="flex justify-end pt-4">
+            <Button
               onClick={handlePreview}
               disabled={isGenerating || isLoadingData}
-              className="flex items-center justify-center gap-2 px-6 py-3 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed w-auto mx-auto"
+              className="flex items-center gap-3 px-6 py-3"
+              size="lg"
             >
               {isGenerating || isLoadingData ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   {isLoadingData ? "Loading Data..." : "Generating Preview..."}
                 </>
               ) : (
                 <>
-                  <FaDownload className="w-4 h-4" />
-                  Download Data
+                  <FaDownload className="w-5 h-5" />
+                  {selectedReport === "student_overview"
+                    ? "Generate Student Report"
+                    : selectedReport === "assessment_student"
+                      ? "Generate Assessment Report"
+                      : "Generate Stage Report"}
                 </>
               )}
-            </button>
+            </Button>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 }

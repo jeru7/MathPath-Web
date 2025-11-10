@@ -1,29 +1,79 @@
-import { type ReactElement } from "react";
-import { FaTimes, FaDownload } from "react-icons/fa";
+import { type ReactElement, useState } from "react";
+import { FaDownload } from "react-icons/fa";
 import {
-  AssessmentData,
-  StageData,
   StudentData,
+  AssessmentData,
+  AssessmentAttemptData,
+  StageData,
+  PreviewDataItem,
 } from "../../../../teacher/types/teacher-data-report";
-import ModalOverlay from "../../modal/ModalOverlay";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Badge } from "@/components/ui/badge";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+type ReportType = {
+  headers: string[];
+  dataKeys: string[];
+  subHeaders?: string[];
+  subDataKeys?: string[];
+};
+
+type PreviewData = {
+  data: PreviewDataItem[];
+  fileSize: string;
+  recordCount: number;
+};
 
 type PreviewDownloadModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   isGenerating: boolean;
-  previewData: {
-    data: StudentData[] | AssessmentData[] | StageData[];
-    fileSize: string;
-    recordCount: number;
-  } | null;
-  currentReport:
-  | {
-    headers: string[];
-    dataKeys: string[];
-  }
-  | undefined;
+  previewData: PreviewData | null;
+  currentReport: ReportType | undefined;
   selectedFormat: string;
+  includeAttempts?: boolean;
+  assessmentData?: {
+    overview: AssessmentData[];
+    attempts: AssessmentAttemptData[];
+  };
+  stageData?: StageData[];
+};
+
+const isAssessmentData = (item: PreviewDataItem): item is AssessmentData => {
+  return "assessmentTitle" in item;
+};
+
+const isStudentData = (item: PreviewDataItem): item is StudentData => {
+  return "lrn" in item;
+};
+
+const isStageData = (item: PreviewDataItem): item is StageData => {
+  return "stage" in item;
 };
 
 export default function PreviewDownloadModal({
@@ -34,146 +84,1095 @@ export default function PreviewDownloadModal({
   previewData,
   currentReport,
   selectedFormat,
+  includeAttempts = false,
+  assessmentData,
+  stageData,
 }: PreviewDownloadModalProps): ReactElement {
-  const formatPreviewValue = (header: string, value: unknown): string => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentAttemptsPage, setCurrentAttemptsPage] = useState(1);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [itemsPerPage] = useState(8);
+
+  const formatPreviewValue = (header: string, value: unknown): ReactElement => {
     if (typeof value === "number") {
-      return header.toLowerCase().includes("percentage") ||
-        header.toLowerCase().includes("correctness") ||
-        header.toLowerCase().includes("score") ||
-        header.toLowerCase().includes("winrate") ||
-        header.toLowerCase().includes("easy") ||
-        header.toLowerCase().includes("medium") ||
-        header.toLowerCase().includes("hard")
-        ? `${value}%`
-        : String(value);
+      const numValue = value;
+      if (
+        header.toLowerCase().includes("rate") ||
+        header.toLowerCase().includes("questions") ||
+        header.toLowerCase().includes("correctness")
+      ) {
+        return (
+          <span className="font-mono text-sm">
+            {header.toLowerCase().includes("time")
+              ? `${numValue}s`
+              : `${numValue}%`}
+          </span>
+        );
+      }
+      return (
+        <span className="font-mono text-sm">
+          {header.toLowerCase().includes("time") ? `${numValue}s` : numValue}
+        </span>
+      );
     }
-    return String(value || "N/A");
+    if (header === "Area of Difficulty") {
+      return (
+        <span className="text-sm font-medium">{String(value || "None")}</span>
+      );
+    }
+
+    return <span className="text-sm">{String(value || "N/A")}</span>;
   };
 
-  const getValueFromData = (
-    row: StudentData | AssessmentData | StageData,
-    dataKey: string,
-  ): unknown => {
-    return row[dataKey as keyof typeof row];
+  const getValueFromData = (row: PreviewDataItem, dataKey: string): unknown => {
+    return (row as Record<string, unknown>)[dataKey];
   };
+
+  const assessmentDataFromPreview =
+    previewData?.data.filter(isAssessmentData) || [];
+  const studentData = previewData?.data.filter(isStudentData) || [];
+  const stageDataFromPreview =
+    stageData || previewData?.data.filter(isStageData) || [];
+
+  const hasAssessmentData = assessmentDataFromPreview.length > 0;
+  const hasStudentData = studentData.length > 0;
+  const hasStageData = stageDataFromPreview.length > 0;
+  const isStudentReport = !hasAssessmentData && hasStudentData;
+  const isStageReport = hasStageData;
+
+  const totalStudentPages = Math.ceil(studentData.length / itemsPerPage);
+  const indexOfLastStudentItem = currentPage * itemsPerPage;
+  const indexOfFirstStudentItem = indexOfLastStudentItem - itemsPerPage;
+  const currentStudentItems = studentData.slice(
+    indexOfFirstStudentItem,
+    indexOfLastStudentItem,
+  );
+
+  const totalOverviewPages = Math.ceil(
+    assessmentDataFromPreview.length / itemsPerPage,
+  );
+  const indexOfLastOverviewItem = currentPage * itemsPerPage;
+  const indexOfFirstOverviewItem = indexOfLastOverviewItem - itemsPerPage;
+  const currentOverviewItems = assessmentDataFromPreview.slice(
+    indexOfFirstOverviewItem,
+    indexOfLastOverviewItem,
+  );
+
+  const totalStagePages = Math.ceil(stageDataFromPreview.length / itemsPerPage);
+  const indexOfLastStageItem = currentPage * itemsPerPage;
+  const indexOfFirstStageItem = indexOfLastStageItem - itemsPerPage;
+  const currentStageItems = stageDataFromPreview.slice(
+    indexOfFirstStageItem,
+    indexOfLastStageItem,
+  );
+
+  const totalAttemptsPages = Math.ceil(
+    (assessmentData?.attempts.length || 0) / itemsPerPage,
+  );
+  const indexOfLastAttemptItem = currentAttemptsPage * itemsPerPage;
+  const indexOfFirstAttemptItem = indexOfLastAttemptItem - itemsPerPage;
+  const currentAttemptItems = (assessmentData?.attempts || []).slice(
+    indexOfFirstAttemptItem,
+    indexOfLastAttemptItem,
+  );
+
+  const handleNextPage = (): void => {
+    if (currentPage < totalStudentPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = (): void => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handlePageClick = (pageNumber: number): void => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleNextAttemptsPage = (): void => {
+    if (currentAttemptsPage < totalAttemptsPages)
+      setCurrentAttemptsPage(currentAttemptsPage + 1);
+  };
+
+  const handlePrevAttemptsPage = (): void => {
+    if (currentAttemptsPage > 1)
+      setCurrentAttemptsPage(currentAttemptsPage - 1);
+  };
+
+  const handleAttemptsPageClick = (pageNumber: number): void => {
+    setCurrentAttemptsPage(pageNumber);
+  };
+
+  const getPageNumbers = (): number[] => {
+    const pageNumbers: number[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalStudentPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalStudentPages; i++) pageNumbers.push(i);
+    } else {
+      const startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxVisiblePages / 2),
+      );
+      const endPage = Math.min(
+        totalStudentPages,
+        startPage + maxVisiblePages - 1,
+      );
+      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  };
+
+  const getAssessmentPageNumbers = (
+    totalPages: number,
+    currentPage: number,
+  ): number[] => {
+    const pageNumbers: number[] = [];
+    const maxVisiblePages = 3;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+      const startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxVisiblePages / 2),
+      );
+      const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  };
+
+  const shouldShowTabs =
+    includeAttempts &&
+    currentReport?.subHeaders &&
+    currentReport?.subDataKeys &&
+    hasAssessmentData;
+
+  if (!currentReport) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-[100dvw] h-[100dvh] max-w-none flex flex-col p-0 sm:max-w-7xl sm:h-[90dvh] sm:rounded-lg">
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 bg-muted/50 border-b">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="space-y-2 sm:space-y-0">
+                <DialogTitle className="text-xl sm:text-2xl font-bold">
+                  Report Preview
+                </DialogTitle>
+                <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span className="font-semibold">
+                      {previewData?.recordCount || 0} total records
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span className="font-semibold">
+                      {previewData?.fileSize || "0 B"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span className="font-semibold">
+                      {selectedFormat.toUpperCase()}
+                    </span>
+                  </div>
+                  {includeAttempts && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="font-semibold">
+                        With Student Attempts
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <Badge
+                variant="secondary"
+                className="px-2 py-1 text-xs sm:px-3 sm:py-1 sm:text-sm"
+              >
+                {includeAttempts && hasAssessmentData
+                  ? "Assessment Report + Attempts"
+                  : hasAssessmentData
+                    ? "Assessment Report"
+                    : hasStageData
+                      ? "Stage Performance Report"
+                      : "Student Overview Report"}
+              </Badge>
+            </div>
+          </DialogHeader>
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-muted-foreground">No report data available</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
-    <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm w-[100svw] h-[100svh] md:max-w-4xl md:w-full sm:h-fit overflow-hidden flex flex-col">
-        {/* header */}
-        <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-300">
-              Download Confirmation
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            >
-              <FaTimes className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="mt-2 flex items-center gap-4 text-sm text-blue-600 dark:text-blue-400">
-            <div className="flex items-center gap-1">
-              <span className="font-medium">
-                {previewData?.recordCount || 0}
-              </span>
-              <span>records</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium">
-                {previewData?.fileSize || "0 B"}
-              </span>
-              <span>file size</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium">
-                {selectedFormat.toUpperCase()}
-              </span>
-              <span>format</span>
-            </div>
-          </div>
-        </div>
-
-        {/* main content */}
-        <div className="flex-1 overflow-auto p-6">
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Preview (First 5 records)
-            </h4>
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                      {currentReport?.headers.map((header, index) => (
-                        <th
-                          key={index}
-                          className="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600"
-                        >
-                          {header}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {previewData?.data.slice(0, 5).map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {currentReport?.dataKeys.map((dataKey, cellIndex) => (
-                          <td
-                            key={cellIndex}
-                            className="px-3 py-2 text-gray-900 dark:text-white whitespace-nowrap"
-                          >
-                            {formatPreviewValue(
-                              currentReport?.headers[cellIndex] || "",
-                              getValueFromData(row, dataKey),
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="w-[100dvw] h-[100dvh] max-w-none flex flex-col p-0 sm:max-w-7xl sm:h-[90dvh] sm:rounded-lg">
+        <DialogHeader className="flex-shrink-0 p-4 sm:p-6 bg-muted/50 border-b">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="space-y-2 sm:space-y-0">
+              <DialogTitle className="text-xl sm:text-2xl font-bold">
+                Report Preview
+              </DialogTitle>
+              <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <span className="font-semibold">
+                    {previewData?.recordCount || 0} total records
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <span className="font-semibold">
+                    {previewData?.fileSize || "0 B"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <span className="font-semibold">
+                    {selectedFormat.toUpperCase()}
+                  </span>
+                </div>
+                {includeAttempts && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="font-semibold">With Student Attempts</span>
+                  </div>
+                )}
               </div>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-              Showing {Math.min(previewData?.data.length || 0, 5)} of{" "}
-              {previewData?.data.length || 0} records
-            </p>
+            <Badge
+              variant="secondary"
+              className="px-2 py-1 text-xs sm:px-3 sm:py-1 sm:text-sm"
+            >
+              {includeAttempts && hasAssessmentData
+                ? "Assessment Report + Attempts"
+                : hasAssessmentData
+                  ? "Assessment Report"
+                  : hasStageData
+                    ? "Stage Performance Report"
+                    : "Student Overview Report"}
+            </Badge>
           </div>
+        </DialogHeader>
+
+        <div className="flex-1 p-3 sm:p-6 overflow-hidden">
+          <Card className="h-full">
+            <CardContent className="p-0 h-full flex flex-col">
+              {isStudentReport ? (
+                <>
+                  <div className="p-3 sm:p-4 border-b bg-muted/30">
+                    <h4 className="text-base sm:text-lg font-semibold">
+                      Data Preview
+                    </h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                      Showing {itemsPerPage} records per page
+                    </p>
+                  </div>
+
+                  <div className="flex-1 overflow-hidden">
+                    <div className="h-full overflow-x-auto">
+                      <div className="min-w-max">
+                        <Table>
+                          <TableHeader className="bg-muted/50">
+                            <TableRow>
+                              {currentReport.headers.map((header, index) => (
+                                <TableHead
+                                  key={index}
+                                  className="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wider text-center border-r last:border-r-0 sm:px-4 sm:py-4 sm:text-sm"
+                                >
+                                  {header}
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {currentStudentItems.map((row, rowIndex) => (
+                              <TableRow
+                                key={rowIndex}
+                                className="hover:bg-muted/50 transition-colors"
+                              >
+                                {currentReport.dataKeys.map(
+                                  (dataKey, cellIndex) => (
+                                    <TableCell
+                                      key={cellIndex}
+                                      className="whitespace-nowrap px-3 py-3 text-center border-r last:border-r-0 align-middle sm:px-4 sm:py-4"
+                                    >
+                                      <div className="flex items-center justify-center min-h-[2rem]">
+                                        {formatPreviewValue(
+                                          currentReport.headers[cellIndex] ||
+                                          "",
+                                          getValueFromData(row, dataKey),
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                  ),
+                                )}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {(previewData?.data.length || 0) > 0 && (
+                    <div className="border-t p-3 sm:p-4 bg-muted/30">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                          Showing{" "}
+                          <span className="font-semibold text-foreground">
+                            {indexOfFirstStudentItem + 1}-
+                            {Math.min(
+                              indexOfLastStudentItem,
+                              studentData.length || 0,
+                            )}
+                          </span>{" "}
+                          of{" "}
+                          <span className="font-semibold text-foreground">
+                            {studentData.length || 0}
+                          </span>{" "}
+                          students
+                        </div>
+
+                        {totalStudentPages > 1 && (
+                          <div className="w-full sm:w-auto">
+                            <Pagination>
+                              <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
+                                <PaginationItem className="sm:flex-1 sm:text-left">
+                                  <PaginationPrevious
+                                    size="sm"
+                                    onClick={handlePrevPage}
+                                    className={
+                                      currentPage === 1
+                                        ? "pointer-events-none opacity-50"
+                                        : "cursor-pointer"
+                                    }
+                                  >
+                                    <IoChevronBack className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" />
+                                    <span className="hidden sm:inline text-xs">
+                                      Prev
+                                    </span>
+                                  </PaginationPrevious>
+                                </PaginationItem>
+
+                                <div className="hidden sm:flex items-center gap-1">
+                                  {getPageNumbers().map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                      <PaginationLink
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePageClick(pageNumber)
+                                        }
+                                        isActive={currentPage === pageNumber}
+                                        className="cursor-pointer font-semibold text-xs"
+                                      >
+                                        {pageNumber}
+                                      </PaginationLink>
+                                    </PaginationItem>
+                                  ))}
+                                </div>
+
+                                <PaginationItem className="sm:flex-1 sm:text-right">
+                                  <PaginationNext
+                                    size="sm"
+                                    onClick={handleNextPage}
+                                    className={
+                                      currentPage === totalStudentPages
+                                        ? "pointer-events-none opacity-50"
+                                        : "cursor-pointer"
+                                    }
+                                  >
+                                    <span className="hidden sm:inline text-xs">
+                                      Next
+                                    </span>
+                                    <IoChevronForward className="w-3 h-3 sm:w-4 sm:h-4 sm:ml-1" />
+                                  </PaginationNext>
+                                </PaginationItem>
+                              </PaginationContent>
+                            </Pagination>
+
+                            <div className="sm:hidden text-center text-xs text-muted-foreground mt-2">
+                              Page {currentPage} of {totalStudentPages}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : isStageReport ? (
+                <>
+                  <div className="p-3 sm:p-4 border-b bg-muted/30">
+                    <h4 className="text-base sm:text-lg font-semibold">
+                      Stage Performance Data
+                    </h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                      Showing {itemsPerPage} records per page
+                    </p>
+                  </div>
+
+                  <div className="flex-1 overflow-hidden">
+                    <div className="h-full overflow-x-auto">
+                      <div className="min-w-max">
+                        <Table>
+                          <TableHeader className="bg-muted/50">
+                            <TableRow>
+                              {currentReport.headers.map((header, index) => (
+                                <TableHead
+                                  key={index}
+                                  className="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wider text-center border-r last:border-r-0 sm:px-4 sm:py-4 sm:text-sm"
+                                >
+                                  {header}
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {currentStageItems.map((row, rowIndex) => (
+                              <TableRow
+                                key={rowIndex}
+                                className="hover:bg-muted/50 transition-colors"
+                              >
+                                {currentReport.dataKeys.map(
+                                  (dataKey, cellIndex) => (
+                                    <TableCell
+                                      key={cellIndex}
+                                      className="whitespace-nowrap px-3 py-3 text-center border-r last:border-r-0 align-middle sm:px-4 sm:py-4"
+                                    >
+                                      <div className="flex items-center justify-center min-h-[2rem]">
+                                        {formatPreviewValue(
+                                          currentReport.headers[cellIndex] ||
+                                          "",
+                                          getValueFromData(row, dataKey),
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                  ),
+                                )}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {stageDataFromPreview.length > 0 && (
+                    <div className="border-t p-3 sm:p-4 bg-muted/30">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                          Showing{" "}
+                          <span className="font-semibold text-foreground">
+                            {indexOfFirstStageItem + 1}-
+                            {Math.min(
+                              indexOfLastStageItem,
+                              stageDataFromPreview.length || 0,
+                            )}
+                          </span>{" "}
+                          of{" "}
+                          <span className="font-semibold text-foreground">
+                            {stageDataFromPreview.length || 0}
+                          </span>{" "}
+                          stages
+                        </div>
+
+                        {totalStagePages > 1 && (
+                          <div className="w-full sm:w-auto">
+                            <Pagination>
+                              <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
+                                <PaginationItem className="sm:flex-1 sm:text-left">
+                                  <PaginationPrevious
+                                    size="sm"
+                                    onClick={handlePrevPage}
+                                    className={
+                                      currentPage === 1
+                                        ? "pointer-events-none opacity-50"
+                                        : "cursor-pointer"
+                                    }
+                                  >
+                                    <IoChevronBack className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" />
+                                    <span className="hidden sm:inline text-xs">
+                                      Prev
+                                    </span>
+                                  </PaginationPrevious>
+                                </PaginationItem>
+
+                                <div className="hidden sm:flex items-center gap-1">
+                                  {getAssessmentPageNumbers(
+                                    totalStagePages,
+                                    currentPage,
+                                  ).map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                      <PaginationLink
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePageClick(pageNumber)
+                                        }
+                                        isActive={currentPage === pageNumber}
+                                        className="cursor-pointer font-semibold text-xs"
+                                      >
+                                        {pageNumber}
+                                      </PaginationLink>
+                                    </PaginationItem>
+                                  ))}
+                                </div>
+
+                                <PaginationItem className="sm:flex-1 sm:text-right">
+                                  <PaginationNext
+                                    size="sm"
+                                    onClick={handleNextPage}
+                                    className={
+                                      currentPage === totalStagePages
+                                        ? "pointer-events-none opacity-50"
+                                        : "cursor-pointer"
+                                    }
+                                  >
+                                    <span className="hidden sm:inline text-xs">
+                                      Next
+                                    </span>
+                                    <IoChevronForward className="w-3 h-3 sm:w-4 sm:h-4 sm:ml-1" />
+                                  </PaginationNext>
+                                </PaginationItem>
+                              </PaginationContent>
+                            </Pagination>
+
+                            <div className="sm:hidden text-center text-xs text-muted-foreground mt-2">
+                              Page {currentPage} of {totalStagePages}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : shouldShowTabs ? (
+                <Tabs
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                  className="h-full flex flex-col"
+                >
+                  <TabsList className="w-full p-2 bg-muted/30">
+                    <TabsTrigger value="overview" className="flex-1">
+                      Assessment Overview ({assessmentDataFromPreview.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="attempts" className="flex-1">
+                      Student Attempts ({assessmentData?.attempts.length || 0})
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent
+                    value="overview"
+                    className="flex-1 overflow-hidden mt-0"
+                  >
+                    <div className="space-y-4 h-full flex flex-col">
+                      <div className="p-3 sm:p-4 border-b bg-muted/30">
+                        <h4 className="text-base sm:text-lg font-semibold">
+                          Assessment Overview
+                        </h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                          Showing{" "}
+                          {Math.min(
+                            itemsPerPage,
+                            assessmentDataFromPreview.length,
+                          )}{" "}
+                          records per page
+                        </p>
+                      </div>
+
+                      <div className="flex-1 overflow-hidden">
+                        <div className="h-full overflow-x-auto">
+                          <div className="min-w-max">
+                            <Table>
+                              <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                  {currentReport.headers.map(
+                                    (header, index) => (
+                                      <TableHead
+                                        key={index}
+                                        className="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wider text-center border-r last:border-r-0 sm:px-4 sm:py-4 sm:text-sm"
+                                      >
+                                        {header}
+                                      </TableHead>
+                                    ),
+                                  )}
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {currentOverviewItems.map((row, rowIndex) => (
+                                  <TableRow
+                                    key={rowIndex}
+                                    className="hover:bg-muted/50 transition-colors"
+                                  >
+                                    {currentReport.dataKeys.map(
+                                      (dataKey, cellIndex) => (
+                                        <TableCell
+                                          key={cellIndex}
+                                          className="whitespace-nowrap px-3 py-3 text-center border-r last:border-r-0 align-middle sm:px-4 sm:py-4"
+                                        >
+                                          <div className="flex items-center justify-center min-h-[2rem]">
+                                            {formatPreviewValue(
+                                              currentReport.headers[
+                                              cellIndex
+                                              ] || "",
+                                              getValueFromData(row, dataKey),
+                                            )}
+                                          </div>
+                                        </TableCell>
+                                      ),
+                                    )}
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      </div>
+
+                      {assessmentDataFromPreview.length > 0 && (
+                        <div className="border-t p-3 sm:p-4 bg-muted/30">
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                              Showing{" "}
+                              <span className="font-semibold text-foreground">
+                                {indexOfFirstOverviewItem + 1}-
+                                {Math.min(
+                                  indexOfLastOverviewItem,
+                                  assessmentDataFromPreview.length,
+                                )}
+                              </span>{" "}
+                              of{" "}
+                              <span className="font-semibold text-foreground">
+                                {assessmentDataFromPreview.length}
+                              </span>{" "}
+                              records
+                            </div>
+
+                            {totalOverviewPages > 1 && (
+                              <div className="w-full sm:w-auto">
+                                <Pagination>
+                                  <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
+                                    <PaginationItem className="sm:flex-1 sm:text-left">
+                                      <PaginationPrevious
+                                        size="sm"
+                                        onClick={handlePrevPage}
+                                        className={
+                                          currentPage === 1
+                                            ? "pointer-events-none opacity-50"
+                                            : "cursor-pointer"
+                                        }
+                                      >
+                                        <IoChevronBack className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" />
+                                        <span className="hidden sm:inline text-xs">
+                                          Prev
+                                        </span>
+                                      </PaginationPrevious>
+                                    </PaginationItem>
+
+                                    <div className="hidden sm:flex items-center gap-1">
+                                      {getAssessmentPageNumbers(
+                                        totalOverviewPages,
+                                        currentPage,
+                                      ).map((pageNumber) => (
+                                        <PaginationItem key={pageNumber}>
+                                          <PaginationLink
+                                            size="sm"
+                                            onClick={() =>
+                                              handlePageClick(pageNumber)
+                                            }
+                                            isActive={
+                                              currentPage === pageNumber
+                                            }
+                                            className="cursor-pointer font-semibold text-xs"
+                                          >
+                                            {pageNumber}
+                                          </PaginationLink>
+                                        </PaginationItem>
+                                      ))}
+                                    </div>
+
+                                    <PaginationItem className="sm:flex-1 sm:text-right">
+                                      <PaginationNext
+                                        size="sm"
+                                        onClick={handleNextPage}
+                                        className={
+                                          currentPage === totalOverviewPages
+                                            ? "pointer-events-none opacity-50"
+                                            : "cursor-pointer"
+                                        }
+                                      >
+                                        <span className="hidden sm:inline text-xs">
+                                          Next
+                                        </span>
+                                        <IoChevronForward className="w-3 h-3 sm:w-4 sm:h-4 sm:ml-1" />
+                                      </PaginationNext>
+                                    </PaginationItem>
+                                  </PaginationContent>
+                                </Pagination>
+
+                                <div className="sm:hidden text-center text-xs text-muted-foreground mt-2">
+                                  Page {currentPage} of {totalOverviewPages}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent
+                    value="attempts"
+                    className="flex-1 overflow-hidden mt-0"
+                  >
+                    <div className="space-y-4 h-full flex flex-col">
+                      <div className="p-3 sm:p-4 border-b bg-muted/30">
+                        <h4 className="text-base sm:text-lg font-semibold">
+                          Student Attempts
+                        </h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                          Showing{" "}
+                          {Math.min(
+                            itemsPerPage,
+                            assessmentData?.attempts.length || 0,
+                          )}{" "}
+                          records per page
+                        </p>
+                      </div>
+
+                      <div className="flex-1 overflow-hidden">
+                        <div className="h-full overflow-x-auto">
+                          <div className="min-w-max">
+                            <Table>
+                              <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                  {currentReport.subHeaders!.map(
+                                    (header, index) => (
+                                      <TableHead
+                                        key={index}
+                                        className="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wider text-center border-r last:border-r-0 sm:px-4 sm:py-4 sm:text-sm"
+                                      >
+                                        {header}
+                                      </TableHead>
+                                    ),
+                                  )}
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {currentAttemptItems.map((row, rowIndex) => (
+                                  <TableRow
+                                    key={rowIndex}
+                                    className="hover:bg-muted/50 transition-colors"
+                                  >
+                                    {currentReport.subDataKeys!.map(
+                                      (dataKey, cellIndex) => (
+                                        <TableCell
+                                          key={cellIndex}
+                                          className="whitespace-nowrap px-3 py-3 text-center border-r last:border-r-0 align-middle sm:px-4 sm:py-4"
+                                        >
+                                          <div className="flex items-center justify-center min-h-[2rem]">
+                                            {formatPreviewValue(
+                                              currentReport.subHeaders![
+                                              cellIndex
+                                              ] || "",
+                                              getValueFromData(row, dataKey),
+                                            )}
+                                          </div>
+                                        </TableCell>
+                                      ),
+                                    )}
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      </div>
+
+                      {(assessmentData?.attempts.length || 0) > 0 && (
+                        <div className="border-t p-3 sm:p-4 bg-muted/30">
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                              Showing{" "}
+                              <span className="font-semibold text-foreground">
+                                {indexOfFirstAttemptItem + 1}-
+                                {Math.min(
+                                  indexOfLastAttemptItem,
+                                  assessmentData?.attempts.length || 0,
+                                )}
+                              </span>{" "}
+                              of{" "}
+                              <span className="font-semibold text-foreground">
+                                {assessmentData?.attempts.length || 0}
+                              </span>{" "}
+                              records
+                            </div>
+
+                            {totalAttemptsPages > 1 && (
+                              <div className="w-full sm:w-auto">
+                                <Pagination>
+                                  <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
+                                    <PaginationItem className="sm:flex-1 sm:text-left">
+                                      <PaginationPrevious
+                                        size="sm"
+                                        onClick={handlePrevAttemptsPage}
+                                        className={
+                                          currentAttemptsPage === 1
+                                            ? "pointer-events-none opacity-50"
+                                            : "cursor-pointer"
+                                        }
+                                      >
+                                        <IoChevronBack className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" />
+                                        <span className="hidden sm:inline text-xs">
+                                          Prev
+                                        </span>
+                                      </PaginationPrevious>
+                                    </PaginationItem>
+
+                                    <div className="hidden sm:flex items-center gap-1">
+                                      {getAssessmentPageNumbers(
+                                        totalAttemptsPages,
+                                        currentAttemptsPage,
+                                      ).map((pageNumber) => (
+                                        <PaginationItem key={pageNumber}>
+                                          <PaginationLink
+                                            size="sm"
+                                            onClick={() =>
+                                              handleAttemptsPageClick(
+                                                pageNumber,
+                                              )
+                                            }
+                                            isActive={
+                                              currentAttemptsPage === pageNumber
+                                            }
+                                            className="cursor-pointer font-semibold text-xs"
+                                          >
+                                            {pageNumber}
+                                          </PaginationLink>
+                                        </PaginationItem>
+                                      ))}
+                                    </div>
+
+                                    <PaginationItem className="sm:flex-1 sm:text-right">
+                                      <PaginationNext
+                                        size="sm"
+                                        onClick={handleNextAttemptsPage}
+                                        className={
+                                          currentAttemptsPage ===
+                                            totalAttemptsPages
+                                            ? "pointer-events-none opacity-50"
+                                            : "cursor-pointer"
+                                        }
+                                      >
+                                        <span className="hidden sm:inline text-xs">
+                                          Next
+                                        </span>
+                                        <IoChevronForward className="w-3 h-3 sm:w-4 sm:h-4 sm:ml-1" />
+                                      </PaginationNext>
+                                    </PaginationItem>
+                                  </PaginationContent>
+                                </Pagination>
+
+                                <div className="sm:hidden text-center text-xs text-muted-foreground mt-2">
+                                  Page {currentAttemptsPage} of{" "}
+                                  {totalAttemptsPages}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                <>
+                  <div className="p-3 sm:p-4 border-b bg-muted/30">
+                    <h4 className="text-base sm:text-lg font-semibold">
+                      Assessment Overview
+                    </h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                      Showing {itemsPerPage} records per page
+                    </p>
+                  </div>
+
+                  <div className="flex-1 overflow-hidden">
+                    <div className="h-full overflow-x-auto">
+                      <div className="min-w-max">
+                        <Table>
+                          <TableHeader className="bg-muted/50">
+                            <TableRow>
+                              {currentReport.headers.map((header, index) => (
+                                <TableHead
+                                  key={index}
+                                  className="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wider text-center border-r last:border-r-0 sm:px-4 sm:py-4 sm:text-sm"
+                                >
+                                  {header}
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {currentOverviewItems.map((row, rowIndex) => (
+                              <TableRow
+                                key={rowIndex}
+                                className="hover:bg-muted/50 transition-colors"
+                              >
+                                {currentReport.dataKeys.map(
+                                  (dataKey, cellIndex) => (
+                                    <TableCell
+                                      key={cellIndex}
+                                      className="whitespace-nowrap px-3 py-3 text-center border-r last:border-r-0 align-middle sm:px-4 sm:py-4"
+                                    >
+                                      <div className="flex items-center justify-center min-h-[2rem]">
+                                        {formatPreviewValue(
+                                          currentReport.headers[cellIndex] ||
+                                          "",
+                                          getValueFromData(row, dataKey),
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                  ),
+                                )}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {assessmentDataFromPreview.length > 0 && (
+                    <div className="border-t p-3 sm:p-4 bg-muted/30">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                          Showing{" "}
+                          <span className="font-semibold text-foreground">
+                            {indexOfFirstOverviewItem + 1}-
+                            {Math.min(
+                              indexOfLastOverviewItem,
+                              assessmentDataFromPreview.length || 0,
+                            )}
+                          </span>{" "}
+                          of{" "}
+                          <span className="font-semibold text-foreground">
+                            {assessmentDataFromPreview.length || 0}
+                          </span>{" "}
+                          records
+                        </div>
+
+                        {totalOverviewPages > 1 && (
+                          <div className="w-full sm:w-auto">
+                            <Pagination>
+                              <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
+                                <PaginationItem className="sm:flex-1 sm:text-left">
+                                  <PaginationPrevious
+                                    size="sm"
+                                    onClick={handlePrevPage}
+                                    className={
+                                      currentPage === 1
+                                        ? "pointer-events-none opacity-50"
+                                        : "cursor-pointer"
+                                    }
+                                  >
+                                    <IoChevronBack className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" />
+                                    <span className="hidden sm:inline text-xs">
+                                      Prev
+                                    </span>
+                                  </PaginationPrevious>
+                                </PaginationItem>
+
+                                <div className="hidden sm:flex items-center gap-1">
+                                  {getAssessmentPageNumbers(
+                                    totalOverviewPages,
+                                    currentPage,
+                                  ).map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                      <PaginationLink
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePageClick(pageNumber)
+                                        }
+                                        isActive={currentPage === pageNumber}
+                                        className="cursor-pointer font-semibold text-xs"
+                                      >
+                                        {pageNumber}
+                                      </PaginationLink>
+                                    </PaginationItem>
+                                  ))}
+                                </div>
+
+                                <PaginationItem className="sm:flex-1 sm:text-right">
+                                  <PaginationNext
+                                    size="sm"
+                                    onClick={handleNextPage}
+                                    className={
+                                      currentPage === totalOverviewPages
+                                        ? "pointer-events-none opacity-50"
+                                        : "cursor-pointer"
+                                    }
+                                  >
+                                    <span className="hidden sm:inline text-xs">
+                                      Next
+                                    </span>
+                                    <IoChevronForward className="w-3 h-3 sm:w-4 sm:h-4 sm:ml-1" />
+                                  </PaginationNext>
+                                </PaginationItem>
+                              </PaginationContent>
+                            </Pagination>
+
+                            <div className="sm:hidden text-center text-xs text-muted-foreground mt-2">
+                              Page {currentPage} of {totalOverviewPages}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
-        {/* action buttons */}
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 mt-auto">
+        <div className="border-t p-4 sm:p-6 flex-shrink-0 bg-muted/30">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
-            <button
+            <Button
               onClick={onClose}
               disabled={isGenerating}
-              className="flex items-center justify-center gap-2 px-6 py-3 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed order-2 sm:order-1"
+              variant="outline"
+              className="order-2 sm:order-1 px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base"
+              size="lg"
             >
-              <FaTimes className="w-3 h-3" />
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={onConfirm}
               disabled={isGenerating}
-              className="flex items-center justify-center gap-2 px-6 py-3 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-green-400 disabled:cursor-not-allowed order-1 sm:order-2"
+              className="order-1 sm:order-2 flex items-center gap-2 sm:gap-3 px-4 py-2 sm:px-8 sm:py-2 font-semibold text-sm sm:text-base"
+              size="lg"
             >
               {isGenerating ? (
                 <>
-                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   Downloading...
                 </>
               ) : (
                 <>
-                  <FaDownload className="w-3 h-3" />
-                  Confirm Download
+                  <FaDownload className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Download Report
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
-    </ModalOverlay>
+      </DialogContent>
+    </Dialog>
   );
 }

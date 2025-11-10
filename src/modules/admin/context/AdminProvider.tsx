@@ -13,6 +13,7 @@ import { WSS } from "../../core/constants/api.constant";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminAssessments } from "../services/admin-assessment.service";
 import { useAdminStudents } from "../services/admin-student.service";
+import { useAdminActivities } from "../services/admin-activity.service";
 
 export default function AdminProvider({
   adminId,
@@ -34,6 +35,19 @@ export default function AdminProvider({
   const { data: students } = useAdminStudents(adminId);
   const { data: sections } = useAdminSections(adminId);
   const { data: assessments } = useAdminAssessments(adminId);
+  const { data: activities } = useAdminActivities(adminId);
+
+  // students
+  const rawStudents = students?.filter((s) => !s.archive.isArchive);
+  const archivedStudents = students?.filter((s) => s.archive.isArchive);
+
+  // sections
+  const rawSections = sections?.filter((s) => !s.archive.isArchive);
+  const archivedSections = sections?.filter((s) => s.archive.isArchive);
+
+  // assessments
+  const rawAssessments = assessments?.filter((a) => !a.archive.isArchive);
+  const archivedAssessments = assessments?.filter((a) => a.archive.isArchive);
 
   // track student online status
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
@@ -144,9 +158,16 @@ export default function AdminProvider({
     adminId,
     admin: admin || null,
     teachers: teachers || [],
-    students: students || [],
-    sections: sections || [],
-    assessments: assessments || [],
+    allStudents: students || [],
+    rawStudents: rawStudents || [],
+    archivedStudents: archivedStudents || [],
+    allSections: sections || [],
+    rawSections: rawSections || [],
+    archivedSections: archivedSections || [],
+    allAssessments: assessments || [],
+    rawAssessments: rawAssessments || [],
+    archivedAssessments: archivedAssessments || [],
+    activities: activities || [],
     onlineStudents: onlineStudents || [],
   };
 

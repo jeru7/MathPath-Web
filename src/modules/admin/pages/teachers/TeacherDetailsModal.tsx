@@ -37,7 +37,7 @@ export default function TeacherDetailsModal({
   onClose,
   teacherId,
 }: TeacherDetailsModalProps): ReactElement {
-  const { teachers, sections, assessments, students, adminId } =
+  const { teachers, rawSections, rawAssessments, rawStudents, adminId } =
     useAdminContext();
   const queryClient = useQueryClient();
   const [teacher, setTeacher] = useState<Teacher | null>(null);
@@ -54,7 +54,8 @@ export default function TeacherDetailsModal({
     useAdminDeleteTeacher(adminId);
 
   const getSectionStudentCount = (sectionId: string) => {
-    return students.filter((student) => student.sectionId === sectionId).length;
+    return rawStudents.filter((student) => student.sectionId === sectionId)
+      .length;
   };
 
   // calculate total students in teacher's sections
@@ -68,12 +69,12 @@ export default function TeacherDetailsModal({
       setTeacher(foundTeacher || null);
 
       if (foundTeacher) {
-        const assignedSections = sections.filter((section) =>
+        const assignedSections = rawSections.filter((section) =>
           section?.teacherIds?.includes(foundTeacher.id),
         );
         setTeacherSections(assignedSections);
 
-        const teacherAssessments = assessments.filter(
+        const teacherAssessments = rawAssessments.filter(
           (assessment) => assessment.teacher === foundTeacher.id,
         );
         setTeacherAssessments(teacherAssessments);
@@ -86,7 +87,7 @@ export default function TeacherDetailsModal({
       setTeacherSections([]);
       setTeacherAssessments([]);
     }
-  }, [isOpen, teacherId, teachers, sections, assessments, students]);
+  }, [isOpen, teacherId, teachers, rawSections, rawAssessments, rawStudents]);
 
   const getFullName = () => {
     if (!teacher) return "";
@@ -197,8 +198,8 @@ export default function TeacherDetailsModal({
                       </div>
                       <div
                         className={`flex items-center gap-2 text-sm sm:text-base px-3 py-1.5 rounded-full ${teacher.verified.verified
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                            : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                          : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
                           } w-fit`}
                       >
                         {teacher.verified.verified ? (

@@ -1,4 +1,5 @@
-import { toZonedTime } from "date-fns-tz";
+import { format } from "date-fns-tz";
+import { TIMEZONE } from "../constants/date.constant";
 
 export const formatHour = (hour: number) => {
   const period = hour >= 12 ? "PM" : "AM";
@@ -24,24 +25,13 @@ export const getMonthName = (monthNumber: number) => {
   return months[monthNumber - 1];
 };
 
-export const formatToPhDate = (dateString: string): Date => {
-  const date = new Date(dateString);
-
-  return toZonedTime(date, "Asia/Manila");
-};
-
-export const toPhilippinesHour = (utcHour: number): number => {
-  return (utcHour + 8) % 24;
-};
-
-export const toPhilippinesDate = (utcDate: {
-  year: number;
-  month: number;
-  day: number;
-}) => {
-  const dateUtc = new Date(
-    Date.UTC(utcDate.year, utcDate.month - 1, utcDate.day),
-  );
-  dateUtc.setHours(dateUtc.getHours() + 8);
-  return dateUtc;
+export const formatDate = (dateString: string): string => {
+  try {
+    return format(new Date(dateString), "MMM dd, yyyy 'at' h:mm a", {
+      timeZone: TIMEZONE,
+    });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid date";
+  }
 };

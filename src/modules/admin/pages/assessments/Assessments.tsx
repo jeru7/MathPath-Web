@@ -10,7 +10,7 @@ import DeleteAssessmentConfirmationModal from "./DeleteAssessmentConfirmationMod
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
-  const { assessments, students, teachers, adminId } = useAdminContext();
+  const { rawAssessments, rawStudents, teachers, adminId } = useAdminContext();
   const queryClient = useQueryClient();
   const { mutate: deleteAssessment } = useAdminDeleteAssessment(adminId);
 
@@ -59,8 +59,9 @@ export default function Assessments(): ReactElement {
     if (!assessment) return 0;
 
     const sectionIds = assessment.sections || [];
-    return students.filter((student) => sectionIds.includes(student.sectionId))
-      .length;
+    return rawStudents.filter((student) =>
+      sectionIds.includes(student.sectionId),
+    ).length;
   };
 
   const getSectionCountForAssessment = (
@@ -80,18 +81,18 @@ export default function Assessments(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full max-w-[2400px] gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen w-full mt-4 md:mt-0 gap-2 bg-inherit p-2">
       {/* header */}
       <header className="flex items-center justify-between">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
           Assessments
         </h3>
       </header>
 
       {/* table section */}
-      <section className="bg-white border border-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-sm overflow-y-hidden shadow-sm w-full flex-1 flex flex-col">
+      <section className=" overflow-y-hidden w-full flex-1 flex flex-col">
         <AssessmentTable
-          assessments={assessments}
+          assessments={rawAssessments}
           teachers={teachers}
           navigate={navigate}
           onDeleteAssessment={handleDeleteInitiate}
