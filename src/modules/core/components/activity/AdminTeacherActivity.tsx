@@ -29,7 +29,7 @@ export default function AdminTeacherActivity({
 
   return (
     <Card
-      className={cn("p-4 flex-1", dialog ? "bg-muted/30" : "bg-background")}
+      className={cn("p-4 max-h-fit", dialog ? "bg-muted/30" : "bg-background")}
     >
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-full flex-shrink-0">

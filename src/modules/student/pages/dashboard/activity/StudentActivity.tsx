@@ -36,7 +36,7 @@ export default function StudentActivity({
   };
 
   return (
-    <article className="flex gap-4 items-start p-4 group hover:bg-muted/30 transition-colors rounded-lg border border-border/50">
+    <article className="flex gap-4 items-start max-h-fit p-4 group hover:bg-muted/30 transition-colors rounded-lg border border-border/50">
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
