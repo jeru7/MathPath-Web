@@ -38,7 +38,7 @@ const MemberCard: React.FC<IMemberCard> = ({
       </motion.div>
 
       <motion.h4
-        className="text-xl font-semibold text-primary"
+        className="text-xl font-semibold text-green-400"
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}

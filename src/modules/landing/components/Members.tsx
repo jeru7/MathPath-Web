@@ -48,7 +48,7 @@ export default function Members(): ReactElement {
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center mb-16">
           <motion.h2
-            className="text-base font-bold sm:text-lg md:text-xl text-primary"
+            className="text-base font-bold sm:text-lg md:text-xl text-green-400"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}

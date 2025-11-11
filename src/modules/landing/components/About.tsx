@@ -74,7 +74,7 @@ export default function About(): ReactElement {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-3xl font-bold mb-3 text-primary">About</h3>
+          <h3 className="text-3xl font-bold mb-3 text-green-400">About</h3>
           <p className="text-gray-300">Discover the world of Math-Path</p>
         </motion.div>
 
@@ -123,14 +123,14 @@ export default function About(): ReactElement {
                     viewport={{ once: true }}
                     className="text-center group"
                   >
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-lg bg-gray-800 flex items-center justify-center p-2 group-hover:bg-green-500/10 transition-colors">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-lg bg-[hsl(240_10%_10%)] border-[hsl(240_10%_18%)] border flex items-center justify-center p-2 group-hover:bg-green-500/10 transition-colors">
                       <img
                         src={potion.image}
                         alt={potion.name}
                         className="w-12 h-12 object-contain"
                       />
                     </div>
-                    <h5 className="font-semibold text-sm mb-1 text-primary">
+                    <h5 className="font-semibold text-sm mb-1 text-green-400">
                       {potion.name}
                     </h5>
                     <p className="text-gray-400 text-xs">{potion.effect}</p>
@@ -157,7 +157,7 @@ export default function About(): ReactElement {
             <div className="relative">
               <button
                 onClick={prevEnemy}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center hover:bg-gray-700 hover:border-green-500 transition-colors"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full  bg-[hsl(240_10%_10%)] border-[hsl(240_10%_18%)] border  flex items-center justify-center hover:bg-gray-700 hover:border-green-500 transition-colors"
                 aria-label="Previous enemy"
               >
                 <FaChevronLeft className="w-4 h-4" />
@@ -165,7 +165,7 @@ export default function About(): ReactElement {
 
               <button
                 onClick={nextEnemy}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center hover:bg-gray-700 hover:border-green-500 transition-colors"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-[hsl(240_10%_10%)] border-[hsl(240_10%_18%)] border  flex items-center justify-center hover:bg-gray-700 hover:border-green-500 transition-colors"
                 aria-label="Next enemy"
               >
                 <FaChevronRight className="w-4 h-4" />
@@ -181,7 +181,7 @@ export default function About(): ReactElement {
                     transition={{ duration: 0.3 }}
                     className="text-center"
                   >
-                    <div className="w-48 h-48 mx-auto mb-6 bg-gray-800 rounded-xl flex items-center justify-center p-6">
+                    <div className="w-48 h-48 mx-auto mb-6 bg-[hsl(240_10%_10%)] border-[hsl(240_10%_18%)] border rounded-xl flex items-center justify-center p-6">
                       <img
                         src={enemies[currentEnemyIndex].image}
                         alt={enemies[currentEnemyIndex].name}

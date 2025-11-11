@@ -70,7 +70,9 @@ export default function Features(): ReactElement {
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <h3 className="text-3xl font-bold mb-3 text-primary">Game Features</h3>
+        <h3 className="text-3xl font-bold mb-3 text-green-400">
+          Game Features
+        </h3>
         <p className="text-gray-300 max-w-md mx-auto">
           Discover what makes our game unique and engaging
         </p>

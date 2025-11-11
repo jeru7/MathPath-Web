@@ -4,7 +4,7 @@ export default function Footer(): ReactElement {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="font-jersey flex flex-col items-center justify-center bg-primary text-[var(--secondary-black)] py-8 px-6">
+    <footer className="font-jersey flex flex-col items-center justify-center bg-green-400 text-[var(--secondary-black)] py-8 px-6">
       <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl gap-6 md:gap-8">
         <div className="text-center md:text-left">
           <h3 className="text-2xl md:text-3xl font-bold tracking-wide">

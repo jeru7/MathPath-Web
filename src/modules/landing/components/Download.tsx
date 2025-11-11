@@ -49,7 +49,7 @@ export default function Download(): ReactElement {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-green-400">
               Math-Path
             </h1>
             <p className="text-gray-300 mb-6 leading-relaxed">
@@ -78,7 +78,7 @@ export default function Download(): ReactElement {
             <motion.a
               href={downloadUrl}
               download="Math-Path10.apk"
-              className="group relative inline-flex items-center justify-center gap-3 bg-primary hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="group relative inline-flex items-center justify-center gap-3 bg-green-400 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
