@@ -76,7 +76,7 @@
   --popover-foreground: 0 0% 98%; /* #fafafa */
   --primary: 142 70% 50%; /* #22c55e - brighter vibrant green */
   --primary-foreground: 240 10% 6%; /* #0f0f11 - dark text on green */
-  --secondary: 142 20% 15%; /* #1a241d - dark green tint */
+  --secondary: 240 10% 6%; /* #0f0f11 - dark green tint */
   --secondary-foreground: 142 70% 50%; /* #22c55e - green text */
   --muted: 240 10% 14%; /* #1f1f23 - dark muted backgrounds */
   --muted-foreground: 240 5% 65%; /* #a1a1aa - light gray text */
@@ -132,6 +132,7 @@ body {
 
 html,
 body {
+  background: #000;
   width: 100vw;
   overflow-x: hidden;
   overscroll-behavior: none;

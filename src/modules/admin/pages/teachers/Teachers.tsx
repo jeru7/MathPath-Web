@@ -39,7 +39,7 @@ export default function Teachers(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col min-h-screen h-full w-full mt-4 md:mt-0 gap-2 bg-inherit p-2">
+    <main className="flex flex-col min-h-screen h-full w-full mt-4 md:mt-0 gap-2 bg-secondary p-2">
       {/* header */}
       <header className="flex items-center justify-between">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">

@@ -18,7 +18,7 @@ export default function Auth({ children }: AuthProps): ReactElement {
         <img
           src={mathPathTitle}
           alt="MathPath Icon/Logo"
-          className="aspect-[16/9] w-[60%] min-w-[150px] max-w-[300px] hover:scale-105 hover:cursor-pointer md:w-[10vw] transition-transform duration-100"
+          className="w-[60%] min-w-[150px] max-w-[300px] hover:scale-105 hover:cursor-pointer md:w-[15vw] transition-transform duration-100"
           onClick={() => navigate("/")}
         />
       </header>

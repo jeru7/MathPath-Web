@@ -17,7 +17,7 @@ export default function Student(): ReactElement {
 
   return (
     <StudentProvider studentId={user?.id}>
-      <div className="font-openSans pt-12 xl:pt-0 xl:pl-18 w-full min-h-screen h-fit">
+      <div className="font-openSans pt-12 xl:pt-0 xl:pl-18 w-full min-h-screen bg-secondary h-fit">
         <Nav />
         <Outlet />
       </div>

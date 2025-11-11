@@ -61,7 +61,6 @@ export default function LandingNav(): ReactElement {
       window.scrollTo({ top: offset, behavior: "smooth" });
       setIsMenuOpen(false);
 
-      // Update URL hash
       window.history.pushState(null, "", `#${id}`);
       setActiveSection(id);
     }

@@ -162,7 +162,7 @@ export default function Students(): ReactElement {
   }, []);
 
   return (
-    <main className="flex flex-col h-full min-h-screen mt-4 md:mt-0 w-full gap-2 bg-inherit p-2">
+    <main className="bg-secondary flex flex-col h-full min-h-screen mt-4 md:mt-0 w-full gap-2 p-2">
       <AnimatePresence>
         {showAddButton && (
           <motion.button
