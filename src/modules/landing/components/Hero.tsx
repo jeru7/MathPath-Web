@@ -84,7 +84,19 @@ export default function Hero(): ReactElement {
             ease: "easeInOut",
           }}
         />
-        <button className="rounded-2xl border-2 border-[var(--parimary-white)] px-3 py-1 text-xl font-bold text-[var(--primary-white)] hover:scale-105 hover:cursor-pointer lg:text-2xl">
+        <button
+          className="rounded-2xl border-2 border-[var(--parimary-white)] px-3 py-1 text-xl font-bold text-[var(--primary-white)] hover:scale-105 hover:cursor-pointer lg:text-2xl"
+          onClick={() => {
+            // tinatamad ako reuse yung isa
+            const featuresSection = document.getElementById("features");
+            if (featuresSection) {
+              const offset =
+                featuresSection.offsetTop -
+                (window.innerHeight / 2 - featuresSection.clientHeight / 2);
+              window.scrollTo({ top: offset, behavior: "smooth" });
+            }
+          }}
+        >
           Learn More
         </button>
       </motion.div>
