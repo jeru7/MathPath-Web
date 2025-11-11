@@ -219,8 +219,8 @@ export default function TeacherReportsCard(): ReactElement {
           recordCount: dataToPreview.length,
         });
         setShowPreviewModal(true);
-      } catch (error) {
-        console.error("Preview failed:", error);
+      } catch {
+        // console.error("Preview failed:", error);
         toast.error("Failed to generate preview");
       } finally {
         setIsGenerating(false);
@@ -237,8 +237,8 @@ export default function TeacherReportsCard(): ReactElement {
           recordCount: data.length,
         });
         setShowPreviewModal(true);
-      } catch (error) {
-        console.error("Preview failed:", error);
+      } catch {
+        // console.error("Preview failed:", error);
         toast.error("Failed to generate preview");
       } finally {
         setIsGenerating(false);
@@ -255,8 +255,8 @@ export default function TeacherReportsCard(): ReactElement {
           recordCount: data.length,
         });
         setShowPreviewModal(true);
-      } catch (error) {
-        console.error("Preview failed:", error);
+      } catch {
+        // console.error("Preview failed:", error);
         toast.error("Failed to generate preview");
       } finally {
         setIsGenerating(false);
@@ -271,11 +271,13 @@ export default function TeacherReportsCard(): ReactElement {
 
     setIsGenerating(true);
     try {
-      if (
+      const shouldDownloadAttempts =
         selectedReport === "assessment_student" &&
-        includeAttempts &&
-        assessmentData
-      ) {
+        assessmentData &&
+        assessmentData.attempts.length > 0 &&
+        includeAttempts;
+
+      if (shouldDownloadAttempts) {
         await generateAndDownloadReportWithAttempts(
           assessmentData.overview,
           assessmentData.attempts,
@@ -286,8 +288,8 @@ export default function TeacherReportsCard(): ReactElement {
       setShowPreviewModal(false);
       setPreviewData(null);
       toast.success("Report downloaded successfully!");
-    } catch (error) {
-      console.error("Download failed:", error);
+    } catch {
+      // console.error("Download failed:", error);
       toast.error("Failed to download report");
     } finally {
       setIsGenerating(false);
@@ -443,6 +445,8 @@ export default function TeacherReportsCard(): ReactElement {
     );
     if (!currentReport) return;
 
+    const timestamp = getFormattedTimestamp();
+
     const assessmentWorksheet = XLSX.utils.json_to_sheet(
       overviewData.map((row) => {
         const orderedRow: Record<string, unknown> = {};
@@ -453,6 +457,28 @@ export default function TeacherReportsCard(): ReactElement {
         return orderedRow;
       }),
     );
+
+    const assessmentWorkbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      assessmentWorkbook,
+      assessmentWorksheet,
+      "Assessment Overview",
+    );
+
+    const assessmentColWidths = currentReport.headers.map((header) => {
+      const maxContentWidth = Math.max(
+        ...overviewData.map(
+          (row) => String(row[header as keyof AssessmentData] || "").length,
+        ),
+        header.length,
+      );
+      return { wch: Math.min(Math.max(maxContentWidth, 10), 50) };
+    });
+    assessmentWorksheet["!cols"] = assessmentColWidths;
+
+    XLSX.writeFile(assessmentWorkbook, `assessment_overview_${timestamp}.xlsx`);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const attemptWorksheet = XLSX.utils.json_to_sheet(
       attemptData.map((row) => {
@@ -465,22 +491,26 @@ export default function TeacherReportsCard(): ReactElement {
       }),
     );
 
-    const workbook = XLSX.utils.book_new();
+    const attemptWorkbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(
-      workbook,
-      assessmentWorksheet,
-      "Assessment Overview",
-    );
-    XLSX.utils.book_append_sheet(
-      workbook,
+      attemptWorkbook,
       attemptWorksheet,
       "Student Attempts",
     );
 
-    XLSX.writeFile(
-      workbook,
-      `assessment_report_${getFormattedTimestamp()}.xlsx`,
-    );
+    const attemptColWidths = currentReport.subHeaders!.map((header) => {
+      const maxContentWidth = Math.max(
+        ...attemptData.map(
+          (row) =>
+            String(row[header as keyof AssessmentAttemptData] || "").length,
+        ),
+        header.length,
+      );
+      return { wch: Math.min(Math.max(maxContentWidth, 10), 50) };
+    });
+    attemptWorksheet["!cols"] = attemptColWidths;
+
+    XLSX.writeFile(attemptWorkbook, `assessment_attempts_${timestamp}.xlsx`);
   };
 
   const downloadAsCSV = async (data: PreviewDataItem[]): Promise<void> => {
@@ -585,30 +615,18 @@ export default function TeacherReportsCard(): ReactElement {
     );
     if (!currentReport) return;
 
+    const timestamp = getFormattedTimestamp();
+
     const assessmentHeaders = currentReport.headers;
     const assessmentCsvContent = [
       assessmentHeaders.join(","),
-      ...overviewData.map((row) =>
-        assessmentHeaders
-          .map(
-            (header) =>
-              `"${String(row[header as keyof AssessmentData] || "")}"`,
-          )
-          .join(","),
-      ),
-    ].join("\n");
-
-    const attemptHeaders = currentReport.subHeaders!;
-    const attemptCsvContent = [
-      attemptHeaders.join(","),
-      ...attemptData.map((row) =>
-        attemptHeaders
-          .map(
-            (header) =>
-              `"${String(row[header as keyof AssessmentAttemptData] || "")}"`,
-          )
-          .join(","),
-      ),
+      ...overviewData.map((row) => {
+        const values = currentReport.dataKeys.map((dataKey) => {
+          const value = row[dataKey as keyof AssessmentData];
+          return `"${String(value || "").replace(/"/g, '""')}"`;
+        });
+        return values.join(",");
+      }),
     ].join("\n");
 
     const assessmentBlob = new Blob([assessmentCsvContent], {
@@ -617,11 +635,25 @@ export default function TeacherReportsCard(): ReactElement {
     const assessmentUrl = URL.createObjectURL(assessmentBlob);
     const assessmentLink = document.createElement("a");
     assessmentLink.href = assessmentUrl;
-    assessmentLink.download = `assessment_overview_${getFormattedTimestamp()}.csv`;
+    assessmentLink.download = `assessment_overview_${timestamp}.csv`;
     document.body.appendChild(assessmentLink);
     assessmentLink.click();
     document.body.removeChild(assessmentLink);
     URL.revokeObjectURL(assessmentUrl);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const attemptHeaders = currentReport.subHeaders!;
+    const attemptCsvContent = [
+      attemptHeaders.join(","),
+      ...attemptData.map((row) => {
+        const values = currentReport.subDataKeys!.map((dataKey) => {
+          const value = row[dataKey as keyof AssessmentAttemptData];
+          return `"${String(value || "").replace(/"/g, '""')}"`;
+        });
+        return values.join(",");
+      }),
+    ].join("\n");
 
     const attemptBlob = new Blob([attemptCsvContent], {
       type: "text/csv;charset=utf-8;",
@@ -629,7 +661,7 @@ export default function TeacherReportsCard(): ReactElement {
     const attemptUrl = URL.createObjectURL(attemptBlob);
     const attemptLink = document.createElement("a");
     attemptLink.href = attemptUrl;
-    attemptLink.download = `assessment_attempts_${getFormattedTimestamp()}.csv`;
+    attemptLink.download = `assessment_attempts_${timestamp}.csv`;
     document.body.appendChild(attemptLink);
     attemptLink.click();
     document.body.removeChild(attemptLink);

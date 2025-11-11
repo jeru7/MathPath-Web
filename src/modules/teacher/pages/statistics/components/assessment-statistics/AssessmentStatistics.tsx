@@ -155,11 +155,6 @@ function MetricsGrid({ overview }: MetricsGridProps): ReactElement {
       format: "number" as const,
     },
     {
-      label: "Completion Rate",
-      value: overview.completionRate,
-      format: "percentage" as const,
-    },
-    {
       label: "Pass Rate",
       value: overview.passRate,
       format: "percentage" as const,
@@ -172,7 +167,7 @@ function MetricsGrid({ overview }: MetricsGridProps): ReactElement {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {metrics.map((metric) => (
         <MetricCard
           key={metric.label}

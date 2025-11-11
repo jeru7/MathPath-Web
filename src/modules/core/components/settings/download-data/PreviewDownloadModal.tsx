@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from "react";
+import { type ReactElement, useState, useEffect } from "react";
 import { FaDownload } from "react-icons/fa";
 import {
   StudentData,
@@ -46,6 +46,7 @@ type PreviewData = {
   data: PreviewDataItem[];
   fileSize: string;
   recordCount: number;
+  includeAttempts?: boolean;
 };
 
 type PreviewDownloadModalProps = {
@@ -86,12 +87,17 @@ export default function PreviewDownloadModal({
   selectedFormat,
   includeAttempts = false,
   assessmentData,
-  stageData,
 }: PreviewDownloadModalProps): ReactElement {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentAttemptsPage, setCurrentAttemptsPage] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [itemsPerPage] = useState(8);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setCurrentAttemptsPage(1);
+    setActiveTab("overview");
+  }, [previewData]);
 
   const formatPreviewValue = (header: string, value: unknown): ReactElement => {
     if (typeof value === "number") {
@@ -130,20 +136,23 @@ export default function PreviewDownloadModal({
 
   const assessmentDataFromPreview =
     previewData?.data.filter(isAssessmentData) || [];
-  const studentData = previewData?.data.filter(isStudentData) || [];
-  const stageDataFromPreview =
-    stageData || previewData?.data.filter(isStageData) || [];
+  const studentDataFromPreview = previewData?.data.filter(isStudentData) || [];
+  const stageDataFromPreview = previewData?.data.filter(isStageData) || [];
 
   const hasAssessmentData = assessmentDataFromPreview.length > 0;
-  const hasStudentData = studentData.length > 0;
+  const hasStudentData = studentDataFromPreview.length > 0;
   const hasStageData = stageDataFromPreview.length > 0;
-  const isStudentReport = !hasAssessmentData && hasStudentData;
-  const isStageReport = hasStageData;
 
-  const totalStudentPages = Math.ceil(studentData.length / itemsPerPage);
+  const isStudentReport = hasStudentData;
+  const isStageReport = hasStageData;
+  const isAssessmentReport = hasAssessmentData;
+
+  const totalStudentPages = Math.ceil(
+    studentDataFromPreview.length / itemsPerPage,
+  );
   const indexOfLastStudentItem = currentPage * itemsPerPage;
   const indexOfFirstStudentItem = indexOfLastStudentItem - itemsPerPage;
-  const currentStudentItems = studentData.slice(
+  const currentStudentItems = studentDataFromPreview.slice(
     indexOfFirstStudentItem,
     indexOfLastStudentItem,
   );
@@ -204,31 +213,15 @@ export default function PreviewDownloadModal({
 
   const getPageNumbers = (): number[] => {
     const pageNumbers: number[] = [];
+    const totalPages = isStudentReport
+      ? totalStudentPages
+      : isStageReport
+        ? totalStagePages
+        : isAssessmentReport
+          ? totalOverviewPages
+          : 1;
+
     const maxVisiblePages = 5;
-
-    if (totalStudentPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalStudentPages; i++) pageNumbers.push(i);
-    } else {
-      const startPage = Math.max(
-        1,
-        currentPage - Math.floor(maxVisiblePages / 2),
-      );
-      const endPage = Math.min(
-        totalStudentPages,
-        startPage + maxVisiblePages - 1,
-      );
-      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
-    }
-
-    return pageNumbers;
-  };
-
-  const getAssessmentPageNumbers = (
-    totalPages: number,
-    currentPage: number,
-  ): number[] => {
-    const pageNumbers: number[] = [];
-    const maxVisiblePages = 3;
 
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
@@ -244,8 +237,29 @@ export default function PreviewDownloadModal({
     return pageNumbers;
   };
 
+  const getAttemptsPageNumbers = (): number[] => {
+    const pageNumbers: number[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalAttemptsPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalAttemptsPages; i++) pageNumbers.push(i);
+    } else {
+      const startPage = Math.max(
+        1,
+        currentAttemptsPage - Math.floor(maxVisiblePages / 2),
+      );
+      const endPage = Math.min(
+        totalAttemptsPages,
+        startPage + maxVisiblePages - 1,
+      );
+      for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  };
+
   const shouldShowTabs =
-    includeAttempts &&
+    (includeAttempts || previewData?.includeAttempts) &&
     currentReport?.subHeaders &&
     currentReport?.subDataKeys &&
     hasAssessmentData;
@@ -339,7 +353,7 @@ export default function PreviewDownloadModal({
                     {selectedFormat.toUpperCase()}
                   </span>
                 </div>
-                {includeAttempts && (
+                {(includeAttempts || previewData?.includeAttempts) && (
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="font-semibold">With Student Attempts</span>
@@ -351,7 +365,8 @@ export default function PreviewDownloadModal({
               variant="secondary"
               className="px-2 py-1 text-xs sm:px-3 sm:py-1 sm:text-sm"
             >
-              {includeAttempts && hasAssessmentData
+              {(includeAttempts || previewData?.includeAttempts) &&
+                hasAssessmentData
                 ? "Assessment Report + Attempts"
                 : hasAssessmentData
                   ? "Assessment Report"
@@ -369,7 +384,7 @@ export default function PreviewDownloadModal({
                 <>
                   <div className="p-3 sm:p-4 border-b bg-muted/30">
                     <h4 className="text-base sm:text-lg font-semibold">
-                      Data Preview
+                      Student Overview Data
                     </h4>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                       Showing {itemsPerPage} records per page
@@ -431,12 +446,12 @@ export default function PreviewDownloadModal({
                             {indexOfFirstStudentItem + 1}-
                             {Math.min(
                               indexOfLastStudentItem,
-                              studentData.length || 0,
+                              studentDataFromPreview.length || 0,
                             )}
                           </span>{" "}
                           of{" "}
                           <span className="font-semibold text-foreground">
-                            {studentData.length || 0}
+                            {studentDataFromPreview.length || 0}
                           </span>{" "}
                           students
                         </div>
@@ -445,7 +460,7 @@ export default function PreviewDownloadModal({
                           <div className="w-full sm:w-auto">
                             <Pagination>
                               <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
-                                <PaginationItem className="sm:flex-1 sm:text-left">
+                                <PaginationItem>
                                   <PaginationPrevious
                                     size="sm"
                                     onClick={handlePrevPage}
@@ -462,7 +477,7 @@ export default function PreviewDownloadModal({
                                   </PaginationPrevious>
                                 </PaginationItem>
 
-                                <div className="hidden sm:flex items-center gap-1">
+                                <div className="flex items-center gap-1">
                                   {getPageNumbers().map((pageNumber) => (
                                     <PaginationItem key={pageNumber}>
                                       <PaginationLink
@@ -479,7 +494,7 @@ export default function PreviewDownloadModal({
                                   ))}
                                 </div>
 
-                                <PaginationItem className="sm:flex-1 sm:text-right">
+                                <PaginationItem>
                                   <PaginationNext
                                     size="sm"
                                     onClick={handleNextPage}
@@ -587,7 +602,7 @@ export default function PreviewDownloadModal({
                           <div className="w-full sm:w-auto">
                             <Pagination>
                               <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
-                                <PaginationItem className="sm:flex-1 sm:text-left">
+                                <PaginationItem>
                                   <PaginationPrevious
                                     size="sm"
                                     onClick={handlePrevPage}
@@ -604,11 +619,8 @@ export default function PreviewDownloadModal({
                                   </PaginationPrevious>
                                 </PaginationItem>
 
-                                <div className="hidden sm:flex items-center gap-1">
-                                  {getAssessmentPageNumbers(
-                                    totalStagePages,
-                                    currentPage,
-                                  ).map((pageNumber) => (
+                                <div className="flex items-center gap-1">
+                                  {getPageNumbers().map((pageNumber) => (
                                     <PaginationItem key={pageNumber}>
                                       <PaginationLink
                                         size="sm"
@@ -624,7 +636,7 @@ export default function PreviewDownloadModal({
                                   ))}
                                 </div>
 
-                                <PaginationItem className="sm:flex-1 sm:text-right">
+                                <PaginationItem>
                                   <PaginationNext
                                     size="sm"
                                     onClick={handleNextPage}
@@ -758,7 +770,7 @@ export default function PreviewDownloadModal({
                               <div className="w-full sm:w-auto">
                                 <Pagination>
                                   <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
-                                    <PaginationItem className="sm:flex-1 sm:text-left">
+                                    <PaginationItem>
                                       <PaginationPrevious
                                         size="sm"
                                         onClick={handlePrevPage}
@@ -775,11 +787,8 @@ export default function PreviewDownloadModal({
                                       </PaginationPrevious>
                                     </PaginationItem>
 
-                                    <div className="hidden sm:flex items-center gap-1">
-                                      {getAssessmentPageNumbers(
-                                        totalOverviewPages,
-                                        currentPage,
-                                      ).map((pageNumber) => (
+                                    <div className="flex items-center gap-1">
+                                      {getPageNumbers().map((pageNumber) => (
                                         <PaginationItem key={pageNumber}>
                                           <PaginationLink
                                             size="sm"
@@ -797,7 +806,7 @@ export default function PreviewDownloadModal({
                                       ))}
                                     </div>
 
-                                    <PaginationItem className="sm:flex-1 sm:text-right">
+                                    <PaginationItem>
                                       <PaginationNext
                                         size="sm"
                                         onClick={handleNextPage}
@@ -918,7 +927,7 @@ export default function PreviewDownloadModal({
                               <div className="w-full sm:w-auto">
                                 <Pagination>
                                   <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
-                                    <PaginationItem className="sm:flex-1 sm:text-left">
+                                    <PaginationItem>
                                       <PaginationPrevious
                                         size="sm"
                                         onClick={handlePrevAttemptsPage}
@@ -935,31 +944,31 @@ export default function PreviewDownloadModal({
                                       </PaginationPrevious>
                                     </PaginationItem>
 
-                                    <div className="hidden sm:flex items-center gap-1">
-                                      {getAssessmentPageNumbers(
-                                        totalAttemptsPages,
-                                        currentAttemptsPage,
-                                      ).map((pageNumber) => (
-                                        <PaginationItem key={pageNumber}>
-                                          <PaginationLink
-                                            size="sm"
-                                            onClick={() =>
-                                              handleAttemptsPageClick(
-                                                pageNumber,
-                                              )
-                                            }
-                                            isActive={
-                                              currentAttemptsPage === pageNumber
-                                            }
-                                            className="cursor-pointer font-semibold text-xs"
-                                          >
-                                            {pageNumber}
-                                          </PaginationLink>
-                                        </PaginationItem>
-                                      ))}
+                                    <div className="flex items-center gap-1">
+                                      {getAttemptsPageNumbers().map(
+                                        (pageNumber) => (
+                                          <PaginationItem key={pageNumber}>
+                                            <PaginationLink
+                                              size="sm"
+                                              onClick={() =>
+                                                handleAttemptsPageClick(
+                                                  pageNumber,
+                                                )
+                                              }
+                                              isActive={
+                                                currentAttemptsPage ===
+                                                pageNumber
+                                              }
+                                              className="cursor-pointer font-semibold text-xs"
+                                            >
+                                              {pageNumber}
+                                            </PaginationLink>
+                                          </PaginationItem>
+                                        ),
+                                      )}
                                     </div>
 
-                                    <PaginationItem className="sm:flex-1 sm:text-right">
+                                    <PaginationItem>
                                       <PaginationNext
                                         size="sm"
                                         onClick={handleNextAttemptsPage}
@@ -1071,7 +1080,7 @@ export default function PreviewDownloadModal({
                           <div className="w-full sm:w-auto">
                             <Pagination>
                               <PaginationContent className="w-full sm:w-auto justify-between sm:justify-normal">
-                                <PaginationItem className="sm:flex-1 sm:text-left">
+                                <PaginationItem>
                                   <PaginationPrevious
                                     size="sm"
                                     onClick={handlePrevPage}
@@ -1088,11 +1097,8 @@ export default function PreviewDownloadModal({
                                   </PaginationPrevious>
                                 </PaginationItem>
 
-                                <div className="hidden sm:flex items-center gap-1">
-                                  {getAssessmentPageNumbers(
-                                    totalOverviewPages,
-                                    currentPage,
-                                  ).map((pageNumber) => (
+                                <div className="flex items-center gap-1">
+                                  {getPageNumbers().map((pageNumber) => (
                                     <PaginationItem key={pageNumber}>
                                       <PaginationLink
                                         size="sm"
@@ -1108,7 +1114,7 @@ export default function PreviewDownloadModal({
                                   ))}
                                 </div>
 
-                                <PaginationItem className="sm:flex-1 sm:text-right">
+                                <PaginationItem>
                                   <PaginationNext
                                     size="sm"
                                     onClick={handleNextPage}

@@ -71,6 +71,11 @@ function StageCustomTooltip({
 
   const data = payload[0].payload as ChartDataItem;
 
+  // add null checks for all potentially undefined fields
+  const totalAttempts = data.totalAttempts ?? 0;
+  const completionRate = data.completionRate ?? 0;
+  const avgSecondsPlayed = data.avgSecondsPlayed ?? 0;
+
   return (
     <div className="bg-background border rounded-lg shadow-lg p-4 text-sm max-w-[300px]">
       <div className="mb-3">
@@ -87,21 +92,21 @@ function StageCustomTooltip({
             variant="secondary"
             className="font-semibold bg-transparent text-blue-600 border-blue-600 text-nowrap"
           >
-            {data.completionRate}%
+            {completionRate}%
           </Badge>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">Total Attempts:</span>
           <span className="font-semibold">
-            {data.totalAttempts.toLocaleString()}
+            {totalAttempts.toLocaleString()}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">Average Time:</span>
           <span className="font-semibold text-purple-600">
-            {formatDuration(data.avgSecondsPlayed)}
+            {formatDuration(avgSecondsPlayed)}
           </span>
         </div>
       </div>
@@ -110,7 +115,7 @@ function StageCustomTooltip({
 }
 
 function StagesChart({ chartData }: { chartData: ChartDataItem[] }) {
-  // Calculate the maximum completion rate for Y-axis domain
+  // calculate the maximum completion rate for y-axis domain
   const maxCompletionRate = Math.max(
     ...chartData.map((item) => item.completionRate),
   );
