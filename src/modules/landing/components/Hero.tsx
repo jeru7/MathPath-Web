@@ -1,4 +1,4 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import mathPathTitle from "../../../assets/svgs/mathpath-title.svg";
 import bgTrees from "../../../assets/images/background-image/trees.png";
@@ -6,14 +6,23 @@ import upperTrees from "../../../assets/svgs/top-trees.svg";
 import bottomBush from "../../../assets/svgs/bottom-bush.svg";
 
 export default function Hero(): ReactElement {
-  const { scrollYProgress } = useScroll();
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  const bgTreesY = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
-  const upperTreesY = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
-  const bottomBushY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const bgTreesY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const upperTreesY = useTransform(scrollYProgress, [0, 1], ["0%", "80%"]);
+  const bottomBushY = useTransform(scrollYProgress, [0, 1], ["0%", "60%"]);
+
+  const bgTreesScale = useTransform(scrollYProgress, [0, 1], [1, 1.3]);
+  const upperTreesScale = useTransform(scrollYProgress, [0, 1], [1, 1.4]);
 
   return (
     <main
+      ref={heroRef}
       className="relative flex h-screen w-screen justify-center overflow-hidden"
       id="hero"
     >
@@ -25,10 +34,8 @@ export default function Hero(): ReactElement {
           backgroundSize: "cover",
           backgroundPosition: "center",
           y: bgTreesY,
+          scale: bgTreesScale,
         }}
-        initial={{ scale: 1.1 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 2, ease: "easeOut" }}
       />
 
       {/* upper trees */}
@@ -37,15 +44,7 @@ export default function Hero(): ReactElement {
         style={{
           backgroundImage: `url(${upperTrees})`,
           y: upperTreesY,
-          willChange: "transform",
-        }}
-        animate={{
-          y: [0, -5, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
+          scale: upperTreesScale,
         }}
       />
 
@@ -55,40 +54,35 @@ export default function Hero(): ReactElement {
         style={{
           backgroundImage: `url(${bottomBush})`,
           y: bottomBushY,
-          willChange: "transform",
-        }}
-        animate={{
-          y: [0, 8, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeOut",
         }}
       >
         {/* bottom fade effect */}
-        <div className="absolute bottom-0 left-0 h-20 w-full bg-gradient-to-t from-[#222222] to-transparent" />
+        <div className="absolute bottom-0 left-0 h-20 w-full bg-gradient-to-t from-[#0A1F0A] via-[#0A1F0A]/50 to-transparent" />
       </motion.div>
 
       {/* hero content */}
       <motion.div
         className="relative z-10 flex w-full flex-col items-center justify-center gap-2"
         initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: [-20, -30, -10] }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
           opacity: { duration: 1, ease: "easeOut" },
-          y: {
-            duration: 2,
-            repeat: Infinity,
-            repeatType: "mirror",
-            ease: "easeInOut",
-          },
+          y: { duration: 1, ease: "easeOut" },
         }}
       >
-        <img
+        <motion.img
           src={mathPathTitle}
           alt="MathPath Title"
           className="h-auto max-w-[80%] sm:h-auto sm:max-w-[60%]"
+          animate={{
+            y: [0, -10, 0],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            repeatType: "mirror",
+            ease: "easeInOut",
+          }}
         />
         <button className="rounded-2xl border-2 border-[var(--parimary-white)] px-3 py-1 text-xl font-bold text-[var(--primary-white)] hover:scale-105 hover:cursor-pointer lg:text-2xl">
           Learn More

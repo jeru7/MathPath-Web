@@ -43,15 +43,15 @@ export default function Members(): ReactElement {
   return (
     <section
       id="members"
-      className="font-jersey flex flex-col items-center justify-center gap-12 bg-inherit px-4 py-12 text-[var(--primary-white)] sm:px-6 md:px-8"
+      className="w-full py-20 flex items-center bg-inherit text-white min-h-screen"
     >
-      <div className="flex flex-col w-full max-w-screen-xl items-center gap-8">
-        <div className="flex flex-col items-center text-center">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center text-center mb-16">
           <motion.h2
-            className="text-base font-bold sm:text-lg md:text-2xl"
+            className="text-base font-bold sm:text-lg md:text-xl text-primary"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             viewport={{ once: true }}
           >
             Meet Our
@@ -61,24 +61,14 @@ export default function Members(): ReactElement {
             className="text-3xl font-bold sm:text-4xl md:text-5xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             viewport={{ once: true }}
           >
             Team Members
           </motion.h3>
         </div>
 
-        <div
-          className="
-            grid 
-            grid-cols-1 
-            sm:grid-cols-2 
-            lg:grid-cols-4 
-            gap-8 
-            w-full 
-            place-items-center
-          "
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 h-full">
           {members.map((member, index) => (
             <MemberCard
               key={index}
@@ -89,14 +79,6 @@ export default function Members(): ReactElement {
           ))}
         </div>
       </div>
-
-      <motion.div
-        className="h-[1px] w-full max-w-screen-xl bg-[var(--primary-green)]"
-        initial={{ opacity: 0, scaleX: 0 }}
-        whileInView={{ opacity: 0.8, scaleX: 1 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        viewport={{ once: true }}
-      />
     </section>
   );
 }

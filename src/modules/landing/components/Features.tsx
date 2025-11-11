@@ -58,28 +58,26 @@ export default function Features(): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="flex h-fit w-full flex-col items-center justify-center gap-4 bg-inherit px-6 py-16 text-white md:px-8 lg:py-20">
+    <section
+      className="w-full min-h-screen py-32 px-8 bg-inherit text-white"
+      id="features"
+    >
       {/* header */}
       <motion.div
-        className="flex flex-col items-center gap-4 text-center"
+        className="text-center mb-8"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <h3
-          className="text-3xl font-bold tracking-tight lg:text-4xl"
-          id="features"
-        >
-          Game Features
-        </h3>
-        <p className="max-w-md text-gray-300 text-sm lg:text-base">
+        <h3 className="text-3xl font-bold mb-3 text-primary">Game Features</h3>
+        <p className="text-gray-300 max-w-md mx-auto">
           Discover what makes our game unique and engaging
         </p>
       </motion.div>
 
       {/* mobile layout */}
-      <div className="flex h-fit w-full max-w-4xl flex-col gap-12 lg:hidden">
+      <div className="flex w-full max-w-4xl flex-col lg:hidden">
         {features.map((feature, index) => (
           <motion.div
             key={index}
@@ -89,7 +87,7 @@ export default function Features(): ReactElement {
             viewport={{ once: true, margin: "-50px" }}
           >
             <GameFeatureCard
-              className="h-full w-full snap-center flex-col gap-6"
+              className="h-full w-full flex-col gap-6"
               imgSrc={feature.img}
               title={feature.title}
               description={feature.description}
@@ -100,8 +98,8 @@ export default function Features(): ReactElement {
       </div>
 
       {/* desktop layout */}
-      <div className="hidden lg:flex w-full max-w-7xl overflow-hidden">
-        <div className="h-[65vh] w-full">
+      <div className="hidden lg:block w-full max-w-7xl mx-auto">
+        <div className="h-[50vh] w-full">
           <Swiper
             direction="vertical"
             slidesPerView={1}
@@ -132,7 +130,7 @@ export default function Features(): ReactElement {
 
       {/* feature counter */}
       <motion.div
-        className="hidden lg:flex items-center gap-2 text-sm text-gray-400"
+        className="hidden lg:flex items-center gap-2 text-sm text-green-400 mx-auto justify-center mt-8"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ delay: 0.5 }}

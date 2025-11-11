@@ -11,17 +11,17 @@ export default function Download(): ReactElement {
 
   const features = [
     {
-      icon: <IoSparkles className="text-2xl text-[var(--primary-yellow)]" />,
+      icon: <IoSparkles className="text-2xl text-green-400" />,
       text: "Interactive Learning",
     },
   ];
 
   return (
     <section
-      className="flex min-h-screen w-full items-center justify-center bg-inherit px-6 py-16"
+      className="w-full flex items-center py-20 bg-inherit min-h-screen text-white"
       id="download"
     >
-      <div className="max-w-2xl mx-auto w-full">
+      <div className="max-w-2xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <motion.div
           className="flex flex-col items-center text-center gap-8"
           initial={{ opacity: 0, y: 30 }}
@@ -38,8 +38,8 @@ export default function Download(): ReactElement {
           >
             <img
               src={logo}
-              alt="MathPath App Icon"
-              className="w-40 h-40 rounded-sm shadow-lg border border-white/10"
+              alt="Math-Path App Icon"
+              className="w-32 h-32 rounded-lg border border-green-500/20"
             />
           </motion.div>
 
@@ -49,10 +49,10 @@ export default function Download(): ReactElement {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-[var(--primary-white)] mb-4">
-              MathPath
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
+              Math-Path
             </h1>
-            <p className="text-xl text-gray-300 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-6 leading-relaxed">
               Transform your grade 10 math learning journey with our interactive
               and engaging educational platform.
             </p>
@@ -61,7 +61,7 @@ export default function Download(): ReactElement {
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-center gap-2 bg-white/5 rounded-lg px-4 py-2 border border-white/10"
+                  className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-4 py-2 border border-green-500/20"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
@@ -77,8 +77,8 @@ export default function Download(): ReactElement {
 
             <motion.a
               href={downloadUrl}
-              download="Math-Path10.zip"
-              className="group relative inline-flex items-center justify-center gap-3 bg-[var(--primary-yellow)] hover:bg-amber-400 text-slate-900 font-semibold text-lg px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              download="Math-Path10.apk"
+              className="group relative inline-flex items-center justify-center gap-3 bg-primary hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}

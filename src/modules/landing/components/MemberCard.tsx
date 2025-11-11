@@ -19,38 +19,40 @@ const MemberCard: React.FC<IMemberCard> = ({
 }: IMemberCard): ReactElement => {
   return (
     <div
-      className={`${className} flex flex-col items-center text-center gap-1 sm:gap-2`}
+      className={`${className} flex flex-col items-center text-center gap-4`}
     >
       <motion.div
-        className="w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 xl:w-64 xl:h-64 aspect-square"
-        initial={{ opacity: 0, y: 10 }}
+        className="relative"
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <img
-          src={img}
-          alt={name}
-          className="rounded-full w-full h-full object-cover shadow-md"
-        />
+        <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br p-1">
+          <img
+            src={img}
+            alt={name}
+            className="rounded-full w-full h-full object-cover"
+          />
+        </div>
       </motion.div>
 
-      <motion.p
-        className="mt-2 text-base font-semibold sm:text-lg md:text-xl lg:text-2xl"
+      <motion.h4
+        className="text-xl font-semibold text-primary"
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.25 }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
         viewport={{ once: true }}
       >
         {name}
-      </motion.p>
+      </motion.h4>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1">
         <motion.p
-          className="text-xs sm:text-sm md:text-base opacity-70"
+          className="text-gray-300 text-sm"
           initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 0.7, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
           viewport={{ once: true }}
         >
           {role.first}
@@ -58,10 +60,10 @@ const MemberCard: React.FC<IMemberCard> = ({
 
         {role.second && (
           <motion.p
-            className="text-xs sm:text-sm md:text-base opacity-70"
+            className="text-gray-300 text-sm"
             initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 0.7, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
             viewport={{ once: true }}
           >
             {role.second}

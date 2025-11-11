@@ -119,6 +119,7 @@
 }
 
 #root {
+  overflow: auto;
   max-width: 100%;
 }
 
@@ -133,6 +134,7 @@ html,
 body {
   width: 100vw;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 .ProseMirror:focus {

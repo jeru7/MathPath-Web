@@ -33,9 +33,7 @@ const GameFeatureCard: React.FC<IGameFeatureCard> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div
-      className={`${className} flex h-full items-center justify-center text-white`}
-    >
+    <div className={`${className} flex items-center justify-center text-white`}>
       <motion.div
         className="flex items-center justify-center relative group"
         initial={{ opacity: 0, x: -30 }}
@@ -80,8 +78,8 @@ const GameFeatureCard: React.FC<IGameFeatureCard> = ({
           className="flex flex-col gap-4"
         >
           <div className="flex flex-col gap-2">
-            <div className="w-8 h-0.5 bg-white mb-2" />
-            <h4 className="text-2xl font-semibold tracking-tight lg:text-3xl">
+            <div className="w-8 h-0.5 bg-green-500 mb-2" />
+            <h4 className="text-2xl font-semibold tracking-tight lg:text-3xl text-primary">
               {title}
             </h4>
           </div>
