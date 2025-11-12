@@ -35,12 +35,12 @@ export default function SplashScreen({
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <motion.h1
-              className="text-6xl font-bold text-green-400 font-jersey"
+              className="text-xl md:text-3xl font-bold text-green-400 font-jersey"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              Math-Path
+              Math-Path 10
             </motion.h1>
             <motion.div
               className="mt-8 h-1 bg-green-400 mx-auto w-48"

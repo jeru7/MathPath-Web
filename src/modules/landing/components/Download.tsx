@@ -50,7 +50,7 @@ export default function Download(): ReactElement {
             viewport={{ once: true }}
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-green-400">
-              Math-Path
+              Math-Path 10
             </h1>
             <p className="text-gray-300 mb-6 leading-relaxed">
               Transform your grade 10 math learning journey with our interactive

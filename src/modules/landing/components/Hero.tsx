@@ -23,7 +23,7 @@ export default function Hero(): ReactElement {
   return (
     <main
       ref={heroRef}
-      className="relative flex h-screen w-screen justify-center overflow-hidden"
+      className="relative flex h-screen w-full md:w-screen justify-center overflow-hidden"
       id="hero"
     >
       {/* background trees */}

@@ -75,7 +75,7 @@ export default function About(): ReactElement {
           viewport={{ once: true }}
         >
           <h3 className="text-3xl font-bold mb-3 text-green-400">About</h3>
-          <p className="text-gray-300">Discover the world of Math-Path</p>
+          <p className="text-gray-300">Discover the world of Math-Path 10</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start">
@@ -88,14 +88,15 @@ export default function About(): ReactElement {
               className="space-y-6"
             >
               <p className="text-gray-300 leading-relaxed">
-                Math-Path is an educational adventure designed to make learning
-                mathematics both fun and meaningful. Created by a group of
-                passionate college students, Math-Path blends the excitement of
-                gaming with the depth of real mathematical learning.
+                Math-Path 10 is an educational adventure designed to make
+                learning mathematics both fun and meaningful. Created by a group
+                of passionate college students, Math-Path 10 blends the
+                excitement of gaming with the depth of real mathematical
+                learning.
               </p>
 
               <p className="text-gray-300 leading-relaxed">
-                Math-Path website extends this experience beyond the game.
+                Math-Path 10 website extends this experience beyond the game.
                 Teachers can monitor student progress, identify their strengths
                 and weaknesses, and even create customized tests. Students can
                 track their in-game achievements, view their rankings, and take

@@ -12,27 +12,35 @@ export default function LandingNav(): ReactElement {
   const location = useLocation();
 
   useEffect(() => {
+    let lastSection = activeSection;
+    let ticking = false;
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight * 0.75);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > window.innerHeight * 0.75);
 
-      const sections = ["hero", "features", "about", "members", "download"];
-      const currentSection = sections.find((section) => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return (
-            rect.top <= window.innerHeight / 2 &&
-            rect.bottom >= window.innerHeight / 2
-          );
-        }
-        return false;
-      });
+          const sections = ["hero", "features", "about", "members", "download"];
+          const currentSection = sections.find((section) => {
+            const element = document.getElementById(section);
+            if (element) {
+              const rect = element.getBoundingClientRect();
+              return (
+                rect.top <= window.innerHeight / 2 &&
+                rect.bottom >= window.innerHeight / 2
+              );
+            }
+            return false;
+          });
 
-      if (currentSection) {
-        setActiveSection(currentSection);
-        if (location.hash !== `#${currentSection}`) {
-          window.history.replaceState(null, "", `#${currentSection}`);
-        }
+          if (currentSection && currentSection !== lastSection) {
+            setActiveSection(currentSection);
+            lastSection = currentSection;
+          }
+
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
@@ -47,7 +55,18 @@ export default function LandingNav(): ReactElement {
     }
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [location]);
+  }, [location.hash, activeSection]);
+
+  useEffect(() => {
+    if (activeSection) {
+      const timer = setTimeout(() => {
+        if (location.hash !== `#${activeSection}`) {
+          window.history.replaceState(null, "", `#${activeSection}`);
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [activeSection, location.hash]);
 
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
@@ -60,8 +79,6 @@ export default function LandingNav(): ReactElement {
         section.offsetTop - (window.innerHeight / 2 - section.clientHeight / 2);
       window.scrollTo({ top: offset, behavior: "smooth" });
       setIsMenuOpen(false);
-
-      window.history.pushState(null, "", `#${id}`);
       setActiveSection(id);
     }
   };
@@ -85,7 +102,6 @@ export default function LandingNav(): ReactElement {
           }`}
       >
         <div className="flex w-full h-full items-center justify-between">
-          {/* mobile menu button */}
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <Button
@@ -101,10 +117,9 @@ export default function LandingNav(): ReactElement {
               className="w-80 p-0 bg-[hsl(240_10%_10%)] border-r border-[hsl(240_10%_18%)] [&>button]:hidden"
             >
               <div className="flex flex-col h-full">
-                {/* header */}
                 <div className="flex items-center justify-between p-6 border-b border-[hsl(240_10%_18%)]">
                   <p className="text-xl text-green-400 font-jersey font-bold">
-                    Math-Path
+                    Math-Path 10
                   </p>
                   <button
                     onClick={() => setIsMenuOpen(false)}
@@ -113,8 +128,6 @@ export default function LandingNav(): ReactElement {
                     ✕
                   </button>
                 </div>
-
-                {/* navigation items */}
                 <div className="flex-1 flex flex-col gap-1 p-4">
                   {navItems.map((item) => (
                     <button
@@ -128,8 +141,6 @@ export default function LandingNav(): ReactElement {
                       <span className="text-sm font-medium">{item.label}</span>
                     </button>
                   ))}
-
-                  {/* login button in sidebar */}
                   <button
                     onClick={() => {
                       setIsMenuOpen(false);
@@ -149,10 +160,9 @@ export default function LandingNav(): ReactElement {
               }`}
             onClick={() => scrollToSection("hero")}
           >
-            Math-Path
+            Math-Path 10
           </button>
 
-          {/* desktop navigation */}
           <div className="hidden items-center gap-6 font-bold md:flex lg:gap-12 lg:text-xl">
             {navItems
               .filter((item) => item.id !== "hero")
@@ -173,7 +183,6 @@ export default function LandingNav(): ReactElement {
               ))}
           </div>
 
-          {/* desktop login button */}
           <button
             className={`items-center rounded-full border-2 px-4 py-1 hover:scale-105 transition-all duration-200 md:flex md:px-5 ${scrolled
                 ? "border-green-400 text-green-400 hover:bg-green-400/10"
