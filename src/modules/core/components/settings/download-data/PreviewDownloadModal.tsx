@@ -6,7 +6,7 @@ import {
   AssessmentAttemptData,
   StageData,
   PreviewDataItem,
-} from "../../../../teacher/types/teacher-data-report";
+} from "../../../../core/types/data-report.type";
 import {
   Dialog,
   DialogContent,
