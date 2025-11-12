@@ -7,7 +7,7 @@ import UserPreferencesCard from "../../../core/components/settings/user-preferen
 import TeacherReportsCard from "../../../core/components/settings/download-data/TeacherReportsCard";
 
 export default function TeacherSettings(): ReactElement {
-  const { teacher } = useTeacherContext();
+  const { teacher, teacherId } = useTeacherContext();
 
   const user = teacher
     ? {
@@ -33,7 +33,7 @@ export default function TeacherSettings(): ReactElement {
       }
       changePasswordCard={<ChangePasswordCard />}
       userPreferencesCard={<UserPreferencesCard />}
-      reportsCard={<TeacherReportsCard />}
+      reportsCard={<TeacherReportsCard userType="teacher" userId={teacherId} />}
     />
   );
 }

@@ -1,43 +1,43 @@
-import { useQuery } from "@tanstack/react-query";
-import { BASE_URI, DATA_STALE_TIME } from "../../core/constants/api.constant";
-import { fetchData } from "../../core/utils/api/api.util";
+import {
+  BASE_URI,
+  DATA_STALE_TIME,
+} from "@/modules/core/constants/api.constant";
 import {
   AssessmentAttemptData,
   AssessmentData,
   StageData,
   StudentData,
 } from "@/modules/core/types/data-report.type";
+import { fetchData } from "@/modules/core/utils/api/api.util";
+import { useQuery } from "@tanstack/react-query";
 
 // get student overview data for reports
-export const useTeacherStudentData = (
-  teacherId: string,
-  sectionId?: string,
-) => {
+export const useAdminStudentData = (adminId: string, sectionId?: string) => {
   return useQuery<StudentData[]>({
-    queryKey: ["teacher", teacherId, "student-data", sectionId],
+    queryKey: ["admin", adminId, "student-data", sectionId],
     queryFn: () => {
       const url =
         sectionId && sectionId !== "all"
-          ? `${BASE_URI}/api/web/teachers/${teacherId}/reports/student-overview?sectionId=${sectionId}`
-          : `${BASE_URI}/api/web/teachers/${teacherId}/reports/student-overview`;
+          ? `${BASE_URI}/api/web/admins/${adminId}/reports/student-overview?sectionId=${sectionId}`
+          : `${BASE_URI}/api/web/admins/${adminId}/reports/student-overview`;
 
       return fetchData<StudentData[]>(url, "Failed to fetch student data.");
     },
     staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
+    enabled: !!adminId,
   });
 };
 
 // get assessment overview data for reports
-export const useTeacherAssessmentOverview = (
-  teacherId: string,
+export const useAdminAssessmentOverview = (
+  adminId: string,
   sectionId?: string,
   assessmentId?: string,
 ) => {
   return useQuery<AssessmentData[]>({
     queryKey: [
-      "teacher",
-      teacherId,
+      "admin",
+      adminId,
       "assessment-overview",
       sectionId,
       assessmentId,
@@ -49,7 +49,7 @@ export const useTeacherAssessmentOverview = (
       if (assessmentId && assessmentId !== "all")
         params.append("assessmentId", assessmentId);
 
-      const url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-overview?${params}`;
+      const url = `${BASE_URI}/api/web/admins/${adminId}/reports/assessment-overview?${params}`;
 
       return fetchData<AssessmentData[]>(
         url,
@@ -57,20 +57,20 @@ export const useTeacherAssessmentOverview = (
       );
     },
     staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
+    enabled: !!adminId,
   });
 };
 
 // get assessment attempts data for reports
-export const useTeacherAssessmentAttempts = (
-  teacherId: string,
+export const useAdminAssessmentAttempts = (
+  adminId: string,
   sectionId?: string,
   assessmentId?: string,
 ) => {
   return useQuery<AssessmentAttemptData[]>({
     queryKey: [
-      "teacher",
-      teacherId,
+      "admin",
+      adminId,
       "assessment-attempts",
       sectionId,
       assessmentId,
@@ -82,7 +82,7 @@ export const useTeacherAssessmentAttempts = (
       if (assessmentId && assessmentId !== "all")
         params.append("assessmentId", assessmentId);
 
-      const url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-attempts?${params}`;
+      const url = `${BASE_URI}/api/web/admins/${adminId}/reports/assessment-attempts?${params}`;
 
       return fetchData<AssessmentAttemptData[]>(
         url,
@@ -90,13 +90,13 @@ export const useTeacherAssessmentAttempts = (
       );
     },
     staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
+    enabled: !!adminId,
   });
 };
 
 // get combined assessment data (overview + attempts) for reports
-export const useTeacherAssessmentCombined = (
-  teacherId: string,
+export const useAdminAssessmentCombined = (
+  adminId: string,
   sectionId?: string,
   assessmentId?: string,
   includeAttempts: boolean = false,
@@ -106,8 +106,8 @@ export const useTeacherAssessmentCombined = (
     attempts: AssessmentAttemptData[];
   }>({
     queryKey: [
-      "teacher",
-      teacherId,
+      "admin",
+      adminId,
       "assessment-combined",
       sectionId,
       assessmentId,
@@ -121,7 +121,7 @@ export const useTeacherAssessmentCombined = (
         params.append("assessmentId", assessmentId);
       if (includeAttempts) params.append("includeAttempts", "true");
 
-      const url = `${BASE_URI}/api/web/teachers/${teacherId}/reports/assessment-combined?${params}`;
+      const url = `${BASE_URI}/api/web/admins/${adminId}/reports/assessment-combined?${params}`;
 
       return fetchData<{
         overview: AssessmentData[];
@@ -129,23 +129,23 @@ export const useTeacherAssessmentCombined = (
       }>(url, "Failed to fetch combined assessment data.");
     },
     staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
+    enabled: !!adminId,
   });
 };
 
 // get stage progress data for reports
-export const useTeacherStageData = (teacherId: string, sectionId?: string) => {
+export const useAdminStageData = (adminId: string, sectionId?: string) => {
   return useQuery<StageData[]>({
-    queryKey: ["teacher", teacherId, "stage-data", sectionId],
+    queryKey: ["admin", adminId, "stage-data", sectionId],
     queryFn: () => {
       const url =
         sectionId && sectionId !== "all"
-          ? `${BASE_URI}/api/web/teachers/${teacherId}/reports/stage-progress?sectionId=${sectionId}`
-          : `${BASE_URI}/api/web/teachers/${teacherId}/reports/stage-progress`;
+          ? `${BASE_URI}/api/web/admins/${adminId}/reports/stage-progress?sectionId=${sectionId}`
+          : `${BASE_URI}/api/web/admins/${adminId}/reports/stage-progress`;
 
       return fetchData<StageData[]>(url, "Failed to fetch stage data.");
     },
     staleTime: DATA_STALE_TIME,
-    enabled: !!teacherId,
+    enabled: !!adminId,
   });
 };

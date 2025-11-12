@@ -11,13 +11,6 @@ import {
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import PreviewDownloadModal from "./PreviewDownloadModal";
-import {
-  StudentData,
-  AssessmentData,
-  AssessmentAttemptData,
-  StageData,
-  PreviewDataItem,
-} from "../../../../teacher/types/teacher-data-report";
 import { useTeacherContext } from "../../../../teacher/context/teacher.context";
 import {
   useTeacherStudentData,
@@ -35,6 +28,19 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useAdminContext } from "@/modules/admin/context/admin.context";
+import {
+  AssessmentAttemptData,
+  AssessmentData,
+  PreviewDataItem,
+  StageData,
+  StudentData,
+} from "@/modules/core/types/data-report.type";
+import {
+  useAdminAssessmentCombined,
+  useAdminStageData,
+  useAdminStudentData,
+} from "@/modules/admin/services/admin-data-report.service";
 
 type ReportType = {
   id: "student_overview" | "assessment_student" | "stage_student";
@@ -65,8 +71,27 @@ const isStageData = (item: PreviewDataItem): item is StageData => {
   return "stage" in item;
 };
 
-export default function TeacherReportsCard(): ReactElement {
-  const { teacherId, rawSections, rawAssessments } = useTeacherContext();
+type ReportsCardProps = {
+  userType: "teacher" | "admin";
+  userId: string;
+};
+
+export default function TeacherReportsCard({
+  userType,
+  userId,
+}: ReportsCardProps): ReactElement {
+  const isTeacher = userType === "teacher";
+  const useUserContext = isTeacher ? useTeacherContext : useAdminContext;
+  const useUserStudentData = isTeacher
+    ? useTeacherStudentData
+    : useAdminStudentData;
+  const useUserAssessmentCombined = isTeacher
+    ? useTeacherAssessmentCombined
+    : useAdminAssessmentCombined;
+  const useUserStageData = isTeacher ? useTeacherStageData : useAdminStageData;
+
+  const { rawSections, rawAssessments } = useUserContext();
+
   const [selectedReport, setSelectedReport] =
     useState<ReportType["id"]>("student_overview");
   const [selectedFormat, setSelectedFormat] = useState<"excel" | "csv">(
@@ -79,22 +104,24 @@ export default function TeacherReportsCard(): ReactElement {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [includeAttempts, setIncludeAttempts] = useState(false);
 
-  const { data: studentData, isLoading: studentLoading } =
-    useTeacherStudentData(
-      teacherId,
-      selectedSection !== "all" ? selectedSection : undefined,
-    );
+  // student data report
+  const { data: studentData, isLoading: studentLoading } = useUserStudentData(
+    userId,
+    selectedSection !== "all" ? selectedSection : undefined,
+  );
 
+  // assessment combined data report
   const { data: assessmentData, isLoading: assessmentLoading } =
-    useTeacherAssessmentCombined(
-      teacherId,
+    useUserAssessmentCombined(
+      userId,
       selectedSection !== "all" ? selectedSection : undefined,
       selectedAssessment !== "all" ? selectedAssessment : undefined,
       selectedReport === "assessment_student" ? includeAttempts : false,
     );
 
-  const { data: stageData, isLoading: stageLoading } = useTeacherStageData(
-    teacherId,
+  // stage data report
+  const { data: stageData, isLoading: stageLoading } = useUserStageData(
+    userId,
     selectedSection !== "all" ? selectedSection : undefined,
   );
 
