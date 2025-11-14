@@ -144,7 +144,10 @@ export default function AssessmentAttemptItem({
               <span>Time: {formatTimeSpent(attempt.timeSpent)}</span>
               <span>
                 {attempt.dateCompleted
-                  ? format(new Date(attempt.dateCompleted), "MMM d, yyyy")
+                  ? format(
+                    new Date(attempt.dateCompleted),
+                    "MMM d, yyyy 'at' hh:mm aa",
+                  )
                   : format(new Date(attempt.dateUpdated), "MMM d, yyyy")}
               </span>
             </div>
@@ -218,7 +221,10 @@ export default function AssessmentAttemptItem({
                       Date Started:
                     </span>
                     <span className="font-medium text-xs sm:text-sm">
-                      {format(new Date(attempt.dateStarted), "MMM d, yyyy")}
+                      {format(
+                        new Date(attempt.dateStarted),
+                        "MMM d, yyyy 'at' hh:mm aa",
+                      )}
                     </span>
                   </div>
                 </div>
@@ -237,7 +243,10 @@ export default function AssessmentAttemptItem({
                         Date Completed:
                       </span>
                       <span className="font-medium text-xs sm:text-sm">
-                        {format(new Date(attempt.dateCompleted), "MMM d, yyyy")}
+                        {format(
+                          new Date(attempt.dateCompleted),
+                          "MMM d, yyyy 'at' hh:mm aa",
+                        )}
                       </span>
                     </div>
                   )}

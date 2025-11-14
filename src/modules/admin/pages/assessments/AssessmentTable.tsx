@@ -46,6 +46,7 @@ import {
 import AssessmentDetailsModal from "@/modules/core/components/assessment-details/AssessesmentDetailsModal";
 import { useAdminContext } from "../../context/admin.context";
 import AssessmentStatusBadge from "@/modules/teacher/pages/assessments/components/assessment_table/AssessmentStatus";
+import { useAdminAssessmentAttempts } from "../../services/admin-assessment-attempt.service";
 
 type AssessmentTableProps = {
   navigate: NavigateFunction;
@@ -68,7 +69,7 @@ export default function AssessmentTable({
   showArchive = false,
   hideFab = false,
 }: AssessmentTableProps): ReactElement {
-  const { adminId } = useAdminContext();
+  const { adminId, rawStudents } = useAdminContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<
     AssessmentStatus | "all"
@@ -82,6 +83,10 @@ export default function AssessmentTable({
   const [expandFab, setExpandFab] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const { data: studentAttempts } = useAdminAssessmentAttempts(
+    adminId,
+    selectedAssessment?.id ?? "",
+  );
 
   const mobileFabRef = useRef<HTMLDivElement>(null);
 
@@ -713,6 +718,8 @@ export default function AssessmentTable({
         <AssessmentDetailsModal
           userType="admin"
           userId={adminId}
+          studentAttempts={studentAttempts}
+          students={rawStudents}
           isOpen={showDetailsModal}
           assessment={selectedAssessment}
           teacher={selectedAssessmentTeacher}
