@@ -1,13 +1,13 @@
-// TODO: improve, provide total downloads, file size, download instructions
-import { type ReactElement } from "react";
+import { type ReactElement, useState } from "react";
 import logo from "../../../assets/images/logo/Sunnyyyyyyyyy.png";
 import { motion } from "framer-motion";
 import { FaDownload } from "react-icons/fa";
 import { IoSparkles } from "react-icons/io5";
+import { Button } from "@/components/ui/button";
+import { TermsModal } from "./download/TermsModal";
 
 export default function Download(): ReactElement {
-  const downloadUrl =
-    "https://github.com/jeru7/MathPath-Web/releases/download/MathPath-10_v1.0.0/Math-Path10.apk";
+  const [showTerms, setShowTerms] = useState(false);
 
   const features = [
     {
@@ -16,14 +16,18 @@ export default function Download(): ReactElement {
     },
   ];
 
+  const handleDownloadClick = () => {
+    setShowTerms(true);
+  };
+
   return (
     <section
-      className="w-full flex items-center py-20 bg-inherit min-h-screen text-white"
+      className="w-full flex items-center py-12 md:py-20 bg-inherit min-h-screen text-white"
       id="download"
     >
       <div className="max-w-2xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="flex flex-col items-center text-center gap-8"
+          className="flex flex-col items-center text-center gap-6 md:gap-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -39,7 +43,7 @@ export default function Download(): ReactElement {
             <img
               src={logo}
               alt="Math-Path App Icon"
-              className="w-32 h-32 rounded-lg border border-green-500/20"
+              className="w-24 h-24 md:w-32 md:h-32 rounded-lg border border-green-400/20"
             />
           </motion.div>
 
@@ -49,50 +53,51 @@ export default function Download(): ReactElement {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-green-400">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 text-green-400">
               Math-Path 10
             </h1>
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-4 md:mb-6 leading-relaxed text-sm md:text-base px-2">
               Transform your grade 10 math learning journey with our interactive
               and engaging educational platform.
             </p>
 
-            <div className="flex justify-center gap-4 mb-8">
+            <div className="flex justify-center gap-2 md:gap-4 mb-6 md:mb-8">
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-4 py-2 border border-green-500/20"
+                  className="flex items-center gap-1 md:gap-2 bg-gray-800/50 rounded-lg px-3 py-1.5 md:px-4 md:py-2 border border-green-400/20"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
                   viewport={{ once: true }}
                 >
                   {feature.icon}
-                  <span className="text-gray-300 text-sm font-medium">
+                  <span className="text-gray-300 text-xs md:text-sm font-medium">
                     {feature.text}
                   </span>
                 </motion.div>
               ))}
             </div>
 
-            <motion.a
-              href={downloadUrl}
-              download="Math-Path10.apk"
-              className="group relative inline-flex items-center justify-center gap-3 bg-green-400 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
-              <FaDownload className="text-xl" />
-              Download Now
-            </motion.a>
+              <Button
+                onClick={handleDownloadClick}
+                className="bg-green-400 hover:bg-green-500 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-xl text-sm md:text-base h-auto"
+                size="lg"
+              >
+                <FaDownload className="mr-2 text-lg md:text-xl" />
+                Download Now
+              </Button>
+            </motion.div>
 
             {/* version info */}
             <motion.p
-              className="text-gray-400 text-sm mt-4"
+              className="text-gray-400 text-xs md:text-sm mt-3 md:mt-4"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -103,6 +108,8 @@ export default function Download(): ReactElement {
           </motion.div>
         </motion.div>
       </div>
+
+      <TermsModal open={showTerms} onOpenChange={setShowTerms} />
     </section>
   );
 }
