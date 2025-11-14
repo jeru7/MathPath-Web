@@ -11,7 +11,7 @@ import TopStudentsCard from "@/modules/core/components/top-students/TopStudentsC
 export default function AdminDashboard(): ReactElement {
   const {
     rawStudents,
-    teachers,
+    rawTeachers,
     rawSections,
     rawAssessments,
     onlineStudents,
@@ -29,7 +29,7 @@ export default function AdminDashboard(): ReactElement {
     {
       color: "bg-blue-500 dark:bg-blue-600",
       title: "Teachers",
-      teachers: teachers.length,
+      teachers: rawTeachers.length,
       sections: rawSections.length,
     },
     {

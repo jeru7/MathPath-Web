@@ -1,8 +1,7 @@
 import { useState, type ReactElement } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FaRegEye, FaRegEyeSlash, FaTimes } from "react-icons/fa";
-import Select from "react-select";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import {
@@ -11,14 +10,25 @@ import {
 } from "../../../../student/types/student.schema";
 import { APIErrorResponse } from "../../../../core/types/api/api.type";
 import { handleApiError } from "../../../../core/utils/api/error.util";
-import { Gender } from "../../../../core/types/user.type";
-import { getCustomSelectColor } from "../../../../core/styles/selectStyles";
-import { Section } from "../../../../core/types/section/section.type";
-import ModalOverlay from "../../../../core/components/modal/ModalOverlay";
-import FormButtons from "../../../../core/components/buttons/FormButtons";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminContext } from "../../../../admin/context/admin.context";
 import { useAdminAddStudent } from "../../../../admin/services/admin-student.service";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type AddStudentModalProps = {
   isOpen: boolean;
@@ -67,7 +77,6 @@ export default function AddStudentModal({
     addStudent(data, {
       onSuccess: () => {
         toast.success("Student added successfully");
-        // invalidate and refresh the student data
         queryClient.invalidateQueries({
           queryKey: ["admin", adminId, "students"],
         });
@@ -112,356 +121,220 @@ export default function AddStudentModal({
   };
 
   return (
-    <ModalOverlay isOpen={isOpen} onClose={handleClose}>
-      <article className="relative h-[100vh] w-[100vw] p-4 shadow-sm md:h-fit md:max-h-[90vh] md:w-[80vw] md:overflow-x-hidden lg:w-[60vw] lg:max-w-4xl rounded-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors duration-200 flex flex-col">
-        <form
-          className="flex flex-col flex-1"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          {/* header */}
-          <header className="flex items-center justify-between border-b border-b-gray-200 dark:border-b-gray-700 pb-4 transition-colors duration-200">
-            <h3 className="text-gray-900 dark:text-gray-100 font-semibold text-lg md:text-xl">
-              Add Student
-            </h3>
-            <button
-              className="hover:scale-105 hover:cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 p-1"
-              type="button"
-              onClick={handleClose}
-            >
-              <FaTimes className="w-5 h-5 md:w-4 md:h-4" />
-            </button>
-          </header>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-2xl max-h-[100vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            Add Student
+          </DialogTitle>
+        </DialogHeader>
 
-          {/* form content */}
-          <div className="flex-1 py-4">
-            <div className="flex flex-col gap-4 md:gap-2 px-4">
-              <div className="flex flex-col gap-4 md:flex-row md:gap-2">
-                {/* first name */}
-                <div className="flex w-full flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <label
-                      htmlFor="firstName"
-                      className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                    >
-                      First Name
-                    </label>
-                    {errors.firstName && (
-                      <p className="text-xs text-red-500 dark:text-red-400">
-                        {errors?.firstName?.message}
-                      </p>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    {...register("firstName")}
-                    name="firstName"
-                    placeholder="Enter first name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
-                  />
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* first name */}
+            <div className="space-y-2">
+              <Label htmlFor="firstName">
+                First Name
+                {errors.firstName && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.firstName.message}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="firstName"
+                {...register("firstName")}
+                placeholder="Enter first name"
+              />
+            </div>
 
-                {/* last name */}
-                <div className="flex w-full flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <label
-                      htmlFor="lastName"
-                      className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                    >
-                      Last Name
-                    </label>
-                    {errors.lastName && (
-                      <p className="text-xs text-red-500 dark:text-red-400">
-                        {errors?.lastName?.message}
-                      </p>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    {...register("lastName")}
-                    name="lastName"
-                    placeholder="Enter last name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
-                  />
-                </div>
-              </div>
+            {/* last name */}
+            <div className="space-y-2">
+              <Label htmlFor="lastName">
+                Last Name
+                {errors.lastName && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.lastName.message}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="lastName"
+                {...register("lastName")}
+                placeholder="Enter last name"
+              />
+            </div>
 
-              <div className="flex flex-col gap-4 md:flex-row md:gap-2">
-                {/* middle name */}
-                <div className="flex w-full flex-col gap-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <label
-                      htmlFor="middleName"
-                      className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                    >
-                      Middle Name
-                      <span className="ml-1 inline-flex items-center gap-1">
-                        <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
-                          (Optional)
-                        </span>
-                        {errors.middleName && (
-                          <span className="text-xs font-normal text-red-500 dark:text-red-400">
-                            {errors?.middleName?.message}
-                          </span>
-                        )}
-                      </span>
-                    </label>
-                  </div>
-                  <input
-                    type="text"
-                    {...register("middleName")}
-                    name="middleName"
-                    placeholder="Enter middle name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
-                  />
-                </div>
+            {/* middle name */}
+            <div className="space-y-2">
+              <Label htmlFor="middleName">
+                Middle Name
+                <span className="text-muted-foreground text-xs ml-1">
+                  (Optional)
+                </span>
+                {errors.middleName && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.middleName.message}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="middleName"
+                {...register("middleName")}
+                placeholder="Enter middle name"
+              />
+            </div>
 
-                {/* gender */}
-                <div className="flex w-full flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <label
-                      htmlFor="gender"
-                      className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                    >
-                      Gender
-                    </label>
-                    {errors.gender && (
-                      <span className="text-xs text-red-500 dark:text-red-400">
-                        {errors?.gender?.message}
-                      </span>
-                    )}
-                  </div>
-                  <div className="h-12 md:h-10">
-                    <Controller
-                      name="gender"
-                      control={control}
-                      render={({ field }) => (
-                        <Select<{ value: Gender; label: string }>
-                          {...field}
-                          id="gender"
-                          name="gender"
-                          options={[
-                            { value: "Male", label: "Male" },
-                            { value: "Female", label: "Female" },
-                          ]}
-                          getOptionLabel={(option) => option.label}
-                          getOptionValue={(option) => option.value}
-                          styles={getCustomSelectColor<{
-                            value: Gender;
-                            label: string;
-                          }>({
-                            height: "100%",
-                            minHeight: "100%",
-                            padding: "0px 2px",
-                            menuWidth: "100%",
-                            menuBackgroundColor: "white",
-                            backgroundColor: "white",
-                            textColor: "#1f2937",
-                            dark: {
-                              backgroundColor: "#374151",
-                              textColor: "#f9fafb",
-                              borderColor: "#4b5563",
-                              borderFocusColor: "#10b981",
-                              optionHoverColor: "#1f2937",
-                              optionSelectedColor: "#059669",
-                              menuBackgroundColor: "#374151",
-                              placeholderColor: "#9ca3af",
-                            },
-                          })}
-                          className="basic-select h-full"
-                          classNamePrefix="select"
-                          placeholder="Select gender..."
-                          onChange={(selected) =>
-                            field.onChange(selected?.value)
-                          }
-                          value={
-                            field.value
-                              ? {
-                                value: field.value,
-                                label:
-                                  field.value === "Male" ? "Male" : "Female",
-                              }
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* email */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="email"
-                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
+            {/* gender */}
+            <div className="space-y-2">
+              <Label htmlFor="gender">
+                Gender
+                {errors.gender && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.gender.message}
+                  </span>
+                )}
+              </Label>
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || ""}
                   >
-                    Email
-                  </label>
-                  {errors.email && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {errors?.email?.message}
-                    </p>
-                  )}
-                </div>
-                <input
-                  type="email"
-                  {...register("email")}
-                  name="email"
-                  placeholder="Enter email"
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            {/* email */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="email">
+                Email
+                {errors.email && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.email.message}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                {...register("email")}
+                placeholder="Enter email"
+              />
+            </div>
+
+            {/* LRN */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="referenceNumber">
+                LRN (Learner Reference Number)
+                {errors.referenceNumber && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.referenceNumber.message}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="referenceNumber"
+                {...register("referenceNumber")}
+                placeholder="Enter reference number"
+                value={referenceNumber}
+                onChange={(e) => {
+                  let val = e.target.value.replace(/\D/g, "");
+                  if (val.length > 12) val = val.slice(0, 12);
+                  setReferenceNumber(val);
+                }}
+              />
+            </div>
+
+            {/* password */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="password">
+                Password
+                {errors.password && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.password.message}
+                  </span>
+                )}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  maxLength={32}
+                  placeholder="Enter password"
+                  className="pr-10"
                 />
-              </div>
-
-              {/* LRN */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="referenceNumber"
-                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                  >
-                    LRN
-                    <span className="font-medium text-gray-700 dark:text-gray-300 ml-1">
-                      (Learner Reference Number)
-                    </span>
-                  </label>
-                  {errors.referenceNumber && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {errors?.referenceNumber?.message}
-                    </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FaRegEyeSlash className="h-4 w-4" />
+                  ) : (
+                    <FaRegEye className="h-4 w-4" />
                   )}
-                </div>
-                <input
-                  type="text"
-                  {...register("referenceNumber")}
-                  name="referenceNumber"
-                  placeholder="Enter reference number"
-                  value={referenceNumber}
-                  onChange={(e) => {
-                    // remove non numeric characters
-                    let val = e.target.value.replace(/\D/g, "");
-                    // limit to 12 digits
-                    if (val.length > 12) val = val.slice(0, 12);
-                    setReferenceNumber(val);
-                  }}
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 md:p-2 [appearance:textfield] focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10"
-                />
+                </Button>
               </div>
+            </div>
 
-              {/* password */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="password"
-                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
+            {/* section */}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="section">
+                Section
+                {errors.sectionId && (
+                  <span className="text-destructive text-xs ml-2">
+                    {errors.sectionId.message}
+                  </span>
+                )}
+              </Label>
+              <Controller
+                name="sectionId"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || ""}
                   >
-                    Password
-                  </label>
-                  {errors.password && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {errors?.password?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    {...register("password")}
-                    maxLength={32}
-                    name="password"
-                    placeholder="Enter password"
-                    className="border border-gray-300 dark:border-gray-600 w-full rounded-lg p-3 md:p-2 focus:border-green-500 dark:focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 text-sm md:text-base h-12 md:h-10 pr-12"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 p-1"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <FaRegEye size={20} className="w-5 h-5 md:w-4 md:h-4" />
-                    ) : (
-                      <FaRegEyeSlash
-                        size={20}
-                        className="w-5 h-5 md:w-4 md:h-4"
-                      />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* section */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="section"
-                    className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200 text-sm md:text-base"
-                  >
-                    Section
-                  </label>
-                  {errors.sectionId && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {errors?.sectionId?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="h-12 md:h-10">
-                  <Controller
-                    name="sectionId"
-                    control={control}
-                    render={({ field }) => (
-                      <Select<Section>
-                        {...field}
-                        id="section"
-                        name="section"
-                        options={rawSections}
-                        getOptionLabel={(option: Section) => option.name}
-                        getOptionValue={(option: Section) => option.id}
-                        styles={getCustomSelectColor<Section>({
-                          height: "100%",
-                          minHeight: "100%",
-                          padding: "0px 2px",
-                          menuWidth: "100%",
-                          menuBackgroundColor: "white",
-                          backgroundColor: "white",
-                          textColor: "#1f2937",
-                          dark: {
-                            backgroundColor: "#374151",
-                            textColor: "#f9fafb",
-                            borderColor: "#4b5563",
-                            borderFocusColor: "#10b981",
-                            optionHoverColor: "#1f2937",
-                            optionSelectedColor: "#059669",
-                            menuBackgroundColor: "#374151",
-                            placeholderColor: "#9ca3af",
-                          },
-                        })}
-                        className="basic-select h-full"
-                        classNamePrefix="select"
-                        placeholder="Select a section..."
-                        onChange={(selected) => field.onChange(selected?.id)}
-                        value={
-                          rawSections.find(
-                            (section) => section.id === field.value,
-                          ) || null
-                        }
-                      />
-                    )}
-                  />
-                </div>
-              </div>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a section..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {rawSections.map((section) => (
+                        <SelectItem key={section.id} value={section.id}>
+                          {section.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           </div>
 
-          {/* action buttons */}
-          <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-            <FormButtons
-              handleBack={handleClose}
-              text={isSubmitting ? "Creating..." : "Add Student"}
-              disabled={isSubmitting}
-            />
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Add Student"}
+            </Button>
           </div>
         </form>
-      </article>
-    </ModalOverlay>
+      </DialogContent>
+    </Dialog>
   );
 }

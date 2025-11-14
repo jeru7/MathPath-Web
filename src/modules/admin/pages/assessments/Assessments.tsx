@@ -10,7 +10,8 @@ import DeleteAssessmentConfirmationModal from "./DeleteAssessmentConfirmationMod
 
 export default function Assessments(): ReactElement {
   const navigate = useNavigate();
-  const { rawAssessments, rawStudents, teachers, adminId } = useAdminContext();
+  const { rawAssessments, rawStudents, rawTeachers, adminId } =
+    useAdminContext();
   const queryClient = useQueryClient();
   const { mutate: deleteAssessment } = useAdminDeleteAssessment(adminId);
 
@@ -72,7 +73,7 @@ export default function Assessments(): ReactElement {
   };
 
   const getTeacherName = (assessment: Assessment): string => {
-    const teacher = teachers.find(
+    const teacher = rawTeachers.find(
       (teacher) => teacher.id === assessment.teacher,
     );
     return teacher
@@ -93,7 +94,7 @@ export default function Assessments(): ReactElement {
       <section className=" overflow-y-hidden w-full flex-1 flex flex-col">
         <AssessmentTable
           assessments={rawAssessments}
-          teachers={teachers}
+          teachers={rawTeachers}
           navigate={navigate}
           onDeleteAssessment={handleDeleteInitiate}
           getTeacherName={getTeacherName}

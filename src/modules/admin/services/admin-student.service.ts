@@ -65,3 +65,29 @@ export const useAdminEditStudent = (adminId: string) => {
     },
   });
 };
+
+// admin archive student
+export const useAdminArchiveStudent = (adminId: string) => {
+  return useMutation({
+    mutationFn: (studentId: string) => {
+      return patchData<Student, null>(
+        `${BASE_URI}/api/web/admins/${adminId}/students/${studentId}/archive`,
+        null,
+        "Failed to delete student.",
+      );
+    },
+  });
+};
+
+// admin restore student
+export const useAdminRestoreStudent = (adminId: string) => {
+  return useMutation({
+    mutationFn: (studentId: string) => {
+      return patchData<Student, null>(
+        `${BASE_URI}/api/web/admins/${adminId}/students/${studentId}/restore`,
+        null,
+        "Failed to delete student.",
+      );
+    },
+  });
+};

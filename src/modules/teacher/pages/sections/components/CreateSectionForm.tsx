@@ -29,6 +29,14 @@ type CreateSectionFormProps = {
   onClose: () => void;
 };
 
+// color mapping to tailwind classes
+const colorClassMap = {
+  "primary-green": "bg-green-500",
+  "tertiary-green": "bg-emerald-400",
+  "primary-orange": "bg-orange-500",
+  "primary-yellow": "bg-yellow-400",
+};
+
 export default function CreateSectionForm({
   isOpen,
   onClose,
@@ -167,7 +175,7 @@ export default function CreateSectionForm({
                     className="hidden"
                   />
                   <span
-                    className={`bg-[var(--${color})] border-2 h-10 w-10 rounded-sm hover:scale-105 transition-transform duration-200 ${selectedColor === color
+                    className={`${colorClassMap[color]} border-2 h-10 w-10 rounded-sm hover:scale-105 transition-transform duration-200 ${selectedColor === color
                         ? "border-3 border-foreground shadow-md"
                         : "border-border"
                       }`}

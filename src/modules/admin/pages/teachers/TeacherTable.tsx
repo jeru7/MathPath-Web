@@ -35,21 +35,25 @@ import {
   TableBody,
 } from "@/components/ui/table";
 import { CiSearch, CiFilter } from "react-icons/ci";
-import { GoPlus } from "react-icons/go";
+import { GoArchive, GoPlus } from "react-icons/go";
 import { IoChevronUp, IoChevronDown } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import TeacherTableItem from "./TeacherTableItem";
+import { useNavigate } from "react-router-dom";
 
 type TeacherTableProps = {
   onTeacherClick: (teacherId: string) => void;
   onAddTeacher: () => void;
+  showArchive?: boolean;
 };
 
 export default function TeacherTable({
   onTeacherClick,
   onAddTeacher,
+  showArchive = false,
 }: TeacherTableProps): ReactElement {
-  const { teachers } = useAdminContext();
+  const { rawTeachers } = useAdminContext();
+  const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVerification, setSelectedVerification] =
@@ -66,7 +70,7 @@ export default function TeacherTable({
   const mobileFabRef = useRef<HTMLDivElement | null>(null);
 
   const filteredAndSortedTeachers = useMemo(() => {
-    const filtered = teachers.filter((teacher) => {
+    const filtered = rawTeachers.filter((teacher) => {
       const {
         firstName = "",
         lastName = "",
@@ -136,7 +140,7 @@ export default function TeacherTable({
     });
 
     return sorted;
-  }, [teachers, searchTerm, selectedVerification, sortConfig]);
+  }, [rawTeachers, searchTerm, selectedVerification, sortConfig]);
 
   const totalPages = Math.ceil(filteredAndSortedTeachers.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -186,6 +190,10 @@ export default function TeacherTable({
 
   const handlePageClick = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+  };
+
+  const handleViewArchive = () => {
+    navigate("archives");
   };
 
   const hasActiveFilters = selectedVerification !== "all" || searchTerm !== "";
@@ -379,7 +387,7 @@ export default function TeacherTable({
 
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>
-                      {filteredAndSortedTeachers.length} of {teachers.length}{" "}
+                      {filteredAndSortedTeachers.length} of {rawTeachers.length}{" "}
                       teachers
                     </span>
                     {hasActiveFilters && (
@@ -399,6 +407,17 @@ export default function TeacherTable({
           </div>
 
           <div className="hidden sm:flex gap-2 items-center">
+            {showArchive && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleViewArchive}
+                className="flex items-center gap-2"
+              >
+                <GoArchive className="h-4 w-4" />
+                Archive
+              </Button>
+            )}
             <Button
               size="sm"
               onClick={onAddTeacher}
@@ -429,7 +448,7 @@ export default function TeacherTable({
       </CardHeader>
 
       <CardContent className="p-0 shadow-none flex flex-1 flex-col">
-        {teachers.length === 0 ? (
+        {rawTeachers.length === 0 ? (
           <div className="flex-1 min-h-[750px]">
             <EmptyState />
           </div>
@@ -554,6 +573,21 @@ export default function TeacherTable({
                 exit={{ opacity: 0, scale: 0.8, y: 20 }}
                 className="flex flex-col gap-3 mb-3"
               >
+                {showArchive && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center justify-center w-14 h-14 bg-background rounded-full border border-border text-foreground hover:bg-muted shadow-sm"
+                    onClick={() => {
+                      handleViewArchive();
+                      setShowMobileFab(false);
+                    }}
+                    title="Archive"
+                  >
+                    <GoArchive className="w-5 h-5" />
+                  </motion.button>
+                )}
                 <motion.button
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}

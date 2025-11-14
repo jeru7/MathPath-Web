@@ -38,6 +38,8 @@ export default function AdminProvider({
   const { data: assessments } = useAdminAssessments(adminId);
   const { data: activities } = useAdminActivities(adminId);
 
+  console.log(teachers);
+
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export default function AdminProvider({
   // students
   const rawStudents = students?.filter((s) => !s.archive.isArchive);
   const archivedStudents = students?.filter((s) => s.archive.isArchive);
+  console.log("");
 
   // sections
   const rawSections = sections?.filter((s) => !s.archive.isArchive);
@@ -58,6 +61,10 @@ export default function AdminProvider({
   // assessments
   const rawAssessments = assessments?.filter((a) => !a.archive.isArchive);
   const archivedAssessments = assessments?.filter((a) => a.archive.isArchive);
+
+  // teachers
+  const rawTeachers = teachers?.filter((t) => !t.archive.isArchive);
+  const archivedTeachers = teachers?.filter((t) => t.archive.isArchive);
 
   // track student online status
   const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
@@ -156,7 +163,9 @@ export default function AdminProvider({
   const value = {
     adminId,
     admin: admin || null,
-    teachers: teachers || [],
+    allTeachers: teachers || [],
+    archivedTeachers: archivedTeachers || [],
+    rawTeachers: rawTeachers || [],
     allStudents: students || [],
     rawStudents: rawStudents || [],
     archivedStudents: archivedStudents || [],

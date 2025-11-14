@@ -69,3 +69,29 @@ export const useAdminEditSection = (adminId: string) => {
     },
   });
 };
+
+// admin archive section
+export const useAdminArchiveSection = (adminId: string) => {
+  return useMutation({
+    mutationFn: (sectionId: string) => {
+      return patchData<Section, null>(
+        `${BASE_URI}/api/web/admins/${adminId}/sections/${sectionId}/archive`,
+        null,
+        "Failed to archive section.",
+      );
+    },
+  });
+};
+
+// admin restore section
+export const useAdminRestoreSection = (adminId: string) => {
+  return useMutation({
+    mutationFn: (sectionId: string) => {
+      return patchData<Section, null>(
+        `${BASE_URI}/api/web/admins/${adminId}/sections/${sectionId}/restore`,
+        null,
+        "Failed to restore section.",
+      );
+    },
+  });
+};

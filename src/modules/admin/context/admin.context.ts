@@ -9,7 +9,9 @@ import { AdminActivity } from "@/modules/core/types/activity/activity.type";
 type AdminContextType = {
   adminId: string;
   admin: Admin | null;
-  teachers: Teacher[];
+  allTeachers: Teacher[];
+  rawTeachers: Teacher[];
+  archivedTeachers: Teacher[];
   allStudents: Student[];
   rawStudents: Student[];
   archivedStudents: Student[];

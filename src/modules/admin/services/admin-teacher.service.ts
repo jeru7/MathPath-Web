@@ -47,3 +47,29 @@ export const useAdminDeleteTeacher = (adminId: string) => {
     },
   });
 };
+
+// admin archive teacher
+export const useAdminArchiveTeacher = (adminId: string) => {
+  return useMutation({
+    mutationFn: (teacherId: string) => {
+      return patchData<Teacher, null>(
+        `${BASE_URI}/api/web/admins/${adminId}/teachers/${teacherId}/archive`,
+        null,
+        "Failed to archive teacher.",
+      );
+    },
+  });
+};
+
+// admin restore teacher
+export const useAdminRestoreTeacher = (adminId: string) => {
+  return useMutation({
+    mutationFn: (teacherId: string) => {
+      return patchData<Teacher, null>(
+        `${BASE_URI}/api/web/admins/${adminId}/teachers/${teacherId}/restore`,
+        null,
+        "Failed to restore teacher.",
+      );
+    },
+  });
+};

@@ -7,8 +7,10 @@ import { Student } from "../../../student/types/student.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
+  useAdminArchiveStudent,
   useAdminDeleteStudent,
   useAdminEditStudent,
+  useAdminRestoreStudent,
 } from "../../services/admin-student.service";
 import StudentTable from "../../../core/components/tables/student-table/StudentTable";
 import StudentDetailsModal from "../../../core/components/tables/student-table/student-details/StudentDetailsModal";
@@ -18,10 +20,13 @@ import { APIErrorResponse } from "../../../core/types/api/api.type";
 import { handleApiError } from "../../../core/utils/api/error.util";
 import EditStudentModal from "../../../core/components/tables/student-table/EditStudentModal";
 import AddStudentModal from "../../../core/components/tables/student-table/AddStudentModal";
+import StudentArchiveModal from "../../../core/components/tables/student-table/student-archive/StudentArchiveModal";
+import StudentArchiveConfirmationModal from "../../../core/components/tables/student-table/StudentArchiveConfirmationModal";
 
 export default function Students(): ReactElement {
   const adminContext = useAdminContext();
-  const { rawSections, rawStudents, adminId } = adminContext;
+  const { rawSections, rawStudents, adminId, archivedStudents, allSections } =
+    adminContext;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,17 +35,33 @@ export default function Students(): ReactElement {
   const { mutate: deleteStudent } = useAdminDeleteStudent(adminId);
   const { mutate: editStudent, isPending: isUpdating } =
     useAdminEditStudent(adminId);
+  const { mutate: archiveStudent } = useAdminArchiveStudent(adminId);
+  const { mutate: restoreStudent } = useAdminRestoreStudent(adminId);
 
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+  const [studentToArchive, setStudentToArchive] = useState<Student | null>(
+    null,
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState<boolean>(false);
+  const [hideFab, setHideFab] = useState<boolean>(false);
 
   const pathEnd = location.pathname.split("/").pop();
   const isAddStudentRoute = pathEnd === "add-student";
   const isStudentDetailsRoute =
     selectedStudent !== null && pathEnd === selectedStudent.id;
+  const showArchive = location.pathname.endsWith("/archives");
+
+  useEffect(() => {
+    if (isAddStudentRoute || showArchive) {
+      setHideFab(true);
+    } else {
+      setHideFab(false);
+    }
+  }, [isAddStudentRoute, showArchive]);
 
   useEffect(() => {
     if (studentId) {
@@ -78,6 +99,11 @@ export default function Students(): ReactElement {
     setIsDeleteModalOpen(true);
   };
 
+  const handleArchiveInitiate = (student: Student) => {
+    setStudentToArchive(student);
+    setIsArchiveModalOpen(true);
+  };
+
   const handleEditInitiate = () => {
     setIsEditModalOpen(true);
   };
@@ -109,6 +135,32 @@ export default function Students(): ReactElement {
     }
   };
 
+  const confirmArchive = () => {
+    if (studentToArchive) {
+      archiveStudent(studentToArchive.id, {
+        onSuccess: () => {
+          toast.success("Student archived successfully");
+          queryClient.invalidateQueries({
+            queryKey: ["admin", adminId, "students"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["admin", adminId, "archived-students"],
+          });
+          setIsArchiveModalOpen(false);
+          setStudentToArchive(null);
+
+          if (selectedStudent?.id === studentToArchive.id) {
+            navigate("..");
+            setSelectedStudent(null);
+          }
+        },
+        onError: () => {
+          toast.error("Failed to archive student");
+        },
+      });
+    }
+  };
+
   const handleUpdateStudent = async (
     studentId: string,
     data: EditStudentDTO,
@@ -127,7 +179,6 @@ export default function Students(): ReactElement {
           onError: (error: unknown) => {
             const errorData: APIErrorResponse = handleApiError(error);
 
-            // handle specific error cases
             if (errorData.error === "EMAIL_ALREADY_EXISTS") {
               console.error("A student with this email already exists.");
             } else {
@@ -141,9 +192,56 @@ export default function Students(): ReactElement {
     });
   };
 
+  const handleRestoreStudent = (studentId: string) => {
+    restoreStudent(studentId, {
+      onSuccess: () => {
+        toast.success("Student restored successfully");
+        queryClient.invalidateQueries({
+          queryKey: ["admin", adminId, "students"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["admin", adminId, "archived-students"],
+        });
+      },
+      onError: (error: unknown) => {
+        const errorData: APIErrorResponse = handleApiError(error);
+
+        if (errorData.error === "ARCHIVED_SECTION") {
+          toast.error(
+            "Student's section is currently archived. Please restore it first.",
+          );
+        } else {
+          toast.error("Failed to restore student");
+        }
+      },
+    });
+  };
+
+  const handlePermanentDelete = (studentId: string) => {
+    deleteStudent(studentId, {
+      onSuccess: () => {
+        toast.success("Student permanently deleted");
+        queryClient.invalidateQueries({
+          queryKey: ["admin", adminId, "students"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["admin", adminId, "archived-students"],
+        });
+      },
+      onError: () => {
+        toast.error("Failed to delete student");
+      },
+    });
+  };
+
   const cancelDelete = () => {
     setIsDeleteModalOpen(false);
     setStudentToDelete(null);
+  };
+
+  const cancelArchive = () => {
+    setIsArchiveModalOpen(false);
+    setStudentToArchive(null);
   };
 
   useEffect(() => {
@@ -164,7 +262,7 @@ export default function Students(): ReactElement {
   return (
     <main className="bg-secondary flex flex-col h-full min-h-screen mt-4 md:mt-0 w-full gap-2 p-2">
       <AnimatePresence>
-        {showAddButton && (
+        {showAddButton && !hideFab && (
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 100, y: 0 }}
@@ -190,6 +288,8 @@ export default function Students(): ReactElement {
           onStudentClick={handleStudentClick}
           context={adminContext}
           showRegistrationCodes={false}
+          showArchive={true}
+          hideFab={hideFab}
         />
       </section>
 
@@ -199,6 +299,18 @@ export default function Students(): ReactElement {
         onClose={handleCloseAddStudentModal}
       />
 
+      {/* archive modal */}
+      {showArchive && archivedStudents && (
+        <StudentArchiveModal
+          isOpen={showArchive}
+          onClose={() => navigate("..")}
+          students={archivedStudents}
+          onRestoreStudent={handleRestoreStudent}
+          onDeleteStudent={handlePermanentDelete}
+          sections={allSections}
+        />
+      )}
+
       {/* student details modal */}
       {selectedStudent && (
         <StudentDetailsModal
@@ -207,6 +319,7 @@ export default function Students(): ReactElement {
           onClose={handleCloseDetailsModal}
           sections={rawSections}
           onEdit={handleEditInitiate}
+          onArchive={() => handleArchiveInitiate(selectedStudent)}
           onDelete={() => handleDeleteInitiate(selectedStudent)}
         />
       )}
@@ -230,6 +343,14 @@ export default function Students(): ReactElement {
         onClose={cancelDelete}
         onConfirm={confirmDelete}
         student={studentToDelete}
+      />
+
+      {/* archive confirmation modal */}
+      <StudentArchiveConfirmationModal
+        isOpen={isArchiveModalOpen}
+        onClose={cancelArchive}
+        onConfirm={confirmArchive}
+        student={studentToArchive}
       />
     </main>
   );

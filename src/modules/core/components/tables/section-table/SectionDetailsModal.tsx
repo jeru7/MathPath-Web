@@ -6,6 +6,7 @@ import {
   FaChartLine,
   FaChevronDown,
   FaChevronUp,
+  FaChalkboardTeacher, // Add teacher icon
 } from "react-icons/fa";
 import { IoSchool } from "react-icons/io5";
 import { CiSearch } from "react-icons/ci";
@@ -24,8 +25,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import StudentList from "./StudentList";
+import { Teacher } from "@/modules/teacher/types/teacher.type";
+import { Avatar, AvatarImage } from "@/components/ui/avatar"; // Add avatar component
+import { getProfilePicture } from "@/modules/core/utils/profile-picture.util";
 
 type SectionDetailsModalProps = {
+  isAdmin?: boolean;
   context: SectionTableContext;
   section: Section;
   isOpen: boolean;
@@ -34,6 +39,7 @@ type SectionDetailsModalProps = {
   onEdit?: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
+  teachers?: Teacher[];
   disableEdit?: boolean;
   disableDelete?: boolean;
   archiveLabel?: string;
@@ -49,6 +55,7 @@ type SectionStats = {
 
 export default function SectionDetailsModal({
   context,
+  isAdmin = false,
   section,
   isOpen,
   onClose,
@@ -56,11 +63,12 @@ export default function SectionDetailsModal({
   onEdit,
   onArchive,
   onDelete,
+  teachers = [], // Default to empty array
   disableEdit = false,
   disableDelete = false,
   archiveLabel = "Archive",
 }: SectionDetailsModalProps): ReactElement {
-  const { allStudents } = context;
+  const { rawStudents } = context;
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
@@ -68,8 +76,16 @@ export default function SectionDetailsModal({
   const [searchTerm, setSearchTerm] = useState("");
 
   const sectionStudents = useMemo(() => {
-    return allStudents.filter((student) => student.sectionId === section.id);
-  }, [allStudents, section.id]);
+    return rawStudents.filter((student) => student.sectionId === section.id);
+  }, [rawStudents, section.id]);
+
+  // Filter teachers for this specific section
+  const sectionTeachers = useMemo(() => {
+    if (!teachers || !section.teacherIds) return [];
+    return teachers.filter((teacher) =>
+      section.teacherIds.includes(teacher.id),
+    );
+  }, [teachers, section.teacherIds]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -163,6 +179,10 @@ export default function SectionDetailsModal({
     });
   };
 
+  const getInitials = (firstName: string, lastName: string): string => {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
+
   const StatsCard = ({
     icon,
     title,
@@ -204,9 +224,12 @@ export default function SectionDetailsModal({
                   <span className="text-sm text-muted-foreground">
                     {sectionStats.totalStudents} students
                   </span>
-                  <span className="text-sm text-green-600">
-                    {sectionStats.activeStudents} active
-                  </span>
+                  {isAdmin && sectionTeachers.length > 0 && (
+                    <span className="text-sm text-blue-600">
+                      {sectionTeachers.length} teacher
+                      {sectionTeachers.length !== 1 ? "s" : ""}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -324,6 +347,45 @@ export default function SectionDetailsModal({
                     {formatDate(section.updatedAt)}
                   </p>
                 </div>
+                {isAdmin && (
+                  <div className="sm:col-span-2 lg:col-span-1">
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Teacher{sectionTeachers.length !== 1 ? "s" : ""}
+                    </label>
+                    <div className="space-y-2">
+                      {sectionTeachers.length > 0 ? (
+                        sectionTeachers.map((teacher) => (
+                          <div
+                            key={teacher.id}
+                            className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage
+                                src={getProfilePicture(
+                                  teacher.profilePicture ?? "Default",
+                                )}
+                                alt={`${teacher.firstName} ${teacher.lastName}`}
+                              />
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-semibold">
+                                {teacher.firstName} {teacher.lastName}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {teacher.email}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground p-2">
+                          <FaChalkboardTeacher className="w-4 h-4" />
+                          No teachers assigned
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </Card>
 
@@ -376,7 +438,7 @@ export default function SectionDetailsModal({
                   onSearchChange={handleSearchChange}
                   onClearSearch={handleClearSearch}
                   onStudentClick={handleStudentClick}
-                  isLoading={!allStudents}
+                  isLoading={!rawStudents}
                 />
               </div>
             </Card>
