@@ -13,6 +13,7 @@ import AssessmentNavigation from "./AssessmentNavigation";
 import AssessmentHeader from "./AssessmentHeader";
 import { FloatingCard } from "./modals/FloatingCard";
 import ExitConfirmationModal from "./modals/ExitConfirmationModal";
+import UnansweredQuestionsModal from "../UnansweredQuestionModal";
 import { Assessment } from "../../../../../core/types/assessment/assessment.type";
 import {
   AssessmentAttempt,
@@ -34,6 +35,47 @@ type StudentAssessmentProps = {
   onSubmitted?: (attempt: AssessmentAttempt) => void;
 };
 
+const TIMER_KEYS = {
+  TIME_REMAINING: "time_remaining",
+  SESSION_START: "session_start_time",
+  INITIAL_TIME: "initial_time_remaining",
+  HAS_SUBMITTED: "assessment_submitted",
+};
+
+const getStoredTimeRemaining = (defaultValue: number): number => {
+  try {
+    const stored = localStorage.getItem(TIMER_KEYS.TIME_REMAINING);
+    return stored ? parseInt(stored, 10) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+};
+
+const getStoredSessionStart = (): number | null => {
+  try {
+    const stored = localStorage.getItem(TIMER_KEYS.SESSION_START);
+    return stored ? parseInt(stored, 10) : null;
+  } catch {
+    return null;
+  }
+};
+
+const getStoredHasSubmitted = (): boolean => {
+  try {
+    const stored = localStorage.getItem(TIMER_KEYS.HAS_SUBMITTED);
+    return stored === "true";
+  } catch {
+    return false;
+  }
+};
+
+const clearTimerStorage = () => {
+  localStorage.removeItem(TIMER_KEYS.TIME_REMAINING);
+  localStorage.removeItem(TIMER_KEYS.SESSION_START);
+  localStorage.removeItem(TIMER_KEYS.INITIAL_TIME);
+  localStorage.removeItem(TIMER_KEYS.HAS_SUBMITTED);
+};
+
 export default function StudentAssessment({
   assessment,
   currentAttempt,
@@ -45,6 +87,15 @@ export default function StudentAssessment({
 
   const initialTimeRemaining = useMemo(() => {
     if (!assessment.timeLimit) return 0;
+
+    const storedTime = getStoredTimeRemaining(-1);
+    if (storedTime >= 0) {
+      const totalTime = assessment.timeLimit * 60;
+      if (storedTime <= totalTime) {
+        return storedTime;
+      }
+    }
+
     const totalTime = assessment.timeLimit * 60;
     if (currentAttempt?.timeSpent && currentAttempt.timeSpent > 0) {
       return Math.max(totalTime - currentAttempt.timeSpent, 0);
@@ -57,7 +108,10 @@ export default function StudentAssessment({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPausing, setIsPausing] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(
+    getStoredHasSubmitted,
+  );
   const [isCardVisible, setIsCardVisible] = useState(false);
 
   const timerRef = useRef<number | null>(null);
@@ -66,7 +120,10 @@ export default function StudentAssessment({
   const hasAttemptedSubmitRef = useRef<boolean>(hasAttemptedSubmit);
   const handleSubmitAssessmentRef =
     useRef<(answers: StudentAnswers, isAutoSubmit?: boolean) => void>();
-  const sessionStartTimeRef = useRef<number>(Date.now());
+
+  const sessionStartTimeRef = useRef<number>(
+    getStoredSessionStart() || Date.now(),
+  );
 
   const getSessionTimeSpent = useCallback(() => {
     return Math.floor((Date.now() - sessionStartTimeRef.current) / 1000);
@@ -84,11 +141,38 @@ export default function StudentAssessment({
 
   useEffect(() => {
     timeRemainingRef.current = timeRemaining;
+    try {
+      localStorage.setItem(TIMER_KEYS.TIME_REMAINING, timeRemaining.toString());
+    } catch (error) {
+      console.error("Failed to save timer to localStorage:", error);
+    }
   }, [timeRemaining]);
 
   useEffect(() => {
     hasAttemptedSubmitRef.current = hasAttemptedSubmit;
+    try {
+      localStorage.setItem(
+        TIMER_KEYS.HAS_SUBMITTED,
+        hasAttemptedSubmit.toString(),
+      );
+    } catch (error) {
+      console.error("Failed to save submission state to localStorage:", error);
+    }
   }, [hasAttemptedSubmit]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        TIMER_KEYS.SESSION_START,
+        sessionStartTimeRef.current.toString(),
+      );
+    } catch (error) {
+      console.error(
+        "Failed to save session start time to localStorage:",
+        error,
+      );
+    }
+  }, []);
 
   const { mutate: submitAssessment } = useSubmitAssessmentAttempt();
   const { mutate: savePausedAssessment } = useSavePausedAssessment();
@@ -107,6 +191,30 @@ export default function StudentAssessment({
     ],
   );
 
+  const clearAllStorage = useCallback(() => {
+    clearTimerStorage();
+  }, []);
+
+  const getTotalQuestions = useCallback((): number => {
+    let count = 0;
+    assessment.pages.forEach((page) => {
+      page.contents.forEach((content) => {
+        if (content.type === "question") {
+          count++;
+        }
+      });
+    });
+    return count;
+  }, [assessment]);
+
+  const getUnansweredCount = useCallback(
+    (answers: StudentAnswers): number => {
+      const totalQuestions = getTotalQuestions();
+      return Math.max(totalQuestions - answers.length, 0);
+    },
+    [getTotalQuestions],
+  );
+
   const submissionHandlersRef = useRef({
     handleSubmissionSuccess: (
       savedAttempt: AssessmentAttempt,
@@ -115,6 +223,8 @@ export default function StudentAssessment({
       setIsSubmitting(false);
       resetAnswers();
       closePreview();
+      clearAllStorage();
+
       if (onSubmitted) onSubmitted(savedAttempt);
       if (!isAutoSubmit) {
         toast.success("Assessment submitted successfully!", {
@@ -136,6 +246,7 @@ export default function StudentAssessment({
       setIsPausing(false);
       resetAnswers();
       closePreview();
+      clearAllStorage();
       toast.success("Assessment paused successfully! You can resume later.", {
         position: "bottom-right",
         autoClose: 3000,
@@ -157,8 +268,44 @@ export default function StudentAssessment({
   const handleSubmitAssessment = useCallback(
     (answers: StudentAnswers, isAutoSubmit: boolean = false) => {
       if (hasAttemptedSubmitRef.current && !isAutoSubmit) return;
+
+      if (isAutoSubmit) {
+        setIsSubmitting(true);
+        setHasAttemptedSubmit(true);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        const totalTimeSpent = getTotalTimeSpent();
+        const completedAttempt: AssessmentAttempt = {
+          ...attemptData,
+          score: 0,
+          timeSpent: totalTimeSpent,
+          status: "completed",
+          answers,
+          dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
+          dateCompleted: new Date().toISOString(),
+          dateUpdated: new Date().toISOString(),
+        };
+        submitAssessment(completedAttempt, {
+          onSuccess: (savedAttempt) =>
+            submissionHandlersRef.current.handleSubmissionSuccess(
+              savedAttempt,
+              isAutoSubmit,
+            ),
+          onError: submissionHandlersRef.current.handleSubmissionError,
+        });
+        return;
+      }
+
+      const unansweredCount = getUnansweredCount(answers);
+      if (unansweredCount > 0) {
+        setShowUnansweredConfirm(true);
+        return;
+      }
+
       setIsSubmitting(true);
-      if (!isAutoSubmit) setHasAttemptedSubmit(true);
+      setHasAttemptedSubmit(true);
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
@@ -188,8 +335,43 @@ export default function StudentAssessment({
       getTotalTimeSpent,
       currentAttempt?.dateStarted,
       submitAssessment,
+      getUnansweredCount,
     ],
   );
+
+  const handleConfirmSubmitWithUnanswered = useCallback(() => {
+    setShowUnansweredConfirm(false);
+    setIsSubmitting(true);
+    setHasAttemptedSubmit(true);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    const totalTimeSpent = getTotalTimeSpent();
+    const completedAttempt: AssessmentAttempt = {
+      ...attemptData,
+      score: 0,
+      timeSpent: totalTimeSpent,
+      status: "completed",
+      answers: (studentAnswersRef.current as StudentAnswers) || [],
+      dateStarted: currentAttempt?.dateStarted || new Date().toISOString(),
+      dateCompleted: new Date().toISOString(),
+      dateUpdated: new Date().toISOString(),
+    };
+    submitAssessment(completedAttempt, {
+      onSuccess: (savedAttempt) =>
+        submissionHandlersRef.current.handleSubmissionSuccess(
+          savedAttempt,
+          false,
+        ),
+      onError: submissionHandlersRef.current.handleSubmissionError,
+    });
+  }, [
+    attemptData,
+    getTotalTimeSpent,
+    currentAttempt?.dateStarted,
+    submitAssessment,
+  ]);
 
   const handlePauseAssessment = useCallback(
     (answers: StudentAnswers) => {
@@ -227,24 +409,40 @@ export default function StudentAssessment({
 
   useEffect(() => {
     if (!assessment.timeLimit || hasAttemptedSubmitRef.current) return;
-    sessionStartTimeRef.current = Date.now();
+
     timeRemainingRef.current = initialTimeRemaining;
     setTimeRemaining(initialTimeRemaining);
+
     if (timerRef.current) clearInterval(timerRef.current);
+
     timerRef.current = window.setInterval(() => {
       timeRemainingRef.current = Math.max(timeRemainingRef.current - 1, 0);
       setTimeRemaining(timeRemainingRef.current);
+
+      try {
+        localStorage.setItem(
+          TIMER_KEYS.TIME_REMAINING,
+          timeRemainingRef.current.toString(),
+        );
+      } catch (error) {
+        console.error("Failed to save timer to localStorage:", error);
+      }
+
       if (timeRemainingRef.current <= 0) {
         clearInterval(timerRef.current!);
         timerRef.current = null;
         handleSubmitAssessmentRef.current?.(
-          (studentAnswersRef.current as StudentAnswers) || {},
+          (studentAnswersRef.current as StudentAnswers) || [],
           true,
         );
       }
     }, 1000);
+
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, [assessment.timeLimit, initialTimeRemaining]);
 
@@ -279,6 +477,7 @@ export default function StudentAssessment({
 
   const handleConfirmExit = () => {
     setShowExitConfirm(false);
+    clearAllStorage();
     window.history.go(-2);
   };
 
@@ -289,11 +488,14 @@ export default function StudentAssessment({
   const handleExitClick = () => setShowExitConfirm(true);
 
   const handlePauseClick = () => {
-    handlePauseAssessment((studentAnswersRef.current as StudentAnswers) || {});
+    handlePauseAssessment((studentAnswersRef.current as StudentAnswers) || []);
     setShowExitConfirm(false);
   };
 
   const toggleCardVisibility = () => setIsCardVisible(!isCardVisible);
+
+  const unansweredCount = getUnansweredCount(studentAnswers);
+  const totalQuestions = getTotalQuestions();
 
   if (!isOpen || mode !== "assessment") return <></>;
 
@@ -332,19 +534,37 @@ export default function StudentAssessment({
       <AssessmentNavigation
         onSubmit={() =>
           handleSubmitAssessmentRef.current?.(
-            (studentAnswersRef.current as StudentAnswers) || {},
+            (studentAnswersRef.current as StudentAnswers) || [],
             false,
           )
         }
         isSubmitting={isSubmitting || isPausing}
       />
+
+      {/* Exit Confirmation Modal */}
       <ExitConfirmationModal
         isOpen={showExitConfirm}
         onConfirm={handleConfirmExit}
         onCancel={handleCancelExit}
         onPause={handlePauseClick}
+        onSubmitAndExit={() => {
+          handleSubmitAssessmentRef.current?.(
+            (studentAnswersRef.current as StudentAnswers) || [],
+            false,
+          );
+          setShowExitConfirm(false);
+        }}
         timeRemaining={timeRemaining}
-        showPauseOption={true}
+        showPauseOption={false}
+      />
+
+      {/* Unanswered Questions Warning Modal */}
+      <UnansweredQuestionsModal
+        isOpen={showUnansweredConfirm}
+        onConfirm={handleConfirmSubmitWithUnanswered}
+        onCancel={() => setShowUnansweredConfirm(false)}
+        unansweredCount={unansweredCount}
+        totalQuestions={totalQuestions}
       />
     </div>
   );

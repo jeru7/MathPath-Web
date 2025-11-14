@@ -26,6 +26,24 @@ export const useSubmitAssessmentAttempt = () => {
           variables.assessmentId,
         ],
       });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "student",
+          variables.studentId,
+          "assessment-attempts",
+          variables.assessmentId,
+          "resume",
+        ],
+      });
+      queryClient.removeQueries({
+        queryKey: [
+          "student",
+          variables.studentId,
+          "assessment-attempts",
+          variables.assessmentId,
+          "resume",
+        ],
+      });
     },
   });
 };

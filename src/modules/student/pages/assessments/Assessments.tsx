@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from "react";
+import { useState, ReactElement } from "react";
 import { useStudentContext } from "../../contexts/student.context";
 import { useNavigate } from "react-router-dom";
 import { useStudentAssessments } from "../../services/student-assessment.service";
@@ -28,17 +28,15 @@ export default function Assessments(): ReactElement {
   };
 
   const handleTakeAssessment = (assessment: Assessment) => {
-    navigate(`${assessment.id}/attempt`);
+    navigate(`${assessment.id}/attempt?retake=true`);
     handleCloseModal();
   };
 
   if (assessmentPending) {
     return (
       <div className="min-h-screen mt-4 lg:mt-0 h-fit w-full p-2 flex flex-col gap-2">
-        {/* header skeleton */}
         <Skeleton className="h-8 w-64 rounded" />
 
-        {/* table skeleton */}
         <div className="flex flex-col gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-16 w-full rounded" />
@@ -50,7 +48,6 @@ export default function Assessments(): ReactElement {
 
   return (
     <main className="min-h-screen mt-4 lg:mt-0 h-fit w-full p-2 flex flex-col gap-2">
-      {/* header */}
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Assessments</h1>

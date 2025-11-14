@@ -4,15 +4,15 @@ import { StudentAnswers } from "../../types/assessment-attempt/assessment-attemp
 
 export type PreviewMode = "preview" | "assessment";
 
-type PreviewContextType = {
+export interface PreviewContextType {
   isOpen: boolean;
   mode: PreviewMode;
   currentAssessment: Assessment | null;
+  currentPage: number;
+  studentAnswers: StudentAnswers;
   openPreview: (assessment: Assessment, mode?: PreviewMode) => void;
   closePreview: () => void;
-  currentPage: number;
   setCurrentPage: (page: number) => void;
-  studentAnswers: StudentAnswers;
   setStudentAnswer: (
     questionId: string,
     answer: string | string[] | Record<string, string> | boolean,
@@ -20,16 +20,20 @@ type PreviewContextType = {
   resetAnswers: () => void;
   onSubmitAssessment?: (answers: StudentAnswers) => void;
   setOnSubmitAssessment: (handler: (answers: StudentAnswers) => void) => void;
-};
+}
 
-export const PreviewContext = createContext<PreviewContextType | undefined>(
-  undefined,
-);
+export const PreviewContext = createContext<PreviewContextType>({
+  isOpen: false,
+  mode: "preview",
+  currentAssessment: null,
+  currentPage: 0,
+  studentAnswers: [],
+  openPreview: () => { },
+  closePreview: () => { },
+  setCurrentPage: () => { },
+  setStudentAnswer: () => { },
+  resetAnswers: () => { },
+  setOnSubmitAssessment: () => { },
+});
 
-export const usePreview = () => {
-  const context = useContext(PreviewContext);
-  if (context === undefined) {
-    throw new Error("usePreview must be used within a PreviewProvider");
-  }
-  return context;
-};
+export const usePreview = () => useContext(PreviewContext);

@@ -10,17 +10,18 @@ type ExitConfirmationModalProps = {
   onConfirm: () => void;
   onCancel: () => void;
   onPause?: () => void;
+  onSubmitAndExit?: () => void;
   timeRemaining?: number;
   showPauseOption?: boolean;
 };
 
 export default function ExitConfirmationModal({
   isOpen,
-  onConfirm,
   onCancel,
   onPause,
   timeRemaining,
-  showPauseOption = true,
+  showPauseOption = false,
+  onSubmitAndExit,
 }: ExitConfirmationModalProps): ReactElement {
   return (
     <ModalOverlay isOpen={isOpen} onClose={onCancel}>
@@ -75,12 +76,14 @@ export default function ExitConfirmationModal({
             )}
 
             {/* exit & submit button */}
-            <div
-              className="py-3 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors duration-200 cursor-pointer text-center font-medium"
-              onClick={onConfirm}
-            >
-              Exit & Submit Final Answers
-            </div>
+            {onSubmitAndExit && (
+              <div
+                className="py-3 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors duration-200 cursor-pointer text-center font-medium"
+                onClick={onSubmitAndExit}
+              >
+                Exit & Submit Final Answers
+              </div>
+            )}
 
             {/* continue assessment button */}
             <div
@@ -93,9 +96,6 @@ export default function ExitConfirmationModal({
 
           {/* help text */}
           <div className="mt-4 text-xs text-muted-foreground space-y-1">
-            <p>
-              • <strong>Pause:</strong> Save progress and resume later
-            </p>
             <p>
               • <strong>Exit & Submit:</strong> Submit final answers for grading
             </p>

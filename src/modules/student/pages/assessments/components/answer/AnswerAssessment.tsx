@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import StudentAssessmentComponent from "./StudentAssessment";
@@ -20,7 +20,10 @@ import { Button } from "../../../../../../components/ui/button";
 import { Card, CardContent } from "../../../../../../components/ui/card";
 
 export default function AnswerAssessment(): ReactElement {
-  const { studentId, assessmentId } = useParams();
+  const { studentId, assessmentId } = useParams<{
+    studentId: string;
+    assessmentId: string;
+  }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { student } = useStudentContext();
@@ -60,77 +63,65 @@ export default function AnswerAssessment(): ReactElement {
   }, [assessment, student, attempts, checkIfCanRetake]);
 
   useEffect(() => {
-    if (studentId && assessmentId) {
-      refetchPausedAttempt();
-    }
+    if (studentId && assessmentId) refetchPausedAttempt();
   }, [studentId, assessmentId, refetchPausedAttempt]);
 
   useEffect(() => {
-    if (assessment && student && !hasInitialized) {
-      const canTakeNew = checkIfCanRetake();
+    if (!assessment || !student || hasInitialized) return;
 
-      const completedAttempt = attempts
-        .filter(
-          (attempt) =>
-            attempt.status === "completed" || attempt.status === "failed",
-        )
-        .sort(
-          (a, b) =>
-            new Date(b.dateCompleted || b.dateUpdated).getTime() -
-            new Date(a.dateCompleted || a.dateUpdated).getTime(),
-        )[0];
+    const canTakeNew = checkIfCanRetake();
 
-      if (isResume && pausedAttempt) {
-        setCurrentAttempt(pausedAttempt);
-        setIsResumingPaused(true);
-        setHasInitialized(true);
-        return;
-      }
+    const completedAttempt = attempts
+      .filter((a) => a.status === "completed" || a.status === "failed")
+      .sort(
+        (a, b) =>
+          new Date(b.dateCompleted || b.dateUpdated).getTime() -
+          new Date(a.dateCompleted || a.dateUpdated).getTime(),
+      )[0];
 
-      if (completedAttempt && !isRetakeFromDetails && !isResume) {
-        setSubmittedAttempt(completedAttempt);
-        setShowResult(true);
-        setHasInitialized(true);
-        return;
-      }
-
-      if (!canTakeNew && !isRetakeFromDetails && !isResume) {
-        toast.error(
-          "You have reached the maximum number of attempts for this assessment.",
-          { position: "top-right", autoClose: 5000 },
-        );
-        setTimeout(() => {
-          navigate(`/student/${studentId}/assessments`);
-        }, 2000);
-        setHasInitialized(true);
-        return;
-      }
-
-      let newAttempt: AssessmentAttempt;
-
-      if (pausedAttempt && !isRetakeFromDetails) {
-        newAttempt = {
-          ...pausedAttempt,
-          dateUpdated: new Date().toISOString(),
-        };
-        setIsResumingPaused(true);
-      } else {
-        newAttempt = {
-          studentId: studentId ?? "",
-          assessmentId: assessmentId ?? "",
-          score: 0,
-          timeSpent: 0,
-          status: "paused",
-          answers: [],
-          dateStarted: new Date().toISOString(),
-          dateUpdated: new Date().toISOString(),
-        };
-        setIsResumingPaused(false);
-      }
-
-      setCurrentAttempt(newAttempt);
+    if (isResume && pausedAttempt) {
+      setCurrentAttempt(pausedAttempt);
+      setIsResumingPaused(true);
       setHasInitialized(true);
+      return;
     }
+
+    if (completedAttempt && !isRetakeFromDetails && !isResume) {
+      setSubmittedAttempt(completedAttempt);
+      setShowResult(true);
+      setHasInitialized(true);
+      return;
+    }
+
+    if (!canTakeNew && !isRetakeFromDetails && !isResume) {
+      toast.error("You have reached the maximum number of attempts.", {
+        autoClose: 5000,
+      });
+      setTimeout(() => navigate(`/student/${studentId}/assessments`), 2000);
+      setHasInitialized(true);
+      return;
+    }
+
+    let newAttempt: AssessmentAttempt;
+    if (pausedAttempt && !isRetakeFromDetails) {
+      newAttempt = { ...pausedAttempt, dateUpdated: new Date().toISOString() };
+      setIsResumingPaused(true);
+    } else {
+      newAttempt = {
+        studentId: studentId ?? "",
+        assessmentId: assessmentId ?? "",
+        score: 0,
+        timeSpent: 0,
+        status: "paused",
+        answers: [],
+        dateStarted: new Date().toISOString(),
+        dateUpdated: new Date().toISOString(),
+      };
+      setIsResumingPaused(false);
+    }
+
+    setCurrentAttempt(newAttempt);
+    setHasInitialized(true);
   }, [
     assessment,
     student,
@@ -165,45 +156,40 @@ export default function AnswerAssessment(): ReactElement {
   ]);
 
   useEffect(() => {
-    if (assessmentId && studentId) {
-      refetchAttempts();
-    }
+    if (assessmentId && studentId) refetchAttempts();
   }, [assessmentId, studentId, refetchAttempts]);
 
-  const handleAssessmentSubmitted = async (attempt: AssessmentAttempt) => {
-    if (attempt.status === "completed" || attempt.status === "failed") {
-      setSubmittedAttempt(attempt);
-      setShowResult(true);
-    } else {
-      navigate(`/student/${studentId}/assessments`);
-    }
+  const handleAssessmentSubmitted = useCallback(
+    async (attempt: AssessmentAttempt) => {
+      if (attempt.status === "completed" || attempt.status === "failed") {
+        setSubmittedAttempt(attempt);
+        setShowResult(true);
+      } else {
+        navigate(`/student/${studentId}/assessments`);
+      }
+      closePreview();
+      try {
+        await refetchAttempts();
+        await refetchPausedAttempt();
+      } catch (err) {
+        console.error("Failed to refetch attempts:", err);
+      }
+    },
+    [closePreview, navigate, studentId, refetchAttempts, refetchPausedAttempt],
+  );
 
-    closePreview();
-
-    try {
-      await refetchAttempts();
-      await refetchPausedAttempt();
-    } catch (error) {
-      console.error("Failed to refetch attempts:", error);
-    }
-  };
-
-  const handleRetakeAssessment = () => {
+  const handleRetakeAssessment = useCallback(() => {
     if (!canRetake) {
-      toast.error(
-        "You have reached the maximum number of attempts for this assessment.",
-        { position: "bottom-right", autoClose: 5000 },
-      );
+      toast.error("You have reached the maximum number of attempts.", {
+        autoClose: 5000,
+      });
       return;
     }
-
     setShowResult(false);
     setSubmittedAttempt(null);
     setCurrentAttempt(null);
-
     closePreview();
     resetAnswers();
-
     const newAttempt: AssessmentAttempt = {
       studentId: studentId ?? "",
       assessmentId: assessmentId ?? "",
@@ -214,13 +200,19 @@ export default function AnswerAssessment(): ReactElement {
       dateStarted: new Date().toISOString(),
       dateUpdated: new Date().toISOString(),
     };
-
     setCurrentAttempt(newAttempt);
     setHasInitialized(true);
-
     refetchAttempts();
     refetchPausedAttempt();
-  };
+  }, [
+    canRetake,
+    closePreview,
+    resetAnswers,
+    studentId,
+    assessmentId,
+    refetchAttempts,
+    refetchPausedAttempt,
+  ]);
 
   if (assessmentPending) {
     return (
@@ -249,7 +241,6 @@ export default function AnswerAssessment(): ReactElement {
             </p>
             <Button
               onClick={() => navigate(`/student/${studentId}/assessments`)}
-              className="px-4 py-2 text-sm font-medium"
             >
               Return to Assessments
             </Button>
@@ -275,10 +266,7 @@ export default function AnswerAssessment(): ReactElement {
   return (
     <div className="min-h-screen bg-background">
       <div
-        className={`transition-opacity duration-200 ${currentAttempt && hasInitialized
-            ? "opacity-100"
-            : "opacity-0 pointer-events-none"
-          }`}
+        className={`transition-opacity duration-200 ${currentAttempt && hasInitialized ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         {assessment && currentAttempt && (
           <StudentAssessmentComponent

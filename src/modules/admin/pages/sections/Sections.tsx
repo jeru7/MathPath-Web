@@ -293,7 +293,7 @@ export default function Sections(): ReactElement {
   };
 
   return (
-    <main className="flex flex-col h-full min-h-screen w-full mt-4 md:mt-4 gap-2 bg-inherit p-2">
+    <main className="flex flex-col h-full min-h-screen w-full mt-4 md:mt-0 gap-2 bg-inherit p-2">
       <AnimatePresence>
         {showAddButton && !hideFab && (
           <motion.button
