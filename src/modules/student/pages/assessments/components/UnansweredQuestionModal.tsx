@@ -87,9 +87,6 @@ export default function UnansweredQuestionsModal({
 
           {/* help text */}
           <div className="mt-4 text-xs text-muted-foreground">
-            <p>
-              • Click "Review Questions" to go back and answer all questions
-            </p>
             <p>• Click "Submit Anyway" to submit with unanswered questions</p>
           </div>
         </CardContent>
