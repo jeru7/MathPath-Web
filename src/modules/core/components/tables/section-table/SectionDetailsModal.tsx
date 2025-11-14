@@ -6,7 +6,7 @@ import {
   FaChartLine,
   FaChevronDown,
   FaChevronUp,
-  FaChalkboardTeacher, // Add teacher icon
+  FaChalkboardTeacher,
 } from "react-icons/fa";
 import { IoSchool } from "react-icons/io5";
 import { CiSearch } from "react-icons/ci";
@@ -63,7 +63,7 @@ export default function SectionDetailsModal({
   onEdit,
   onArchive,
   onDelete,
-  teachers = [], // Default to empty array
+  teachers = [],
   disableEdit = false,
   disableDelete = false,
   archiveLabel = "Archive",
@@ -177,10 +177,6 @@ export default function SectionDetailsModal({
       month: "short",
       day: "numeric",
     });
-  };
-
-  const getInitials = (firstName: string, lastName: string): string => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   const StatsCard = ({
