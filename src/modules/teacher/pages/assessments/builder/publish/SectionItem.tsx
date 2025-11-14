@@ -4,7 +4,6 @@ import { getSectionBanner } from "../../../../../core/utils/section/section.util
 import { IoClose } from "react-icons/io5";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 type SectionItemProps = {
   data: Section;
@@ -15,7 +14,6 @@ type SectionItemProps = {
 export default function SectionItem({
   data,
   onDelete,
-  studentCount = 0,
 }: SectionItemProps): ReactElement {
   return (
     <Card className="group transition-all duration-200">
@@ -29,9 +27,6 @@ export default function SectionItem({
             />
             <div className="flex flex-col gap-1">
               <p className="font-semibold text-sm">{data.name}</p>
-              <Badge variant="secondary" className="w-fit text-xs">
-                {studentCount} {studentCount === 1 ? "student" : "students"}
-              </Badge>
             </div>
           </div>
           <Button
