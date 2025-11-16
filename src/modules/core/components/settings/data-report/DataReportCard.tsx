@@ -76,7 +76,7 @@ type ReportsCardProps = {
   userId: string;
 };
 
-export default function TeacherReportsCard({
+export default function DataReportCard({
   userType,
   userId,
 }: ReportsCardProps): ReactElement {
@@ -122,7 +122,7 @@ export default function TeacherReportsCard({
   // stage data report
   const { data: stageData, isLoading: stageLoading } = useUserStageData(
     userId,
-    selectedSection !== "all" ? selectedSection : undefined,
+    selectedSection ?? "all",
   );
 
   const reportTypes: ReportType[] = [

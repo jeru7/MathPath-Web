@@ -93,18 +93,18 @@ export default function PreviewDownloadModal({
   const [activeTab, setActiveTab] = useState("overview");
   const [itemsPerPage] = useState(8);
 
+  // reset pagination
   useEffect(() => {
     setCurrentPage(1);
     setCurrentAttemptsPage(1);
     setActiveTab("overview");
-  }, [previewData]);
+  }, [isOpen, previewData]);
 
   const formatPreviewValue = (header: string, value: unknown): ReactElement => {
     if (typeof value === "number") {
       const numValue = value;
       if (
         header.toLowerCase().includes("rate") ||
-        header.toLowerCase().includes("questions") ||
         header.toLowerCase().includes("correctness")
       ) {
         return (
@@ -147,6 +147,7 @@ export default function PreviewDownloadModal({
   const isStageReport = hasStageData;
   const isAssessmentReport = hasAssessmentData;
 
+  // student data pagination
   const totalStudentPages = Math.ceil(
     studentDataFromPreview.length / itemsPerPage,
   );
@@ -157,6 +158,7 @@ export default function PreviewDownloadModal({
     indexOfLastStudentItem,
   );
 
+  // assessment overview pagination
   const totalOverviewPages = Math.ceil(
     assessmentDataFromPreview.length / itemsPerPage,
   );
@@ -167,6 +169,7 @@ export default function PreviewDownloadModal({
     indexOfLastOverviewItem,
   );
 
+  // stage data pagination
   const totalStagePages = Math.ceil(stageDataFromPreview.length / itemsPerPage);
   const indexOfLastStageItem = currentPage * itemsPerPage;
   const indexOfFirstStageItem = indexOfLastStageItem - itemsPerPage;
@@ -175,6 +178,7 @@ export default function PreviewDownloadModal({
     indexOfLastStageItem,
   );
 
+  // assessment attempts pagination
   const totalAttemptsPages = Math.ceil(
     (assessmentData?.attempts.length || 0) / itemsPerPage,
   );
@@ -187,6 +191,8 @@ export default function PreviewDownloadModal({
 
   const handleNextPage = (): void => {
     if (currentPage < totalStudentPages) setCurrentPage(currentPage + 1);
+    else if (currentPage < totalOverviewPages) setCurrentPage(currentPage + 1);
+    else if (currentPage < totalStagePages) setCurrentPage(currentPage + 1);
   };
 
   const handlePrevPage = (): void => {
@@ -212,15 +218,17 @@ export default function PreviewDownloadModal({
   };
 
   const getPageNumbers = (): number[] => {
-    const pageNumbers: number[] = [];
-    const totalPages = isStudentReport
-      ? totalStudentPages
-      : isStageReport
-        ? totalStagePages
-        : isAssessmentReport
-          ? totalOverviewPages
-          : 1;
+    let totalPages = 1;
 
+    if (isStudentReport) {
+      totalPages = totalStudentPages;
+    } else if (isStageReport) {
+      totalPages = totalStagePages;
+    } else if (isAssessmentReport) {
+      totalPages = totalOverviewPages;
+    }
+
+    const pageNumbers: number[] = [];
     const maxVisiblePages = 5;
 
     if (totalPages <= maxVisiblePages) {
@@ -387,7 +395,9 @@ export default function PreviewDownloadModal({
                       Student Overview Data
                     </h4>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                      Showing {itemsPerPage} records per page
+                      Showing{" "}
+                      {Math.min(itemsPerPage, currentStudentItems.length)}{" "}
+                      records per page
                     </p>
                   </div>
 
@@ -437,7 +447,7 @@ export default function PreviewDownloadModal({
                     </div>
                   </div>
 
-                  {(previewData?.data.length || 0) > 0 && (
+                  {studentDataFromPreview.length > 0 && (
                     <div className="border-t p-3 sm:p-4 bg-muted/30">
                       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
@@ -446,12 +456,12 @@ export default function PreviewDownloadModal({
                             {indexOfFirstStudentItem + 1}-
                             {Math.min(
                               indexOfLastStudentItem,
-                              studentDataFromPreview.length || 0,
+                              studentDataFromPreview.length,
                             )}
                           </span>{" "}
                           of{" "}
                           <span className="font-semibold text-foreground">
-                            {studentDataFromPreview.length || 0}
+                            {studentDataFromPreview.length}
                           </span>{" "}
                           students
                         </div>
@@ -529,7 +539,8 @@ export default function PreviewDownloadModal({
                       Stage Performance Data
                     </h4>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                      Showing {itemsPerPage} records per page
+                      Showing {Math.min(itemsPerPage, currentStageItems.length)}{" "}
+                      records per page
                     </p>
                   </div>
 
@@ -588,12 +599,12 @@ export default function PreviewDownloadModal({
                             {indexOfFirstStageItem + 1}-
                             {Math.min(
                               indexOfLastStageItem,
-                              stageDataFromPreview.length || 0,
+                              stageDataFromPreview.length,
                             )}
                           </span>{" "}
                           of{" "}
                           <span className="font-semibold text-foreground">
-                            {stageDataFromPreview.length || 0}
+                            {stageDataFromPreview.length}
                           </span>{" "}
                           stages
                         </div>
@@ -690,10 +701,7 @@ export default function PreviewDownloadModal({
                         </h4>
                         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                           Showing{" "}
-                          {Math.min(
-                            itemsPerPage,
-                            assessmentDataFromPreview.length,
-                          )}{" "}
+                          {Math.min(itemsPerPage, currentOverviewItems.length)}{" "}
                           records per page
                         </p>
                       </div>
@@ -847,10 +855,7 @@ export default function PreviewDownloadModal({
                         </h4>
                         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                           Showing{" "}
-                          {Math.min(
-                            itemsPerPage,
-                            assessmentData?.attempts.length || 0,
-                          )}{" "}
+                          {Math.min(itemsPerPage, currentAttemptItems.length)}{" "}
                           records per page
                         </p>
                       </div>
@@ -1007,7 +1012,9 @@ export default function PreviewDownloadModal({
                       Assessment Overview
                     </h4>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                      Showing {itemsPerPage} records per page
+                      Showing{" "}
+                      {Math.min(itemsPerPage, currentOverviewItems.length)}{" "}
+                      records per page
                     </p>
                   </div>
 
@@ -1066,12 +1073,12 @@ export default function PreviewDownloadModal({
                             {indexOfFirstOverviewItem + 1}-
                             {Math.min(
                               indexOfLastOverviewItem,
-                              assessmentDataFromPreview.length || 0,
+                              assessmentDataFromPreview.length,
                             )}
                           </span>{" "}
                           of{" "}
                           <span className="font-semibold text-foreground">
-                            {assessmentDataFromPreview.length || 0}
+                            {assessmentDataFromPreview.length}
                           </span>{" "}
                           records
                         </div>

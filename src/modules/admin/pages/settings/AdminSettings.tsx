@@ -4,7 +4,7 @@ import AccountSettingsCard from "../../../core/components/settings/account-setti
 import ChangePasswordCard from "../../../core/components/settings/change-password/ChangePasswordCard";
 import UserPreferencesCard from "../../../core/components/settings/user-preference/UserPreferencesCard";
 import { useAdminContext } from "../../context/admin.context";
-import TeacherReportsCard from "@/modules/core/components/settings/download-data/TeacherReportsCard";
+import DataReportCard from "@/modules/core/components/settings/data-report/DataReportCard";
 
 export default function AdminSettings(): ReactElement {
   const { admin, adminId } = useAdminContext();
@@ -33,7 +33,7 @@ export default function AdminSettings(): ReactElement {
       }
       changePasswordCard={<ChangePasswordCard />}
       userPreferencesCard={<UserPreferencesCard />}
-      reportsCard={<TeacherReportsCard userType="admin" userId={adminId} />}
+      reportsCard={<DataReportCard userType="admin" userId={adminId} />}
     />
   );
 }

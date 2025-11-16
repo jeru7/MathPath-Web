@@ -18,8 +18,8 @@ export const useAdminStudentData = (adminId: string, sectionId?: string) => {
     queryFn: () => {
       const url =
         sectionId && sectionId !== "all"
-          ? `${BASE_URI}/api/web/admins/${adminId}/reports/student-overview?sectionId=${sectionId}`
-          : `${BASE_URI}/api/web/admins/${adminId}/reports/student-overview`;
+          ? `${BASE_URI}/api/web/admins/${adminId}/data-reports/student-overview?sectionId=${sectionId}`
+          : `${BASE_URI}/api/web/admins/${adminId}/data-reports/student-overview`;
 
       return fetchData<StudentData[]>(url, "Failed to fetch student data.");
     },
@@ -49,44 +49,11 @@ export const useAdminAssessmentOverview = (
       if (assessmentId && assessmentId !== "all")
         params.append("assessmentId", assessmentId);
 
-      const url = `${BASE_URI}/api/web/admins/${adminId}/reports/assessment-overview?${params}`;
+      const url = `${BASE_URI}/api/web/admins/${adminId}/data-reports/assessment-overview?${params}`;
 
       return fetchData<AssessmentData[]>(
         url,
         "Failed to fetch assessment overview data.",
-      );
-    },
-    staleTime: DATA_STALE_TIME,
-    enabled: !!adminId,
-  });
-};
-
-// get assessment attempts data for reports
-export const useAdminAssessmentAttempts = (
-  adminId: string,
-  sectionId?: string,
-  assessmentId?: string,
-) => {
-  return useQuery<AssessmentAttemptData[]>({
-    queryKey: [
-      "admin",
-      adminId,
-      "assessment-attempts",
-      sectionId,
-      assessmentId,
-    ],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      if (sectionId && sectionId !== "all")
-        params.append("sectionId", sectionId);
-      if (assessmentId && assessmentId !== "all")
-        params.append("assessmentId", assessmentId);
-
-      const url = `${BASE_URI}/api/web/admins/${adminId}/reports/assessment-attempts?${params}`;
-
-      return fetchData<AssessmentAttemptData[]>(
-        url,
-        "Failed to fetch assessment attempts data.",
       );
     },
     staleTime: DATA_STALE_TIME,
@@ -121,7 +88,7 @@ export const useAdminAssessmentCombined = (
         params.append("assessmentId", assessmentId);
       if (includeAttempts) params.append("includeAttempts", "true");
 
-      const url = `${BASE_URI}/api/web/admins/${adminId}/reports/assessment-combined?${params}`;
+      const url = `${BASE_URI}/api/web/admins/${adminId}/data-reports/assessment-combined?${params}`;
 
       return fetchData<{
         overview: AssessmentData[];
@@ -140,8 +107,8 @@ export const useAdminStageData = (adminId: string, sectionId?: string) => {
     queryFn: () => {
       const url =
         sectionId && sectionId !== "all"
-          ? `${BASE_URI}/api/web/admins/${adminId}/reports/stage-progress?sectionId=${sectionId}`
-          : `${BASE_URI}/api/web/admins/${adminId}/reports/stage-progress`;
+          ? `${BASE_URI}/api/web/admins/${adminId}/data-reports/stage-progress?sectionId=${sectionId}`
+          : `${BASE_URI}/api/web/admins/${adminId}/data-reports/stage-progress`;
 
       return fetchData<StageData[]>(url, "Failed to fetch stage data.");
     },

@@ -4,7 +4,7 @@ import Settings from "../../../core/components/settings/Settings";
 import AccountSettingsCard from "../../../core/components/settings/account-settings/AccountSettingsCard";
 import ChangePasswordCard from "../../../core/components/settings/change-password/ChangePasswordCard";
 import UserPreferencesCard from "../../../core/components/settings/user-preference/UserPreferencesCard";
-import TeacherReportsCard from "../../../core/components/settings/download-data/TeacherReportsCard";
+import DataReportCard from "@/modules/core/components/settings/data-report/DataReportCard";
 
 export default function TeacherSettings(): ReactElement {
   const { teacher, teacherId } = useTeacherContext();
@@ -33,7 +33,7 @@ export default function TeacherSettings(): ReactElement {
       }
       changePasswordCard={<ChangePasswordCard />}
       userPreferencesCard={<UserPreferencesCard />}
-      reportsCard={<TeacherReportsCard userType="teacher" userId={teacherId} />}
+      reportsCard={<DataReportCard userType="teacher" userId={teacherId} />}
     />
   );
 }
