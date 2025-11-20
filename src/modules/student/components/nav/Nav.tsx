@@ -86,8 +86,8 @@ export default function Nav(): ReactElement {
                   key={index}
                   to={to}
                   className={`relative group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 ${isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                     }`}
                   end={index === 0}
                 >
@@ -168,7 +168,7 @@ export default function Nav(): ReactElement {
             <MdOutlineMenu className="h-5 w-5 text-foreground" />
           </Button>
           <h1 className="font-bold font-baloo text-xl text-primary">
-            MathPath
+            Math-Path 10
           </h1>
         </nav>
 
@@ -179,7 +179,7 @@ export default function Nav(): ReactElement {
           >
             <SheetHeader className="px-6 h-14 flex flex-row items-center border-b border-border">
               <SheetTitle className="text-primary font-bold text-lg font-baloo">
-                MathPath
+                Math-Path 10
               </SheetTitle>
             </SheetHeader>
 
@@ -195,8 +195,8 @@ export default function Nav(): ReactElement {
                       key={index}
                       to={to}
                       className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${isActive
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                         }`}
                       end={index === 0}
                       onClick={() => setIsMenuOpen(false)}
