@@ -1,6 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./modules/auth/contexts/AuthProvider";
@@ -34,6 +38,7 @@ const router = createBrowserRouter([
     ),
     children: [
       // public routes
+
       { path: "/", element: <Landing /> },
 
       // auth routes
@@ -106,7 +111,7 @@ const router = createBrowserRouter([
       },
 
       // Catch-all
-      { path: "*", element: <Landing /> },
+      { path: "*", element: <Navigate to="/" replace /> },
     ],
   },
 ]);
