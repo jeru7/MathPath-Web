@@ -12,7 +12,7 @@ export const useStudentActivities = (studentId: string) => {
     queryFn: () =>
       fetchData<StudentActivity[]>(
         `${BASE_URI}/api/web/students/${studentId}/activities`,
-        "Failed to fetch assessment attempts.",
+        "Failed to fetch student activities.",
       ),
     staleTime: DATA_STALE_TIME,
     enabled: !!studentId,

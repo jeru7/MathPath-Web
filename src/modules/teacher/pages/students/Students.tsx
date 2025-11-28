@@ -272,7 +272,6 @@ export default function Students(): ReactElement {
 
       {showCodes && <RegistrationCode />}
 
-      {/* archive modal */}
       {showArchive && archivedStudents && (
         <StudentArchiveModal
           isOpen={showArchive}
@@ -284,7 +283,6 @@ export default function Students(): ReactElement {
         />
       )}
 
-      {/* student details modal */}
       {selectedStudent && (
         <StudentDetailsModal
           student={selectedStudent}
@@ -297,7 +295,6 @@ export default function Students(): ReactElement {
         />
       )}
 
-      {/* edit student modal */}
       {selectedStudent && (
         <EditStudentModal
           isOpen={isEditModalOpen}
@@ -310,7 +307,6 @@ export default function Students(): ReactElement {
         />
       )}
 
-      {/* delete confirmation modal */}
       <DeleteStudentConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={cancelDelete}
@@ -318,7 +314,6 @@ export default function Students(): ReactElement {
         student={studentToDelete}
       />
 
-      {/* archive confirmation modal */}
       <StudentArchiveConfirmationModal
         isOpen={isArchiveModalOpen}
         onClose={cancelArchive}

@@ -6,7 +6,6 @@ import { ProgressLog } from "../../core/types/progress-log/progress-log.type";
 import { Section } from "../../core/types/section/section.type";
 import { Student } from "../types/student.type";
 
-// get student data
 export const useStudent = (studentId: string) => {
   return useQuery<Student>({
     queryKey: ["student", studentId, "student-data"],
@@ -20,7 +19,6 @@ export const useStudent = (studentId: string) => {
   });
 };
 
-// get student section
 export const useStudentSection = (studentId: string, sectionId: string) => {
   return useQuery<Section>({
     queryKey: ["student", studentId, "section", sectionId],
@@ -34,7 +32,6 @@ export const useStudentSection = (studentId: string, sectionId: string) => {
   });
 };
 
-// get student stage attempts
 export const useStudentAttempts = (studentId: string) => {
   return useQuery<StageAttempt[]>({
     queryKey: ["student", studentId, "attempts"],
@@ -48,7 +45,6 @@ export const useStudentAttempts = (studentId: string) => {
   });
 };
 
-// get student progress logs
 export const useStudentProgressLog = (studentId: string) => {
   return useQuery<ProgressLog[]>({
     queryKey: ["student", studentId, "progress-log"],

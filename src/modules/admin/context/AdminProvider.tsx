@@ -1,16 +1,8 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactElement,
-} from "react";
-import { AdminContext } from "./admin.context";
+import { useEffect, useRef, useState } from "react";
 import { useAdmin, useAdminTeacher } from "../services/admin.service";
-import { useAdminSections } from "../services/admin-section.service";
 import { WSS } from "../../core/constants/api.constant";
-import { useQueryClient } from "@tanstack/react-query";
+import { AdminContext } from "./admin.context";
+import { useAdminSections } from "../services/admin-section.service";
 import { useAdminAssessments } from "../services/admin-assessment.service";
 import { useAdminStudents } from "../services/admin-student.service";
 import { useAdminActivities } from "../services/admin-activity.service";
@@ -22,164 +14,130 @@ export default function AdminProvider({
 }: {
   adminId: string;
   children: React.ReactNode;
-}): ReactElement {
+}) {
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
-  const reconnectInterval = 3000;
-  const isMounted = useRef(true);
 
-  const queryClient = useQueryClient();
+  const { data: admin, isLoading: isLoadingAdmin } = useAdmin(adminId);
+  const { data: teachers, isLoading: isLoadingTeachers } =
+    useAdminTeacher(adminId);
+  const { data: students, isLoading: isLoadingStudents } =
+    useAdminStudents(adminId);
+  const { data: sections, isLoading: isLoadingSections } =
+    useAdminSections(adminId);
+  const { data: assessments, isLoading: isLoadingAssessments } =
+    useAdminAssessments(adminId);
+  const { data: activities, isLoading: isLoadingActivities } =
+    useAdminActivities(adminId);
 
-  const { data: admin } = useAdmin(adminId);
-  const { data: teachers } = useAdminTeacher(adminId);
-  const { data: students } = useAdminStudents(adminId);
-  const { data: sections } = useAdminSections(adminId);
-  const { data: assessments } = useAdminAssessments(adminId);
-  const { data: activities } = useAdminActivities(adminId);
-
-  console.log(teachers);
-
+  const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoader(false);
-    }, 1000); // delay 1 sec
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // students
-  const rawStudents = students?.filter((s) => !s.archive.isArchive);
-  const archivedStudents = students?.filter((s) => s.archive.isArchive);
-  console.log("");
+  useEffect(() => {
+    if (!adminId) return;
 
-  // sections
-  const rawSections = sections?.filter((s) => !s.archive.isArchive);
-  const archivedSections = sections?.filter((s) => s.archive.isArchive);
-
-  // assessments
-  const rawAssessments = assessments?.filter((a) => !a.archive.isArchive);
-  const archivedAssessments = assessments?.filter((a) => a.archive.isArchive);
-
-  // teachers
-  const rawTeachers = teachers?.filter((t) => !t.archive.isArchive);
-  const archivedTeachers = teachers?.filter((t) => t.archive.isArchive);
-
-  // track student online status
-  const [onlineStudentIds, setOnlineStudentIds] = useState<string[]>([]);
-
-  const onlineStudents = useMemo(() => {
-    return students?.filter((s) => onlineStudentIds.includes(s.id));
-  }, [students, onlineStudentIds]);
-
-  const connectWebSocket = useCallback(() => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      return;
-    }
-
-    if (wsRef.current) {
-      wsRef.current.close();
-    }
-
-    wsRef.current = new WebSocket(WSS);
-    const ws = wsRef.current;
+    const ws = new WebSocket(WSS);
+    wsRef.current = ws;
 
     ws.onopen = () => {
-      if (!isMounted.current) {
-        ws.close();
-        return;
-      }
-
-      reconnectAttempts.current = 0;
+      console.log("Admin WebSocket connected, sending ADMIN_LOGIN");
+      ws.send(JSON.stringify({ type: "ADMIN_LOGIN", data: adminId }));
     };
 
     ws.onmessage = (e) => {
-      if (!isMounted.current) return;
+      console.log("Admin WebSocket message received:", e.data);
       const { type, data } = JSON.parse(e.data);
-
-      if (type === "TEACHER_INITIAL_DATA") {
-        setOnlineStudentIds(data.onlineStudents);
+      if (type === "ADMIN_INITIAL_DATA") {
+        console.log("Received ADMIN_INITIAL_DATA:", data.onlineStudents);
+        setOnlineStudentIds(data.onlineStudents || []);
       }
-
       if (type === "STUDENT_ONLINE") {
-        setOnlineStudentIds((prev) =>
-          prev.includes(data.studentId) ? prev : [...prev, data.studentId],
-        );
-        queryClient.refetchQueries({
-          queryKey: ["admin", adminId, "active-students"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["admin", adminId, "online-trend"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["admin", adminId, "students"],
-        });
+        console.log("Received STUDENT_ONLINE:", data.studentId);
+        setOnlineStudentIds((prev) => [...prev, data.studentId]);
       }
-
       if (type === "STUDENT_OFFLINE") {
+        console.log("Received STUDENT_OFFLINE:", data.studentId);
         setOnlineStudentIds((prev) =>
           prev.filter((id) => id !== data.studentId),
         );
-        queryClient.refetchQueries({
-          queryKey: ["admin", adminId, "active-students"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["admin", adminId, "online-trend"],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["admin", adminId, "students"],
-        });
       }
+    };
+
+    ws.onerror = (error) => {
+      console.error("Admin WebSocket error:", error);
     };
 
     ws.onclose = () => {
-      if (!isMounted.current) return;
-
-      if (reconnectAttempts.current < maxReconnectAttempts) {
-        reconnectAttempts.current += 1;
-        setTimeout(connectWebSocket, reconnectInterval);
-      }
+      console.log("Admin WebSocket disconnected");
     };
-
-    wsRef.current.onerror = () => {
-      if (!isMounted.current) return;
-    };
-  }, [adminId, queryClient]);
-
-  useEffect(() => {
-    isMounted.current = true;
-    connectWebSocket();
 
     return () => {
-      isMounted.current = false;
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
+      ws.close();
     };
-  }, [connectWebSocket]);
+  }, [adminId]);
+
+  // students
+  const rawStudents = students?.filter((s) => !s.archive.isArchive) || [];
+  const archivedStudents = students?.filter((s) => s.archive.isArchive) || [];
+
+  // sections
+  const rawSections = sections?.filter((s) => !s.archive.isArchive) || [];
+  const archivedSections = sections?.filter((s) => s.archive.isArchive) || [];
+
+  // assessments
+  const rawAssessments = assessments?.filter((a) => !a.archive.isArchive) || [];
+  const archivedAssessments =
+    assessments?.filter((a) => a.archive.isArchive) || [];
+
+  // teachers
+  const rawTeachers = teachers?.filter((t) => !t.archive.isArchive) || [];
+  const archivedTeachers = teachers?.filter((t) => t.archive.isArchive) || [];
 
   const value = {
     adminId,
     admin: admin || null,
     allTeachers: teachers || [],
-    archivedTeachers: archivedTeachers || [],
-    rawTeachers: rawTeachers || [],
+    rawTeachers: rawTeachers,
+    archivedTeachers: archivedTeachers,
     allStudents: students || [],
-    rawStudents: rawStudents || [],
-    archivedStudents: archivedStudents || [],
+    rawStudents: rawStudents,
+    archivedStudents: archivedStudents,
     allSections: sections || [],
-    rawSections: rawSections || [],
-    archivedSections: archivedSections || [],
+    rawSections: rawSections,
+    archivedSections: archivedSections,
     allAssessments: assessments || [],
-    rawAssessments: rawAssessments || [],
-    archivedAssessments: archivedAssessments || [],
+    rawAssessments: rawAssessments,
+    archivedAssessments: archivedAssessments,
     activities: activities || [],
-    onlineStudents: onlineStudents || [],
+    onlineStudents:
+      students?.filter((s) => onlineStudentIds.includes(s.id)) || [],
+
+    // loading states
+    isLoadingAdmin,
+    isLoadingTeachers,
+    isLoadingStudents,
+    isLoadingSections,
+    isLoadingAssessments,
+    isLoadingActivities,
+    isCriticalDataLoaded: !!admin,
   };
 
-  if (showLoader || !teachers) {
+  if (
+    showLoader ||
+    isLoadingAdmin ||
+    isLoadingTeachers ||
+    isLoadingStudents ||
+    isLoadingSections ||
+    isLoadingAssessments ||
+    isLoadingActivities ||
+    !admin
+  ) {
     return <PageLoader items={["Loading admin data..."]} />;
   }
 
