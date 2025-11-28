@@ -15,6 +15,7 @@ export default function AssessmentBuilderWrapper(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const hasInitialized = useRef(false);
+  const navigationInProgress = useRef(false);
 
   const [draftId, setDraftId] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(
@@ -26,24 +27,37 @@ export default function AssessmentBuilderWrapper(): ReactElement {
   const { data: assessmentDraft, isFetching } = useTeacherAssessment(
     teacherId,
     assessmentDataId ?? "",
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enabled: !!assessmentDataId && !!teacherId,
+    },
   );
 
   const { mutateAsync } = useCreateAssessmentDraft(teacherId);
 
   useEffect(() => {
-    if (!teacherId || hasInitialized.current) return;
-    hasInitialized.current = true;
+    if (!teacherId || hasInitialized.current || navigationInProgress.current)
+      return;
 
     const initializeAssessment = async () => {
       try {
+        navigationInProgress.current = true;
+        hasInitialized.current = true;
+
         if (assessmentId && assessmentId !== "new") {
-          // edit mode
+          console.log("Editing existing assessment:", assessmentId);
           setEditId(assessmentId);
           setDraftId(null);
 
-          // ensure we're on a valid edit step
           const currentPath = location.pathname;
-          if (!currentPath.includes("/edit")) {
+          const isValidEditPath =
+            currentPath.includes("/edit") &&
+            (currentPath.includes("/create/edit") ||
+              currentPath.includes("/configure/edit") ||
+              currentPath.includes("/publish/edit"));
+
+          if (!isValidEditPath) {
             navigate(
               `/teacher/${teacherId}/assessments/${assessmentId}/create/edit`,
               {
@@ -52,25 +66,35 @@ export default function AssessmentBuilderWrapper(): ReactElement {
             );
           }
         } else {
-          // create mode
+          console.log("Creating new assessment");
           if (!draftId) {
             const data = await mutateAsync();
+            console.log("Created new draft:", data.id);
             localStorage.setItem("currentAssessmentDraftId", data.id);
             setDraftId(data.id);
             setEditId(null);
 
-            // navigate to create step
-            navigate(`/teacher/${teacherId}/assessments/${data.id}/create`, {
-              replace: true,
-            });
-          } else {
-            // ensure we're on create step for draft
             const currentPath = location.pathname;
-            if (
-              !currentPath.includes("/create") &&
-              !currentPath.includes("/configure") &&
-              !currentPath.includes("/publish")
-            ) {
+            const isCurrentDraftPath = currentPath.includes(`/${data.id}/`);
+            const isValidCreatePath =
+              currentPath.includes("/create") ||
+              currentPath.includes("/configure") ||
+              currentPath.includes("/publish");
+
+            if (!isCurrentDraftPath || !isValidCreatePath) {
+              navigate(`/teacher/${teacherId}/assessments/${data.id}/create`, {
+                replace: true,
+              });
+            }
+          } else {
+            const currentPath = location.pathname;
+            const isCurrentDraftPath = currentPath.includes(`/${draftId}/`);
+            const isValidPath =
+              currentPath.includes("/create") ||
+              currentPath.includes("/configure") ||
+              currentPath.includes("/publish");
+
+            if (!isCurrentDraftPath || !isValidPath) {
               setEditId(null);
               navigate(`/teacher/${teacherId}/assessments/${draftId}/create`, {
                 replace: true,
@@ -80,6 +104,10 @@ export default function AssessmentBuilderWrapper(): ReactElement {
         }
       } catch (error) {
         console.error("Failed to initialize assessment:", error);
+      } finally {
+        setTimeout(() => {
+          navigationInProgress.current = false;
+        }, 100);
       }
     };
 
@@ -95,7 +123,7 @@ export default function AssessmentBuilderWrapper(): ReactElement {
 
   useEffect(() => {
     return () => {
-      if (assessmentId === "new" || draftId) {
+      if (assessmentId === "new" && draftId) {
         localStorage.removeItem("currentAssessmentDraftId");
       }
     };
@@ -109,7 +137,10 @@ export default function AssessmentBuilderWrapper(): ReactElement {
 
   return (
     <PreviewProvider>
-      <AssessmentBuilderProvider initialAssessment={assessmentDraft}>
+      <AssessmentBuilderProvider
+        initialAssessment={assessmentDraft}
+        key={assessmentDataId}
+      >
         <AssessmentBuilder />
       </AssessmentBuilderProvider>
     </PreviewProvider>

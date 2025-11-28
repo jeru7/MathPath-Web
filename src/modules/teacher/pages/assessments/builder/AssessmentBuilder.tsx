@@ -34,11 +34,16 @@ export default function AssessmentBuilder(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isNavigatingAway = useRef(false);
+  const popStateHandled = useRef(false);
+
   const pathSegments = location.pathname.split("/");
-  const isEditMode =
-    pathSegments.includes("edit") && assessment.status !== "draft";
+  const isEditRoute = pathSegments.includes("edit");
+  const isDraftAssessment = assessment.status === "draft";
+  const shouldDisableEditingInCreate = isEditRoute && !isDraftAssessment;
+
   const lastSegment =
-    pathSegments[pathSegments.length - (isEditMode ? 2 : 1)] ?? "create";
+    pathSegments[pathSegments.length - (isEditRoute ? 2 : 1)] ?? "create";
 
   const [step, setStep] = useState<BuilderStep>(
     ["create", "configure", "publish"].includes(lastSegment)
@@ -67,7 +72,6 @@ export default function AssessmentBuilder(): ReactElement {
   const configureErrors = useAssessmentValidation(assessment, 2);
   const publishErrors = useAssessmentValidation(assessment, 3);
 
-  // track unsaved changes
   useEffect(() => {
     const currentSerialized = JSON.stringify({
       title: assessment.title,
@@ -85,10 +89,8 @@ export default function AssessmentBuilder(): ReactElement {
       ? prevAssessmentRef.current !== currentSerialized
       : false;
 
-    // update state immediately
     setHasUnsavedChanges(hasChanges);
 
-    // calculate changes count
     if (prevAssessmentRef.current) {
       const prev = JSON.parse(prevAssessmentRef.current);
       const current = JSON.parse(currentSerialized);
@@ -102,7 +104,6 @@ export default function AssessmentBuilder(): ReactElement {
       setChangesCount(count);
     }
 
-    // initialize with current state if not set
     if (!prevAssessmentRef.current) {
       prevAssessmentRef.current = currentSerialized;
     }
@@ -119,7 +120,7 @@ export default function AssessmentBuilder(): ReactElement {
     const currentMode = modeMap[step];
 
     let targetPath;
-    if (isEditMode) {
+    if (isEditRoute) {
       // edit mode urls: /create/edit, /configure/edit, /publish/edit
       targetPath = `/teacher/${teacherId}/assessments/${assessmentId}/${currentMode}/edit`;
     } else {
@@ -133,9 +134,8 @@ export default function AssessmentBuilder(): ReactElement {
     if (teacherId && location.pathname !== targetPath) {
       navigate(targetPath, { replace: true });
     }
-  }, [step, navigate, teacherId, assessmentId, location.pathname, isEditMode]);
+  }, [step, navigate, teacherId, assessmentId, location.pathname, isEditRoute]);
 
-  // update step when url changes - handle edit mode urls
   useEffect(() => {
     if (["create", "configure", "publish"].includes(lastSegment)) {
       setStep(getInitialStep(lastSegment as BuilderMode));
@@ -151,10 +151,9 @@ export default function AssessmentBuilder(): ReactElement {
     }
   }, [assessmentId, teacherId, rawAssessments, deleteDraft, assessment.id]);
 
-  // browser back button and navigation handling
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
+      if (hasUnsavedChanges && !isNavigatingAway.current) {
         event.preventDefault();
         event.returnValue =
           "You have unsaved changes. Are you sure you want to leave?";
@@ -163,15 +162,33 @@ export default function AssessmentBuilder(): ReactElement {
     };
 
     const handlePopState = (event: PopStateEvent) => {
-      // if there are unsaved changes, show confirmation modal and prevent navigation
-      if (hasUnsavedChanges) {
+      if (
+        hasUnsavedChanges &&
+        !isNavigatingAway.current &&
+        !popStateHandled.current
+      ) {
         event.preventDefault();
+        popStateHandled.current = true;
+
+        console.log("Back button pressed - showing confirmation modal");
         setShowExitConfirm(true);
 
-        // immediately push state back to maintain current position
-        window.history.pushState(null, "", window.location.href);
+        const pushState = () => {
+          window.history.pushState(null, "", window.location.href);
+        };
+
+        pushState();
+        setTimeout(pushState, 10);
+        setTimeout(pushState, 20);
+        setTimeout(pushState, 30);
+
+        setTimeout(() => {
+          popStateHandled.current = false;
+        }, 100);
       }
     };
+
+    window.history.pushState(null, "", window.location.href);
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("popstate", handlePopState);
@@ -206,6 +223,8 @@ export default function AssessmentBuilder(): ReactElement {
   const handleSaveAndExit = () => {
     cancelPendingUpdates();
     setIsSaving(true);
+    isNavigatingAway.current = true;
+
     updateDraft(assessment, {
       onSuccess: () => {
         setHasUnsavedChanges(false);
@@ -213,18 +232,23 @@ export default function AssessmentBuilder(): ReactElement {
         setShowExitConfirm(false);
         navigate("..");
       },
-      onError: () => setIsSaving(false),
+      onError: () => {
+        setIsSaving(false);
+        isNavigatingAway.current = false;
+      },
     });
   };
 
   const handleExitWithoutSave = () => {
     setShowExitConfirm(false);
     setHasUnsavedChanges(false);
+    isNavigatingAway.current = true;
     navigate("..");
   };
 
   const handleCancelExit = () => {
     setShowExitConfirm(false);
+    isNavigatingAway.current = false;
     window.history.pushState(null, "", window.location.href);
   };
 
@@ -232,6 +256,7 @@ export default function AssessmentBuilder(): ReactElement {
     if (hasUnsavedChanges) {
       setShowExitConfirm(true);
     } else {
+      isNavigatingAway.current = true;
       navigate("..");
     }
   };
@@ -297,7 +322,7 @@ export default function AssessmentBuilder(): ReactElement {
       <Card className="border-border">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="text-2xl font-bold">
-            {isEditMode ? "Edit Assessment" : "Create Assessment"}
+            {isEditRoute ? "Edit Assessment" : "Create Assessment"}
           </CardTitle>
           <div className="flex items-center gap-2">
             {hasUnsavedChanges && !isSaving && (
@@ -369,7 +394,7 @@ export default function AssessmentBuilder(): ReactElement {
                 <Create
                   isValidated={isValidated}
                   errors={createErrors}
-                  isEditMode={isEditMode}
+                  isEditMode={shouldDisableEditingInCreate}
                 />
               ) : step === 2 ? (
                 <Configure isValidated={isValidated} errors={configureErrors} />
@@ -382,7 +407,7 @@ export default function AssessmentBuilder(): ReactElement {
                   isPublishPending={isPublishPending}
                   isSaving={isSaving}
                   publishError={publishError}
-                  isEditMode={isEditMode}
+                  isEditMode={isEditRoute}
                 />
               ) : null}
             </CardContent>

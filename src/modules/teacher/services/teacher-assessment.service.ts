@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { DATA_STALE_TIME, BASE_URI } from "../../core/constants/api.constant";
 import { Assessment } from "../../core/types/assessment/assessment.type";
 import {
@@ -27,8 +32,9 @@ export const useTeacherAssessments = (teacherId: string) => {
 export const useTeacherAssessment = (
   teacherId: string,
   assessmentId: string,
+  options?: Omit<UseQueryOptions<Assessment, Error>, "queryKey" | "queryFn">,
 ) => {
-  return useQuery<Assessment>({
+  return useQuery<Assessment, Error>({
     queryKey: ["teacher", teacherId, "assessments", assessmentId],
     queryFn: () =>
       fetchData<Assessment>(
@@ -37,9 +43,9 @@ export const useTeacherAssessment = (
       ),
     enabled: !!teacherId && !!assessmentId,
     staleTime: DATA_STALE_TIME,
+    ...options,
   });
 };
-
 export const useCreateAssessmentDraft = (teacherId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -95,6 +101,8 @@ export const usePublishAssessment = (teacherId: string) => {
 };
 
 export const useUpdateAssessmentDraft = (teacherId: string) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (updatedAssessment: Assessment) => {
       return patchData<Assessment, Assessment>(
@@ -102,6 +110,13 @@ export const useUpdateAssessmentDraft = (teacherId: string) => {
         updatedAssessment,
         "Failed to update assessment draft",
       );
+    },
+    onSuccess: (_savedAssessment, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["teacher", teacherId, "assessments", variables.id],
+      });
+
+      console.log("🔄 Invalidated cache for assessment:", variables.id);
     },
   });
 };

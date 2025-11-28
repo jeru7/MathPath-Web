@@ -36,6 +36,7 @@ export default function TopicPredictionsModal({
       : useAdminTopicPredictions;
 
   const { data: topicPredictions, isLoading } = useTopicPredictions(userId);
+  console.log("topic", topicPredictions);
   const predictions = topicPredictions?.predictions || [];
   const topicsAnalyzed = topicPredictions?.topicsAnalyzed || 0;
 

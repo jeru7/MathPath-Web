@@ -131,7 +131,7 @@ export const useAdminQuestionStats = (adminId: string) => {
 // get topic prediction
 export const useAdminTopicPredictions = (adminId: string) => {
   return useQuery<TopicPredictionResponse>({
-    queryKey: ["admins", adminId, "topic-prediction"],
+    queryKey: ["admin", adminId, "topic-prediction"],
     queryFn: () => {
       return fetchData<TopicPredictionResponse>(
         `${BASE_URI}/api/web/admins/${adminId}/stats/topics/predictions`,
