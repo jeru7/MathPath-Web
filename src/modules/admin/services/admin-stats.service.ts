@@ -2,6 +2,7 @@ import {
   BASE_URI,
   DATA_STALE_TIME,
 } from "@/modules/core/constants/api.constant";
+import { TopicPredictionResponse } from "@/modules/core/types/analytics/topic-prediction.type";
 import { AssessmentOverview } from "@/modules/core/types/assessment/assessment-stats.type";
 import {
   QuestionStatsResponse,
@@ -120,6 +121,21 @@ export const useAdminQuestionStats = (adminId: string) => {
       return fetchData<QuestionStatsResponse>(
         `${BASE_URI}/api/web/admins/${adminId}/stats/questions`,
         "Failed to fetch question stats.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!adminId,
+  });
+};
+
+// get topic prediction
+export const useAdminTopicPredictions = (adminId: string) => {
+  return useQuery<TopicPredictionResponse>({
+    queryKey: ["admins", adminId, "topic-prediction"],
+    queryFn: () => {
+      return fetchData<TopicPredictionResponse>(
+        `${BASE_URI}/api/web/admins/${adminId}/stats/topics/predictions`,
+        "Failed to fetch topic prediction.",
       );
     },
     staleTime: DATA_STALE_TIME,

@@ -15,7 +15,9 @@ import {
 } from "../types/student-online-trend.type";
 import { AssessmentOverview } from "../../core/types/assessment/assessment-stats.type";
 import { TopStudent } from "@/modules/student/types/top-student.type";
+import { TopicPredictionResponse } from "@/modules/core/types/analytics/topic-prediction.type";
 
+// get topic stats
 export const useTeacherTopicStats = (teacherId: string) => {
   return useQuery<TopicStatsResponse>({
     queryKey: ["teacher", teacherId, "topic-stats"],
@@ -23,6 +25,21 @@ export const useTeacherTopicStats = (teacherId: string) => {
       return fetchData<TopicStatsResponse>(
         `${BASE_URI}/api/web/teachers/${teacherId}/stats/topics`,
         "Failed to fetch topic stats.",
+      );
+    },
+    staleTime: DATA_STALE_TIME,
+    enabled: !!teacherId,
+  });
+};
+
+// get topic prediction
+export const useTeacherTopicPredictions = (teacherId: string) => {
+  return useQuery<TopicPredictionResponse>({
+    queryKey: ["teacher", teacherId, "topic-prediction"],
+    queryFn: () => {
+      return fetchData<TopicPredictionResponse>(
+        `${BASE_URI}/api/web/teachers/${teacherId}/stats/topics/predictions`,
+        "Failed to fetch topic prediction.",
       );
     },
     staleTime: DATA_STALE_TIME,
